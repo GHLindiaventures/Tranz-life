@@ -8,7 +8,7 @@ import { inr } from '../../utils/format.js';
 
 const API = (import.meta.env.VITE_CHAT_API || '') + '/api/chat';
 const STORE = 'tl-chat-v1';
-const WELCOME = 'Hi, I\'m Tulsi 🌿 Tell me what\'s been bothering you, and we\'ll find a gentle, natural way to feel better. You can type in English, Tamil or Tanglish.';
+const WELCOME = 'Hi, I\'m Tulsi 🌿 Tell me what\'s been bothering you, and we\'ll find a gentle, natural way to feel better. You can type in English, Tamil or Tanglish, and I\'ll reply in simple English. I share general wellness tips, not medical advice.';
 const CHIPS = ['Period cramps', 'Stressed at work', 'Dry, cracked feet', 'Always tired', 'Liver care', 'Can\'t sleep well'];
 
 const LEAF = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 19c0-8 5-13 14-14-1 9-6 14-14 14z"/><path d="M5 19c3-4 6-7 10-9"/></svg>';

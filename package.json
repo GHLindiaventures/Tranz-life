@@ -10,7 +10,8 @@
     "build:single": "vite build --mode single",
     "preview": "vite preview",
     "test": "vitest run",
-    "start": "node --env-file-if-exists=.env server/index.js"
+    "start": "node --env-file-if-exists=.env server/index.js",
+    "test:chat": "node --env-file-if-exists=.env scripts/tulsi-eval.mjs docs/tulsi-test-results.md"
   },
   "dependencies": {
     "gsap": "3.12.5",

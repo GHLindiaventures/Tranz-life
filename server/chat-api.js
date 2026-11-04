@@ -6,7 +6,7 @@
 //   - server/index.js serves it next to the built site for `npm start`
 import { emergencyReply, systemPrompt } from './advisor-prompt.js';
 import { analyse, routingNote } from './advisor-rules.js';
-import { PRODUCTS } from '../src/data/products.js';
+import { fallbackReply, fixedReply, problems } from './reply-check.js';
 
 const MAX_TURNS = 12, MAX_CHARS = 1500;
 
@@ -33,40 +33,56 @@ function createChatApi(env = {}){
   const ORIGIN = env.CHAT_ORIGIN || '';      // only when the site is served from another domain
   const SYSTEM = systemPrompt();
 
+  async function generate(messages, temperature, signal){
+    const limit = AbortSignal.timeout(45000);      // never leave a visitor waiting on a stuck model
+    const r = await fetch(`${OLLAMA}/api/chat`, { method:'POST', signal:signal ? AbortSignal.any([signal, limit]) : limit, headers:{ 'Content-Type':'application/json' },
+      body:JSON.stringify({ model:MODEL, stream:false, keep_alive:'30m', messages,
+        options:{ temperature, top_p:.9, repeat_penalty:1.1, num_ctx:4096, num_predict:350 } }) });
+    if (!r.ok) throw new Error(`ollama ${r.status}`);
+    return ((await r.json()).message?.content || '').trim();
+  }
+
+  // The whole safety pipeline. Returns { text, products, via } where via is
+  // 'emergency' (fixed reply), 'model', 'retry' (model, second draft) or 'fallback' (fixed reply from approved tips).
+  async function respond(msgs, signal){
+    const urgent = emergencyReply(msgs[msgs.length - 1].content);
+    if (urgent) return { text:urgent, products:[], via:'emergency', problems:[] };
+    // code decides the kind of message, approved tips, products, warning signs and language; the model only writes the reply
+    const a = analyse(msgs);
+    const fixed = fixedReply(a);
+    if (fixed) return { text:fixed, checked:fixed, products:a.products, via:'fixed', problems:[], analysis:a };
+    const convo = [{ role:'system', content:SYSTEM }, ...msgs.slice(0, -1), { role:'system', content:routingNote(a) }, msgs[msgs.length - 1]];
+    let text = await generate(convo, .5, signal), found = problems(text, a), via = 'model';
+    const first = found;
+    if (found.length){
+      // second draft, told exactly what was wrong
+      const fix = { role:'system', content:`Your previous draft broke these rules: ${found.join('; ')}. Write the reply again. Follow the routing note exactly, use only the approved tips, and fix every problem listed.` };
+      text = await generate([...convo, { role:'assistant', content:text }, fix], .2, signal); found = problems(text, a); via = 'retry';
+    }
+    if (found.length){ text = fallbackReply(a); via = 'fallback'; }
+    const checked = text;
+    // fixed sentences (e.g. "I can't advise on ashwagandha or doses") go first, written by code, not the model
+    if (a.prefix.length) text = `${a.prefix.join(' ')}\n\n${text}`;
+    return { text, checked, products:a.products, via, problems:first, analysis:a };
+  }
+
   async function chat(req, res){
     let msgs;
     try { msgs = cleanHistory((await readJson(req)).messages); } catch(e){ msgs = null; }
     if (!msgs){ res.writeHead(400, { 'Content-Type':'application/json' }); return res.end('{"error":"bad request"}'); }
-
-    const last = msgs[msgs.length - 1].content;
-    const urgent = emergencyReply(last);
-    if (urgent){ res.writeHead(200, { 'Content-Type':'text/plain; charset=utf-8' }); return res.end(urgent); }
-    // code decides the product, warning signs and language; the model only writes the reply
-    const a = analyse(last);
-    const convo = [{ role:'system', content:SYSTEM }, ...msgs.slice(0, -1), { role:'system', content:routingNote(a, PRODUCTS) }, msgs[msgs.length - 1]];
-    res.writeHead(200, { 'Content-Type':'text/plain; charset=utf-8', 'Cache-Control':'no-cache', 'X-Accel-Buffering':'no',
-      'X-Products':a.products.join(','), 'Access-Control-Expose-Headers':'X-Products' });
-
     const ctrl = new AbortController();
     res.on('close', () => { if (!res.writableEnded) ctrl.abort(); });
     try {
-      const up = await fetch(`${OLLAMA}/api/chat`, { method:'POST', signal:ctrl.signal, headers:{ 'Content-Type':'application/json' },
-        body:JSON.stringify({ model:MODEL, stream:true, keep_alive:'30m', messages:convo,
-          options:{ temperature:.6, top_p:.9, repeat_penalty:1.1, num_ctx:4096, num_predict:400 } }) });
-      if (!up.ok || !up.body) throw new Error(`ollama ${up.status}`);
-      const dec = new TextDecoder(); let buf = '';
-      for await (const chunk of up.body){
-        buf += dec.decode(chunk, { stream:true });
-        let nl; while ((nl = buf.indexOf('\n')) >= 0){
-          const line = buf.slice(0, nl).trim(); buf = buf.slice(nl + 1); if (!line) continue;
-          const j = JSON.parse(line); if (j.message?.content) res.write(j.message.content);
-        }
-      }
-      res.end();
+      const out = await respond(msgs, ctrl.signal);
+      if (out.via !== 'model') console.log(`[tulsi] ${out.via}${out.problems.length ? `: ${out.problems.join('; ')}` : ''}`);   // no message text is logged
+      res.writeHead(200, { 'Content-Type':'text/plain; charset=utf-8', 'Cache-Control':'no-cache',
+        'X-Products':out.products.join(','), 'Access-Control-Expose-Headers':'X-Products' });
+      res.end(out.text);
     } catch(err){
       if (ctrl.signal.aborted) return;
       console.error('[tulsi]', err.message);
-      res.end('\n\nSorry, I could not reach my thoughts just now. Please try again in a moment.');
+      res.writeHead(503, { 'Content-Type':'text/plain; charset=utf-8' });
+      res.end('unavailable');
     }
   }
 
@@ -88,7 +104,7 @@ function createChatApi(env = {}){
       .catch(() => log.warn(`  Tulsi chat: Ollama is not running at ${OLLAMA}. Start the Ollama app or run: ollama serve`));
   }
 
-  return { handle, warmUp, model:MODEL };
+  return { handle, warmUp, respond, model:MODEL };
 }
 
 export { createChatApi };

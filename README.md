@@ -30,13 +30,21 @@ npm run dev          # http://localhost:5173 with live reload, Tulsi chat includ
 
 The "Ask Tulsi" button opens a chat with a friendly natural-health advisor. It answers through a local Ollama model, so no chat data leaves the machine.
 
-The chat is part of the site: its API (`server/chat-api.js`) runs inside `npm run dev` and `npm run preview`, and inside `npm start` in production. There is no separate chat server to start. Set `CHAT_MODEL` in `.env` to try another model (`qwen2.5:7b` is faster, but writes weaker Tanglish).
+The chat is part of the site: its API (`server/chat-api.js`) runs inside `npm run dev` and `npm run preview`, and inside `npm start` in production. There is no separate chat server to start.
 
-How it decides what to say:
+Because this is health advice, the model never decides what to say. **Read [docs/tulsi-safety-review.md](docs/tulsi-safety-review.md) before changing anything.** In short:
 
-- `server/advisor-rules.js` is plain code that reads each message before the model sees it. It picks the matching product (if any), spots warning signs that need a doctor (for example a foot wound with diabetes, or yellow eyes) and detects English, Tamil or Tanglish. The model is told what to do in a short note, and the product card is shown from this decision, not from the model's text.
-- `server/advisor-prompt.js` holds Tulsi's personality and safety rules, and fixed replies for emergencies (112) and self-harm (Tele-MANAS 14416) that never go through the model.
-- To add a new concern-to-product match, add keywords in `advisor-rules.js` and a line to `MATCH` in `advisor-prompt.js`, then add a test in `tests/server/advisor-rules.test.js`.
+- `server/wellness-tips.js`: the **only** health advice Tulsi may give, 10 topics, each tip reworded from NHS / Diabetes UK guidance with the source link.
+- `server/advisor-rules.js`: plain code that picks the topic, tips, product, warning signs (doctor first) and caution rules (pregnancy, children, diabetes, medicine).
+- `server/advisor-prompt.js`: Tulsi's personality, and fixed replies for emergencies (112) and self-harm (Tele-MANAS 14416) that never go through the model.
+- `server/reply-check.js`: checks every reply before it is shown (unapproved remedies, doses, cure claims, diagnoses, stopping medicine…); a failing reply is rewritten once, then replaced with a fixed safe reply.
+
+```bash
+npm test            # unit tests, including the chat rules
+npm run test:chat   # 86 realistic questions through the real model; every answer is saved to docs/tulsi-test-results.md
+```
+
+Run `npm run test:chat` and read the answers after changing tips, rules or `CHAT_MODEL`.
 
 ## Going live
 
