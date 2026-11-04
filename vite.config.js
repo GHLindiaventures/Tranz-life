@@ -1,16 +1,26 @@
-import { defineConfig } from 'vite';
+import { defineConfig, loadEnv } from 'vite';
 import { viteSingleFile } from 'vite-plugin-singlefile';
+import { createChatApi } from './server/chat-api.js';
 
-// `npm run build` makes a normal static site in dist/ for hosting.
-// `npm run build:single` makes one self-contained dist-single/index.html you can email or open from disk.
+// Runs the Tulsi chat API inside the Vite server, so `npm run dev` and `npm run preview` include the chat.
+function tulsiChat(env){
+  let api;
+  const mount = server => {
+    api ??= createChatApi(env);
+    server.middlewares.use((req, res, next) => api.handle(req, res, next));
+    server.httpServer?.once('listening', () => api.warmUp(server.config.logger));
+  };
+  return { name: 'tulsi-chat', configureServer: mount, configurePreviewServer: mount };
+}
+
+// `npm run build` makes the site in dist/; `npm start` serves it with the chat (server/index.js).
+// `npm run build:single` makes one self-contained dist-single/index.html you can email or open from disk (no chat).
 export default defineConfig(({ mode }) => {
   const single = mode === 'single';
+  const env = loadEnv(mode, process.cwd(), '');      // all .env values, for the chat API only (never sent to the browser)
   return {
     base: './',
-    plugins: single ? [viteSingleFile()] : [],
-    // the Tulsi chat calls /api/chat; in dev that goes to `npm run chat` (server/chat-server.js)
-    server: { proxy: { '/api': `http://localhost:${process.env.CHAT_PORT || 8787}` } },
-    preview: { proxy: { '/api': `http://localhost:${process.env.CHAT_PORT || 8787}` } },
+    plugins: single ? [viteSingleFile()] : [tulsiChat(env)],
     build: single
       ? { outDir: 'dist-single', assetsInlineLimit: Number.MAX_SAFE_INTEGER, cssCodeSplit: false }
       : { outDir: 'dist', chunkSizeWarningLimit: 900 },

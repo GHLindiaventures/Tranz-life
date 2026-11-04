@@ -1,5 +1,5 @@
 // "Tulsi" wellness chat: a floating button that opens a chat panel. Replies stream from the chat API
-// (server/chat-server.js, which talks to a local Ollama model). Recommended products appear as cards
+// (server/chat-api.js, built into the site's server, which talks to a local Ollama model). Recommended products appear as cards
 // with an "Add to bag" button that the cart already handles (.mini-add[data-id]).
 import { thumbs } from '../../app/state.js';
 import { PRODUCTS } from '../../data/products.js';

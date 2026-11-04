@@ -9,15 +9,6 @@
         "dev"
       ],
       "port": 5173
-    },
-    {
-      "name": "chat",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "run",
-        "chat"
-      ],
-      "port": 8787
     }
   ]
 }
