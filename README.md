@@ -14,7 +14,8 @@ The site is a single page built with Vite and plain JavaScript (ES modules). It 
 
 ## Requirements
 
-- Node.js 18 or newer (20 LTS recommended)
+- Node.js 18 or newer for the website; 22.9 or newer for `npm run chat` (it reads `.env` with `--env-file-if-exists`)
+- Ollama, only for the Tulsi chat (see below)
 - Python 3.10+ only if you want to regenerate the image assets in `scripts/`
 
 ## Setup and run
@@ -23,6 +24,25 @@ The site is a single page built with Vite and plain JavaScript (ES modules). It 
 npm install
 npm run dev          # http://localhost:5173 with live reload
 ```
+
+## Tulsi wellness chat (local AI)
+
+The "Ask Tulsi" button opens a chat with a friendly natural-health advisor. It answers through a local [Ollama](https://ollama.com) model, so no chat data leaves the machine.
+
+```bash
+ollama pull gemma2:9b   # once
+npm run chat            # chat API on http://localhost:8787 (keep it running next to npm run dev)
+```
+
+Vite forwards `/api` to the chat server in dev and preview. Set `CHAT_MODEL` in `.env` to try another model (`qwen2.5:7b` is faster, but writes weaker Tanglish).
+
+How it decides what to say:
+
+- `server/advisor-rules.js` is plain code that reads each message before the model sees it. It picks the matching product (if any), spots warning signs that need a doctor (for example a foot wound with diabetes, or yellow eyes) and detects English, Tamil or Tanglish. The model is told what to do in a short note, and the product card is shown from this decision, not from the model's text.
+- `server/advisor-prompt.js` holds Tulsi's personality and safety rules, and fixed replies for emergencies (112) and self-harm (Tele-MANAS 14416) that never go through the model.
+- To add a new concern-to-product match, add keywords in `advisor-rules.js` and a line to `MATCH` in `advisor-prompt.js`, then add a test in `tests/server/advisor-rules.test.js`.
+
+For a live site, the chat server and Ollama must run on a machine with a GPU that the website can reach. Either serve them behind the same domain at `/api`, or set `VITE_CHAT_API` (website) and `CHAT_ORIGIN` (chat server).
 
 ## Build
 

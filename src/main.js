@@ -7,6 +7,7 @@ import { initScroll } from './app/scroll-animations.js';
 import { initSmooth } from './app/smooth-scroll.js';
 import { state, thumbs } from './app/state.js';
 import { initCart, renderCart } from './features/cart/cart.js';
+import { initChat } from './features/chat/chat-widget.js';
 import { initContactForm } from './features/contact/contact-form.js';
 import { buildNeeds, selectNeed } from './features/finder/product-finder.js';
 import { initHeroJar } from './features/hero/hero-jar.js';
@@ -31,7 +32,7 @@ async function boot(){
   try { if (document.fonts) await Promise.race([Promise.all(['850 40px Archivo','600 20px Archivo','600 24px Caveat'].map(f => document.fonts.load(f))).then(() => document.fonts.ready), new Promise(r => setTimeout(r, 2500))]); } catch(e){}
   setLoad(36);
   try { state.heroApi = initHeroJar(); } catch(err){ console.warn('hero jar unavailable', err); }
-  Object.assign(thumbs, SHOTS); initLightbox();
+  Object.assign(thumbs, SHOTS); initLightbox(); initChat();
   setLoad(78);
   fillShots(); buildGrid(); buildFilters(); selectNeed(1, true);
   try { state.mol = initMolecule(); } catch(err){ console.warn('molecule viewer unavailable', err); }

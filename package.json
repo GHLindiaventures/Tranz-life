@@ -9,6 +9,7 @@
     "build": "vite build",
     "build:single": "vite build --mode single",
     "preview": "vite preview",
+    "chat": "node --env-file-if-exists=.env server/chat-server.js",
     "test": "vitest run"
   },
   "dependencies": {
