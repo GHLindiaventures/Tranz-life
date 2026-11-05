@@ -35,6 +35,13 @@ const CASES = [
   { g:'everyday', t:['feeling a bit sick after lunch'], products:[], small:true },
   { g:'everyday', t:['I have dandruff'], products:[], small:true },
   { g:'everyday', t:['I want to quit smoking'], products:['craving-control', 'craving-gummies'], has:/1800\s*112\s*356/ },
+  // --- alcohol: cutting-down tips, Liver Booster with an honest note, never "stop suddenly" advice
+  { g:'alcohol', t:['my friend drinks alcohol a lot'], products:['liver-booster'], has:/cannot undo the effects of heavy drinking.*|14446/s },
+  { g:'alcohol', t:['en appa daily sarakku adikiraaru'], products:['liver-booster'], has:/14446/ },
+  { g:'alcohol', t:['I drink every night, how can I protect my liver?'], products:['liver-booster'], has:/drinking less is what helps the liver most/ },
+  { g:'alcohol', t:['I drink water a lot'], products:[], not:/14446|liver booster|cutting down/i },
+  { g:'alcohol', t:['he gets shaky in the morning without a drink'], products:[], flag:true, doctor:true, has:/14446/ },
+  { g:'emergency', t:['I stopped drinking and now I am seeing things'], emergency:/112/ },
   // --- severe, lasting or worsening: tips plus when to see a doctor
   { g:'lasting', t:['headaches every day for 3 weeks'], products:[], doctor:true },
   { g:'lasting', t:['back pain getting worse for a month'], products:[], doctor:true },

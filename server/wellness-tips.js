@@ -105,6 +105,22 @@ const CONCERNS = [
     sources:['https://www.nhs.uk/conditions/liver-disease/', 'https://www.nhs.uk/conditions/non-alcoholic-fatty-liver-disease/']
   },
   {
+    id:'alcohol', label:'drinking alcohol', products:['liver-booster'],
+    match:/alcohol|after\s*drinking|drinking\s*(habit|problem|too\s*much|a\s*lot)|\bdrink(s|ing)?\b(?!\s*(more\s*|enough\s*|plenty\s*of\s*|lots\s*of\s*)?(water|juice|tea|coffee|milk|fluids|soup))(?!.{0,25}\b(water|juice|tea|coffee|milk|fluids)\b).{0,25}(a\s*lot|too\s*much|heavily|daily|every\s*(day|night)|beer|whisk|brandy|\brum\b|vodka|wine|\bpegs?\b)|\bdrinkers?\b|\bdrunk\b|\bbooze|\bbeers?\b|whiske?y|brandy|\brum\b|vodka|liquor|\bpegs?\b|hangover|sarakk?u|thanni\s*adi|tasmac|kudi\s*(pazhakkam|palakkam)|kudikaa?ran|மது|சாராய/i,
+    tips:[
+      { text:'Set a limit before starting to drink, and keep to it; taking only a fixed amount of money helps.', kind:'lifestyle' },
+      { text:'Have several drink-free days every week.', kind:'lifestyle' },
+      { text:'Eat something and drink water first, and alternate every alcoholic drink with a glass of water.', kind:'lifestyle' },
+      { text:'Choose smaller or lower-strength drinks, and cut back a little each day.', kind:'lifestyle' },
+      { text:'Tell friends and family about cutting down, so they can support it.', kind:'lifestyle' }
+    ],
+    doctor:'If drinking feels hard to control, or there is shaking, sweating, anxiety or poor sleep when cutting down, please see a doctor.',
+    // always said: stopping suddenly after heavy drinking can be dangerous (NHS), and where to get free help
+    footer:'If someone drinks heavily every day, stopping suddenly can be dangerous, so a doctor should help them cut down safely. India\'s free de-addiction helpline is 14446.',
+    productNotes:{ 'liver-booster':'It cannot undo the effects of heavy drinking; drinking less is what helps the liver most.' },
+    sources:['https://www.nhs.uk/live-well/alcohol-advice/tips-on-cutting-down-alcohol/', 'https://www.nhs.uk/conditions/alcohol-misuse/', 'https://dot.gov.in/node/18785']
+  },
+  {
     id:'headache', label:'headaches', products:[],
     match:/headache|head\s*ache|head\s*pain|thal(a|ai)\s+(\w+\s+){0,2}(vali|valikuthu|valikudhu)|thalaivali|தலை\s*வலி|தலைவலி/i,
     tips:[
@@ -262,12 +278,12 @@ const CONCERNS = [
     match:/smok|cigarette|\bbeedi|\bbidi|tobacco|nicotine|vape|vaping|quit\s*(smoking|tobacco)|thamm?\s*adik|pugai|புகை/i,
     tips:[
       { text:'Pick a quit date and plan for the moments that usually make you want to smoke.', kind:'lifestyle' },
-      { text:'Get support: friends and family help, and India\'s free National Tobacco Quit Line (1800 112 356) offers counselling in many languages.', kind:'lifestyle' },
+      { text:'Get support: telling friends and family helps, and free counselling is available (the quit line number is added below).', kind:'lifestyle' },
       { text:'If you slip up, do not give up; refocus and keep going. Reaching 28 days smoke-free makes you much more likely to stay quit.', kind:'lifestyle' },
       { text:'Notice your progress: your body starts to recover within days of stopping.', kind:'lifestyle' }
     ],
     doctor:'A doctor or the National Tobacco Quit Line (1800 112 356) can also help with stronger support to quit.',
-    footer:'For free support, you can call India\'s National Tobacco Quit Line on 1800 112 356.',
+    footer:'For free support, you can call India\'s National Tobacco Quit Line on 1800 112 356 (counselling in many languages).',
     sources:['https://www.nhs.uk/better-health/quit-smoking/', 'https://ntcp.mohfw.gov.in/national_tobacco_quit_line_services']
   }
 ];

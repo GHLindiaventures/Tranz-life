@@ -50,6 +50,22 @@ describe('topic, tips and products', () => {
   });
 });
 
+describe('alcohol', () => {
+  it('gives cutting-down tips, the Liver Booster with an honest note, and the safety line', () => {
+    for (const q of ['my friend drinks alcohol a lot', 'en appa daily sarakku adikiraaru', 'I drink every night, how to protect my liver']){
+      const a = ask(q); expect(a.concerns, q).toContain('alcohol'); expect(a.products, q).toEqual(['liver-booster']);
+      expect(a.suffix.join(' '), q).toMatch(/cannot undo the effects of heavy drinking/); expect(a.suffix.join(' '), q).toMatch(/14446/);
+    }
+  });
+  it('does not mistake drinking water for alcohol', () => {
+    expect(ask('I drink water a lot').concerns).not.toContain('alcohol');
+  });
+  it('treats dependence signs as a warning and severe withdrawal as an emergency', () => {
+    expect(ask('he gets shaky in the morning without a drink').flags.map(f => f.id)).toContain('alcohol-dependence');
+    expect(emergencyReply('I stopped drinking and now I am seeing things')).toMatch(/112/);
+  });
+});
+
 describe('when to mention a doctor', () => {
   it('does not send small everyday problems to a doctor', () => {
     for (const q of ['I have a headache', 'eye pain', 'feeling a bit stressed', 'pimples on my face', 'I have a cold'])

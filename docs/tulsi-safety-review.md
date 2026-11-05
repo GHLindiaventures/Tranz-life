@@ -7,7 +7,7 @@ November 2026. Written by Claude (AI assistant) for the TranzLife website team.
 ## What Tulsi does and does not do
 
 **Does:**
-- Gives simple self-care tips for 20 everyday topics: period cramps, stress, trouble sleeping, dry or cracked feet (with a separate set for diabetes), tiredness, liver care, headaches, acidity, colds and coughs, constipation, tired or sore eyes, back pain, joint pain, pimples, hair fall, mouth ulcers, feeling sick, mild fever, dandruff and quitting smoking.
+- Gives simple self-care tips for 21 everyday topics: period cramps, stress, trouble sleeping, dry or cracked feet (with a separate set for diabetes), tiredness, liver care, drinking alcohol (cutting-down tips, plus a fixed line that stopping suddenly after heavy drinking can be dangerous and India's de-addiction helpline 14446; Liver Booster is suggested with the note that it cannot undo the effects of heavy drinking), headaches, acidity, colds and coughs, constipation, tired or sore eyes, back pain, joint pain, pimples, hair fall, mouth ulcers, feeling sick, mild fever, dandruff and quitting smoking.
 - For small everyday problems it just helps, without sending people to a doctor. It says when to see a doctor only when the visitor describes the problem as severe, long-lasting, repeated or getting worse (and always for a fever and for diabetic feet).
 - Recommends a TranzLife product (from the client's brochure, `src/data/catalog.js`) only when the topic matches it and it is safe to suggest.
 - Sends people to a doctor when there is a warning sign, and to 112 or Tele-MANAS (14416) in an emergency.
@@ -49,7 +49,7 @@ Each message passes through these in order. The model only ever writes the frien
 - **Warning signs** stay active for the next few messages, so a follow-up like "can I put something on it at home?" still gets "see a doctor".
 
 ### Warning signs (doctor first, no tips, no product)
-Foot wound or problem with diabetes; non-healing wound with diabetes; foot wound or infection; yellow eyes or skin; blood in vomit, stool, urine or phlegm; very heavy period bleeding; bleeding or pain in pregnancy; high or long fever; an unwell baby or young child; unexplained weight loss; severe pain; racing or irregular heartbeat; a new lump; long-lasting low mood; vomiting that will not settle; a painful red eye, vision changes, light hurting the eyes or an eye injury; back pain with numb or weak legs, bladder or bowel problems or after an accident; a hot, swollen or injured joint.
+Foot wound or problem with diabetes; non-healing wound with diabetes; foot wound or infection; yellow eyes or skin; blood in vomit, stool, urine or phlegm; very heavy period bleeding; bleeding or pain in pregnancy; high or long fever; an unwell baby or young child; unexplained weight loss; severe pain; racing or irregular heartbeat; a new lump; long-lasting low mood; vomiting that will not settle; a painful red eye, vision changes, light hurting the eyes or an eye injury; back pain with numb or weak legs, bladder or bowel problems or after an accident; a hot, swollen or injured joint; signs of alcohol dependence (shaking or sweating without a drink, needing a morning drink, cannot stop). Severe alcohol withdrawal (confusion, seeing or hearing things, seizures) is an emergency (112).
 
 ## Where the tips come from
 
@@ -67,6 +67,7 @@ Every approved tip is reworded from these pages, which were read in November 202
 | Acidity and heartburn | NHS: Heartburn and acid reflux |
 | Colds and coughs | NHS: Common cold (no honey under 1 year, no salt-water gargle for children) |
 | Constipation | NHS: Constipation |
+| Drinking alcohol | NHS: Tips on cutting down alcohol; NHS: Alcohol misuse (stopping suddenly can be very dangerous when dependent); India's de-addiction helpline 14446 (Ministry of Social Justice, DoT short-code allocation) |
 | Tired or sore eyes | NHS: Dry eyes |
 | Back pain | NHS: Back pain |
 | Joint pain | NHS: Joint pain |

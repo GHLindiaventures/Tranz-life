@@ -49,6 +49,7 @@ const MEDICAL = [
   /(sudden|worst|thunderclap|explod).{0,25}headache|headache.{0,40}(stiff\s*neck|neck\s*(is\s*)?stiff|confus|seizure|\bfits?\b|head\s*injury|numb|weak|can'?t\s*(see|speak)|rash)/i,
   /unconscious|fainted|passed\s*out|not\s*waking|won'?t\s*wake|mayangi\s*(vizh|vizhundh|vizhunth)|mayakkam\s*pott/i,
   /fever.{0,50}(stiff\s*neck|neck\s*(is\s*)?stiff|rash|confus|drows)|(stiff\s*neck|rash).{0,50}fever/i,
+  /hallucinat|seeing\s*things|hearing\s*(voices|things)|(alcohol|drinking|drink).{0,60}(confus|seizure|\bfits?\b)|(confus|seizure|\bfits?\b).{0,60}(stopp\w*|quit\w*)\s*(drinking|alcohol)/i,
   /seizure|convuls|\bfits?\s*(vandh|came|attack|started)|valippu\s*vandh/i,
   /(throat|tongue|lips?|face)\s*(is\s*|are\s*)?(swell|swollen)|anaphyla/i,
   /severe\s*bleeding|bleeding\s*(a\s*lot|heavily|won'?t\s*stop|not\s*stopping)|ratham\s*nikkala/i,

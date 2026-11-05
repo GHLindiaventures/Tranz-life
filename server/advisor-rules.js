@@ -49,6 +49,8 @@ const RED_FLAGS = [
     re:/(back|spine).{0,60}(numb|tingl|weak).{0,25}(leg|legs|both)|(numb|tingl|weak)\w*.{0,25}(both\s*legs|legs).{0,40}back|(can'?t|cannot|difficult\w*|trouble)\s*(to\s*)?(pee|urinate|control\s*(my\s*)?(bladder|bowel))|back.{0,40}after\s*(an?\s*)?(accident|fall|crash)/i },
   { id:'joint', why:'a hot, swollen or injured joint', say:'A hot, swollen joint, joint pain with fever, or a joint you cannot put weight on after an injury should be checked by a doctor soon.',
     re:/(joint|knee|ankle|wrist|elbow|shoulder|hip)\w*.{0,30}(hot|red).{0,20}swol|swol\w*.{0,20}(and\s*)?(hot|red)\b|can'?t\s*(walk|put\s*weight|stand\s*on)|(joint|knee|ankle|wrist|elbow|shoulder|hip).{0,40}after\s*(a\s*)?(fall|injury|accident)|(joint|knee|ankle|wrist|elbow|shoulder|hip)\w*.{0,30}(out\s*of\s*place|dislocat)/i },
+  { id:'alcohol-dependence', why:'signs the body may depend on alcohol', say:'Shaking, sweating or feeling unwell without a drink, or needing a drink first thing in the morning, can mean the body depends on alcohol. Then stopping suddenly can be dangerous, so please see a doctor for help to cut down safely. India\'s free de-addiction helpline is 14446.',
+    re:/(shak|tremor|trembl|sweat|kai\s*nadu)\w*.{0,40}(without|when\s*(i|he|she|they)\s*(stop|don'?t|do\s*not)\w*|if\s*(i|he|she|they)\s*(stop|don'?t))\s*.{0,10}(drink|alcohol)|(need|want)\w*\s*a\s*drink\s*(first\s*thing|in\s*the\s*morning|every\s*morning|to\s*(stop|calm)\s*(the\s*)?shak)|morning\s*drink|can'?t\s*(stop|control)\s*(drinking|his\s*drinking|her\s*drinking|my\s*drinking)|addicted\s*to\s*(alcohol|drink)|alcoholic/i },
   { id:'vomiting', why:'vomiting that will not settle', say:'Vomiting that will not settle, or not being able to keep water down, needs a doctor.',
     re:/(can'?t|cannot|unable to)\s*keep\s*(water|anything|food)\s*down|vomit\w*\s*(for\s*(a|one|two|\d)\s*day|all\s*day|again\s*and\s*again|non[- ]?stop)|dehydrat/i }
 ];
@@ -60,6 +62,8 @@ const ABOUT = {
   breastfeeding:/breast\s*-?feed|nursing\s*(my\s*|a\s*)?baby|feeding\s*my\s*baby|thaai\s*paal|தாய்ப்பால்/i,
   child:/\b(my|en|our|enga)\s*(baby|child|kid|toddler|infant|kuzhandhai|kozhandhai|kuzhanthai|paiyan|ponnu|son|daughter)\b|\b([1-9]|1[0-5])\s*(year|yr|month|vayasu)s?\s*old|kuzhandhai|kozhandhai|kuzhanthai|குழந்தை/i,
   onMeds:/(taking|on|using|eduthutu|edukuren|sapdren|saapidren|podren)\s+.{0,25}(medicine|medication|tablets?|pills?|insulin|maathirai|mathirai|marundhu|marunthu)|\b(bp|sugar|thyroid|heart|blood\s*thinner)\s*(tablets?|medicine|maathirai|pills?)|warfarin|insulin/i,
+  // asking about someone else ("my friend drinks a lot", "en appa ku...")
+  other:/\b(my|our)\s+(friend|father|dad|mother|mom|mum|husband|wife|brother|sister|son|daughter|uncle|aunt|grand\w+|parents?|colleague|boss|roommate|partner|boyfriend|girlfriend)\b|\b(en|enga|engal)\s+(appa|amma|friend|anna|thambi|akka|thangachi|kanavar|purushan|manaivi|paati|thatha|paiyan|ponnu)\b/i,
   chronic:/\b(bp|blood\s*pressure|hypertension|thyroid|heart\s*(disease|problem|patient|condition)|kidney|liver\s*disease|cirrhosis|hepatitis|asthma|epilep|cancer|chemo)/i
 };
 
@@ -187,7 +191,9 @@ function analyse(history){
   // the product suggestion is written by code from the catalogue, never by the model
   if (mode === 'tips' && products.length){
     const ps = products.map(id => CATALOG.find(x => x.id === id));
-    suffix.unshift(`You might also like our ${ps.map(p => `${p.name} (${p.pitch})`).join(', or our ')}.${ps.filter(p => p.note).map(p => ` ${p.note}`).join('')}`);
+    // topic-specific honesty notes, e.g. Liver Booster for drinking: "it cannot undo the effects of heavy drinking"
+    const notes = ps.flatMap(p => [p.note, ...concerns.map(c => c.productNotes?.[p.id])]).filter(Boolean);
+    suffix.unshift(`You might also like our ${ps.map(p => `${p.name}, ${p.pitch}`).join('; or our ')}.${[...new Set(notes)].map(n => ` ${n}`).join('')}`);
   }
   // a fixed line some topics always end with (for example the quit-smoking helpline)
   if (mode === 'tips') concerns.filter(c => c.footer).forEach(c => suffix.unshift(c.footer));
@@ -206,6 +212,7 @@ function routingNote(a){
   if (a.lang === 'tanglish') L.push('- The visitor wrote in Tanglish. Reply in simple, friendly English. You may open with one short casual word like "Aiyo" or "Seri", but write everything else, especially tips and doctor advice, in plain English.');
   else if (a.lang === 'tamil') L.push('- The visitor wrote in Tamil. Reply in simple, clear English. Do not write Tamil script.');
   else L.push('- Reply in English.');
+  if (a.about.other) L.push('- They are asking about someone else (a friend or family member). Give the tips for that person ("your friend could…", "your father could…"), not for the visitor, and be kind to both.');
   if (a.prefix.length) L.push(`- The website will put this before your reply, so do not repeat it and do not mention those remedies: "${a.prefix.join(' ')}"`);
 
   if (a.mode === 'flag'){
