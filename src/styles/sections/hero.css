@@ -72,10 +72,10 @@
   opacity: 0.92;
 }
 
-/* Layer 4: Sculpted mossy botanical log plinth */
+/* Layer 4: Sculpted mossy stone slab / plinth */
 .hero__slab {
   position: absolute;
-  top: 45.5%;
+  top: 48%;
   left: 50%;
   width: clamp(820px, 142vw, 1980px);
   max-width: none;
@@ -423,7 +423,7 @@
   }
   .hero__slab {
     width: 200vw;
-    top: 48%;
+    top: 50%;
   }
   .panel-left {
     display: none;
