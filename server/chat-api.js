@@ -60,9 +60,11 @@ function createChatApi(env = {}){
       text = await generate([...convo, { role:'assistant', content:text }, fix], .2, signal); found = problems(text, a); via = 'retry';
     }
     if (found.length){ text = fallbackReply(a); via = 'fallback'; }
+    text = text.replace(/[ \t]+\n/g, '\n').replace(/\n{3,}/g, '\n\n').trim();
     const checked = text;
     // fixed sentences (e.g. "I can't advise on ashwagandha or doses") go first, written by code, not the model
     if (a.prefix.length) text = `${a.prefix.join(' ')}\n\n${text}`;
+    if (a.suffix.length) text = `${text}\n\n${a.suffix.join(' ')}`;
     return { text, checked, products:a.products, via, problems:first, analysis:a };
   }
 

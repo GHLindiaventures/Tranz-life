@@ -34,7 +34,8 @@ The chat is part of the site: its API (`server/chat-api.js`) runs inside `npm ru
 
 Because this is health advice, the model never decides what to say. **Read [docs/tulsi-safety-review.md](docs/tulsi-safety-review.md) before changing anything.** In short:
 
-- `server/wellness-tips.js`: the **only** health advice Tulsi may give, 10 topics, each tip reworded from NHS / Diabetes UK guidance with the source link.
+- `server/wellness-tips.js`: the **only** health advice Tulsi may give, 20 everyday topics, each tip reworded from NHS / Diabetes UK guidance with the source link. Small problems get tips without "see a doctor"; that is added only when the visitor says it is severe, lasting or getting worse.
+- `src/data/catalog.js`: the products Tulsi talks about, from the client's brochure (`new resource/`). The shop section still uses `src/data/products.js`.
 - `server/advisor-rules.js`: plain code that picks the topic, tips, product, warning signs (doctor first) and caution rules (pregnancy, children, diabetes, medicine).
 - `server/advisor-prompt.js`: Tulsi's personality, and fixed replies for emergencies (112) and self-harm (Tele-MANAS 14416) that never go through the model.
 - `server/reply-check.js`: checks every reply before it is shown (unapproved remedies, doses, cure claims, diagnoses, stopping medicine…); a failing reply is rewritten once, then replaced with a fixed safe reply.

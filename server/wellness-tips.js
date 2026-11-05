@@ -1,7 +1,7 @@
 // APPROVED WELLNESS TIPS: the only health advice Tulsi is allowed to give.
 //
-// Every tip below is reworded from public health guidance (sources listed on each concern) and was checked
-// against those pages in November 2026. Tulsi never invents remedies: code picks the concern, the model only
+// Every tip below is reworded from public health guidance (sources listed on each topic) and was checked
+// against those pages in November 2026. Tulsi never invents remedies: code picks the topic, the model only
 // rephrases these tips warmly, and server/reply-check.js rejects any reply that adds other remedies.
 //
 // Before changing anything here:
@@ -10,15 +10,19 @@
 //   - add the source link, and add a test in tests/server/
 //   - ideally have a qualified person (BAMS doctor / pharmacist) read the change
 //
+// Topic fields:
+//   products      catalogue ids (src/data/catalog.js) that may be suggested for this topic
+//   doctor        when to see a doctor; only said when the visitor describes it as severe, long-lasting or worsening,
+//                 unless alwaysDoctor is set (everyday small problems should not be sent to a doctor)
 // Tip fields:
-//   kind    'lifestyle' (habits, rest, movement), 'heat' (warmth on the body), 'food' (anything eaten, drunk or gargled)
+//   kind    'lifestyle' (habits, rest, movement), 'heat' / 'cold' (on the body), 'food' (anything eaten, drunk or gargled)
 //   uses    remedy words this tip may use (see REMEDIES in reply-check.js); anything else in a reply is rejected
 //   sugar   contains sugar or honey (dropped when diabetes is mentioned)
 //   adult   adults only (dropped for children)
 
 const CONCERNS = [
   {
-    id:'period', label:'period cramps', product:'rollon',
+    id:'period', label:'period cramps', products:['cyclerelief'],
     // pain or cramps must be mentioned: late, missed or irregular periods are not this topic (they need a doctor)
     match:/(period|menstrua|menses|mensus|maadhavidai|maathavidai|matha\s*vidai|பீரியட்|மாதவிடாய்).{0,45}(pain|painful|cramp|ache|hurt|discomfort|vali|வலி)|(pain|painful|cramp|ache|hurt|vali|வலி)\w*.{0,45}(period|menstrua|menses|maadhavidai|மாதவிடாய்)|\bcramps?\b|\bpms\b|month(ly)?\s*(pain|cramp)/i,
     tips:[
@@ -31,7 +35,7 @@ const CONCERNS = [
     sources:['https://www.nhs.uk/conditions/period-pain/']
   },
   {
-    id:'stress', label:'stress', product:'inhaler',
+    id:'stress', label:'stress', products:['breathefree'],
     match:/stress|anxious|anxiety|tension|overwhelm|restless|nervous|pathattam|padapadappu|mana\s*azhutham|மன\s*அழுத்த|பதட்ட/i,
     tips:[
       { text:'Pause for a few minutes and breathe slowly: in gently through your nose, and out slowly through your mouth.', kind:'lifestyle' },
@@ -43,7 +47,7 @@ const CONCERNS = [
     sources:['https://www.nhs.uk/every-mind-matters/mental-health-issues/stress/']
   },
   {
-    id:'sleep', label:'trouble sleeping', product:null,
+    id:'sleep', label:'trouble sleeping', products:[],
     match:/(can'?t|cannot|can\s*not|unable\s*to|trouble|difficulty|problem|hard\s*to|not\s*able\s*to)\s*(\w+\s*){0,2}(sleep|fall\s*asleep|stay\s*asleep)|(no|poor|bad|less|broken|light)\s*sleep|sleep(less|ing)?\s*(problem|issue|trouble|badly|poorly)|not\s*sleeping|insomnia|wake\s*up\s*(at\s*night|often|many\s*times|again\s*and\s*again)|thookam|thookame|thukkam|thoongave|thoonga\s*mudiyala|thoongamudiyala|thoongala|thoongarathu|தூக்க/i,
     tips:[
       { text:'Get up at the same time every day, even after a bad night, and try not to nap during the day.', kind:'lifestyle' },
@@ -55,7 +59,7 @@ const CONCERNS = [
     sources:['https://www.nhs.uk/conditions/insomnia/']
   },
   {
-    id:'feet', label:'dry or cracked feet', product:'reviva',
+    id:'feet', label:'dry or cracked feet', products:[],
     match:/(dry|crack|rough|tired|hard|flak|vedi|vedippu|veddi)\w*.{0,40}\b(feet|foot|heels?|kaal|kaalu|paadham|paatham|kuthikal|kudhikal)\b|\b(feet|foot|heels?|kaal|kaalu|paadham|paatham|kuthikal|kudhikal)\b.{0,40}(dry|crack|rough|tired|vedi|vedippu|veddi)|cracked\s*heel|பாத|குதிகால்/i,
     tips:[
       { text:'Use a moisturising cream on your feet every day, but not between the toes.', kind:'lifestyle' },
@@ -71,13 +75,14 @@ const CONCERNS = [
         { text:'Wash the feet daily with warm water, checking the temperature with your wrist or elbow first, and dry well between the toes.', kind:'lifestyle' },
         { text:'Do not soak the feet, and wear wide, comfortable shoes and socks that do not rub.', kind:'lifestyle', uses:['soak-warning'] }
       ],
-      doctor:'With diabetes, any cut, blister, colour change, swelling or loss of feeling in the feet should be shown to a doctor as soon as possible, without waiting for the routine check.'
+      doctor:'With diabetes, any cut, blister, colour change, swelling or loss of feeling in the feet should be shown to a doctor as soon as possible, without waiting for the routine check.',
+      alwaysDoctor:true
     },
     sources:['https://www.diabetes.org.uk/guide-to-diabetes/complications/feet/taking-care-of-your-feet']
   },
   {
-    id:'tired', label:'tiredness', product:'gummies',
-    match:/tired(?!.{0,20}\b(feet|foot|kaal)\b)|fatigue|exhaust|no\s*energy|low\s*energy|energy\s*(illa|ille|kammi|kuraivu)|weak(ness)?\b|run\s*down|sorv|soarv|kalaippu|kalaipa|சோர்வ|களைப்பு/i,
+    id:'tired', label:'tiredness', products:['energy-booster'],
+    match:/(?<!\beyes?\s+(\w+\s+)?)tired(?!.{0,20}\b(feet|foot|kaal|eyes?)\b)|fatigue|exhaust|no\s*energy|low\s*energy|energy\s*(illa|ille|kammi|kuraivu)|weak(ness)?\b|run\s*down|sorv|soarv|kalaippu|kalaipa|சோர்வ|களைப்பு/i,
     tips:[
       { text:'Go to bed and get up at the same times each day, aiming for 6 to 9 hours of sleep.', kind:'lifestyle' },
       { text:'Eat well and stay active, even a short walk each day helps.', kind:'lifestyle' },
@@ -88,7 +93,7 @@ const CONCERNS = [
     sources:['https://www.nhs.uk/conditions/tiredness-and-fatigue/']
   },
   {
-    id:'liver', label:'liver care', product:'liver',
+    id:'liver', label:'liver care', products:['liver-booster'],
     match:/\bliver\b|\bdetox|kalleeral|kalleral|கல்லீரல்/i,
     tips:[
       { text:'Eat a healthy, balanced diet.', kind:'lifestyle' },
@@ -100,8 +105,8 @@ const CONCERNS = [
     sources:['https://www.nhs.uk/conditions/liver-disease/', 'https://www.nhs.uk/conditions/non-alcoholic-fatty-liver-disease/']
   },
   {
-    id:'headache', label:'headaches', product:null,
-    match:/headache|head\s*ache|head\s*pain|thalai\s*vali|thalaivali|thala\s*vali|தலை\s*வலி|தலைவலி/i,
+    id:'headache', label:'headaches', products:[],
+    match:/headache|head\s*ache|head\s*pain|thal(a|ai)\s+(\w+\s+){0,2}(vali|valikuthu|valikudhu)|thalaivali|தலை\s*வலி|தலைவலி/i,
     tips:[
       { text:'Drink plenty of water through the day.', kind:'lifestyle' },
       { text:'Do not skip meals, even if you do not feel hungry.', kind:'lifestyle' },
@@ -112,7 +117,7 @@ const CONCERNS = [
     sources:['https://www.nhs.uk/conditions/headaches/']
   },
   {
-    id:'acidity', label:'acidity or heartburn', product:null,
+    id:'acidity', label:'acidity or heartburn', products:[],
     match:/acidity|acid\s*reflux|reflux|heartburn|indigestion|gas\s*trouble|bloat|heavy\s*(after|stomach)|oily\s*food|fatty\s*food|nenju\s*erichal|vayiru\s*erichal|erichal|நெஞ்செரிச்சல்/i,
     tips:[
       { text:'Eat smaller meals more often, instead of big ones.', kind:'lifestyle' },
@@ -124,8 +129,8 @@ const CONCERNS = [
     sources:['https://www.nhs.uk/conditions/heartburn-and-acid-reflux/']
   },
   {
-    id:'cold', label:'a cold or cough', product:null,
-    match:/common\s*cold|\ba\s*cold\b|\bhave\s*(a\s*)?cold\b|caught\s*(a\s*)?cold|cold\s*(and|&)\s*cough|runny\s*nose|blocked\s*nose|stuffy\s*nose|sore\s*throat|throat\s*pain|cough|sneez|jaladosh|jalathosh|\bsali\b|irumal|thondai\s*vali|ஜலதோஷ|இருமல்|சளி/i,
+    id:'cold', label:'a cold or cough', products:['pulmoclear'],
+    match:/common\s*cold|\ba\s*cold\b|\bhave\s*(a\s*)?cold\b|caught\s*(a\s*)?cold|cold\s*(and|&)\s*cough|runny\s*nose|blocked\s*nose|stuffy\s*nose|sore\s*throat|throat\s*pain|cough|sneez|congestion|jaladosh|jalathosh|\bsali\b|irumal|thondai\s*vali|ஜலதோஷ|இருமல்|சளி/i,
     tips:[
       { text:'Rest well and drink plenty of fluids, like water.', kind:'lifestyle' },
       { text:'For a blocked nose, breathe in steam, for example by sitting in the bathroom with a hot shower running.', kind:'lifestyle' },
@@ -136,7 +141,7 @@ const CONCERNS = [
     sources:['https://www.nhs.uk/conditions/common-cold/']
   },
   {
-    id:'constipation', label:'constipation', product:null,
+    id:'constipation', label:'constipation', products:[],
     match:/constipat|hard\s*stool|motion\s*(pogala|varala|aagala|problem)|malachikkal|malachikal|malasikkal|மலச்சிக்கல்/i,
     tips:[
       { text:'Drink plenty of water through the day.', kind:'lifestyle' },
@@ -146,6 +151,124 @@ const CONCERNS = [
     ],
     doctor:'If it is not improving, keeps coming back, or comes with blood in your stool, tummy pain, or weight loss without trying, please see a doctor.',
     sources:['https://www.nhs.uk/conditions/constipation/']
+  },
+  {
+    id:'eyes', label:'tired or sore eyes', products:[],
+    match:/\beyes?\b.{0,25}(pain|strain|tired|sore|dry|ache|hurt|burn|itch|irritat|watering)|(pain|strain|tired|sore|dry|aching|burning|itchy)\w*\s*(in\s*(my\s*)?)?eyes?\b|eye\s*(pain|strain)|kann?u\s+(\w+\s+){0,2}(vali|erichal|valikuthu|valikudhu|erikuthu|erikudhu)|கண்\s*வலி/i,
+    tips:[
+      { text:'Take regular breaks to rest your eyes when using a screen or watching TV.', kind:'lifestyle' },
+      { text:'Keep your computer screen just below eye level.', kind:'lifestyle' },
+      { text:'Avoid spending long hours in smoky, dusty or dry places, or in strong air-conditioning.', kind:'lifestyle' },
+      { text:'If you wear contact lenses, switch to glasses for a while to rest your eyes.', kind:'lifestyle' }
+    ],
+    doctor:'If your eyes stay sore or dry for a few weeks, please see an optician or doctor. Get urgent help if the eye is painful and red, your vision changes, or it hurts to look at light.',
+    sources:['https://www.nhs.uk/conditions/dry-eyes/']
+  },
+  {
+    id:'back', label:'back pain', products:[],
+    match:/back\s*(pain|ache|vali|stiff)|backache|lower\s*back|(muthugu|mudhugu|idupu|iduppu)\s+(\w+\s+){0,2}(vali|valikuthu|valikudhu)|முதுகு\s*வலி/i,
+    tips:[
+      { text:'Keep moving and carry on with your daily activities as much as you can; staying in bed for long can slow recovery.', kind:'lifestyle' },
+      { text:'For stiffness, a heat pack or hot water bag wrapped in a towel can help.', kind:'heat', uses:['heat'] },
+      { text:'For pain or swelling, an ice pack or a bag of frozen peas wrapped in a towel can help.', kind:'cold', uses:['ice'] },
+      { text:'Gentle back stretches, walking, swimming or yoga can help; stop if the pain gets worse.', kind:'lifestyle' }
+    ],
+    doctor:'If it has not improved after a few weeks, stops you doing daily activities, is worse at night, or comes with weight loss or feeling feverish, please see a doctor.',
+    sources:['https://www.nhs.uk/conditions/back-pain/']
+  },
+  {
+    id:'joints', label:'joint pain', products:[],
+    match:/joint\s*pain|joints?\s*(ache|hurt|stiff)|\b(knees?|ankles?|wrists?|elbows?|shoulders?|hips?)\b\s*(pain|ache|vali|hurts?|is\s*hurting|are\s*hurting|sore|stiff)|(pain|ache|hurt\w*)\s*(in\s*)?(my\s*)?\b(knees?|ankles?|wrists?|elbows?|shoulders?|hips?)\b|(mootu|muttu|moottu|kaal\s*muttu)\s+(\w+\s+){0,2}(vali|valikuthu|valikudhu)|மூட்டு\s*வலி/i,
+    tips:[
+      { text:'Rest the joint when you can, but keep gently moving it rather than stopping completely.', kind:'lifestyle' },
+      { text:'An ice pack or a bag of frozen peas wrapped in a towel, for up to 20 minutes every 2 to 3 hours, can ease pain.', kind:'cold', uses:['ice'] },
+      { text:'Regular exercise and a healthy, balanced diet help your joints.', kind:'lifestyle' },
+      { text:'Keeping to a healthy weight takes strain off your joints.', kind:'lifestyle' }
+    ],
+    doctor:'If pain or swelling is getting worse or keeps coming back, has not improved after 2 weeks, or the joint stays stiff for more than 30 minutes after waking, please see a doctor.',
+    sources:['https://www.nhs.uk/conditions/joint-pain/']
+  },
+  {
+    id:'acne', label:'pimples', products:[],
+    match:/pimple|acne|\bspots?\s*on\s*(my\s*)?(face|skin)|breakout|paru|பரு/i,
+    tips:[
+      { text:'Wash your skin twice a day with a gentle cleanser.', kind:'lifestyle' },
+      { text:'Remove make-up at the end of the day, and choose skincare and make-up labelled non-comedogenic (they do not clog pores).', kind:'lifestyle' },
+      { text:'Try not to pick or squeeze spots, as it can leave scars.', kind:'lifestyle' },
+      { text:'Do not scrub your skin, as it can make acne worse.', kind:'lifestyle' }
+    ],
+    doctor:'If it is not improving, the spots are deep, painful or leaving scars, or it is affecting how you feel, a pharmacist or doctor can suggest stronger options.',
+    sources:['https://www.nhs.uk/conditions/acne/']
+  },
+  {
+    id:'hair', label:'hair fall', products:[],
+    match:/hair\s*(fall|loss|falling|thinning)|losing\s*(my\s*)?hair|mudi\s*(kottuthu|kottudhu|uthiruthu|udhiradhu)|முடி\s*உதிர/i,
+    tips:[
+      { text:'Hair fall is often temporary, for example after an illness, stress or weight loss, and the hair usually grows back once you recover.', kind:'lifestyle' },
+      { text:'Look after your general health with balanced meals, good sleep and ways to manage stress.', kind:'lifestyle' },
+      { text:'If it is upsetting you, talking to others who have been through it can help.', kind:'lifestyle' }
+    ],
+    doctor:'If you are worried about it or it is affecting how you feel, a doctor can help find the cause, which is worth doing before spending on hair clinics.',
+    sources:['https://www.nhs.uk/conditions/hair-loss/']
+  },
+  {
+    id:'ulcer', label:'mouth ulcers', products:[],
+    match:/mouth\s*ulcers?|ulcers?\s*in\s*(my\s*)?mouth|canker|vaai\s*pun|vaipun|வாய்\s*புண்/i,
+    tips:[
+      { text:'Use a soft-bristled toothbrush.', kind:'lifestyle' },
+      { text:'Eat softer foods, and drink cool drinks through a straw.', kind:'food' },
+      { text:'Avoid very spicy, salty or acidic food, rough crunchy food, and very hot drinks.', kind:'lifestyle', uses:['salt'] }
+    ],
+    doctor:'If an ulcer lasts more than 3 weeks, keeps getting bigger, bleeds, or becomes more painful and red, please see a dentist or doctor.',
+    sources:['https://www.nhs.uk/conditions/mouth-ulcers/']
+  },
+  {
+    id:'nausea', label:'feeling sick', products:[],
+    match:/nause|feel(ing|s)?\s*(a\s*(bit|little)\s*|little\s*|kind\s*of\s*|so\s*|very\s*)?sick|queasy|vomit\w*\s*feel|vaanthi\s*(varra|vara|varuthu)\s*maari|kumattal|குமட்டல்/i,
+    tips:[
+      { text:'Get some fresh air, and take regular small sips of a cold drink.', kind:'lifestyle' },
+      { text:'Eat smaller meals more often, and avoid strong-smelling, fried or greasy food.', kind:'lifestyle' },
+      { text:'Try not to lie down soon after eating, and avoid tight clothes around your tummy.', kind:'lifestyle' },
+      { text:'Ginger or peppermint tea may help settle your stomach.', kind:'food', uses:['ginger', 'peppermint'] }
+    ],
+    doctor:'If you still feel sick after a few days, or it keeps coming back, please see a doctor. If you are also vomiting, keep sipping fluids so you do not get dehydrated.',
+    sources:['https://www.nhs.uk/conditions/feeling-sick-nausea/']
+  },
+  {
+    id:'fever', label:'a mild fever', products:[], alwaysDoctor:true,
+    match:/\bfever\b|temperature|kaaichal|kaichal|காய்ச்சல்/i,
+    tips:[
+      { text:'Get plenty of rest.', kind:'lifestyle' },
+      { text:'Drink plenty of fluids, mainly water, so you do not get dehydrated.', kind:'lifestyle' },
+      { text:'Stay at home and away from others until the temperature has gone.', kind:'lifestyle' }
+    ],
+    // India: a fever lasting more than 2 days should be checked (dengue, malaria, typhoid are common)
+    doctor:'If the temperature is very high, getting worse, not improving with rest, or lasts more than 2 days, please see a doctor.',
+    sources:['https://www.nhs.uk/conditions/fever-in-adults/']
+  },
+  {
+    id:'dandruff', label:'dandruff', products:[],
+    match:/dandruff|flaky\s*scalp|itchy\s*scalp|podugu|பொடுகு/i,
+    tips:[
+      { text:'Use an anti-dandruff shampoo from a pharmacy or supermarket, and give it up to 4 weeks to work.', kind:'lifestyle' },
+      { text:'If the first shampoo does not help, try a different anti-dandruff shampoo.', kind:'lifestyle' },
+      { text:'Wash your hair regularly; dandruff is not caused by poor hygiene, but it shows more if hair is not washed often.', kind:'lifestyle' }
+    ],
+    doctor:'If it has not improved after 4 weeks of anti-dandruff shampoo, or your scalp is red, swollen or very itchy, please see a pharmacist or doctor.',
+    sources:['https://www.nhs.uk/conditions/dandruff/']
+  },
+  {
+    id:'smoking', label:'quitting smoking', products:['craving-control', 'craving-gummies'],
+    match:/smok|cigarette|\bbeedi|\bbidi|tobacco|nicotine|vape|vaping|quit\s*(smoking|tobacco)|thamm?\s*adik|pugai|புகை/i,
+    tips:[
+      { text:'Pick a quit date and plan for the moments that usually make you want to smoke.', kind:'lifestyle' },
+      { text:'Get support: friends and family help, and India\'s free National Tobacco Quit Line (1800 112 356) offers counselling in many languages.', kind:'lifestyle' },
+      { text:'If you slip up, do not give up; refocus and keep going. Reaching 28 days smoke-free makes you much more likely to stay quit.', kind:'lifestyle' },
+      { text:'Notice your progress: your body starts to recover within days of stopping.', kind:'lifestyle' }
+    ],
+    doctor:'A doctor or the National Tobacco Quit Line (1800 112 356) can also help with stronger support to quit.',
+    footer:'For free support, you can call India\'s National Tobacco Quit Line on 1800 112 356.',
+    sources:['https://www.nhs.uk/better-health/quit-smoking/', 'https://ntcp.mohfw.gov.in/national_tobacco_quit_line_services']
   }
 ];
 

@@ -1,11 +1,12 @@
 // Tulsi's personality and safety rules (the system prompt), plus fixed replies for emergencies.
 // The health content itself is NOT here: it comes only from server/wellness-tips.js, picked by server/advisor-rules.js.
-import { PRODUCTS } from '../src/data/products.js';
+import { CATALOG, COMING_SOON } from '../src/data/catalog.js';
 
 const ASSISTANT_NAME = 'Tulsi';
 
 function catalogue(){
-  return PRODUCTS.map(p => `- ${p.name} (${p.size}, ₹${p.price}). ${p.desc} Key points: ${p.ing.join(', ')}.`).join('\n');
+  return CATALOG.filter(p => p.status === 'available').map(p => `- ${p.name} (${[p.form, p.size, p.price ? `₹${p.price}` : 'price on request'].filter(Boolean).join(', ')}). ${p.about}${p.note ? ` ${p.note}` : ''}`).join('\n')
+    + `\nComing soon (not on sale yet, never recommend): ${COMING_SOON.join(', ')}.`;
 }
 
 function systemPrompt(){
@@ -18,6 +19,7 @@ HOW YOU TALK
 - Talk about the right person: if they ask about a family member ("en amma", "my dad"), the advice is for that person.
 - At most one emoji, only when the mood is light. No pet names like "honey", "dear" or "sweetie".
 - If asked whether you are a human or a bot, be honest: you are TranzLife's virtual wellness assistant.
+- Never talk about yourself as if you had a body, health problems or personal experiences ("my eyes", "I get headaches").
 
 WHERE YOUR HEALTH ADVICE COMES FROM
 - Before every visitor message the website adds a ROUTING NOTE. It tells you the language, the approved tips, whether to suggest a doctor, and whether you may mention a product. Follow it exactly.
@@ -31,6 +33,7 @@ SAFETY RULES (always, above everything else)
 - Never tell anyone to stop, reduce, skip or replace a medicine their doctor prescribed.
 - If the routing note says to see a doctor, say it clearly and kindly. When in doubt, suggest a doctor.
 - Only talk about health, wellness and TranzLife. Kindly bring other topics back.
+- Never compare TranzLife products with medicines, and never say a product can replace medicine or control blood sugar, blood pressure or any condition.
 - Never make up prices, offers, delivery times, ingredients or certifications. For orders or anything you do not know, suggest the Contact section of the website.
 
 OUR PRODUCTS (for reference when the routing note allows one, or when asked about one by name)
@@ -45,6 +48,7 @@ const MEDICAL = [
   /stroke|face\s*(is\s*)?(droop|drooping|fallen|twisted)|(one|left|right)\s*side.{0,25}(weak|numb|paralys|droop)|slurred\s*speech|sudden(ly)?\s*(can'?t|cannot)\s*(speak|talk|see|walk|move)|vaai\s*kon(al|a)/i,
   /(sudden|worst|thunderclap|explod).{0,25}headache|headache.{0,40}(stiff\s*neck|neck\s*(is\s*)?stiff|confus|seizure|\bfits?\b|head\s*injury|numb|weak|can'?t\s*(see|speak)|rash)/i,
   /unconscious|fainted|passed\s*out|not\s*waking|won'?t\s*wake|mayangi\s*(vizh|vizhundh|vizhunth)|mayakkam\s*pott/i,
+  /fever.{0,50}(stiff\s*neck|neck\s*(is\s*)?stiff|rash|confus|drows)|(stiff\s*neck|rash).{0,50}fever/i,
   /seizure|convuls|\bfits?\s*(vandh|came|attack|started)|valippu\s*vandh/i,
   /(throat|tongue|lips?|face)\s*(is\s*|are\s*)?(swell|swollen)|anaphyla/i,
   /severe\s*bleeding|bleeding\s*(a\s*lot|heavily|won'?t\s*stop|not\s*stopping)|ratham\s*nikkala/i,

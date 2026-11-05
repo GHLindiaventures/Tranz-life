@@ -1,8 +1,7 @@
 // "Tulsi" wellness chat: a floating button that opens a chat panel. Replies stream from the chat API
 // (server/chat-api.js, built into the site's server, which talks to a local Ollama model). Recommended products appear as cards
-// with an "Add to bag" button that the cart already handles (.mini-add[data-id]).
-import { thumbs } from '../../app/state.js';
-import { PRODUCTS } from '../../data/products.js';
+// from the brochure catalogue (src/data/catalog.js), with an "Enquire" button that opens the contact form.
+import { CATALOG } from '../../data/catalog.js';
 import { $ } from '../../utils/dom.js';
 import { inr } from '../../utils/format.js';
 
@@ -29,10 +28,11 @@ function format(text){
 }
 
 function productCard(id){
-  const p = PRODUCTS.find(x => x.id === id); if (!p) return '';
-  return `<div class="ch-prod">${thumbs[id] ? `<img src="${thumbs[id]}" alt="">` : '<span></span>'}
-    <div><b>${esc(p.name)}</b><small>${esc(p.size)} · ${inr(p.price)}</small></div>
-    <button class="mini-add" data-id="${id}" type="button">Add to bag</button></div>`;
+  const p = CATALOG.find(x => x.id === id); if (!p) return '';
+  const meta = [p.form, p.size, p.price ? inr(p.price) : 'Price on request'].filter(Boolean).join(' · ');
+  return `<div class="ch-prod"><span class="ch-prod-ic">${LEAF}</span>
+    <div><b>${esc(p.name)}</b><small>${esc(meta)}</small></div>
+    <a class="ch-enquire" href="#contact" data-product="${esc(p.name)}">Enquire</a></div>`;
 }
 
 function bubble(m){
@@ -68,7 +68,7 @@ async function send(text){
     const res = await fetch(API, { method:'POST', headers:{ 'Content-Type':'application/json' },
       body:JSON.stringify({ messages:msgs.map(({ role, content }) => ({ role, content })) }) });
     if (!res.ok || !res.body) throw new Error(res.status);
-    reply.products = (res.headers.get('X-Products') || '').split(',').filter(id => PRODUCTS.some(p => p.id === id));
+    reply.products = (res.headers.get('X-Products') || '').split(',').filter(id => CATALOG.some(p => p.id === id));
     const reader = res.body.getReader(), dec = new TextDecoder();
     for (;;){
       const { done, value } = await reader.read(); if (done) break;
@@ -125,6 +125,12 @@ function initChat(){
   els.fab.addEventListener('click', () => open(!root.classList.contains('open')));
   $('.ch-x', root).addEventListener('click', () => open(false));
   $('.ch-new', root).addEventListener('click', () => { if (busy) return; msgs = []; save(); render(); els.input.focus(); });
+  // "Enquire" on a product card: start a contact message about that product, then close the chat
+  els.list.addEventListener('click', e => {
+    const a = e.target.closest('.ch-enquire'); if (!a) return;
+    const msg = $('#f-msg'); if (msg && !msg.value.trim()) msg.value = `Hi, I'd like to know more about the ${a.dataset.product} (price and how to order).`;
+    open(false);
+  });
   els.chips.addEventListener('click', e => { const b = e.target.closest('button'); if (b) send(b.textContent); });
   $('.ch-form', root).addEventListener('submit', e => { e.preventDefault(); send(els.input.value); });
   els.input.addEventListener('input', autosize);

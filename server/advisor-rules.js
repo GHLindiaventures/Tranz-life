@@ -3,13 +3,13 @@
 // The model only rewrites the result warmly. Keywords cover English plus common Tamil / Tanglish spellings.
 import { CONCERNS } from './wellness-tips.js';
 import { REMEDIES } from './reply-check.js';
-import { PRODUCTS } from '../src/data/products.js';
+import { CATALOG, COMING_SOON_MATCH, KINDS } from '../src/data/catalog.js';
 
 // Products that are swallowed. These are held back whenever someone has diabetes, a long-term condition or regular
-// medicine, because we do not know how they interact; topical products (roll-ons) and the inhaler are not.
-const INGESTED = new Set(['gummies', 'liver']);
-// Words a reply may use when that product is recommended (its labelled ingredients).
-const PRODUCT_WORDS = { rollon:['peppermint', 'rose', 'rosemary'] };
+// medicine, because we do not know how they interact; roll-ons and inhalers are not.
+const INGESTED = new Set(CATALOG.filter(p => p.ingested).map(p => p.id));
+// Remedy words a reply may use when that product is mentioned: the ingredients on its own label.
+const PRODUCT_WORDS = Object.fromEntries(CATALOG.map(p => [p.id, Object.keys(REMEDIES).filter(k => REMEDIES[k].test(`${p.about} ${p.use}`))]));
 
 const FOOT = '(foot|feet|toes?|heels?|kaal|kaalu|sole|paadham)';
 const WOUND = '(wound|sore|ulcer|infect|pus\\b|blister|swollen|swelling|numb|punn|seezh|cut|black\\s*(spot|patch|colou?r))';
@@ -43,6 +43,12 @@ const RED_FLAGS = [
   { id:'lump', why:'a lump', say:'Any new lump should be checked by a doctor.', re:/\blump\b|\bkatti\b/i },
   { id:'mood', why:'low mood', say:'Feeling low for a long time is worth talking to a doctor about, and Tele-MANAS (14416) is free to call any time.',
     re:/depress|hopeless|empty\s*inside|nothing\s*matters|can'?t\s*stop\s*crying/i },
+  { id:'eye', why:'an eye problem that needs checking', say:'A painful red eye, any change in your vision, light hurting your eyes, or an injury or something stuck in the eye should be checked by a doctor straight away.',
+    re:/(vision|sight|eyesight).{0,25}(chang|blur|loss|lost|gone|flash|wavy|dark)|blurr?(ed|y)\s*vision|flash\w*\s*lights?|wavy\s*lines|can'?t\s*see|light\s*hurts|hurts?\s*to\s*look\s*at\s*(the\s*)?light|eyes?.{0,20}(injur|hit|pierc|scratch|chemical|stuck)|(something|dust|chemical)\s*(went\s*)?(in|into|stuck\s*in)\s*(my\s*)?eye|(red|swollen)\s*(and\s*)?painful\s*eye|painful\s*(and\s*)?red\s*eye|eyes?\s*(is|are)?\s*(very|dark|blood)\s*red/i },
+  { id:'back', why:'back pain with warning signs', say:'Back pain with numbness or weakness in the legs, trouble peeing or controlling your bladder or bowels, fever, or pain after an accident or fall needs a doctor straight away.',
+    re:/(back|spine).{0,60}(numb|tingl|weak).{0,25}(leg|legs|both)|(numb|tingl|weak)\w*.{0,25}(both\s*legs|legs).{0,40}back|(can'?t|cannot|difficult\w*|trouble)\s*(to\s*)?(pee|urinate|control\s*(my\s*)?(bladder|bowel))|back.{0,40}after\s*(an?\s*)?(accident|fall|crash)/i },
+  { id:'joint', why:'a hot, swollen or injured joint', say:'A hot, swollen joint, joint pain with fever, or a joint you cannot put weight on after an injury should be checked by a doctor soon.',
+    re:/(joint|knee|ankle|wrist|elbow|shoulder|hip)\w*.{0,30}(hot|red).{0,20}swol|swol\w*.{0,20}(and\s*)?(hot|red)\b|can'?t\s*(walk|put\s*weight|stand\s*on)|(joint|knee|ankle|wrist|elbow|shoulder|hip).{0,40}after\s*(a\s*)?(fall|injury|accident)|(joint|knee|ankle|wrist|elbow|shoulder|hip)\w*.{0,30}(out\s*of\s*place|dislocat)/i },
   { id:'vomiting', why:'vomiting that will not settle', say:'Vomiting that will not settle, or not being able to keep water down, needs a doctor.',
     re:/(can'?t|cannot|unable to)\s*keep\s*(water|anything|food)\s*down|vomit\w*\s*(for\s*(a|one|two|\d)\s*day|all\s*day|again\s*and\s*again|non[- ]?stop)|dehydrat/i }
 ];
@@ -58,10 +64,23 @@ const ABOUT = {
 };
 
 // Questions about stopping prescribed medicine: never encourage it.
-const STOP_MEDS = /(stop|quit|skip|replace|instead of|leave|come\s*off|go\s*off|get\s*off|wean|taper|switch\s*from|niruth|niruthi|vittu)\w*.{0,40}(tablet|medicine|medication|pill|insulin|maathirai|mathirai|marundhu|marunthu|மாத்திரை|மருந்து)|(tablet|medicine|medication|pill|insulin|maathirai|mathirai|marundhu)\w*.{0,40}(stop|quit|skip|replace|niruth|vittu)/i;
+// ("quit smoking" or "stop drinking" is not about medicine)
+const STOP_WORD = '(stop|quit|skip|replace|instead of|leave|come\\s*off|go\\s*off|get\\s*off|wean|taper|switch\\s*from|niruth|niruthi|vittu)(?!\\w*\\s*(smok|cigar|beedi|bidi|tobacco|drink|alcohol|vap))';
+const MED_WORD = '(tablet|medicine|medication|pill|insulin|maathirai|mathirai|marundhu|marunthu|மாத்திரை|மருந்து)';
+const STOP_MEDS = new RegExp(`${STOP_WORD}\\w*.{0,40}${MED_WORD}|${MED_WORD}\\w*.{0,40}${STOP_WORD}`, 'i');
 
 // Products named by the visitor, and questions about them or the shop.
-const NAMED = { gummies:/gumm(y|ies)/i, inhaler:/inhaler/i, rollon:/calm\s*(period\s*)?(relief\s*)?roll|period\s*(relief\s*)?roll/i, reviva:/reviva/i, liver:/liver\s*booster|booster\s*liquid/i };
+// a product name, or a product type ("roll-ons", "inhalers", "gummies") that lists every product of that type
+const namedIn = text => {
+  const ids = CATALOG.filter(p => p.match.test(text)).map(p => p.id);
+  if (!ids.length) KINDS.filter(k => k.match.test(text)).forEach(k => ids.push(...k.ids));
+  return [...new Set(ids)];
+};
+// a short follow-up that continues the previous topic ("what else?", "anything more?", "innum enna?")
+const FOLLOW_UP_START = /^\s*(and\s*|ok(ay)?\s*|so\s*)?(what\s*else|anything\s*else|any\s*(more|other)|more\s*(tips|ideas|help)?|other\s*(tips|ideas|ways)|what\s*more|then\s*what|what\s*(now|next)|what\s*(should|can|do)\s*i\s*do|how|why|and\b|then\b|innum|vera\s*enna|apram|aprom|enna\s*pannalam|really)/i;
+const isFollowUp = text => FOLLOW_UP_START.test(text) && text.trim().split(/\s+/).length <= 8;
+// the visitor says it is severe, long-lasting, repeated or getting worse: only then do tips end with when to see a doctor
+const SERIOUS = /sever|really\s*bad|very\s*bad|so\s*bad|worst|unbearable|getting\s*worse|worse\s*(and\s*worse|every|now)|won'?t\s*(go|stop|settle)|not\s*(going\s*away|getting\s*better|improving|stopping)|for\s*(weeks|months|a\s*long\s*time|ages|years)|\b\d+\s*(weeks?|months?|years?)\b|since\s*(last\s*)?(weeks?|months?|year)|every\s*(day|night|week)|daily|always|all\s*the\s*time|keeps?\s*(coming|happening|getting)|again\s*and\s*again|frequent|often|romba\s*naala|rombo\s*naala|neraya\s*naal|ரொம்ப\s*நாள/i;
 const SHOP = /\b(what|which)\s+(\w+\s+){0,2}(products?|items?)|\b(products?|items?)\s*(list|range|enna|ennenna)|\b(price|cost|rate|evlo|evvalavu|how\s*much)\b|\b(delivery|deliver|shipping|order|buy|purchase|cod|cash\s*on|discount|offer|coupon|stock)\b/i;
 const PRODUCT_Q = /what('?s|\s*is|\s*are)?\s*(in|inside)\b|ingredients?|contain|made\s*(of|with|from)|how\s*(to|do\s*i|should\s*i|can\s*i)\s*(use|apply|take)|price|cost|how\s*much|evlo|evvalavu|\bsize\b|details?|tell\s*me\s*about|what\s*(is|'s)\s*(the\s*)?(\w+\s*){0,4}(for|used\s*for)|enna\s*irukku/i;
 const SAFETY_Q = /\b(safe|safety|side[- ]?effects?|harmful|allerg\w*|reaction|interact\w*)\b|(with|along\s*with|together\s*with)\s*my\s*(medicine|tablets?|insulin|maathirai)/i;
@@ -82,7 +101,7 @@ function language(text){
 }
 
 const concernsIn = text => CONCERNS.filter(c => c.match.test(text));
-const nameOf = id => PRODUCTS.find(p => p.id === id).name;
+const nameOf = id => CATALOG.find(p => p.id === id).name;
 
 // history: [{ role, content }], ending with the visitor's latest message
 function analyse(history){
@@ -96,24 +115,29 @@ function analyse(history){
   if (flags.some(f => f.id.startsWith('diabetic'))) flags = flags.filter(f => f.id !== 'foot-wound');
   if (flags.some(f => f.id === 'diabetic-foot')) flags = flags.filter(f => f.id !== 'diabetic-wound');
 
-  const named = Object.keys(NAMED).filter(id => NAMED[id].test(last));
+  const named = namedIn(last);
   const smallTalk = SMALL_TALK.test(last);
   const found = (last.match(CONDITION) || [])[0] || '';
   const condition = /^bp$/i.test(found) ? 'blood pressure' : /^uti$/i.test(found) ? 'urine infection' : /^(pcos|pcod)$/i.test(found) ? found.toUpperCase() : found.toLowerCase();
   const cureQ = CURE_Q.test(last), diagnoseQ = DIAGNOSE_Q.test(last), doseQ = DOSE_Q.test(last), stopMeds = STOP_MEDS.test(last);
 
-  // the concern comes from the latest message; a follow-up like "what else?" keeps the previous concern's tips
-  let concerns = smallTalk ? [] : concernsIn(last).slice(0, 2), fresh = concerns.length > 0;
-  if (!concerns.length && !smallTalk && !named.length) for (let i = users.length - 2; i >= Math.max(0, users.length - 4) && !concerns.length; i--) concerns = concernsIn(users[i]).slice(0, 2);
+  // the topic comes from the latest message. Only a short follow-up ("what else?") keeps the previous topic:
+  // a new message about something else ("eye pain") must never get the old topic's tips.
+  // (product names are removed first, so "Liver Booster" is a product question, not the liver-care topic)
+  const topicText = CATALOG.reduce((t, p) => t.replace(new RegExp(p.match.source, 'gi'), ' '), last);
+  let concerns = smallTalk ? [] : concernsIn(topicText).slice(0, 2), fresh = concerns.length > 0;
+  if (!concerns.length && !named.length && isFollowUp(last)) for (let i = users.length - 2; i >= Math.max(0, users.length - 3) && !concerns.length; i--) concerns = concernsIn(users[i]).slice(0, 2);
 
   // what kind of message is this? (first match wins)
   let mode;
   if (flags.length) mode = 'flag';
   else if (IDENTITY.test(last)) mode = 'identity';
   else if (SAFETY_Q.test(last) && (named.length || /\b(your|these|this|tranzlife)\s*(products?|gumm|inhaler|roll|liquid)/i.test(last))) mode = 'safety';
-  else if (named.length && PRODUCT_Q.test(last)) mode = 'product';
+  // (a cure question, or a condition with no product named: "Reviva for diabetes?" is a product question)
+  else if ((condition || cureQ) && !fresh && (cureQ || !named.length)) mode = 'medical';
+  else if (named.length && (PRODUCT_Q.test(last) || !fresh)) mode = 'product';
+  else if (COMING_SOON_MATCH.test(last) && !fresh) mode = 'soon';
   else if (smallTalk) mode = 'smalltalk';
-  else if ((condition || cureQ) && !fresh) mode = 'medical';
   else if (concerns.length) mode = 'tips';
   else if (SHOP.test(last)) mode = 'shop';
   else if (named.length) mode = 'product';
@@ -121,23 +145,25 @@ function analyse(history){
   if (mode !== 'tips') concerns = [];
 
   const careful = about.pregnant || about.breastfeeding || about.child;
+  const serious = SERIOUS.test(recent);
   const tips = [], doctor = [];
   concerns.forEach(c => {
     const v = about.diabetes && c.diabetes ? c.diabetes : c;
     v.tips.filter(t => !(careful && t.kind === 'food') && !(about.diabetes && t.sugar) && !(about.child && t.adult)).forEach(t => tips.push(t));
-    doctor.push(v.doctor);
+    // small everyday problems are not sent to a doctor; only severe, lasting or worsening ones (or always-check topics)
+    if (serious || v.alwaysDoctor || c.alwaysDoctor) doctor.push(v.doctor);
   });
 
-  // products: only for a concern raised in this message or a product asked about by name; never with a warning sign,
+  // products: only for a topic raised in this message or a product asked about by name; never with a warning sign,
   // a medicine, diagnosis or cure-of-a-condition question; never in pregnancy, breastfeeding or for children;
   // nothing swallowed with diabetes, a long-term condition or regular medicine
-  const wanted = mode === 'tips' || mode === 'product' ? [...new Set([...(fresh ? concerns.map(c => c.product).filter(Boolean) : []), ...named])] : [];
+  const wanted = mode === 'tips' || mode === 'product' ? [...new Set([...(fresh ? concerns.flatMap(c => c.products) : []), ...named])].slice(0, 3) : [];
   let products = wanted;
   if (stopMeds || careful || diagnoseQ || (cureQ && condition)) products = [];
   if (about.diabetes || about.chronic || about.onMeds) products = products.filter(id => !INGESTED.has(id));
   const heldBack = wanted.filter(id => !products.includes(id));
   // product names the reply may say
-  const mentionable = mode === 'flag' ? [] : mode === 'shop' ? PRODUCTS.map(p => p.id) : [...new Set([...products, ...named])];
+  const mentionable = mode === 'flag' ? [] : mode === 'shop' ? CATALOG.map(p => p.id) : [...new Set([...products, ...named])];
 
   const allowed = new Set(tips.flatMap(t => t.uses || []));
   products.forEach(id => (PRODUCT_WORDS[id] || []).forEach(w => allowed.add(w)));
@@ -145,17 +171,32 @@ function analyse(history){
   // remedies or doses the visitor asked about that are not approved: a fixed sentence says we cannot advise on them
   // (only when they ask about using it: "I soak a pad every hour" is not a question about soaking)
   const asking = /\?|\b(should|can|could|may|shall|is\s*it\s*(ok|okay|good|fine|safe)|do\s*i|will|try|use|using|apply|take|drink|eat|put|give|rub)\b|pannalama|podalama|kudikalama|sapdalama|thadavalama|use\s*pannalama/i.test(last);
-  const asked = !asking ? [] : Object.entries(REMEDIES).filter(([k, re]) => !allowed.has(k) && !(k === 'soak' && flags.length) && re.test(last)).map(([, re]) => last.match(re)[0].toLowerCase());
+  const found_remedies = !asking ? [] : Object.entries(REMEDIES).filter(([k, re]) => !allowed.has(k) && !(k === 'soak' && flags.length) && re.test(last)).map(([, re]) => last.match(re)[0].toLowerCase());
+  // drop words already inside another one ("oil" when "coconut oil" was found)
+  const asked = [...new Set(found_remedies)].filter((w, i, all) => !all.some((o, j) => j !== i && o.length > w.length && o.includes(w)));
   const prefix = [];
   if (diagnoseQ) prefix.push('I can\'t tell what is causing this. Only a doctor can check that properly.');
   if (asked.length) prefix.push(`I can't advise on ${[...new Set(asked)].join(' or ')}${doseQ ? ' or how much to take' : ''}, so please check with a doctor or pharmacist before trying ${asked.length > 1 ? 'them' : 'it'}.`);
   else if (doseQ) prefix.push('I can\'t advise on doses, so please ask a doctor or pharmacist about that.');
   if (cureQ && mode === 'tips') prefix.push('I can\'t promise a cure, but a few simple things may help.');
+  // fixed sentences after the reply, written by code so they can never be left out
+  const suffix = [];
+  if (mode === 'tips' && (about.pregnant || about.breastfeeding)) suffix.push('Since you\'re pregnant or breastfeeding, please check with your doctor before trying any new product or supplement.');
+  else if (mode === 'tips' && about.child) suffix.push('For a child, please check with their doctor before giving anything new.');
+  else if (mode === 'tips' && heldBack.length && (about.diabetes || about.chronic || about.onMeds)) suffix.push('Because of your health condition or regular medicine, please check with your doctor before starting any supplement.');
+  // the product suggestion is written by code from the catalogue, never by the model
+  if (mode === 'tips' && products.length){
+    const ps = products.map(id => CATALOG.find(x => x.id === id));
+    suffix.unshift(`You might also like our ${ps.map(p => `${p.name} (${p.pitch})`).join(', or our ')}.${ps.filter(p => p.note).map(p => ` ${p.note}`).join('')}`);
+  }
+  // a fixed line some topics always end with (for example the quit-smoking helpline)
+  if (mode === 'tips') concerns.filter(c => c.footer).forEach(c => suffix.unshift(c.footer));
 
   // product facts (ingredients, price, size, how to use) come straight from the catalogue, never from the model
-  const productInfo = mode === 'product' && PRODUCT_Q.test(last);
-  return { lang:language(last), mode, productInfo, smallTalk, named, condition, concerns:concerns.map(c => c.id), fresh, tips:mode === 'tips' ? tips : [], doctor, products, heldBack, mentionable,
-    flags, about, stopMeds, prefix, allowed:mode === 'tips' ? allowed : new Set([...products].flatMap(id => PRODUCT_WORDS[id] || [])), shop:mode === 'shop' };
+  const productInfo = mode === 'product';
+  const named_allowed = mentionable.flatMap(id => PRODUCT_WORDS[id] || []);
+  return { lang:language(last), mode, productInfo, smallTalk, named, condition, concerns:concerns.map(c => c.id), fresh, serious, tips:mode === 'tips' ? tips : [], doctor, products, heldBack, mentionable,
+    flags, about, stopMeds, prefix, suffix, allowed:new Set([...(mode === 'tips' ? allowed : []), ...named_allowed]), shop:mode === 'shop' };
 }
 
 // The note the model sees right before the visitor's latest message.
@@ -179,21 +220,18 @@ function routingNote(a){
   } else if (a.mode === 'tips'){
     L.push(`- Topic: ${a.concerns.map(id => CONCERNS.find(c => c.id === id).label).join(' and ')}. APPROVED TIPS (use 2 or 3 of these and nothing else; reword warmly but keep the meaning exactly):`);
     a.tips.forEach(t => L.push(`    • ${t.text}`));
-    L.push(`- Then say when to see a doctor, in one short sentence, based on: "${a.doctor.join(' ')}"`);
+    if (a.doctor.length) L.push(`- Then say when to see a doctor, in one short sentence, based on: "${a.doctor.join(' ')}"`);
+    else L.push('- This sounds like an everyday problem. Do NOT tell them to see a doctor or pharmacist; just help, kindly and confidently. You may end with one short, warm line such as "Hope this helps." Do not ask how they feel after trying the tips.');
     L.push('- Do not add any other remedy, food, drink, herb, spice, oil, medicine, supplement, dose or exercise that is not in the approved tips.');
   }
 
-  if (a.products.length) a.products.forEach(id => { const c = CONCERNS.find(x => x.product === id);
-    L.push(`- You may recommend our ${nameOf(id)} in one warm sentence, as something that may help with ${c.label}. A product card appears under your message automatically. Do not mention any other product.`); });
+  if (a.products.length) L.push('- Do not mention any product: the website adds a short product suggestion and a product card after your reply.');
   else if (a.mode === 'shop') L.push('- Do not recommend a product for a health problem here; just answer the question.');
   else if (a.named.length && a.mode !== 'flag') L.push(`- Because of their health situation, do not recommend ${a.named.map(nameOf).join(' or ')} right now; kindly say to check with their doctor first.`);
   else L.push('- Do not mention or recommend any TranzLife product in this reply.');
 
   if (a.stopMeds) L.push('- They are asking about stopping or replacing prescribed medicine. Clearly and kindly say not to stop or change any medicine without talking to their doctor first.');
-  if (a.about.pregnant || a.about.breastfeeding) L.push('- Pregnancy or breastfeeding is involved. Suggest they check with their doctor before trying any product or supplement.');
-  if (a.about.child) L.push('- A child is involved. Suggest checking with the child\'s doctor before giving anything.');
-  if (a.mode !== 'flag' && a.heldBack.length && (a.about.diabetes || a.about.chronic || a.about.onMeds))
-    L.push('- Because of their health condition or regular medicine, suggest they check with their doctor before starting any supplement.');
+  if (a.suffix.length) L.push(`- The website will add this after your reply, so do not repeat it or say anything like it: "${a.suffix.join(' ')}"`);
   return L.join('\n');
 }
 
