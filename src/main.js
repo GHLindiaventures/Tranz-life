@@ -10,6 +10,7 @@ import { initCart, renderCart } from './features/cart/cart.js';
 import { initContactForm } from './features/contact/contact-form.js';
 import { buildNeeds, selectNeed } from './features/finder/product-finder.js';
 import { initHeroJar } from './features/hero/hero-jar.js';
+import { initLayeredDepth } from './features/hero/layered-depth.js';
 import { buildMarquee } from './features/hero/marquee.js';
 import { buildLab } from './features/lab/lab-board.js';
 import { initNav } from './features/navigation/navigation.js';
@@ -31,6 +32,7 @@ async function boot(){
   try { if (document.fonts) await Promise.race([Promise.all(['850 40px Archivo','600 20px Archivo','600 24px Caveat'].map(f => document.fonts.load(f))).then(() => document.fonts.ready), new Promise(r => setTimeout(r, 2500))]); } catch(e){}
   setLoad(36);
   try { state.heroApi = initHeroJar(); } catch(err){ console.warn('hero jar unavailable', err); }
+  try { state.layeredDepth = initLayeredDepth(); } catch(err){ console.warn('layered depth unavailable', err); }
   Object.assign(thumbs, SHOTS); initLightbox();
   setLoad(78);
   fillShots(); buildGrid(); buildFilters(); selectNeed(1, true);
@@ -49,4 +51,3 @@ async function boot(){
 const failSafe = setTimeout(() => $('#loader').classList.add('done'), 25000);
 
 boot().catch(err => { console.error(err); $('#loader').classList.add('done'); }).finally(() => clearTimeout(failSafe));
-

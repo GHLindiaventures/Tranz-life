@@ -60,22 +60,66 @@
 
 <main>
 <section class="page stage" id="home" data-theme="cream">
-  <div class="st-arc" aria-hidden="true"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="49.2" pathLength="100"/></svg></div>
-  <div class="st-hill" aria-hidden="true"></div>
+  <!-- Layer 1: Ambient Background Video (MotionSites Layered Depth) -->
+  <video class="hero__bg st-photo" autoplay muted loop playsinline preload="auto" disablepictureinpicture
+    src="/layered-depth-bg.mp4" width="1280" height="720"></video>
+
+  <!-- Layer 2: Warm Atmospheric Overlay -->
+  <div class="hero__overlay" aria-hidden="true"></div>
+
+  <!-- Layer 3: Giant Center Brand Display Text (Layered behind stone slab) -->
+  <div class="hero__brand" aria-hidden="true">
+    <span>TranzLife</span>
+  </div>
+
+  <!-- Layer 4: Sculpted Mossy Stone Slab Plinth -->
+  <img class="hero__slab" id="slab" src="/layered-depth-slab.webp" alt="Sculpted mossy stone plinth" aria-hidden="true" draggable="false">
+
+  <!-- Layer 5: Interactive Bird Video System -->
+  <div class="birds" id="birds" aria-hidden="true">
+    <video id="bird-enter" muted playsinline src="/bird-enter.webm"></video>
+    <video id="bird-idle1" muted playsinline style="display:none" src="/bird-idle1.webm"></video>
+    <video id="bird-idle2" muted playsinline style="display:none" src="/bird-idle2.webm"></video>
+    <video id="bird-leave" muted playsinline style="display:none" src="/bird-leave.webm"></video>
+  </div>
+
+  <!-- Layer 6: 3D Product Canvas & Soft Plinth Contact Shadow -->
   <canvas id="heroCanvas" aria-hidden="true"></canvas>
-  <div class="facts" aria-label="TranzLife in numbers">
-    <div class="fact" style="--a:30deg;--am:62deg"><b>5</b><span>plant-based products</span></div>
-    <div class="fact" style="--a:48deg;--am:90deg"><b>4</b><span>everyday formats</span></div>
-    <div class="fact" style="--a:66deg;--am:118deg"><b>6</b><span>stage testing</span></div>
-  </div>
-  <a class="pill st-buy" href="#shop"><i aria-hidden="true">↗</i><b>Buy now</b></a>
-  <div class="st-copy">
-    <p class="st-tag">Innovating life beyond limits</p>
-    <h1 class="st-h"><span class="ln"><span class="wl"><span class="w">Nature</span></span></span><span class="ln"><span class="wl"><span class="w">meets</span></span></span><span class="ln"><span class="wl"><span class="w">science</span></span></span></h1>
-    <p class="st-lede">Plant-based care in gummies, a calming inhaler, soothing roll-ons and a liver tonic <u>you'll actually reach for.</u></p>
-  </div>
-  <div class="stage-space" aria-hidden="true"><video class="st-photo" autoplay muted loop playsinline preload="auto" disablepictureinpicture poster="./src/assets/videos/hero-bg-poster.jpg" width="1280" height="720"><source src="./src/assets/videos/hero-bg.mp4" type="video/mp4"></video></div>
   <div class="st-shadow" aria-hidden="true"></div>
+
+  <!-- Layer 7: Left & Right Editorial Floating Panels -->
+  <div class="hero__panels" id="panels">
+    <div class="panel-left">
+      <p class="panel-left__tag">Innovating Life Beyond Limits</p>
+      <div class="panel-left__head">Nature meets science
+beyond
+what's expected</div>
+      <div class="panel-left__divider"></div>
+      <a class="panel-left__link" href="#products">Explore our approach
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+      </a>
+    </div>
+
+    <div class="panel-right">
+      <img class="panel-right__bg" src="/layered-depth-card.webp" alt="Botanical Science" draggable="false">
+      <div class="panel-right__grad"></div>
+      <div class="panel-right__top">Every lasting wellness ritual begins with pure plant science.</div>
+      <div class="panel-right__cta">
+        <span class="cta-circle">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 8h14l-1.2 12H6.2z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>
+        </span>
+        <a class="cta-btn" href="#shop">Shop All Products</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating Stats Badges in 3D Depth Space -->
+  <div class="facts" aria-label="TranzLife in numbers">
+    <div class="fact" style="--a:28deg;--am:62deg"><b>5</b><span>plant-based products</span></div>
+    <div class="fact" style="--a:46deg;--am:90deg"><b>4</b><span>everyday formats</span></div>
+    <div class="fact" style="--a:64deg;--am:118deg"><b>6</b><span>stage testing</span></div>
+  </div>
+
   <div class="mq" aria-hidden="true"><div class="mq-track" id="mq"></div></div>
 </section>
 

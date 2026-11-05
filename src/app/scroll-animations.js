@@ -19,7 +19,7 @@ function initScroll(){
   // handwritten arrows draw themselves
   $$('.in-why .draw').forEach(p => { const len = p.getTotalLength(); p.style.strokeDasharray = len; gsap.fromTo(p, { strokeDashoffset:len }, { strokeDashoffset:0, duration:1.4, ease:'power2.out', scrollTrigger:{ trigger:p, start:'top 85%', once:true } }); });
   // the hero copy lifts away; the DNA in science floats
-  gsap.to('.st-copy', { yPercent:-18, opacity:.2, ease:'none', scrollTrigger:{ trigger:'#home', start:'top top', end:'bottom top', scrub:true } });
+  gsap.to('.hero__panels', { yPercent:-18, opacity:.2, ease:'none', scrollTrigger:{ trigger:'#home', start:'top top', end:'bottom top', scrub:true } });
   gsap.fromTo('#sciDna', { y:60, rotation:-2 }, { y:-60, rotation:2, ease:'none', scrollTrigger:{ trigger:'#science', start:'top bottom', end:'bottom top', scrub:true } });
   // lab bars fill in
   $$('.b-bar i').forEach(i => i.style.setProperty('--s', 0));
