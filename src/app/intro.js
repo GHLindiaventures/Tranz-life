@@ -17,7 +17,6 @@ function intro(){
         .from('.st-lede', { opacity:0, y:18, duration:1 }, .6)
         .fromTo('.st-buy', { scale:0, opacity:0 }, { scale:1, opacity:1, duration:.8, ease:'back.out(2.2)' }, .8)
         .fromTo('.fact', { scale:0, opacity:0 }, { scale:1, opacity:1, duration:.9, stagger:.12, ease:'back.out(2)' }, .9)
-        .from('.st-note', { opacity:0, rotation:-14, duration:.9 }, 1.2)
         .from('.nav > *', { y:-18, opacity:0, duration:.8, stagger:.06 }, .3)
         .from('.dock', { x:-90, opacity:0, duration:1.1, ease:'expo.out' }, .5)
         .from('.st-tag', { opacity:0, y:12, duration:.8 }, .25);

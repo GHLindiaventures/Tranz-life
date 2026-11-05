@@ -4,16 +4,20 @@
 .st-arc svg{width:100%;height:100%;overflow:visible}
 .st-arc circle{fill:none;stroke:#fff;stroke-width:1.5%;stroke-linecap:round}
 .st-hill{position:absolute;left:37%;bottom:-25vh;width:64vh;height:40vh;transform:translateX(-50%);border-radius:50%;background:radial-gradient(60% 60% at 50% 30%,#3a7334,#1f4a26);z-index:1}
+/* hero background video, shown exactly as supplied: no filter, grade or overlay; it only covers the hero */
+.st-photo{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 100%;z-index:0;pointer-events:none;user-select:none}
+/* soft contact shadow where the product meets the shelf (position set by hero-jar.js) */
+.st-shadow{position:absolute;z-index:1;left:var(--sx,-999px);border-radius:50%;transform:translate(-50%,-50%);pointer-events:none}
+.st-shadow{top:var(--sy,0);width:var(--sw,0);height:calc(var(--sw,0px)*.17);background:radial-gradient(closest-side,rgba(14,34,18,.6),rgba(14,34,18,.24) 55%,transparent);filter:blur(3px)}
+.st-arc,.st-hill{display:none}
 #heroCanvas{position:absolute;inset:0;width:100%;height:100%;z-index:2;pointer-events:none}
 .facts{position:absolute;left:37%;top:100%;width:0;height:0;z-index:3}
 .fact{position:absolute;left:0;top:0;width:clamp(92px,10.5vh,120px);aspect-ratio:1;margin:calc(clamp(92px,10.5vh,120px)/-2) 0 0 calc(clamp(92px,10.5vh,120px)/-2);border-radius:50%;background:#e6ecdc;display:grid;place-content:center;text-align:center;color:var(--forest);transform:rotate(var(--a)) translateX(-52vh) rotate(calc(var(--a)*-1));box-shadow:0 10px 30px -14px rgba(31,70,35,.35)}
 .fact b{font-family:var(--f-display);font-stretch:68%;font-weight:850;font-size:clamp(30px,3.6vh,40px);line-height:.9}
 .fact b small{font-size:.5em;font-weight:800}
 .fact span{font-size:12px;font-weight:600;line-height:1.1;margin-top:3px;padding-inline:8px}
-.st-note{position:absolute;z-index:3;left:max(112px,calc(37% - 52vh - 10px));top:calc(100% - 52vh - 150px);font-size:23px;transform:rotate(-6deg)}
-.st-note svg{display:block;width:44px;height:40px;margin:2px 0 0 14px;fill:none;stroke:var(--forest);stroke-width:2;stroke-linecap:round}
-.st-buy{position:absolute;left:37%;top:calc(42% - 66px);margin-left:-62px;z-index:4}
-.st-copy{position:absolute;z-index:4;right:max(48px,6vw);top:50%;transform:translateY(-34%);width:min(560px,40vw);text-align:center}
+.st-buy{position:absolute;left:var(--tx,37%);top:var(--ty,calc(42% - 66px));margin-left:-62px;z-index:4}
+.st-copy{position:absolute;z-index:4;right:max(48px,7.6vw);top:50%;transform:translateY(-64%);width:min(560px,40vw);text-align:center;box-sizing:border-box;padding:28px 28px 32px;border-radius:30px;background:linear-gradient(160deg,rgba(247,250,242,.74),rgba(232,240,224,.5));border:1px solid rgba(231,198,128,.5);-webkit-backdrop-filter:blur(14px) saturate(1.2);backdrop-filter:blur(14px) saturate(1.2);box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 30px 70px -36px rgba(20,52,26,.6)}
 .st-tag{display:inline-flex;align-items:center;gap:12px;margin-bottom:16px;font-weight:800;font-stretch:90%;font-size:13px;letter-spacing:.22em;text-transform:uppercase;color:var(--forest)}
 .st-tag::before,.st-tag::after{content:"";width:34px;height:2px;border-radius:2px;background:var(--gold)}
 .st-h{font-size:clamp(4rem,10.5vh,8.6rem);font-stretch:64%;font-weight:850;text-transform:uppercase;line-height:.84;letter-spacing:-.01em;color:var(--forest)}
