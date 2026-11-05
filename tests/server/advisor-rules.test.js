@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { emergencyReply, isEmergency, systemPrompt } from '../../server/advisor-prompt.js';
 import { analyse, routingNote } from '../../server/advisor-rules.js';
-import { fallbackReply, fixedReply, problems } from '../../server/reply-check.js';
+import { fallbackReply, fixedReply, problems, suggestChips } from '../../server/reply-check.js';
 import { CONCERNS } from '../../server/wellness-tips.js';
 import { CATALOG } from '../../src/data/catalog.js';
 
@@ -13,7 +13,7 @@ describe('topic, tips and products', () => {
     expect(ask('bro romba stress ah iruku office la').products).toEqual(['breathefree']);
     expect(ask('always tired, no energy even after sleeping').products).toEqual(['energy-booster']);
     expect(ask('how can I take care of my liver').products).toEqual(['liver-booster']);
-    expect(ask('I want to quit smoking').products).toEqual(['craving-control', 'craving-gummies']);
+    expect(ask('I want to quit smoking').products).toEqual(['craving-control', 'craving-gummies', 'pulmoclear']);
     expect(ask('I have a cold and sore throat').products).toEqual(['pulmoclear']);
     expect(ask('I have period cramps').tips.length).toBeGreaterThan(1);
   });
@@ -23,18 +23,19 @@ describe('topic, tips and products', () => {
       const a = ask(q); expect(a.mode, q).toBe('tips'); expect(a.tips.length, q).toBeGreaterThan(0); expect(a.products, q).toEqual([]);
     }
   });
-  it('answers topics with no approved tips with fixed text, never the model', () => {
-    const a = ask('I have white patches on my skin'); expect(a.tips).toEqual([]); expect(a.products).toEqual([]);
-    expect(fixedReply(a)).toMatch(/don't have trusted tips/);
+  it('answers topics with no approved tips with a clarifying question and quick replies, never the model', () => {
+    const a = ask('I have white patches on my skin'); expect(a.mode).toBe('clarify'); expect(a.tips).toEqual([]); expect(a.products).toEqual([]);
+    expect(fixedReply(a)).toMatch(/tell me a little more/); expect(fixedReply(a)).not.toMatch(/don't have trusted tips/);
+    expect(suggestChips(a).length).toBeGreaterThan(2);
   });
   it('does not carry an old topic into a new, different message', () => {
     expect(ask('I am stressed at work', 'Sorry to hear...', 'eye pain').concerns).toEqual(['eyes']);
     const r = ask('headache in the evening', 'Sorry...', 'roll on');
     expect(r.concerns).toEqual([]); expect(r.mode).toBe('product'); expect(r.named).toEqual(['cyclerelief', 'reviva']);
   });
-  it('keeps short follow-up questions on the earlier topic without showing the card again', () => {
+  it('keeps short follow-up questions on the earlier topic, with its products', () => {
     const a = ask('I have period cramps', 'Sorry to hear that...', 'what else can I do?');
-    expect(a.concerns).toEqual(['period']); expect(a.products).toEqual([]);
+    expect(a.concerns).toEqual(['period']); expect(a.products).toEqual(['cyclerelief']); expect(a.keepHistory).toBe(true);
   });
   it('treats product names and product types as product questions', () => {
     expect(ask('roll on products').named).toEqual(['cyclerelief', 'reviva']);
@@ -66,6 +67,100 @@ describe('alcohol', () => {
   });
 });
 
+describe('habits, situations and conditions matched to products', () => {
+  it('matches everyday habits and situations to the related product', () => {
+    const m = {
+      'I smoke a lot and cough every morning':['craving-control', 'craving-gummies', 'pulmoclear'],
+      'I chew gutka daily':['craving-control', 'craving-gummies', 'pulmoclear'],
+      'I work at a construction site with lots of dust':['pulmoclear'],
+      'pollution is very bad in my city':['pulmoclear'],
+      'I fall sick often':['pulmoclear'],
+      'I eat junk food every day':['liver-booster'],
+      'I work night shifts and feel drained':['energy-booster'],
+      'exam pressure is too much':['breathefree'],
+      'my friend drinks alcohol a lot':['liver-booster']
+    };
+    for (const [q, p] of Object.entries(m)) expect(ask(q).products, q).toEqual(p);
+  });
+  it('mentions a support product for a diagnosed condition, never as a treatment', () => {
+    const d = fixedReply(ask('I have diabetes'));
+    expect(d).toMatch(/not a treatment for diabetes/); expect(d).toMatch(/Reviva/); expect(d).toMatch(/check with your doctor before trying it/);
+    expect(ask('I have fatty liver').suffix.join(' ')).toMatch(/For fatty liver, please keep following your doctor's advice/);
+  });
+  it('suggests nothing for breathing diseases, cure questions or stopping medicine', () => {
+    expect(ask('I have asthma').products).toEqual([]);
+    expect(ask('Which herb cures diabetes?').products).toEqual([]);
+    expect(fixedReply(ask('can I stop insulin and use your products?'))).toMatch(/don't stop or change any medicine/);
+  });
+});
+
+// TULSI_FIX_BRIEF.md, bug table rows A to M
+describe('fix brief: bugs A to M', () => {
+  const run = (...u) => ask(...u.flatMap((c, i) => i < u.length - 1 ? [c, 'ok'] : [c]));
+  it('A: a friend\'s BP does not hold back the visitor\'s Liver Booster', () => {
+    const a = run('my friend has bp and takes tablets', 'i am a drinker which product should i need to use');
+    expect(a.subject).toBe('self'); expect(a.products).toEqual(['liver-booster']); expect(a.heldBack).toEqual([]);
+    expect(fixedReply(a)).toMatch(/Liver Booster.*cannot undo the effects of heavy drinking/s); expect(fixedReply(a)).not.toMatch(/If you are pregnant/);
+  });
+  it('B: a friend\'s diabetes does not hold back the visitor\'s smoking products', () => {
+    expect(run('my friend has diabetes', 'i smoke a lot, which product should i use').products).toEqual(['craving-control', 'craving-gummies', 'pulmoclear']);
+  });
+  it('C, D: "which product" after a health message recommends that topic, not the whole list', () => {
+    const c = run('i drink a lot', 'which product should i use'); expect(c.mode).toBe('recommend'); expect(c.products).toEqual(['liver-booster']);
+    const d = run('i smoke', 'which product is best'); expect(d.mode).toBe('recommend'); expect(d.products[0]).toBe('craving-control');
+  });
+  it('E: "what else" after smoking keeps tips and products', () => {
+    const e = run('i smoke a lot', 'what else'); expect(e.mode).toBe('tips'); expect(e.concerns).toEqual(['smoking']); expect(e.products.length).toBe(3);
+  });
+  it('F: smoking is the main topic, smoking products first, liver second', () => {
+    expect(run('i smoke and drink daily').products).toEqual(['craving-control', 'craving-gummies', 'pulmoclear', 'liver-booster']);
+  });
+  it('G, H: Tamil verb forms, slang and misspellings reach the right topic', () => {
+    for (const q of ['nan kudikiren', 'weekend la kudipen', 'en husband romba kudikiraru', 'daily kudikira pazhakkam iruku', 'alchohol adikren'])
+      expect(run(q).concerns, q).toContain('alcohol');
+    for (const q of ['cigerette pidikiren', 'ciggarette quit panna help pannunga', 'he puffs 20 a day']) expect(run(q).concerns, q).toContain('smoking');
+    expect(run('thanni kudikiren daily').concerns).not.toContain('alcohol');
+  });
+  it('I, J: lung questions reach PulmoClear, recommended with its pitch', () => {
+    for (const q of ['lung problem iruku enna product', 'my lungs feel heavy', 'lung health improve panna enna pannalam', 'I have a weak lungs'])
+      expect(run(q).products, q).toEqual(['pulmoclear']);
+    const j = run('what products do you have for lungs'); expect(j.mode).toBe('recommend'); expect(fixedReply(j)).toMatch(/PulmoClear Lung Booster Gummies\*\*: Ayurvedic herbal gummies/);
+  });
+  it('K: a friend\'s drinking, then "en frnd ku enna product", recommends Liver Booster for the friend', () => {
+    const k = run('en friend drinks daily', 'en frnd ku enna product use pannalam');
+    expect(k.subject).toBe('other'); expect(k.mode).toBe('recommend'); expect(k.products).toEqual(['liver-booster']); expect(fixedReply(k)).toMatch(/may help them/);
+  });
+  it('L: ordinary messages get the closest topic or a clarifying question, never the dead end', () => {
+    expect(run('stomach pain after eating outside food').concerns).toEqual(['acidity']);
+    expect(run('i cant concentrate and feel low').concerns).toEqual(['stress']);
+    const l = run('i feel dizzy and no appetite'); expect(l.mode).toBe('clarify'); expect(fixedReply(l)).not.toMatch(/don't have trusted tips/);
+  });
+  it('M: after a friend topic, the visitor\'s own message is about them and gets no earlier history', () => {
+    const m = run('my friend drinks alcohol a lot', 'i smoke a lot i want to fix myself');
+    expect(m.subject).toBe('self'); expect(m.keepHistory).toBe(false); expect(routingNote(m)).toMatch(/about the visitor themselves/);
+  });
+  it('"which product" with no topic asks what they need, with product chips', () => {
+    const a = run('which product should i use'); expect(a.mode).toBe('clarify'); expect(suggestChips(a)).toContain('Lung health');
+  });
+});
+
+describe('who the message is about', () => {
+  it('does not carry "my friend" or someone else\'s medicine into the visitor\'s own new message', () => {
+    const a = ask('my friend drinks alcohol a lot', 'Your friend could...', 'my father takes BP tablets and is tired', 'Your father could...', 'i smoke a lot i want to fix myself');
+    expect(a.about.other).toBe(false);
+    expect(routingNote(a)).not.toMatch(/someone else/);
+    expect(a.suffix.join(' ')).not.toMatch(/Because of (your|their) health condition|If you are pregnant/);
+    expect(a.products).toEqual(['craving-control', 'craving-gummies', 'pulmoclear']);   // the father's BP tablets are not the visitor's
+  });
+  it('talks about the other person when the latest message is about them', () => {
+    const a = ask('my father takes BP tablets and wants to quit smoking');
+    expect(a.about.other).toBe(true); expect(a.suffix.join(' ')).toMatch(/Because of their health condition/);
+  });
+  it('talks to the visitor when they say it about themselves', () => {
+    expect(ask('i smoke a lot i want to fix myself').suffix.join(' ')).not.toMatch(/health condition/);
+  });
+});
+
 describe('when to mention a doctor', () => {
   it('does not send small everyday problems to a doctor', () => {
     for (const q of ['I have a headache', 'eye pain', 'feeling a bit stressed', 'pimples on my face', 'I have a cold'])
@@ -90,7 +185,7 @@ describe('caution rules', () => {
     expect(kid.products).toEqual([]); expect(kid.tips.some(t => t.kind === 'food')).toBe(false);
   });
   it('holds back swallowed products with diabetes, long-term conditions or regular medicine', () => {
-    expect(ask('I have sugar and feel tired all the time').products).toEqual([]);
+    expect(ask('I have sugar and feel tired all the time').products).toEqual(['reviva']);   // no Energy Booster; Reviva as diabetes support
     expect(ask('I take BP tablets and want to support my liver').products).toEqual([]);
     expect(ask('I take thyroid tablets and want to quit smoking').products).toEqual(['craving-control']);
   });

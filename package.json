@@ -11,7 +11,8 @@
     "preview": "vite preview",
     "test": "vitest run",
     "start": "node --env-file-if-exists=.env server/index.js",
-    "test:chat": "node --env-file-if-exists=.env scripts/tulsi-eval.mjs docs/tulsi-test-results.md"
+    "test:chat": "node --env-file-if-exists=.env scripts/tulsi-eval.mjs docs/tulsi-test-results.md",
+    "test:understand": "node --env-file-if-exists=.env scripts/understand-eval.mjs"
   },
   "dependencies": {
     "gsap": "3.12.5",

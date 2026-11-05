@@ -51,7 +51,8 @@ const CLAIMS = [
   [/(support|control|manag|lower|reduc|balanc|regulat|improv|normali[sz]|maintain)\w*\s+(\w+\s+){0,3}(blood\s*sugar|sugar\s*levels?|glucose|blood\s*pressure|\bbp\b|cholesterol)|(blood\s*sugar|sugar\s*levels?|glucose)\s+(\w+\s+){0,2}(control|support|balance|management)/i, 'makes a blood sugar, blood pressure or cholesterol claim'],
   [/(instead\s*of|replace\w*|better\s*than|alternative\s*to|no\s*need\s*(for|of))\s+(\w+\s+){0,3}(medicine|medication|tablets?|insulin|allopath\w*|drugs?)/i, 'compares with or replaces medicine'],
   [/\b(my|mine)\s+(own\s+)?(vision|eyes?|eyesight|body|head|stomach|tummy|back|knees?|periods?|skin|hair|feet|throat)\b|\bi\s+(also\s+|sometimes\s+|often\s+)?(get|had|have|feel|felt|suffer\w*)\s+(a\s+|from\s+)?(headaches?|pain|cramps?|tired|sick|acidity|stress\w*|blurry)|\bwhen\s+i'?m\s+(tired|sick|stressed)/i, 'talks as if it has a body or its own health'],
-  [/\b(i\s*am|i'?m|as)\s*(a\s*|your\s*)?(doctor|physician|nurse|pharmacist|ayurvedic\s*(doctor|practitioner|physician)|dietitian|real\s*person|human)\b/i, 'pretends to be a professional or a human']
+  // ("as your doctor advised" is fine; "as your doctor, I…" is not)
+  [/\b(i\s*am|i'?m|as)\s*(a\s*|your\s*)?(doctor|physician|nurse|pharmacist|ayurvedic\s*(doctor|practitioner|physician)|dietitian|real\s*person|human)\b(?!\s*(advised|advises|said|says|prescribed|recommended|recommends|told|suggested))/i, 'pretends to be a professional or a human']
 ];
 const DIAGNOSIS = [
   /(?<!\bif\s)(?<!\bif\s\w+\s)\b(you|she|he|they|your\s+\w+|amma|appa)\s+(probably|likely|might|may|could|must|definitely)?\s*(have|has|be\s+suffering\s+from|is\s+suffering\s+from|are\s+suffering\s+from|got)\s+(a\s+|an\s+)?(\w+\s+){0,2}(infection|disease|disorder|deficiency|anaemia|anemia|thyroid|pcos|pcod|cancer|ulcer|fibroids?|endometriosis|depression|migraine|sinusitis|gerd|ibs|hypertension|fatty\s*liver|jaundice|hepatitis|insomnia|neuropathy|arthritis)/i,
@@ -123,9 +124,28 @@ function fixedReply(a){
   }
   if (a.productInfo) return productText(a);
   if (a.mode === 'medical') return `Thank you for asking. TranzLife products are natural wellness products. They aren't meant for medical conditions${a.condition ? ` like ${a.condition}` : ''}, and I can't recommend herbs, remedies or doses for them. A doctor is the right person to guide you on this.${meds || MEDS_LINE}`;
+  if (a.mode === 'support'){
+    const ps = a.products.map(id => CATALOG.find(x => x.id === id));
+    const label = a.support.join(' and ');
+    const extra = ps.length ? ` Alongside your doctor's treatment, you could look at our ${ps.map(p => `${p.name}, ${p.pitch}`).join('; or our ')}.${ps.filter(p => p.note).map(p => ` ${p.note}`).join('')} Please check with your doctor before trying it.` : '';
+    return `Thanks for telling me. TranzLife products are natural wellness products, not a treatment for ${label}, so please keep following your doctor's advice and don't stop or change any medicine without them.${extra}${careLine(a)}`;
+  }
+  if (a.mode === 'recommend'){
+    const label = a.concerns.map(id => { const c = CONCERNS.find(x => x.id === id); return c.forLabel || c.label; }).join(' and ');
+    const who = a.about.other ? 'them' : 'you';
+    const lines = a.products.map(id => { const p = CATALOG.find(x => x.id === id);
+      return `- **${p.name}**: ${p.pitch}.${(a.productNotes[id] || []).map(n => ` ${n}`).join('')}`; });
+    const held = a.heldBack.map(id => CATALOG.find(x => x.id === id).name);
+    const body = lines.length ? `For ${label}, these may help ${who}:\n\n${lines.join('\n')}` : `For ${label}, our usual suggestions are ${held.join(' and ')}.`;
+    const heldLine = lines.length && held.length ? `\n\nWe also have ${held.join(' and ')}, but please check with the doctor before trying ${held.length > 1 ? 'those' : 'that'}.` : '';
+    const after = a.suffix.length ? `\n\n${a.suffix.join(' ')}` : '';
+    return `${body}${heldLine}${after}\n\nTap Enquire on a card for the price and how to order.`;
+  }
+  if (a.mode === 'clarify') return a.recommendQ
+    ? 'Happy to help you choose. What would you like support with? Pick one below or tell me in your own words.'
+    : 'I want to make sure I help with the right thing. Could you tell me a little more about how you feel, or pick one of these? If it\'s something I can\'t advise on, a pharmacist or doctor is the best person to ask.';
   if (a.mode === 'shop') return `Here's our current range: ${productNames()}. Ask me about any of them and I'll share what it's for and how to use it. For prices, orders or delivery, the team is happy to help through the Contact section.`;
   if (a.mode === 'soon') return `That one is coming soon and isn't on sale yet, so I can't share details about it. Right now our range is: ${productNames()}. For updates, the team is happy to help through the Contact section.`;
-  if (a.mode === 'none') return `Thanks for telling me. I don't have trusted tips for that one yet, and I'd rather not guess. I can help with ${TOPICS}. If it's bothering you a lot or not settling, a pharmacist or doctor can help.${meds}${careLine(a)}`;
   return '';
 }
 
@@ -141,4 +161,10 @@ function fallbackReply(a){
   return `I'm sorry you're dealing with ${label}. A few gentle things that may help:\n\n${a.tips.slice(0, 4).map(t => `- ${t.text}`).join('\n')}${a.doctor.length ? `\n\n${a.doctor.join(' ')}` : ''}${meds}`;
 }
 
-export { problems, fixedReply, fallbackReply, REMEDIES, PRODUCT_NAMES };
+// Quick-reply chips sent with a clarifying question (X-Suggest header). Each label is worded so that, when tapped and
+// sent back as a message, it matches an approved topic.
+const SUGGEST_HEALTH = ['Stress', 'Trouble sleeping', 'Tiredness', 'Acidity', 'Cold or cough'];
+const SUGGEST_PRODUCTS = ['Quit smoking', 'Lung health', 'Liver care', 'Period cramps', 'Low energy'];
+const suggestChips = a => a.mode !== 'clarify' ? [] : a.recommendQ ? SUGGEST_PRODUCTS : SUGGEST_HEALTH;
+
+export { problems, fixedReply, fallbackReply, suggestChips, REMEDIES, PRODUCT_NAMES };

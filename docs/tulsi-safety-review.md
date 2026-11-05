@@ -32,6 +32,14 @@ Each message passes through these in order. The model only ever writes the frien
 | 4. Model | `server/chat-api.js` | gemma2:9b rewrites the approved tips warmly, following a short routing note. |
 | 5. Reply checker | `server/reply-check.js` (`problems`) | Every model reply is checked before the customer sees it (list below). A failing reply is rewritten once with the problems listed; if it still fails, a fixed reply built only from the approved tips is sent instead. |
 
+### Understanding layer (typos, Tamil, Tanglish, paraphrases)
+`server/understand.js` runs alongside the rules. It compares each message with example messages (`server/intents.js`, about 450, in English, Tamil script, Tanglish and with typos) using the `bge-m3` embedding model in Ollama. It uses gemma2 at temperature 0 only when that comparison is unclear.
+- It can only pick topic, product, intent and subject ids that already exist. It never writes advice.
+- It only fills gaps: whatever the rules find always wins. Emergencies, warning signs, stop-medicine, cure, dose and diagnosis checks stay rule-based and run first. It may add a "possible emergency" warning, never remove one.
+- Complaints without approved tips (dizziness, rashes, toothache…) are recognised as such and get a clarifying question, not the nearest topic.
+- If the embedding model is missing or slow (2 s), the chat answers with the rules alone.
+- Measured on 93 labelled messages (`npm run test:understand`): rules alone got 74% of topics right, rules plus this layer 98.9%, with 0 wrong product suggestions and 0 messages made worse. 9 of the 93 test messages also appear among the examples; all misses were outside those.
+
 ### What the reply checker rejects
 - Any remedy not in that topic's approved tips: herbs and spices (ashwagandha, turmeric, ginger, methi and about 50 more), oils, milk, juice, soaking, ice, balms, medicines (paracetamol, antacids, antibiotics and so on), vitamins and supplements, fasting or detox, specific yoga or pranayama, pumice or blades.
 - Doses or amounts ("500 mg", "2 tablets", "3 times a day").
@@ -82,6 +90,22 @@ Every approved tip is reworded from these pages, which were read in November 202
 ## Products
 
 Product facts come from the client's brochure and product posters in `new resource/` (November 2026), stored in `src/data/catalog.js`. The chat shows only products marked as on sale: PulmoClear Lung Booster Gummies, PulmoClear Craving Control Gummies, BreatheFree inhaler, Craving Control inhalers (4 variants), RespiraJel+ / Respira+ (names only), Liver Booster (LiverDetox), CycleRelief roll-on, Reviva massage roll-on and Energy Booster. Pipeline products (Rasayana Elite, Total360, Golden Years, Femina, Viryamax, Kidzen) are "coming soon" and never recommended. The brochure's research work (autism, cancer) is never mentioned.
+
+**Which situations get which product** (code decides this; the suggestion line is written by code, never the model):
+
+| Situation the visitor describes | Product suggested |
+|---|---|
+| Period cramps, PMS | CycleRelief Roll-On |
+| Stress, work or exam pressure, anxiety, overthinking | BreatheFree inhaler |
+| Smoking, beedi, chewing tobacco, gutka, hookah, vaping | Craving Control inhalers, Craving Control gummies, PulmoClear Lung Booster (with "it does not undo the harm of smoking; quitting is what helps your lungs most") |
+| Cold, cough, congestion; air pollution, dust, construction or factory work; falling sick often | PulmoClear Lung Booster gummies |
+| Liver care, alcohol, junk or fried food habits, eating out a lot | Liver Booster (for alcohol: "it cannot undo the effects of heavy drinking") |
+| Tiredness, low stamina, night shifts, long hours, after the gym | Energy Booster |
+| Diagnosed diabetes | Reviva (as wellness support alongside treatment; "does not replace diabetes medicine") |
+| Diagnosed fatty liver | Liver Booster (alongside the doctor's advice) |
+| Asthma, COPD, other diseases; cure questions; stopping medicine | No product |
+
+Products that are swallowed are held back for pregnancy, breastfeeding, children, and people with diabetes, a long-term condition or regular medicine. Roll-ons and inhalers are not held back for long-term conditions, but are for pregnancy and children.
 
 Product questions are answered with fixed text taken word for word from the catalogue (what it is, how to use it, caution), never written by the model.
 

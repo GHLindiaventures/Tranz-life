@@ -27,6 +27,9 @@ function format(text){
   }).join('');
 }
 
+// quick replies suggested by the server with a clarifying question
+const suggestRow = list => list && list.length ? `<div class="ch-chips ch-suggest" style="padding:2px 0 0">${list.map(s => `<button type="button" data-say="${esc(s)}">${esc(s)}</button>`).join('')}</div>` : '';
+
 function productCard(id){
   const p = CATALOG.find(x => x.id === id); if (!p) return '';
   const meta = [p.form, p.size, p.price ? inr(p.price) : 'Price on request'].filter(Boolean).join(' · ');
@@ -39,7 +42,7 @@ function bubble(m){
   const row = document.createElement('div');
   row.className = `ch-msg ${m.role === 'user' ? 'me' : 'bot'}`;
   row.innerHTML = m.role === 'user' ? `<div class="ch-b"><p>${esc(m.content)}</p></div>`
-    : `<span class="ch-av">${LEAF}</span><div class="ch-b">${format(m.content)}${(m.products || []).map(productCard).join('')}</div>`;
+    : `<span class="ch-av">${LEAF}</span><div class="ch-b">${format(m.content)}${(m.products || []).map(productCard).join('')}${suggestRow(m.suggest)}</div>`;
   return row;
 }
 
@@ -69,6 +72,7 @@ async function send(text){
       body:JSON.stringify({ messages:msgs.map(({ role, content }) => ({ role, content })) }) });
     if (!res.ok || !res.body) throw new Error(res.status);
     reply.products = (res.headers.get('X-Products') || '').split(',').filter(id => CATALOG.some(p => p.id === id));
+    reply.suggest = (res.headers.get('X-Suggest') || '').split('|').map(s => s.trim()).filter(Boolean).slice(0, 5);
     const reader = res.body.getReader(), dec = new TextDecoder();
     for (;;){
       const { done, value } = await reader.read(); if (done) break;
@@ -76,7 +80,7 @@ async function send(text){
       if (reply.content.trim()){ row.classList.remove('typing'); body.innerHTML = format(reply.content); scrollDown(); }
     }
     if (!reply.content.trim()) throw new Error('empty');
-    body.innerHTML = format(reply.content) + reply.products.map(productCard).join('');
+    body.innerHTML = format(reply.content) + reply.products.map(productCard).join('') + suggestRow(reply.suggest);
     msgs.push(reply);
   } catch(err){
     row.classList.remove('typing');
@@ -126,6 +130,7 @@ function initChat(){
   $('.ch-x', root).addEventListener('click', () => open(false));
   $('.ch-new', root).addEventListener('click', () => { if (busy) return; msgs = []; save(); render(); els.input.focus(); });
   // "Enquire" on a product card: start a contact message about that product, then close the chat
+  els.list.addEventListener('click', e => { const s = e.target.closest('.ch-suggest button'); if (s) send(s.dataset.say); });
   els.list.addEventListener('click', e => {
     const a = e.target.closest('.ch-enquire'); if (!a) return;
     const msg = $('#f-msg'); if (msg && !msg.value.trim()) msg.value = `Hi, I'd like to know more about the ${a.dataset.product} (price and how to order).`;

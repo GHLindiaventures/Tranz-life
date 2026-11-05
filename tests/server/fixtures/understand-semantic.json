@@ -1,0 +1,909 @@
+{
+ "I get bad cramps every month during my cycle": {
+  "concerns": [
+   "period"
+  ],
+  "products": [],
+  "intent": "health_problem",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "feeling very stressed about work deadlines": {
+  "concerns": [
+   "stress"
+  ],
+  "products": [],
+  "intent": "health_problem",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "I struggle to fall asleep": {
+  "concerns": [
+   "sleep"
+  ],
+  "products": [],
+  "intent": "health_problem",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "my heels have deep cracks": {
+  "concerns": [
+   "feet"
+  ],
+  "products": [],
+  "intent": "health_problem",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "I am always low on energy": {
+  "concerns": [
+   "tired"
+  ],
+  "products": [],
+  "intent": "health_problem",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "I want to keep my liver healthy": {
+  "concerns": [
+   "liver"
+  ],
+  "products": [],
+  "intent": "health_problem",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "I drink beer every weekend": {
+  "concerns": [
+   "alcohol"
+  ],
+  "products": [],
+  "intent": "health_problem",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "the air in my area is full of dust": {
+  "concerns": [
+   "pollution"
+  ],
+  "products": [],
+  "intent": "health_problem",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "my lungs don't feel strong": {
+  "concerns": [
+   "lungs"
+  ],
+  "products": [],
+  "intent": "health_problem",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "I fall ill very often": {
+  "concerns": [
+   "immunity"
+  ],
+  "products": [],
+  "intent": "health_problem",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "my head is throbbing": {
+  "concerns": [
+   "headache"
+  ],
+  "products": [],
+  "intent": "health_problem",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "burning feeling in my chest after meals": {
+  "concerns": [
+   "acidity"
+  ],
+  "products": [],
+  "intent": "health_problem",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "I have a runny nose and sneezing": {
+  "concerns": [
+   "cold"
+  ],
+  "products": [],
+  "intent": "health_problem",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "haven't passed stool in two days": {
+  "concerns": [
+   "constipation"
+  ],
+  "products": [],
+  "intent": "health_problem",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "my eyes hurt after screens": {
+  "concerns": [
+   "eyes"
+  ],
+  "products": [],
+  "intent": "health_problem",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "lower back hurts when I sit long": {
+  "concerns": [
+   "back"
+  ],
+  "products": [],
+  "intent": "health_problem",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "my knees ache when climbing stairs": {
+  "concerns": [
+   "joints"
+  ],
+  "products": [],
+  "intent": "health_problem",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "breakouts on my forehead": {
+  "concerns": [
+   "acne"
+  ],
+  "products": [],
+  "intent": "health_problem",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "lots of hair falling while combing": {
+  "concerns": [
+   "hair"
+  ],
+  "products": [],
+  "intent": "health_problem",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "painful sore inside my cheek": {
+  "concerns": [
+   "ulcer"
+  ],
+  "products": [],
+  "intent": "health_problem",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "I feel queasy after lunch": {
+  "concerns": [
+   "nausea"
+  ],
+  "products": [],
+  "intent": "health_problem",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "slight temperature since yesterday": {
+  "concerns": [
+   "fever"
+  ],
+  "products": [],
+  "intent": "health_problem",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "white flakes from my scalp on my shoulders": {
+  "concerns": [
+   "dandruff"
+  ],
+  "products": [],
+  "intent": "health_problem",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "I want to give up cigarettes": {
+  "concerns": [
+   "smoking"
+  ],
+  "products": [],
+  "intent": "health_problem",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "எனக்கு மாதவிடாய் வலி": {
+  "concerns": [
+   "period"
+  ],
+  "products": [],
+  "intent": "health_problem",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "தூக்கம் சரியாக வரவில்லை": {
+  "concerns": [
+   "sleep"
+  ],
+  "products": [],
+  "intent": "health_problem",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "தலைவலி அதிகம்": {
+  "concerns": [
+   "headache"
+  ],
+  "products": [],
+  "intent": "health_problem",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "சளி இருமல் இருக்கு": {
+  "concerns": [
+   "cold"
+  ],
+  "products": [],
+  "intent": "health_problem",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "முடி கொட்டுது": {
+  "concerns": [
+   "hair"
+  ],
+  "products": [],
+  "intent": "health_problem",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "கண் எரிச்சல்": {
+  "concerns": [
+   "eyes"
+  ],
+  "products": [],
+  "intent": "health_problem",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "எனக்கு மன அழுத்தம் அதிகம்": {
+  "concerns": [
+   "stress"
+  ],
+  "products": [],
+  "intent": "health_problem",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "புகை பிடிக்கும் பழக்கம் இருக்கு": {
+  "concerns": [
+   "smoking"
+  ],
+  "products": [],
+  "intent": "health_problem",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "மது குடிக்கும் பழக்கம்": {
+  "concerns": [
+   "alcohol"
+  ],
+  "products": [],
+  "intent": "health_problem",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "நெஞ்செரிச்சல் இருக்கு": {
+  "concerns": [
+   "acidity"
+  ],
+  "products": [],
+  "intent": "health_problem",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "periods time la romba vali": {
+  "concerns": [
+   "period"
+  ],
+  "products": [],
+  "intent": "health_problem",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "office tension romba iruku": {
+  "concerns": [
+   "stress"
+  ],
+  "products": [],
+  "intent": "health_problem",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "night thookam varave matengudhu": {
+  "concerns": [
+   "sleep"
+  ],
+  "products": [],
+  "intent": "health_problem",
+  "subject": "self",
+  "emergency": false,
+  "via": "llm"
+ },
+ "kaal kuthikal vedichu iruku": {
+  "concerns": [
+   "feet"
+  ],
+  "products": [],
+  "intent": "health_problem",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "udambu romba sorva iruku": {
+  "concerns": [
+   "tired"
+  ],
+  "products": [],
+  "intent": "health_problem",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "daily sarakku adikiren": {
+  "concerns": [
+   "alcohol"
+  ],
+  "products": [],
+  "intent": "health_problem",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "cigarette pidikkura pazhakkam iruku": {
+  "concerns": [
+   "smoking"
+  ],
+  "products": [],
+  "intent": "health_problem",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "thalai vali evening la": {
+  "concerns": [
+   "headache"
+  ],
+  "products": [],
+  "intent": "health_problem",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "saptathum vayiru erichal": {
+  "concerns": [
+   "acidity"
+  ],
+  "products": [],
+  "intent": "health_problem",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "sali irumal rendu naala": {
+  "concerns": [
+   "cold"
+  ],
+  "products": [],
+  "intent": "health_problem",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "motion sariya pogala": {
+  "concerns": [
+   "constipation"
+  ],
+  "products": [],
+  "intent": "health_problem",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "kannu romba vali ah iruku": {
+  "concerns": [
+   "stress"
+  ],
+  "products": [],
+  "intent": "health_problem",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "muthugu valikuthu": {
+  "concerns": [],
+  "products": [],
+  "intent": "health_problem",
+  "subject": "self",
+  "emergency": false,
+  "via": "llm"
+ },
+ "mudi romba kottuthu": {
+  "concerns": [
+   "hair"
+  ],
+  "products": [],
+  "intent": "health_problem",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "vaai la pun iruku": {
+  "concerns": [
+   "ulcer"
+  ],
+  "products": [],
+  "intent": "health_problem",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "konjam kaaichal iruku": {
+  "concerns": [
+   "fever"
+  ],
+  "products": [],
+  "intent": "health_problem",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "thalaila podugu iruku": {
+  "concerns": [
+   "headache"
+  ],
+  "products": [],
+  "intent": "health_problem",
+  "subject": "self",
+  "emergency": false,
+  "via": "llm"
+ },
+ "dust la work panren daily": {
+  "concerns": [
+   "pollution"
+  ],
+  "products": [],
+  "intent": "health_problem",
+  "subject": "self",
+  "emergency": false,
+  "via": "llm"
+ },
+ "perod crampz": {
+  "concerns": [],
+  "products": [],
+  "intent": null,
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "streesed at wrk": {
+  "concerns": [
+   "stress"
+  ],
+  "products": [],
+  "intent": "health_problem",
+  "subject": "self",
+  "emergency": false,
+  "via": "llm"
+ },
+ "cant slep at nite": {
+  "concerns": [
+   "sleep"
+  ],
+  "products": [],
+  "intent": "health_problem",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "tierd all day": {
+  "concerns": [
+   "tired"
+  ],
+  "products": [],
+  "intent": "health_problem",
+  "subject": "self",
+  "emergency": false,
+  "via": "llm"
+ },
+ "alchohol daily": {
+  "concerns": [
+   "alcohol"
+  ],
+  "products": [],
+  "intent": "health_problem",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "cigerete habit": {
+  "concerns": [
+   "smoking"
+  ],
+  "products": [],
+  "intent": "health_problem",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "hedache since morning": {
+  "concerns": [
+   "headache"
+  ],
+  "products": [],
+  "intent": "health_problem",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "accidity after food": {
+  "concerns": [
+   "acidity"
+  ],
+  "products": [],
+  "intent": "health_problem",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "constipaton problem": {
+  "concerns": [
+   "constipation"
+  ],
+  "products": [],
+  "intent": "health_problem",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "dandruf in hair": {
+  "concerns": [
+   "dandruff"
+  ],
+  "products": [],
+  "intent": "health_problem",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "pimpels on face": {
+  "concerns": [
+   "acne"
+  ],
+  "products": [],
+  "intent": "health_problem",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "lungs weeak": {
+  "concerns": [
+   "lungs"
+  ],
+  "products": [],
+  "intent": "health_problem",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "my brother drinks every night": {
+  "concerns": [
+   "alcohol"
+  ],
+  "products": [],
+  "intent": "health_problem",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "en amma ku thookam varala": {
+  "concerns": [
+   "sleep"
+  ],
+  "products": [],
+  "intent": "health_problem",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "I feel tired all the time": {
+  "concerns": [
+   "tired"
+  ],
+  "products": [],
+  "intent": "health_problem",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "what can he use": {
+  "concerns": [],
+  "products": [],
+  "intent": "recommend",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "I am pregnant and stressed": {
+  "concerns": [
+   "stress"
+  ],
+  "products": [],
+  "intent": "health_problem",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "my dad takes BP tablets and is tired": {
+  "concerns": [
+   "tired"
+  ],
+  "products": [],
+  "intent": "health_problem",
+  "subject": "other",
+  "emergency": false,
+  "via": "llm"
+ },
+ "I smoke daily": {
+  "concerns": [
+   "smoking"
+  ],
+  "products": [],
+  "intent": "health_problem",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "my son has a cold": {
+  "concerns": [
+   "cold"
+  ],
+  "products": [],
+  "intent": "health_problem",
+  "subject": "other",
+  "emergency": false,
+  "via": "llm"
+ },
+ "en appa ku smoking pazhakkam": {
+  "concerns": [
+   "smoking"
+  ],
+  "products": [],
+  "intent": "health_problem",
+  "subject": "other",
+  "emergency": false,
+  "via": "llm"
+ },
+ "en friend weekend la kudipan": {
+  "concerns": [
+   "alcohol"
+  ],
+  "products": [],
+  "intent": "health_problem",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "what else": {
+  "concerns": [],
+  "products": [],
+  "intent": "recommend",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "enna product use pannalam": {
+  "concerns": [],
+  "products": [],
+  "intent": "recommend",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "edhu nalla": {
+  "concerns": [],
+  "products": [],
+  "intent": "recommend",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "anything for this": {
+  "concerns": [],
+  "products": [],
+  "intent": "recommend",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "recommend something": {
+  "concerns": [],
+  "products": [],
+  "intent": "recommend",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "what do you have for smokers": {
+  "concerns": [],
+  "products": [
+   "craving-control"
+  ],
+  "intent": "recommend",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "any product for low energy": {
+  "concerns": [
+   "tired"
+  ],
+  "products": [
+   "energy-booster",
+   "pulmoclear"
+  ],
+  "intent": "product_question",
+  "subject": "self",
+  "emergency": false,
+  "via": "llm"
+ },
+ "something for my lungs": {
+  "concerns": [
+   "lungs"
+  ],
+  "products": [
+   "pulmoclear"
+  ],
+  "intent": "health_problem",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "do you have anything for periods": {
+  "concerns": [
+   "period"
+  ],
+  "products": [
+   "cyclerelief"
+  ],
+  "intent": "health_problem",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "nan daily beedi pidippen": {
+  "concerns": [
+   "smoking"
+  ],
+  "products": [],
+  "intent": "health_problem",
+  "subject": "self",
+  "emergency": false,
+  "via": "llm"
+ },
+ "fatigue after work": {
+  "concerns": [
+   "tired"
+  ],
+  "products": [],
+  "intent": "health_problem",
+  "subject": "self",
+  "emergency": false,
+  "via": "llm"
+ },
+ "I feel bloated": {
+  "concerns": [
+   "nausea"
+  ],
+  "products": [],
+  "intent": "health_problem",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "I drink water a lot": {
+  "concerns": [],
+  "products": [],
+  "intent": "other",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "who won the match": {
+  "concerns": [],
+  "products": [],
+  "intent": "other",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "tell me a joke": {
+  "concerns": [],
+  "products": [],
+  "intent": "other",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "I go for a walk every morning": {
+  "concerns": [],
+  "products": [],
+  "intent": "other",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "hi": {
+  "concerns": [],
+  "products": [],
+  "intent": "smalltalk",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "thanks": {
+  "concerns": [],
+  "products": [],
+  "intent": "smalltalk",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "dizzy and no appetite": {
+  "concerns": [],
+  "products": [],
+  "intent": "other",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ }
+}

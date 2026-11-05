@@ -36,7 +36,7 @@ const CONCERNS = [
   },
   {
     id:'stress', label:'stress', products:['breathefree'],
-    match:/stress|anxious|anxiety|tension|overwhelm|restless|nervous|pathattam|padapadappu|mana\s*azhutham|மன\s*அழுத்த|பதட்ட/i,
+    match:/stress|can'?t\s*(concentrate|focus)|(concentrat\w*|focus)\s*(panna\s*)?mudiyala|kavalai|anxious|anxiety|tension|overwhelm|restless|nervous|work\s*pressure|exam\s*(pressure|fear|tension)|deadlines?|burn\s*-?\s*out|overthink|pathattam|padapadappu|mana\s*azhutham|மன\s*அழுத்த|பதட்ட/i,
     tips:[
       { text:'Pause for a few minutes and breathe slowly: in gently through your nose, and out slowly through your mouth.', kind:'lifestyle' },
       { text:'Break big tasks into small steps, and give yourself credit as you finish each one.', kind:'lifestyle' },
@@ -82,7 +82,7 @@ const CONCERNS = [
   },
   {
     id:'tired', label:'tiredness', products:['energy-booster'],
-    match:/(?<!\beyes?\s+(\w+\s+)?)tired(?!.{0,20}\b(feet|foot|kaal|eyes?)\b)|fatigue|exhaust|no\s*energy|low\s*energy|energy\s*(illa|ille|kammi|kuraivu)|weak(ness)?\b|run\s*down|sorv|soarv|kalaippu|kalaipa|சோர்வ|களைப்பு/i,
+    match:/(?<!\beyes?\s+(\w+\s+)?)tired(?!.{0,20}\b(feet|foot|kaal|eyes?)\b)|fatigue|exhaust|no\s*energy|low\s*energy|(low|less|no|poor)\s*stamina|stamina|night\s*shifts?|long\s*(working\s*|work\s*)?hours|after\s*(the\s*)?(gym|workout)|workouts?\s*(tired|recovery)|busy\s*schedule|energy\s*(illa|ille|kammi|kuraivu)|weak(ness)?\b(?!\s*(lungs?|immun))|run\s*down|dull\s*ah?\s*(iruk|feel)|sorv|soarv|kalaippu|kalaipa|சோர்வ|களைப்பு/i,
     tips:[
       { text:'Go to bed and get up at the same times each day, aiming for 6 to 9 hours of sleep.', kind:'lifestyle' },
       { text:'Eat well and stay active, even a short walk each day helps.', kind:'lifestyle' },
@@ -94,7 +94,8 @@ const CONCERNS = [
   },
   {
     id:'liver', label:'liver care', products:['liver-booster'],
-    match:/\bliver\b|\bdetox|kalleeral|kalleral|கல்லீரல்/i,
+    // also lifestyle habits that strain the liver: junk / fried food habits, eating out a lot, fatty liver risk
+    match:/\bliver\b|\bdetox|junk\s*food|fast\s*food|fried\s*food\s*(daily|a\s*lot|every|often)|eat(ing)?\s*(out|outside|hotel\s*food)\s*(daily|a\s*lot|every\s*day|often)|fatty\s*liver\s*risk|kalleeral|kalleral|கல்லீரல்/i,
     tips:[
       { text:'Eat a healthy, balanced diet.', kind:'lifestyle' },
       { text:'Keep alcohol low, or avoid it.', kind:'lifestyle' },
@@ -105,8 +106,8 @@ const CONCERNS = [
     sources:['https://www.nhs.uk/conditions/liver-disease/', 'https://www.nhs.uk/conditions/non-alcoholic-fatty-liver-disease/']
   },
   {
-    id:'alcohol', label:'drinking alcohol', products:['liver-booster'],
-    match:/alcohol|after\s*drinking|drinking\s*(habit|problem|too\s*much|a\s*lot)|\bdrink(s|ing)?\b(?!\s*(more\s*|enough\s*|plenty\s*of\s*|lots\s*of\s*)?(water|juice|tea|coffee|milk|fluids|soup))(?!.{0,25}\b(water|juice|tea|coffee|milk|fluids)\b).{0,25}(a\s*lot|too\s*much|heavily|daily|every\s*(day|night)|beer|whisk|brandy|\brum\b|vodka|wine|\bpegs?\b)|\bdrinkers?\b|\bdrunk\b|\bbooze|\bbeers?\b|whiske?y|brandy|\brum\b|vodka|liquor|\bpegs?\b|hangover|sarakk?u|thanni\s*adi|tasmac|kudi\s*(pazhakkam|palakkam)|kudikaa?ran|மது|சாராய/i,
+    id:'alcohol', label:'drinking alcohol', forLabel:'cutting down on alcohol', products:['liver-booster'],
+    match:/alcohol|\balc[a-z]{0,3}h[a-z]{0,3}l|alkohol|(?<!(thanni|thannee|water|tea|coffee|paal|milk|juice)\s)\bkudi(kk?iren|kk?iraen|pp?en|kk?iraaru|kk?iraru|kk?iran|kk?uraan|kk?urar|kk?ura|kk?ira|kk?aranga|kk?irom|chen|chitten)\b|after\s*drinking|drinking\s*(habit|problem|too\s*much|a\s*lot)|\bdrink(s|ing)?\b(?!\s*(more\s*|enough\s*|plenty\s*of\s*|lots\s*of\s*)?(water|juice|tea|coffee|milk|fluids|soup))(?!.{0,25}\b(water|juice|tea|coffee|milk|fluids)\b).{0,25}(a\s*lot|too\s*much|heavily|daily|every\s*(day|night)|beer|whisk|brandy|\brum\b|vodka|wine|\bpegs?\b)|\bdrinkers?\b|\bdrunk\b|\bbooze|\bbeers?\b|whiske?y|brandy|\brum\b|vodka|liquor|\bpegs?\b|hangover|sarakk?u|thanni\s*adi|tasmac|kudi\s*(pazhakkam|palakkam)|kudikaa?ran|மது|சாராய/i,
     tips:[
       { text:'Set a limit before starting to drink, and keep to it; taking only a fixed amount of money helps.', kind:'lifestyle' },
       { text:'Have several drink-free days every week.', kind:'lifestyle' },
@@ -119,6 +120,42 @@ const CONCERNS = [
     footer:'If someone drinks heavily every day, stopping suddenly can be dangerous, so a doctor should help them cut down safely. India\'s free de-addiction helpline is 14446.',
     productNotes:{ 'liver-booster':'It cannot undo the effects of heavy drinking; drinking less is what helps the liver most.' },
     sources:['https://www.nhs.uk/live-well/alcohol-advice/tips-on-cutting-down-alcohol/', 'https://www.nhs.uk/conditions/alcohol-misuse/', 'https://dot.gov.in/node/18785']
+  },
+  {
+    id:'pollution', label:'air pollution and dust', products:['pulmoclear'],
+    match:/pollut|\bsmog\b|\baqi\b|air\s*quality|\bdust(y)?\b|fumes|traffic\s*smoke|construction\s*(site|work|dust)|factory\s*(smoke|dust|work)|dhool|thoosi|தூசி|மாசு/i,
+    tips:[
+      { text:'On high-pollution days, change when and where you go out: avoid busy roads and peak traffic times when you can.', kind:'lifestyle' },
+      { text:'Keep exercising, but choose cleaner times and places, away from heavy traffic.', kind:'lifestyle' },
+      { text:'Keep the air at home clean: no smoking indoors, and let fresh air in or use a kitchen exhaust when cooking.', kind:'lifestyle' }
+    ],
+    doctor:'If you have asthma, a lung or heart condition, or are pregnant, ask your doctor how best to protect yourself on high-pollution days. Trouble breathing needs urgent help.',
+    sources:['https://www.who.int/news-room/questions-and-answers/item/air-pollution-personal-interventions-and-risk-communication']
+  },
+  {
+    // lung health, NOT lung disease: asthma / COPD are conditions with no product (see advisor-rules.js), and
+    // breathing difficulty, chest tightness and coughing blood are emergencies or warning signs that run first
+    id:'lungs', label:'lung health', products:['pulmoclear'], alwaysDoctor:true,
+    match:/\blungs?\b|nurai\s*eeral|nuraiyeeral|breath(ing)?\s*(feels?\s*)?(heavy|weak|tight)|chest\s*feels?\s*congested|lung\s*(health|problem|weak)|weak\s*lungs?|நுரையீரல்/i,
+    tips:[
+      { text:'If you smoke, stopping is the best thing you can do for your lungs, and free help is available.', kind:'lifestyle' },
+      { text:'Stay active, like walking or cycling, but avoid exercising outdoors on very hot or very cold days.', kind:'lifestyle' },
+      { text:'Keep warm and drink plenty of fluids.', kind:'lifestyle' },
+      { text:'Check the air quality, and plan outdoor activity around days when the air is poor.', kind:'lifestyle' }
+    ],
+    doctor:'If you get breathless, wheezy or tight in the chest, or have a cough lasting more than 3 weeks, please see a doctor. If you already have a lung condition, keep using your prescribed treatment exactly as your doctor advised.',
+    sources:['https://www.england.nhs.uk/london/wp-content/uploads/sites/8/2022/07/TOP-TIPS-FOR-LUNG-HEALTH-v3.1.pdf', 'https://www.nhs.uk/conditions/common-cold/']
+  },
+  {
+    id:'immunity', label:'falling sick often', products:['pulmoclear'],
+    match:/immun|fall(ing)?\s*sick\s*(often|a\s*lot|frequently|easily|again)|get(ting)?\s*sick\s*(often|easily|a\s*lot|again\s*and\s*again)|catch(ing)?\s*(colds?|infections?)\s*(often|easily|a\s*lot)|always\s*(getting\s*)?(sick|cold)|adikadi\s*(sali|kaaichal|udambu\s*sari\s*illa)/i,
+    tips:[
+      { text:'Wash your hands often with soap and warm water.', kind:'lifestyle' },
+      { text:'Try not to touch your eyes and nose, and do not share cups or towels with someone who has a cold.', kind:'lifestyle' },
+      { text:'Keep fit and healthy: balanced meals, enough sleep and regular activity.', kind:'lifestyle' }
+    ],
+    doctor:'If you catch infections very often, or they take a long time to clear, please see a doctor.',
+    sources:['https://www.nhs.uk/conditions/common-cold/']
   },
   {
     id:'headache', label:'headaches', products:[],
@@ -134,7 +171,7 @@ const CONCERNS = [
   },
   {
     id:'acidity', label:'acidity or heartburn', products:[],
-    match:/acidity|acid\s*reflux|reflux|heartburn|indigestion|gas\s*trouble|bloat|heavy\s*(after|stomach)|oily\s*food|fatty\s*food|nenju\s*erichal|vayiru\s*erichal|erichal|நெஞ்செரிச்சல்/i,
+    match:/acidity|(stomach|tummy)\s*(pain|ache|upset)\s*after\s*(eating|food|meals?|lunch|dinner)|(after|from)\s*(eating\s*)?(outside|hotel|street)\s*food|acid\s*reflux|reflux|heartburn|indigestion|gas\s*trouble|bloat|heavy\s*(after|stomach)|oily\s*food|fatty\s*food|nenju\s*erichal|vayiru\s*erichal|erichal|நெஞ்செரிச்சல்/i,
     tips:[
       { text:'Eat smaller meals more often, instead of big ones.', kind:'lifestyle' },
       { text:'Avoid eating in the 3 to 4 hours before bed.', kind:'lifestyle' },
@@ -146,7 +183,7 @@ const CONCERNS = [
   },
   {
     id:'cold', label:'a cold or cough', products:['pulmoclear'],
-    match:/common\s*cold|\ba\s*cold\b|\bhave\s*(a\s*)?cold\b|caught\s*(a\s*)?cold|cold\s*(and|&)\s*cough|runny\s*nose|blocked\s*nose|stuffy\s*nose|sore\s*throat|throat\s*pain|cough|sneez|congestion|jaladosh|jalathosh|\bsali\b|irumal|thondai\s*vali|ஜலதோஷ|இருமல்|சளி/i,
+    match:/common\s*cold|\ba\s*cold\b|\bhave\s*(a\s*)?cold\b|caught\s*(a\s*)?cold|cold\s*(and|&)\s*cough|runny\s*nose|blocked\s*nose|stuffy\s*nose|sore\s*throat|throat\s*pain|cough|sneez|congestion|thummal|mookk?adaip+u|mooku\s*(ozhuguthu|adaippu|adaikuthu)|sali\s*pidi\w*|jaladosh|jalathosh|\bsali\b|irumal|thondai\s*vali|ஜலதோஷ|இருமல்|சளி/i,
     tips:[
       { text:'Rest well and drink plenty of fluids, like water.', kind:'lifestyle' },
       { text:'For a blocked nose, breathe in steam, for example by sitting in the bathroom with a hot shower running.', kind:'lifestyle' },
@@ -274,15 +311,17 @@ const CONCERNS = [
     sources:['https://www.nhs.uk/conditions/dandruff/']
   },
   {
-    id:'smoking', label:'quitting smoking', products:['craving-control', 'craving-gummies'],
-    match:/smok|cigarette|\bbeedi|\bbidi|tobacco|nicotine|vape|vaping|quit\s*(smoking|tobacco)|thamm?\s*adik|pugai|புகை/i,
+    id:'smoking', label:'quitting smoking or tobacco', products:['craving-control', 'craving-gummies', 'pulmoclear'],
+    // smoking, beedi, chewing tobacco, gutka, hookah, vaping; smoking also affects the lungs, so PulmoClear is suggested too
+    match:/smok|\bcig\w*|\bsig(a|e)ret\w*|\bpuffs?\b|\bbeedi|\bbidi|tobacco|nicotine|gutka|gutkha|pan\s*masala|\bkhaini\b|hookah|vape|vaping|quit\s*(smoking|tobacco)|thamm?\s*adik|pugai|புகை/i,
+    productNotes:{ pulmoclear:'It does not undo the harm of smoking; quitting is what helps your lungs most.' },
     tips:[
-      { text:'Pick a quit date and plan for the moments that usually make you want to smoke.', kind:'lifestyle' },
+      { text:'Pick a quit date and plan for the moments that usually make you want to smoke or use tobacco.', kind:'lifestyle' },
       { text:'Get support: telling friends and family helps, and free counselling is available (the quit line number is added below).', kind:'lifestyle' },
-      { text:'If you slip up, do not give up; refocus and keep going. Reaching 28 days smoke-free makes you much more likely to stay quit.', kind:'lifestyle' },
+      { text:'If you slip up, do not give up; refocus and keep going. Reaching 28 days tobacco-free makes you much more likely to stay quit.', kind:'lifestyle' },
       { text:'Notice your progress: your body starts to recover within days of stopping.', kind:'lifestyle' }
     ],
-    doctor:'A doctor or the National Tobacco Quit Line (1800 112 356) can also help with stronger support to quit.',
+    doctor:'A doctor can also help with stronger support to quit.',
     footer:'For free support, you can call India\'s National Tobacco Quit Line on 1800 112 356 (counselling in many languages).',
     sources:['https://www.nhs.uk/better-health/quit-smoking/', 'https://ntcp.mohfw.gov.in/national_tobacco_quit_line_services']
   }

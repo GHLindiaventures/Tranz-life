@@ -6,7 +6,8 @@
 //   - server/index.js serves it next to the built site for `npm start`
 import { emergencyReply, systemPrompt } from './advisor-prompt.js';
 import { analyse, routingNote } from './advisor-rules.js';
-import { fallbackReply, fixedReply, problems } from './reply-check.js';
+import { fallbackReply, fixedReply, problems, suggestChips } from './reply-check.js';
+import { createUnderstanding } from './understand.js';
 
 const MAX_TURNS = 12, MAX_CHARS = 1500;
 
@@ -32,6 +33,8 @@ function createChatApi(env = {}){
   const OLLAMA = (env.OLLAMA_URL || 'http://localhost:11434').replace(/\/$/, '');
   const ORIGIN = env.CHAT_ORIGIN || '';      // only when the site is served from another domain
   const SYSTEM = systemPrompt();
+  // semantic understanding layer (embeddings + closed-set classifier); UNDERSTAND=off turns it off
+  const understanding = env.UNDERSTAND === 'off' ? null : createUnderstanding(env);
 
   async function generate(messages, temperature, signal){
     const limit = AbortSignal.timeout(45000);      // never leave a visitor waiting on a stuck model
@@ -47,11 +50,19 @@ function createChatApi(env = {}){
   async function respond(msgs, signal){
     const urgent = emergencyReply(msgs[msgs.length - 1].content);
     if (urgent) return { text:urgent, products:[], via:'emergency', problems:[] };
-    // code decides the kind of message, approved tips, products, warning signs and language; the model only writes the reply
-    const a = analyse(msgs);
+    // code decides the kind of message, approved tips, products, warning signs and language; the model only writes the reply.
+    // The semantic layer helps with typos, Tamil and paraphrases; if it is missing or slow it returns null (regex only).
+    const semantic = understanding ? await understanding.understand(msgs[msgs.length - 1].content) : null;
+    const a = analyse(msgs, { semantic });
     const fixed = fixedReply(a);
-    if (fixed) return { text:fixed, checked:fixed, products:a.products, via:'fixed', problems:[], analysis:a };
-    const convo = [{ role:'system', content:SYSTEM }, ...msgs.slice(0, -1), { role:'system', content:routingNote(a) }, msgs[msgs.length - 1]];
+    if (fixed){
+      // unmatched messages: only the length is logged, never the text
+      if (a.mode === 'clarify') console.log(`[tulsi] clarify (message length ${msgs[msgs.length - 1].content.length})`);
+      return { text:fixed, checked:fixed, products:a.products, suggest:suggestChips(a), via:'fixed', problems:[], analysis:a };
+    }
+    // earlier turns only for a genuine follow-up about the same person; otherwise a clean context (no earlier replies to copy)
+    const earlier = a.keepHistory ? msgs.slice(-5, -1) : [];
+    const convo = [{ role:'system', content:SYSTEM }, ...earlier, { role:'system', content:routingNote(a) }, msgs[msgs.length - 1]];
     let text = await generate(convo, .5, signal), found = problems(text, a), via = 'model';
     const first = found;
     if (found.length){
@@ -65,7 +76,7 @@ function createChatApi(env = {}){
     // fixed sentences (e.g. "I can't advise on ashwagandha or doses") go first, written by code, not the model
     if (a.prefix.length) text = `${a.prefix.join(' ')}\n\n${text}`;
     if (a.suffix.length) text = `${text}\n\n${a.suffix.join(' ')}`;
-    return { text, checked, products:a.products, via, problems:first, analysis:a };
+    return { text, checked, products:a.products, suggest:[], via, problems:first, analysis:a };
   }
 
   async function chat(req, res){
@@ -78,7 +89,7 @@ function createChatApi(env = {}){
       const out = await respond(msgs, ctrl.signal);
       if (out.via !== 'model') console.log(`[tulsi] ${out.via}${out.problems.length ? `: ${out.problems.join('; ')}` : ''}`);   // no message text is logged
       res.writeHead(200, { 'Content-Type':'text/plain; charset=utf-8', 'Cache-Control':'no-cache',
-        'X-Products':out.products.join(','), 'Access-Control-Expose-Headers':'X-Products' });
+        'X-Products':out.products.join(','), 'X-Suggest':(out.suggest || []).join('|'), 'Access-Control-Expose-Headers':'X-Products, X-Suggest' });
       res.end(out.text);
     } catch(err){
       if (ctrl.signal.aborted) return;
@@ -104,9 +115,12 @@ function createChatApi(env = {}){
     fetch(`${OLLAMA}/api/generate`, { method:'POST', body:JSON.stringify({ model:MODEL, keep_alive:'30m' }) })
       .then(r => r.ok ? log.info(`  Tulsi chat ready (${MODEL})`) : log.warn(`  Tulsi chat: could not load ${MODEL}. Run: ollama pull ${MODEL}`))
       .catch(() => log.warn(`  Tulsi chat: Ollama is not running at ${OLLAMA}. Start the Ollama app or run: ollama serve`));
+    // embed the examples in the background (about 30 s once); until then the chat answers with the regex rules only
+    understanding?.init().then(() => log.info('  Tulsi understanding layer ready'))
+      .catch(() => log.warn(`  Tulsi understanding layer off (embedding model unavailable). Run: ollama pull ${env.EMBED_MODEL || 'bge-m3'}`));
   }
 
-  return { handle, warmUp, respond, model:MODEL };
+  return { handle, warmUp, respond, understanding, model:MODEL };
 }
 
 export { createChatApi };
