@@ -210,7 +210,8 @@ function fixedReply(a){
     bye:'Take care! 🌿 I\'m here whenever you need a hand.',
     thanks:'You\'re welcome! 🌿 Is there anything else on your mind?',
     howareyou:'I\'m doing well, thanks for asking! 🌿 How are you feeling today? Tell me if anything is bothering you.',
-    ok:'Sure! 🌿 If anything is bothering you, like stress, sleep or tiredness, just tell me.',
+    ok:a.afterProduct ? 'Great! 🌿 Tap Enquire on the product card and our team will help you with the price and how to order. Is there anything else on your mind?'
+      : 'Sure! 🌿 If anything is bothering you, like stress, sleep or tiredness, just tell me.',
     greeting:'Hi! 🌿 I\'m Tulsi. How are you feeling today? Tell me what\'s on your mind, or pick one below.'
   }[a.smallTalkKind || 'greeting'];
   // about Tulsi / TranzLife (company line from the client's brochure)

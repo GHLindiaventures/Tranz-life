@@ -175,7 +175,9 @@ const CASES = [
   { g:'alcohol', t:['i want to help my alcoholic friend', 'Shaking, sweating or feeling unwell without a drink ... please see a doctor ... India\'s free de-addiction helpline is 14446.', 'is there any product for my friend?'],
     products:['liver-booster'], has:/^Because of the drinking, please let a doctor guide them/, not:/(cannot undo[\s\S]*){2}/ },
   { g:'alcohol', t:['i want to help my alcoholic friend', 'Shaking ... 14446.', 'is there any product for my friend?', 'Because of the drinking, please let a doctor guide them ... 14446 ... Liver Booster (LiverDetox) ...', 'is this safe?'],
-    products:[], has:/Liver Booster[\s\S]*read the label/, not:/current range/ }
+    products:[], has:/Liver Booster[\s\S]*read the label/, not:/current range/ },
+  // agreeing after a product suggestion must not restart the chat with a greeting
+  { g:'smalltalk', t:['any product for diabetes', 'Alongside your doctor\'s treatment, you could look at our Reviva Massage Roll-On ...', 'yeah sure'], products:[], has:/Tap Enquire on the product card/, not:/I'm Tulsi/ }
 ];
 
 const api = createChatApi(process.env);

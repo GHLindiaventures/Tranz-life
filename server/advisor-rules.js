@@ -127,7 +127,7 @@ const SUPPORT = [
 const DIAGNOSE_Q = /what\s*(disease|illness|condition|problem|sickness)\s*(do\s*|does\s*)?(i|she|he|they|my\s*\w+)\s*(have|has|got)|diagnos|what('?s|\s*is)\s*wrong\s*with\s*(me|her|him)|what\s*is\s*(causing|the\s*cause)|enna\s*(noi|vyadhi|vyaadhi)/i;
 const DOSE_Q = /\b(dose|dosage|how\s*much\s*(should|to|can)\s*(i\s*|we\s*)?(take|eat|drink|give)|how\s*many\s*(times|tablets|spoons|capsules|drops))\b/i;
 
-const SMALL_TALK = /^\s*(hi+|hello+|helo+|hey+|hai|yo|sup|wassup|whats\s*up|hola|vanakkam|good\s*(morning|afternoon|evening|night)|thanks?|thank\s*(you|u)|thx|tq|ty|ok+|okay|k|kk|hmm+|sari|seri|nandri|super|nice|great|awesome|bye|take\s*care|see\s*(you|ya)|cool|fine|got\s*it|purinjuthu|purinjudhu|how\s*(are|r)\s*(you|u)(\s*doing)?(\s*today)?|how\s*is\s*it\s*going|epdi\s*(irukeenga|irukinga|iruka|irukka)|nalla\s*(irukeengala|irukingala|irukiya)|nice\s*talking\s*to\s*you)\b[\s!.,?🙏😊❤️💚👍]*((bro|da|ma|tulsi|dude|man|buddy|anna|akka|machi|machan|there|friend|so\s*much|a\s*lot|again|take\s*care|cool|super|nice|great|fine|thanks?|thank\s*(you|u)|got\s*it)[\s!.,?🙏😊❤️💚👍]*){0,3}$/iu;
+const SMALL_TALK = /^\s*(hi+|hello+|helo+|hey+|hai|yo|sup|wassup|whats\s*up|hola|vanakkam|good\s*(morning|afternoon|evening|night)|thanks?|thank\s*(you|u)|thx|tq|ty|ok+|okay|k|kk|hmm+|yes+|yeah+|yea|yep|yup|ya|sure|alright|aama|haan|sounds\s*good|will\s*do|sari|seri|nandri|super|nice|great|awesome|bye|take\s*care|see\s*(you|ya)|cool|fine|got\s*it|purinjuthu|purinjudhu|how\s*(are|r)\s*(you|u)(\s*doing)?(\s*today)?|how\s*is\s*it\s*going|epdi\s*(irukeenga|irukinga|iruka|irukka)|nalla\s*(irukeengala|irukingala|irukiya)|nice\s*talking\s*to\s*you)\b[\s!.,?🙏😊❤️💚👍]*((bro|da|ma|tulsi|dude|man|buddy|anna|akka|machi|machan|there|friend|so\s*much|a\s*lot|again|take\s*care|cool|super|nice|great|fine|thanks?|thank\s*(you|u)|got\s*it|sure|ok+|okay|will\s*do|sounds\s*good)[\s!.,?🙏😊❤️💚👍]*){0,3}$/iu;
 // questions about Tulsi or TranzLife ("what can you do", "can you help me", "what is tranzlife", "who made you")
 const ABOUT_Q = /what\s*(can|do)\s*(you|u)\s*do|how\s*(can|do)\s*(you|u)\s*help|^\s*(can|could)\s*(you|u)\s*help(\s*me)?\s*[?.!]*\s*$|^\s*(i\s*)?need\s*(some\s*)?help\s*[?.!]*\s*$|^\s*help(\s*me)?\s*[?.!]*\s*$|what\s*(is|'s)\s*tranz\s*life|about\s*(your|the|this)\s*company|tell\s*me\s*about\s*(tranz\s*life|your\s*company|yourself|you)|who\s*(made|built|created|owns|runs)\s*(you|u|tranz\s*life)|what\s*is\s*this\s*(site|website|chat)/i;
 
@@ -380,9 +380,12 @@ function analyse(history, { semantic = null } = {}){
     : /\b(bye|take\s*care|see\s*(you|ya)|good\s*night)\b/i.test(last) ? 'bye'
     : /\b(thanks?|thank|thx|tq|ty|nandri)\b/i.test(last) ? 'thanks'
     : /how\s*(are|r)\s*(you|u)|how\s*is\s*it\s*going|epdi|nalla\s*iruk/i.test(last) ? 'howareyou'
-    : /^\s*(ok+|okay|k|kk|hmm+|cool|super|nice|great|awesome|fine|got\s*it|sari|seri|purinj\w*)\b/i.test(last) ? 'ok'
-    : 'greeting';
-  return { lang:language(last), mode, smallTalkKind, recommendQ, viaSemantic, subject, carried, keepHistory, productNotes, support:support.map(s => s.label), productInfo, smallTalk, named, condition, concerns:concerns.map(c => c.id), fresh, serious, tips:mode === 'tips' ? tips : [], doctor, products, heldBack, mentionable,
+    // a real greeting starts with a greeting word; anything else short ("yeah sure", "ok cool") is agreeing with the last reply
+    : /^\s*(hi+|hello+|helo+|hey+|hai|yo|sup|wassup|whats\s*up|hola|vanakkam|good\s*(morning|afternoon|evening))\b/i.test(last) || (!lastBot && !SMALL_TALK.test(last)) ? 'greeting'
+    : 'ok';
+  // "yeah sure" right after a product was suggested: point to the card, don't start over
+  const afterProduct = smallTalkKind === 'ok' && CATALOG.some(p => lastBot.includes(p.name));
+  return { lang:language(last), mode, smallTalkKind, afterProduct, recommendQ, viaSemantic, subject, carried, keepHistory, productNotes, support:support.map(s => s.label), productInfo, smallTalk, named, condition, concerns:concerns.map(c => c.id), fresh, serious, tips:mode === 'tips' ? tips : [], doctor, products, heldBack, mentionable,
     flags, about, stopMeds, childQ, prefix, suffix, explainProducts:targetExplain, suitabilityProducts:targetSuitability, safetyProducts:mode === 'safety' ? safetyTarget : [], warnedJustNow, allowed:new Set([...(mode === 'tips' ? allowed : []), ...named_allowed]), shop:mode === 'shop' };
 }
 

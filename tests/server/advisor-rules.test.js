@@ -555,3 +555,18 @@ describe('helping a friend who may depend on alcohol', () => {
     expect(ask('my friend shakes when he does not drink, any product for him?').mode).toBe('flag');
   });
 });
+
+describe('agreeing after a reply', () => {
+  const P = 'Alongside your doctor\'s treatment, you could look at our Reviva Massage Roll-On, a massage roll-on ...';
+  it('"yeah sure" after a product suggestion points to the card instead of greeting again', () => {
+    for (const yes of ['yeah sure', 'yes', 'sure', 'ok sure', 'yep', 'sounds good']){
+      const a = ask('any product for diabetes', P, yes);
+      expect(a.mode, yes).toBe('smalltalk'); expect(a.smallTalkKind, yes).toBe('ok');
+      expect(fixedReply(a), yes).toMatch(/Tap Enquire on the product card/); expect(suggestChips(a), yes).toEqual([]);
+    }
+  });
+  it('agreeing after tips is a short "sure", and a real hi is still a greeting', () => {
+    expect(fixedReply(ask('I am stressed', 'Try a short walk.', 'yeah'))).toMatch(/^Sure!/);
+    const hi = ask('I am stressed', 'Try a short walk.', 'hi'); expect(hi.smallTalkKind).toBe('greeting'); expect(suggestChips(hi).length).toBeGreaterThan(0);
+  });
+});
