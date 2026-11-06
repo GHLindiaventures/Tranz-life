@@ -6,7 +6,13 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { analyse } from '../server/advisor-rules.js';
 import { createUnderstanding, decide, score, DEFAULTS } from '../server/understand.js';
-import { CASES } from '../tests/server/understand-cases.js';
+import { CASES as LABELLED } from '../tests/server/understand-cases.js';
+import { CASES as REAL1 } from '../tests/server/real-questions.js';
+import { CASES as REAL2 } from '../tests/server/real-questions-2.js';
+// --set real / --set real2: the realistic held-out questions (tests/server/real-questions*.js); the fixture is written only for the labelled set
+const REAL_SET = process.argv.includes('real') || process.argv.includes('real2');
+const REAL = process.argv.includes('real2') ? REAL2 : REAL1;
+const CASES = REAL_SET ? REAL : LABELLED;
 
 const msgsOf = c => c.t.map((content, i) => ({ role:i % 2 ? 'assistant' : 'user', content }));
 const lastOf = c => c.t[c.t.length - 1];
@@ -14,11 +20,12 @@ const same = (a, b) => JSON.stringify([...a].sort()) === JSON.stringify([...b].s
 
 function check(c, a){
   const errs = [];
-  if ((a.concerns[0] || null) !== (c.concerns[0] || null)) errs.push(`topic ${JSON.stringify(a.concerns)} expected ${JSON.stringify(c.concerns)}`);
+  const topicOk = [c.concerns[0] || null, ...(c.alt || [])].includes(a.concerns[0] || null);   // alt: other acceptable main topics
+  if (!topicOk) errs.push(`topic ${JSON.stringify(a.concerns)} expected ${JSON.stringify(c.concerns)}`);
   if (!same(a.products, c.products)) errs.push(`products ${JSON.stringify(a.products)} expected ${JSON.stringify(c.products)}`);
   if (c.subject && a.subject !== c.subject) errs.push(`subject ${a.subject} expected ${c.subject}`);
   const wrongProduct = a.products.some(id => !c.products.includes(id));
-  return { errs, wrongProduct, topicOk:(a.concerns[0] || null) === (c.concerns[0] || null) };
+  return { errs, wrongProduct, topicOk };
 }
 
 function report(label, results){
@@ -56,7 +63,7 @@ if (process.argv.includes('--tune')){
 // live run
 const fixture = {}, live = [], base = [];
 for (const c of CASES){
-  const sem = await u.understand(lastOf(c));
+  const sem = await u.understandChat(msgsOf(c));
   fixture[lastOf(c)] = sem && { concerns:sem.concerns, products:sem.products, intent:sem.intent, subject:sem.subject, emergency:sem.emergency, via:sem.via };
   live.push({ c, sem, a:analyse(msgsOf(c), { semantic:sem }), ...check(c, analyse(msgsOf(c), { semantic:sem })) });
   base.push({ c, ...check(c, analyse(msgsOf(c))) });
@@ -65,7 +72,9 @@ report('Regex rules only (before)', base);
 const r = report('Regex + understanding layer', live);
 const misses = live.filter(x => x.errs.length);
 if (misses.length){ console.log('\nMisses:'); misses.forEach(x => console.log(`  [${x.c.g}] "${lastOf(x.c)}": ${x.errs.join('; ')}  (semantic: ${x.sem ? `${JSON.stringify(x.sem.concerns)} ${x.sem.intent} via ${x.sem.via}` : 'none'})`)); }
-mkdirSync(new URL('../tests/server/fixtures/', import.meta.url), { recursive:true });
-writeFileSync(new URL('../tests/server/fixtures/understand-semantic.json', import.meta.url), JSON.stringify(fixture, null, 1));
-console.log('\nfixture written: tests/server/fixtures/understand-semantic.json');
+if (!REAL_SET){
+  mkdirSync(new URL('../tests/server/fixtures/', import.meta.url), { recursive:true });
+  writeFileSync(new URL('../tests/server/fixtures/understand-semantic.json', import.meta.url), JSON.stringify(fixture, null, 1));
+  console.log('\nfixture written: tests/server/fixtures/understand-semantic.json');
+}
 process.exit(r.wrong ? 1 : 0);

@@ -151,7 +151,11 @@ const INTENT_EXAMPLES = {
   neutral:[
     'I drink water a lot', 'I drink plenty of water', 'thanni neraya kudikiren', 'I drink coffee in the morning', 'I drink tea daily',
     'I sleep well', 'I go for a walk every day', 'I eat healthy food', 'I exercise daily', 'I feel fine today', 'nothing is wrong',
-    'I am healthy', 'I drink milk at night', 'I like green tea'
+    'I am healthy', 'I drink milk at night', 'I like green tea',
+    // hobbies, routines and life facts (not health problems)
+    'I play football on weekends', 'I play badminton with friends', 'I go swimming every Sunday', 'I do yoga in the morning',
+    'I like reading books at night', 'I watch movies with my family', 'I travel a lot for my job', 'I work in an IT company',
+    'I cook at home every day', 'evening la friends oda vilayaduven', 'I go jogging in the park', 'I moved to Bangalore last month'
   ]
 };
 

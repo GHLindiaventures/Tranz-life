@@ -82,7 +82,7 @@ const CONCERNS = [
   },
   {
     id:'tired', label:'tiredness', products:['energy-booster'],
-    match:/(?<!\beyes?\s+(\w+\s+)?)tired(?!.{0,20}\b(feet|foot|kaal|eyes?)\b)|fatigue|exhaust\w*|drained|no\s*energy|low\s*energy|(low|less|no|poor)\s*stamina|stamina|night\s*shifts?|long\s*(working\s*|work\s*)?hours|after\s*(the\s*)?(gym|workout)|workouts?\s*(tired|recovery)|busy\s*schedule|energy\s*(illa|ille|kammi|kuraivu)|weak(ness)?\b(?!\s*(lungs?|immun))|run\s*down|dull\b|drows\w*|letharg\w*|sluggish|sorv|soarv|kalaippu|kalaipa|சோர்வ|களைப்பு/i,
+    match:/(?<!\beyes?\s+(\w+\s+){0,3})tired(?!.{0,20}\b(feet|foot|kaal|eyes?)\b)|fatigue|exhaust(ed|ion|ing)\b|worn\s*out|drained|no\s*energy|low\s*energy|(low|less|no|poor)\s*stamina|stamina|night\s*shifts?|long\s*(working\s*|work\s*)?hours|after\s*(the\s*)?(gym|workout)|workouts?\s*(tired|recovery)|busy\s*schedule|energy\s*(illa|ille|kammi|kuraivu)|(?<!\b(lungs?|chest|breathing|knees?|legs?|eyes?|eyesight|immunity)\s+(\w+\s+){0,2})weak(ness)?\b(?!\s*(lungs?|immun))|run\s*down|dull\b|drows\w*|letharg\w*|sluggish|sorv|soarv|kalaippu|kalaipa|சோர்வ|களைப்பு/i,
     tips:[
       { text:'Go to bed and get up at the same times each day, aiming for 6 to 9 hours of sleep.', kind:'lifestyle' },
       { text:'Eat well and stay active, even a short walk each day helps.', kind:'lifestyle' },
@@ -123,7 +123,7 @@ const CONCERNS = [
   },
   {
     id:'pollution', label:'air pollution and dust', products:['pulmoclear'],
-    match:/pollut|\bsmog\b|\baqi\b|air\s*quality|\bdust(y)?\b|fumes|traffic\s*smoke|construction\s*(site|work|dust)|factory\s*(smoke|dust|work)|dhool|thoosi|தூசி|மாசு/i,
+    match:/pollut|\bsmog\b|\baqi\b|air\s*quality|\bdust(y)?\b|fumes|(traffic|vehicle|exhaust|bus)\s*smoke|(vehicle|car|bus|traffic|lots\s*of|diesel)\s*exhaust\b|near\s*(a\s*|the\s*)?(highway|main\s*road|factory)|(breathe|breathing|inhal\w*)\s+(\w+\s+)?smoke|construction\s*(site|work|dust)|factory\s*(smoke|dust|work)|dhool|thoosi|தூசி|மாசு/i,
     tips:[
       { text:'On high-pollution days, change when and where you go out: avoid busy roads and peak traffic times when you can.', kind:'lifestyle' },
       { text:'Keep exercising, but choose cleaner times and places, away from heavy traffic.', kind:'lifestyle' },
@@ -136,7 +136,7 @@ const CONCERNS = [
     // lung health, NOT lung disease: asthma / COPD are conditions with no product (see advisor-rules.js), and
     // breathing difficulty, chest tightness and coughing blood are emergencies or warning signs that run first
     id:'lungs', label:'lung health', products:['pulmoclear'], alwaysDoctor:true,
-    match:/\blungs?\b|nurai\s*eeral|nuraiyeeral|breath(ing)?\s*(feels?\s*)?(heavy|weak|tight)|chest\s*feels?\s*congested|lung\s*(health|problem|weak)|weak\s*lungs?|நுரையீரல்/i,
+    match:/\blungs?\b|respirat\w*|breathing\s*(problems?|issues?|troubles?|difficult\w*|kashtam\w*)|(hard|difficult|tough)\s*to\s*breathe|support\s*(my\s*)?breathing|breathless\w*|moochu\s*(vida|vidarathu)?\s*kashtam\w*|nurai\s*eeral|nuraiyeeral|breath(ing)?\s*(feels?\s*)?(heavy|weak|tight)|chest\s*feels?\s*congested|lung\s*(health|problem|weak)|weak\s*lungs?|நுரையீரல்/i,
     tips:[
       { text:'Protect your lungs by staying away from tobacco smoke, dust and indoor air pollution.', kind:'lifestyle' },
       { text:'Stay active, like walking or cycling, but avoid exercising outdoors on very hot or very cold days.', kind:'lifestyle' },
@@ -314,7 +314,8 @@ const CONCERNS = [
   {
     id:'smoking', label:'quitting smoking or tobacco', products:['craving-control', 'craving-gummies', 'pulmoclear'],
     // smoking, beedi, chewing tobacco, gutka, hookah, vaping; smoking also affects the lungs, so PulmoClear is suggested too
-    match:/smok|\bcig\w*|\bsig(a|e)ret\w*|\bpuffs?\b|\bbeedi|\bbidi|tobacco|nicotine|gutka|gutkha|pan\s*masala|\bkhaini\b|hookah|vape|vaping|quit\s*(smoking|tobacco)|thamm?\s*adik|\bcrav(e|es|ing|ings)\b|urge\s*to\s*smoke|chain\s*smok\w*|heavy\s*smok\w*|pugai|புகை/i,
+    // ("traffic smoke", "breathe factory smoke" is pollution, not smoking)
+    match:/(?<!\b(traffic|vehicle|factory|exhaust|chimney|kitchen|wood|fire|bus|breathe|breathing|inhale|inhaling)\s+)smok(?!e\s+from\s+(traffic|vehicles?|factor))|\bcig\w*|\bsig(a|e)ret\w*|\bpuffs?\b|\bbeedi|\bbidi|tobacco|nicotine|gutka|gutkha|pan\s*masala|\bkhaini\b|hookah|vape|vaping|quit\s*(smoking|tobacco)|thamm?\s*adik|\bcrav(e|es|ing|ings)\b|urge\s*to\s*smoke|chain\s*smok\w*|heavy\s*smok\w*|pugai|புகை/i,
     productNotes:{ pulmoclear:'It does not undo the harm of smoking; quitting is what helps your lungs most.' },
     tips:[
       { text:'Pick a quit date and plan for the moments that usually make you want to smoke or use tobacco.', kind:'lifestyle' },

@@ -82,6 +82,14 @@ const namedIn = text => {
 };
 // a short follow-up that continues the previous topic ("what else?", "anything more?", "innum enna?")
 const FOLLOW_UP_START = /^\s*(and\s*|ok(ay)?\s*|so\s*)?(what\s*else|anything\s*else|any\s*(more|other)|more\s*(tips|ideas|help)?|other\s*(tips|ideas|ways)|what\s*more|then\s*what|what\s*(now|next)|what\s*(should|can|do)\s*i\s*do|how|why|and\b|then\b|innum|vera\s*enna|apram|aprom|enna\s*pannalam|really)/i;
+// A message that describes something of its own ("I work in delhi and face respiratory issues, any product?") is not a
+// follow-up, even with "any product" in it: after removing the asking words, 3 or more other words are left.
+const ASKING_WORDS = new Set(('is are am was there any some anything something product products one thing things for to of me my mine i you your ' +
+  'we us it this that these those do does did have has had sell sells get got buy use try take need want would could should can will ' +
+  'what which who how best good better nice right suggest recommend recommendation please pls bro da sir madam also too else more other ' +
+  'and or so then ok okay a an the in on with about give tell show him her them his their friend dad mom amma appa wife husband ' +
+  'enna edhu ethu endha nalla product venum sollunga pannalam iruka irukka ah la ku').split(/\s+/));
+const describesNew = text => text.toLowerCase().replace(/[^a-z\s]/g, ' ').split(/\s+/).filter(w => w.length > 1 && !ASKING_WORDS.has(w)).length >= 3;
 const isFollowUp = text => (FOLLOW_UP_START.test(text) && text.trim().split(/\s+/).length <= 8) || (RECOMMEND.test(text) && text.trim().split(/\s+/).length <= 14);
 
 // Questions about how a product works, mechanisms, or benefits
@@ -106,7 +114,7 @@ function previousProducts(history){
   return [];
 }
 // asking which product to use ("which product should I use", "enna product use pannalam", "anything for this")
-const RECOMMEND = /\b(which|what|any|best|good)\s+(\w+\s+){0,2}(products?|one|thing)\b|which\s*(one|product)|what\s*(should|can|do)\s*i\s*(use|take|buy|try|need)|\b(recommend|suggest)\w*|(anything|something)\s*(for|to\s*help\s*with)\s*(this|that|it|me)|\b(enna|endha|edhu|ethu)\s*(product|nalla)|product\s*(sollunga|suggest|venum)|use\s*pannalam|\bbest\s+product/i;
+const RECOMMEND = /\b(which|what|any|best|good)\s+(\w+\s+){0,2}(products?|one|thing)\b|which\s*(one|product)|what\s*(should|can|do)\s*i\s*(use|take|buy|try|need)|\b(recommend|suggest)\w*|(anything|something)\s*(for|to\s*help\s*with)\s*(this|that|it|me)|(sell|have|got)\s+(anything|something)\s*(for|to\s*help)|\b(enna|endha|edhu|ethu)\s*(product|nalla)|product\s*(sollunga|suggest|venum)|use\s*pannalam|\bbest\s+product/i;
 // explicit catalogue, price or delivery questions (the shop list is only for these)
 const SHOP_EXPLICIT = /\b(what|which)\s+products?\s+(do\s+|does\s+)?(you|u|tranzlife)\s+(sell|have|having|make|offer)\b(?!.{0,15}\bfor\b)|\bwhat\s+are\s+(all\s+)?(the|your)\s+products(\s*(you\s+|u\s+)?(have|having|sell|make|offer))?\b(?!.{0,15}\bfor\b)|\ball\s+(your\s+)?products\b|\bproducts?\s*(list|range|catalog)\b|\b(price|cost|rate|evlo|evvalavu|how\s*much)\b|\b(delivery|deliver|shipping|order|buy|purchase|cod|cash\s*on|discount|offer|coupon|stock)\b|\b(do\s+you\s+know|tell\s+me)\s+(about\s+)?(all\s+)?(the\s+|your\s+|our\s+)?products?\b|\b(products?|product)\s*(pathi|paththi)\s*(theriyuma|theriyum\s*ah|sollu|sollunga)\b|\b(namma|unga|ungala)\s*(kitta|kita)?\s*(enna|iruka|irukka)?\s*products?\b/i;
 // the visitor says it is severe, long-lasting, repeated or getting worse: only then do tips end with when to see a doctor
@@ -170,6 +178,10 @@ function analyse(history, { semantic = null } = {}){
   const about = Object.fromEntries(Object.entries(ABOUT).map(([k, re]) => [k, re.test(recent)]));
   const now = Object.fromEntries(Object.entries(ABOUT).map(([k, re]) => [k, re.test(last)]));
   about.other = now.other = subject === 'other';
+  // "my daughter is 22" / "my son works in IT" is an adult, not a child
+  const ADULT = /\b(is|aged?|age)\s*(1[89]|[2-9]\d)\b|\b(1[89]|[2-9]\d)\s*(years?|yrs?|vayasu)\b|\b(grown[- ]?up|married|working|college|engineer|job|office)\b/i;
+  if (ADULT.test(recent)) about.child = false;
+  if (ADULT.test(last)) now.child = false;
   const prevSubject = subjects[subjects.length - 2];
 
   const nowFlags = RED_FLAGS.filter(f => f.re.test(last) && (!f.with || now[f.with]));
@@ -203,7 +215,9 @@ function analyse(history, { semantic = null } = {}){
   }
   // a follow-up ("what else?", "which product should I use?", "enna product?") continues the previous topic, products included
   const recommendQ = RECOMMEND.test(last) || semantic?.intent === 'recommend';
-  if (!concerns.length && !named.length && (isFollowUp(last) || (semantic?.intent === 'recommend' && last.trim().split(/\s+/).length <= 14))){
+  // ...but NOT when the message describes a new problem of its own that we did not recognise ("i work in delhi and face
+  // respiratory issues, is there any product?" must never get the previous topic's product)
+  if (!concerns.length && !named.length && !describesNew(last) && (isFollowUp(last) || (['recommend', 'shop'].includes(semantic?.intent) && last.trim().split(/\s+/).length <= 14))){
     for (let i = users.length - 2; i >= Math.max(0, users.length - 3) && !concerns.length; i--){
       const u = users[i];
       const prevNamed = namedIn(u);
@@ -216,6 +230,9 @@ function analyse(history, { semantic = null } = {}){
         }
       }
       concerns = concernsIn(CATALOG.reduce((t, p) => t.replace(new RegExp(p.match.source, 'gi'), ' '), u)).slice(0, 2);
+      // the rules missed the previous message ("I drink most nights"): use what the understanding layer found in it
+      if (!concerns.length && i === users.length - 2 && semantic?.prevConcerns?.length)
+        concerns = semantic.prevConcerns.map(id => CONCERNS.find(c => c.id === id)).filter(Boolean).slice(0, 2);
       carried = concerns.length > 0;
       if (carried) break;
     }
@@ -275,7 +292,10 @@ function analyse(history, { semantic = null } = {}){
   else if (explainQ && targetExplain.length) mode = 'explain';
   else if (named.length && (PRODUCT_Q.test(last) || !fresh)) mode = 'product';
   else if (COMING_SOON_MATCH.test(last) && !fresh) mode = 'soon';
-  else if (SHOP_EXPLICIT.test(last) || semantic?.intent === 'shop') mode = 'shop';
+  // "do you sell anything for it?" right after a problem is a request for that problem's products, not a shop question
+  else if (recommendQ && carried && concerns.length && /\bfor\s+(it|this|that|these|him|her|them|me)\b/i.test(last)) mode = 'recommend';
+  // (a health problem in the same message wins: "as a delivery rider I am worn out" is about tiredness, not delivery)
+  else if ((SHOP_EXPLICIT.test(last) || semantic?.intent === 'shop') && !(fresh && !/\?|\b(price|cost|order|buy|pay|deliver\s+to)\b/i.test(last))) mode = 'shop';
   // "which product should I use?" with a health topic (in this message or just before) recommends that topic's products
   else if (recommendQ && concerns.length) mode = 'recommend';
   else if (concerns.length) mode = 'tips';

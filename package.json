@@ -12,7 +12,8 @@
     "test": "vitest run",
     "start": "node --env-file-if-exists=.env server/index.js",
     "test:chat": "node --env-file-if-exists=.env scripts/tulsi-eval.mjs docs/tulsi-test-results.md",
-    "test:understand": "node --env-file-if-exists=.env scripts/understand-eval.mjs"
+    "test:understand": "node --env-file-if-exists=.env scripts/understand-eval.mjs",
+    "test:real": "node --env-file-if-exists=.env scripts/understand-eval.mjs --set real && node --env-file-if-exists=.env scripts/understand-eval.mjs --set real2"
   },
   "dependencies": {
     "gsap": "3.12.5",

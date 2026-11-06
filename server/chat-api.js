@@ -52,7 +52,7 @@ function createChatApi(env = {}){
     if (urgent) return { text:urgent, products:[], via:'emergency', problems:[] };
     // code decides the kind of message, approved tips, products, warning signs and language; the model only writes the reply.
     // The semantic layer helps with typos, Tamil and paraphrases; if it is missing or slow it returns null (regex only).
-    const semantic = understanding ? await understanding.understand(msgs[msgs.length - 1].content) : null;
+    const semantic = understanding ? await understanding.understandChat(msgs) : null;
     const a = analyse(msgs, { semantic });
     const fixed = fixedReply(a);
     if (fixed){

@@ -225,9 +225,9 @@
   ],
   "products": [],
   "intent": "health_problem",
-  "subject": null,
+  "subject": "self",
   "emergency": false,
-  "via": "embed"
+  "via": "llm"
  },
  "I want to give up cigarettes": {
   "concerns": [
@@ -815,10 +815,10 @@
   "products": [
    "cyclerelief"
   ],
-  "intent": "health_problem",
-  "subject": null,
+  "intent": "product_question",
+  "subject": "self",
   "emergency": false,
-  "via": "embed"
+  "via": "llm"
  },
  "nan daily beedi pidippen": {
   "concerns": [

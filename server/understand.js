@@ -29,6 +29,7 @@ const DEFAULTS = {
   topic:0.72,        // a topic must score at least this
   margin:0.02,       // and beat the next topic by this much
   ambiguous:0.60,    // between this and `topic` (or a small margin): ask the LLM (step B)
+  plainMargin:0.04,  // a topic must beat the closest non-health example by this much, or the LLM decides
   intent:0.62,       // an intent example must score at least this to count
   product:0.80,      // a product's matching data must score at least this
   embedTimeout:2000, llmTimeout:9000
@@ -63,6 +64,10 @@ function decide(best, t = DEFAULTS){
   const intentHit = intentScore >= t.intent && intentScore > top ? intentId : null;
   if (intentHit && intentHit !== 'recommend') clear = false;
   if (intentHit === 'recommend' && intentScore - top >= t.margin) clear = false;
+  // a non-health example almost as close as the topic ("I play cricket every evening": "I drink beer every night" 0.74,
+  // "I exercise daily" 0.72) is too close to call on sentence shape alone: let the LLM decide (step B)
+  const bestPlain = Math.max(...['neutral', 'other', 'unsupported'].map(id => best.intent[id] || 0));
+  if (clear && top - bestPlain < t.plainMargin) clear = false;
   const concerns = clear ? [topId] : [];
   const products = p.filter(([, s]) => s >= t.product).slice(0, 2).map(([id]) => id);
   const ambiguous = !clear && !intentHit && top >= t.ambiguous;
@@ -154,7 +159,19 @@ function createUnderstanding(env = {}, overrides = {}){
     }
   }
 
-  return { init, understand, documents:docs, get ready(){ return !!vectors; } };
+  // The latest message of a chat. For a short message ("what would you recommend?") the previous visitor message is
+  // understood too, so a follow-up can continue a topic the regex rules missed ("I drink most nights").
+  async function understandChat(msgs){
+    const users = msgs.filter(m => m.role === 'user').map(m => m.content);
+    const s = await understand(users[users.length - 1] || '');
+    if (s && users.length > 1 && users[users.length - 1].trim().split(/\s+/).length <= 14){
+      const p = await understand(users[users.length - 2]);
+      s.prevConcerns = p?.concerns || [];
+    }
+    return s;
+  }
+
+  return { init, understand, understandChat, documents:docs, get ready(){ return !!vectors; } };
 }
 
 export { createUnderstanding, documents, score, decide, validate, classifierPrompt, DEFAULTS, INTENTS };
