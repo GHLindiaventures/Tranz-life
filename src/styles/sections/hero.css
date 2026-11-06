@@ -76,7 +76,7 @@
 }
 .hero__tag::before, .hero__tag::after { content: ""; width: 34px; height: 2px; border-radius: 2px; background: var(--gold); }
 .hero__title {
-  margin: 0 0 12vh;
+  margin: 0 0 24vh; /* bottom margin lifts the centred headline: +12vh here = 6vh higher */
   font-family: var(--f-display);
   font-size: clamp(64px, 9.6vw, 196px);
   font-stretch: 64%;
