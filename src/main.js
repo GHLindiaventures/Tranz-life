@@ -11,6 +11,7 @@ import { initContactForm } from './features/contact/contact-form.js';
 import { buildNeeds, selectNeed } from './features/finder/product-finder.js';
 import { initHeroJar } from './features/hero/hero-jar.js';
 import { initLayeredDepth } from './features/hero/layered-depth.js';
+import { initMossReveal } from './features/hero/moss-reveal.js';
 import { buildMarquee } from './features/hero/marquee.js';
 import { buildLab } from './features/lab/lab-board.js';
 import { initNav } from './features/navigation/navigation.js';
@@ -33,6 +34,7 @@ async function boot(){
   setLoad(36);
   try { state.heroApi = initHeroJar(); } catch(err){ console.warn('hero jar unavailable', err); }
   try { state.layeredDepth = initLayeredDepth(); } catch(err){ console.warn('layered depth unavailable', err); }
+  try { initMossReveal(); } catch(err){ console.warn('moss reveal unavailable', err); }
   Object.assign(thumbs, SHOTS); initLightbox();
   setLoad(78);
   fillShots(); buildGrid(); buildFilters(); selectNeed(1, true);

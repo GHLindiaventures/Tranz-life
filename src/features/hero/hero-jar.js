@@ -7,8 +7,10 @@ import { berryGeometry, gummyMaterial } from '../products/product-model.js';
 import { $ } from '../../utils/dom.js';
 import { clamp, ease, seeded } from '../../utils/math.js';
 
-// Layered depth stone pedestal (1920x1080): center top of stone plinth
-const PHOTO = { w: 1920, h: 1080, tableX: 0.5, tableY: 0.535, productH: 0.25 };
+// Stone slab image (layered-depth-slab-set.webp: main rock + side rocks, 1920x1080; the main rock is unchanged): the middle of its flat top face, as fractions of
+// the image, and the product height as a fraction of the slab's on-screen width.
+const SLAB = { topX: 0.5, topY: 22/1080, productW: 0.2 };
+const PHOTO = { productH: 0.25 }; // fallback product height (fraction of stage height) when the slab is missing
 const HOLD = 3.4; // seconds each product stays on the pedestal
 
 function initHeroJar(){
@@ -24,7 +26,7 @@ function initHeroJar(){
   window.addEventListener('pointermove', e => { mouse.tx = e.clientX/innerWidth - .5; mouse.ty = e.clientY/innerHeight - .5; });
 
   const phone = matchMedia('(max-width:980px)');
-  const table = { x:0, y:0, dh:1 };
+  const table = { x:0, y:0, ph:1 };
   let posX = .5, posY = .5;
   const layout = () => {
     L.resize();
@@ -33,22 +35,33 @@ function initHeroJar(){
       photo.style.objectPosition = '50% 50%';
     }
   };
+  // stand the product on the slab's top face, read from where the slab actually is on screen
+  // (its size, scroll and parallax offsets included), so it always sits on the rock
+  const slab = $('#slab');
   const measure = () => {
-    const c = canvas.getBoundingClientRect(), r = stage.getBoundingClientRect();
-    const s = Math.max(r.width/PHOTO.w, r.height/PHOTO.h), dw = PHOTO.w*s, dh = PHOTO.h*s;
-    const ox = (r.width - dw)*posX, oy = (r.height - dh)*posY;
-    table.x = r.left - c.left + ox + PHOTO.tableX*dw;
-    table.y = r.top - c.top + oy + PHOTO.tableY*dh;
-    table.dh = dh;
-    stage.style.setProperty('--tx', table.x.toFixed(0) + 'px');
-    stage.style.setProperty('--ty', Math.max(90, table.y - dh*PHOTO.productH*1.12 - 56).toFixed(0) + 'px');
+    const c = canvas.getBoundingClientRect();
+    if (slab && slab.offsetWidth){
+      const r = slab.getBoundingClientRect();
+      table.x = r.left - c.left + SLAB.topX*r.width;
+      table.y = r.top - c.top + SLAB.topY*r.height;
+      table.ph = r.width*SLAB.productW*(phone.matches ? 1.45 : 1); // the rock is narrow on phones
+    } else {
+      const r = stage.getBoundingClientRect();
+      table.x = r.left - c.left + r.width/2; table.y = r.top - c.top + r.height*.5; table.ph = r.height*PHOTO.productH;
+    }
   };
   window.addEventListener('resize', layout); phone.addEventListener('change', layout); layout();
   const play = () => { if (photo && photo.paused) { const p = photo.play(); if (p && p.catch) p.catch(() => {}); } };
   document.addEventListener('visibilitychange', () => { if (!document.hidden) play(); });
 
-  // soft contact shadow where the product meets the stone plinth (CSS layer .st-shadow)
-  const setVar = (k, v) => stage.style.setProperty(k, v.toFixed(1) + 'px');
+  // soft contact shadow where the product meets the stone plinth (CSS layer .st-shadow).
+  // Moved with a transform on its own element (no layout, no style recalc for the rest of the hero), only when it changes.
+  const shadow = $('.st-shadow'); let shadowKey = '';
+  const setShadow = (x, y, w) => {
+    if (!shadow) return;
+    const key = `${x.toFixed(1)},${y.toFixed(1)},${(w/100).toFixed(3)}`; if (key === shadowKey) return; shadowKey = key;
+    shadow.style.transform = `translate3d(${x.toFixed(1)}px,${y.toFixed(1)}px,0) translate(-50%,-50%) scale(${(w/100).toFixed(3)})`;
+  };
 
   let at = -1, tNow = 0, last = performance.now();
   (function frame(now){
@@ -61,15 +74,15 @@ function initHeroJar(){
     if (at >= 0){ const ns = now/1000; if (!nextAt) nextAt = ns + HOLD; if (ns >= nextAt){ progT += 1; nextAt = ns + HOLD; } }
     prog += (progT - prog)*(1 - Math.exp(-dt*3.2));
     const cur = ((Math.round(prog) % N) + N) % N; if (cur !== shown){ shown = cur; tint(PRODUCTS[cur]); }
-    const pxH = table.dh*PHOTO.productH;
+    const pxH = table.ph;
     // the outgoing product shrinks and spins away while the next one grows and spins in, both on the plinth
     let bigH = 0;
     jars.forEach((jar, i) => { const d = wrap(prog - i), w = sm(clamp(1 - Math.abs(d)*1.6, 0, 1)), on = w > 0.001; jar.G.visible = on; if (!on) return;
       const jh = pxH*jar.fit*(.6 + .4*e)*w; if (jh > bigH) bigH = jh;
       L.size(jar, Math.max(1, jh));
-      L.place(jar.G, table.x + mouse.x*10, table.y - jh/2 + (1 - e)*L.H*.5);
+      L.place(jar.G, table.x, table.y - jh/2 + (1 - e)*L.H*.5);
       jar.G.rotation.set(.04 + mouse.y*.08, -.35 + (1 - e)*-5 + Math.sin(tNow*.45)*.25 + mouse.x*.35 - d*3.2, -.02 + Math.sin(tNow*.6)*.015); });
-    setVar('--sh-x', table.x + mouse.x*10); setVar('--sh-y', table.y + 4); setVar('--sh-w', bigH*.58*e);
+    setShadow(table.x, table.y + 4, bigH*.58*e);
     const jar = jars[cur], u = pxH/L.ppu(), gw = sm(clamp(1 - Math.abs(wrap(prog - cur))*1.6, 0, 1));
     props.forEach((o, k) => { const a = o.a + tNow*o.sp, rr = o.r*u*.42*(1 + (1 - e)*.6);
       o.m.position.set(jar.G.position.x + Math.cos(a)*rr, jar.G.position.y + o.y*u*.45 + Math.sin(tNow + k)*u*.03, Math.sin(a)*rr*.6);

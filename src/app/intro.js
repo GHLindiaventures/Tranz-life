@@ -13,11 +13,9 @@ function intro(){
     state.layeredDepth && state.layeredDepth.start && state.layeredDepth.start();
     if (hasGsap && !reduce){
       const tl = gsap.timeline({ defaults:{ ease:'power4.out' } });
-      tl.fromTo('.hero__brand span', { opacity:0, y:40, scale:0.95 }, { opacity:0.92, y:0, scale:1, duration:1.6, ease:'power3.out' }, 0.2)
+      tl.fromTo('.hero__brand > *', { opacity:0, y:40 }, { opacity:1, y:0, duration:1.4, stagger:.15, ease:'power3.out' }, 0.2)
         .fromTo('.hero__slab', { opacity:0, y:60, scale:0.96 }, { opacity:1, y:0, scale:1, duration:1.8, ease:'power3.out' }, 0.1)
-        .fromTo('.panel-left', { opacity:0, y:28 }, { opacity:1, y:0, duration:1.2, ease:'power3.out' }, 0.5)
-        .fromTo('.panel-right', { opacity:0, y:28 }, { opacity:1, y:0, duration:1.2, ease:'power3.out' }, 0.6)
-        .fromTo('.fact', { y:16, opacity:0 }, { y:0, opacity:1, duration:0.9, stagger:0.1, ease:'power3.out' }, .7)
+        .fromTo('.fact', { scale:0, opacity:0 }, { scale:1, opacity:1, duration:.9, stagger:.12, ease:'back.out(2)', clearProps:'transform' }, .7)
         .from('.nav > *', { y:-18, opacity:0, duration:.8, stagger:.06 }, .3)
         .from('.dock', { x:-90, opacity:0, duration:1.1, ease:'expo.out' }, .5);
     }
