@@ -1,5 +1,6 @@
 // MotionSites Layered Depth: Bird video state machine + multi-plane scroll & mouse parallax.
 import { $ } from '../../utils/dom.js';
+import { BIRD_WALK, BIRD_WALK_FPS } from './bird-walk.js';
 
 function initLayeredDepth() {
   const stage = $('#home');
@@ -178,8 +179,31 @@ function initLayeredDepth() {
     stage.style.setProperty('--bird-dx', (target.x - (ox + k * (fx - ox))).toFixed(1) + 'px');
     stage.style.setProperty('--bird-dy', (target.y - (oy + k * (fy - oy))).toFixed(1) + 'px');
   };
+  // 5. Keep the feet planted: in the idle clips the bird shuffles sideways a little. Shift each idle
+  // clip by the opposite of that drift, frame by frame, so the bird moves but its feet stay on the S.
+  const pinFeet = (video, table) => {
+    if (!video || !table) return;
+    const apply = t => {
+      const p = table[Math.min(table.length - 1, Math.max(0, Math.round(t*BIRD_WALK_FPS)))];
+      const W = birdsEl.offsetWidth, H = birdsEl.offsetHeight, sc = Math.max(W/1920, H/1080);
+      video.style.transform = `translate3d(${(-p[0]*sc).toFixed(1)}px, ${(-p[1]*sc).toFixed(1)}px, 0)`;
+    };
+    if ('requestVideoFrameCallback' in video) {
+      const onFrame = (now, meta) => { apply(meta.mediaTime); video.requestVideoFrameCallback(onFrame); };
+      video.requestVideoFrameCallback(onFrame);
+    } else {
+      const loop = () => { if (!video.paused) apply(video.currentTime); requestAnimationFrame(loop); };
+      requestAnimationFrame(loop);
+    }
+    video.addEventListener('seeked', () => apply(video.currentTime));
+  };
+  pinFeet($('#bird-idle1'), BIRD_WALK.idle1);
+  pinFeet($('#bird-idle2'), BIRD_WALK.idle2);
+
   placeBird();
   window.addEventListener('resize', placeBird);
+  // re-measure whenever the headline itself changes size (late font load, wrapping)
+  if (title && 'ResizeObserver' in window) new ResizeObserver(() => placeBird()).observe(title);
   window.addEventListener('load', placeBird);
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(placeBird);
   [600, 2500, 4500].forEach(t => setTimeout(placeBird, t));

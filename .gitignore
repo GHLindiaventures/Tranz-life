@@ -18,4 +18,5 @@ coverage/
 Thumbs.db
 .idea/
 .vscode/
+.claude/
 __pycache__/
