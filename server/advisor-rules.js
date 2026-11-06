@@ -50,7 +50,7 @@ const RED_FLAGS = [
   { id:'joint', why:'a hot, swollen or injured joint', say:'A hot, swollen joint, joint pain with fever, or a joint you cannot put weight on after an injury should be checked by a doctor soon.',
     re:/(joint|knee|ankle|wrist|elbow|shoulder|hip)\w*.{0,30}(hot|red).{0,20}swol|swol\w*.{0,20}(and\s*)?(hot|red)\b|can'?t\s*(walk|put\s*weight|stand\s*on)|(joint|knee|ankle|wrist|elbow|shoulder|hip).{0,40}after\s*(a\s*)?(fall|injury|accident)|(joint|knee|ankle|wrist|elbow|shoulder|hip)\w*.{0,30}(out\s*of\s*place|dislocat)/i },
   { id:'alcohol-dependence', why:'signs the body may depend on alcohol', say:'Shaking, sweating or feeling unwell without a drink, or needing a drink first thing in the morning, can mean the body depends on alcohol. Then stopping suddenly can be dangerous, so please see a doctor for help to cut down safely. India\'s free de-addiction helpline is 14446.',
-    re:/(shak|tremor|trembl|sweat|kai\s*nadu)\w*.{0,40}(without|when\s*(i|he|she|they)\s*(stop|don'?t|do\s*not)\w*|if\s*(i|he|she|they)\s*(stop|don'?t))\s*.{0,10}(drink|alcohol)|(need|want)\w*\s*a\s*drink\s*(first\s*thing|in\s*the\s*morning|every\s*morning|to\s*(stop|calm)\s*(the\s*)?shak)|morning\s*drink|can'?t\s*(stop|control)\s*(drinking|his\s*drinking|her\s*drinking|my\s*drinking)|addicted\s*to\s*(alcohol|drink)|alcoholic/i },
+    re:/(shak|tremor|trembl|sweat|kai\s*nadu)\w*.{0,40}(without|when\s*(i|he|she|they)\s*(stop|don'?t|doesn'?t|do\s*not|does\s*not)\w*|if\s*(i|he|she|they)\s*(stop|don'?t|doesn'?t|does\s*not))\s*.{0,10}(drink|alcohol)|(need|want)\w*\s*a\s*drink\s*(first\s*thing|in\s*the\s*morning|every\s*morning|to\s*(stop|calm)\s*(the\s*)?shak)|morning\s*drink|can'?t\s*(stop|control)\s*(drinking|his\s*drinking|her\s*drinking|my\s*drinking)|addicted\s*to\s*(alcohol|drink)|alcoholic/i },
   { id:'vomiting', why:'vomiting that will not settle', say:'Vomiting that will not settle, or not being able to keep water down, needs a doctor.',
     re:/(can'?t|cannot|unable to)\s*keep\s*(water|anything|food)\s*down|vomit\w*\s*(for\s*(a|one|two|\d)\s*day|all\s*day|again\s*and\s*again|non[- ]?stop)|dehydrat/i }
 ];
@@ -63,7 +63,7 @@ const ABOUT = {
   child:/\b(my|en|our|enga)\s*(baby|child|kid|toddler|infant|kuzhandhai|kozhandhai|kuzhanthai|paiyan|ponnu|son|daughter)\b|\b([1-9]|1[0-5])\s*(year|yr|month|vayasu)s?\s*old|kuzhandhai|kozhandhai|kuzhanthai|குழந்தை/i,
   onMeds:/(taking|on|using|eduthutu|edukuren|sapdren|saapidren|podren)\s+.{0,25}(medicine|medication|tablets?|pills?|insulin|maathirai|mathirai|marundhu|marunthu)|\b(bp|sugar|thyroid|heart|blood\s*thinner)\s*(tablets?|medicine|maathirai|pills?)|warfarin|insulin/i,
   // asking about someone else ("my friend drinks a lot", "en appa ku...")
-  other:/\b(my|our|ennoda|en|enga|engal)\s+(best\s+)?(friends?|frnds?|frnd|father|dad|daddy|mother|mom|mum|husband|hubby|wife|brother|bro|sister|sis|son|daughter|uncle|aunt|aunty|grand\w+|parents?|colleague|boss|roommate|partner|boyfriend|girlfriend|neighbou?r|appa|amma|anna|thambi|akka|thangachi|kanavar|purushan|manaivi|paati|thatha|paiyan|ponnu|mama|machan)\b|\b(he|she|his|him|her)\b/i,
+  other:/\b(my|our|ennoda|en|enga|engal)\s+([a-z]+\s+)?(friends?|frnds?|frnd|father|dad|daddy|mother|mom|mum|husband|hubby|wife|brother|bro|sister|sis|son|daughter|uncle|aunt|aunty|grand\w+|parents?|colleague|boss|roommate|partner|boyfriend|girlfriend|neighbou?r|appa|amma|anna|thambi|akka|thangachi|kanavar|purushan|manaivi|paati|thatha|paiyan|ponnu|mama|machan)\b|\b(he|she|his|him|her)\b/i,
   chronic:/\b(bp|blood\s*pressure|hypertension|thyroid|heart\s*(disease|problem|patient|condition)|kidney|liver\s*disease|cirrhosis|hepatitis|asthma|epilep|cancer|chemo)/i
 };
 
@@ -245,22 +245,27 @@ function analyse(history, { semantic = null } = {}){
     }
   }
 
+  // "is this safe?" / "any side effects?" right after a product was shown is about that product
+  const safetyQ = SAFETY_Q.test(last);
+  const safetyTarget = !safetyQ ? [] : named.length ? named
+    : (ANAPHORA.test(last) || last.trim().split(/\s+/).length <= 8) ? prevProds : [];
+
   // what kind of message is this? (first match wins)
   // A warning sign in this message, or in the last few messages about the same person, always comes first: the doctor
   // message, no tips, no product, no "how it works" or "who can use it" pitch ("diabetic toe sore" -> "can I use Reviva
   // on it?" must still get the doctor message). Only small talk, "who are you / what can you do" and pure price or
   // delivery questions with no product named are answered normally. One exception: when the only warning is the
-  // drinking-habit one (not an urgent symptom), a question about a named product gets an honest answer that leads
-  // with that warning ("can my friend use the liver booster?" -> "it cannot undo heavy drinking ... 14446").
+  // drinking-habit one (not an urgent symptom), a product question ("any product for my friend?", "can he use the
+  // liver booster?", "is this safe?") gets an honest answer that LEADS with that warning (doctor + 14446).
   const habitOnly = flags.length && flags.every(f => f.id === 'alcohol-dependence');
   const flagOff = smallTalk || IDENTITY.test(last) || ABOUT_Q.test(last) || (SHOP_EXPLICIT.test(last) && !named.length && !explainQ && !suitabilityQ)
-    || (habitOnly && named.length && (explainQ || suitabilityQ));
+    || (habitOnly && !nowFlags.length && ((named.length && (explainQ || suitabilityQ)) || (recommendQ && concerns.length) || safetyTarget.length));
   let mode;
   if (nowFlags.length || flags.some(f => f.id === 'possible-emergency') || (flags.length && !flagOff)) mode = 'flag';
   else if (IDENTITY.test(last)) mode = 'identity';
   else if (ABOUT_Q.test(last) && !fresh && !named.length) mode = 'about';
   else if (smallTalk) mode = 'smalltalk';
-  else if (SAFETY_Q.test(last) && (named.length || /\b(your|these|this|tranzlife)\s*(products?|gumm|inhaler|roll|liquid)/i.test(last))) mode = 'safety';
+  else if (safetyQ && (safetyTarget.length || /\b(your|these|this|tranzlife)\s*(products?|gumm|inhaler|roll|liquid)/i.test(last))) mode = 'safety';
   else if (stopMeds && !fresh && !named.length) mode = 'medical';
   // a diagnosed condition with a support product ("I have diabetes"), not a cure or stop-medicine question
   else if (support.length && !cureQ && !stopMeds && !fresh && !named.length) mode = 'support';
@@ -321,7 +326,7 @@ function analyse(history, { semantic = null } = {}){
   // products the catalogue's own "how it works / who can use it" text points to ("if you do not smoke, the BreatheFree Inhaler is a better fit")
   const pointedTo = [...targetExplain, ...targetSuitability].map(id => CATALOG.find(p => p.id === id)).filter(Boolean)
     .flatMap(p => Object.keys(PRODUCT_NAMES).filter(id => PRODUCT_NAMES[id].test(`${p.mechanism || ''} ${p.suitability || ''}`)));
-  const mentionable = mode === 'flag' ? [] : mode === 'shop' ? CATALOG.map(p => p.id) : [...new Set([...products, ...named, ...targetExplain, ...targetSuitability, ...pointedTo])];
+  const mentionable = mode === 'flag' ? [] : mode === 'shop' ? CATALOG.map(p => p.id) : [...new Set([...products, ...named, ...targetExplain, ...targetSuitability, ...pointedTo, ...(mode === 'safety' ? safetyTarget : [])])];
 
   const allowed = new Set(tips.flatMap(t => t.uses || []));
   products.forEach(id => (PRODUCT_WORDS[id] || []).forEach(w => allowed.add(w)));
@@ -355,13 +360,18 @@ function analyse(history, { semantic = null } = {}){
   // a diagnosed condition (diabetes, fatty liver) alongside an everyday problem: the doctor's treatment comes first
   if (helps && support.length && products.length) suffix.push(`For ${support.map(s => s.label).join(' and ')}, please keep following your doctor's advice and check with them before trying any new product.`);
   // a fixed line some topics always end with (for example the quit-smoking helpline)
-  if (helps) concerns.filter(c => c.footer).forEach(c => suffix.unshift(c.footer));
+  // (not when the drinking warning already leads the reply: it says the same thing)
+  if (helps) concerns.filter(c => c.footer && !(c.id === 'alcohol' && flags.length)).forEach(c => suffix.unshift(c.footer));
 
   // product facts (ingredients, price, size, how to use) come straight from the catalogue, never from the model
   const productInfo = mode === 'product';
   const named_allowed = mentionable.flatMap(id => PRODUCT_WORDS[id] || []);
   // honesty notes per product for this topic (e.g. Liver Booster for drinking), used by the recommend reply
-  const productNotes = Object.fromEntries(products.map(id => [id, [CATALOG.find(p => p.id === id).note, ...concerns.map(c => c.productNotes?.[id])].filter(Boolean)]));
+  // the drinking warning was given in the bot's last reply: the next answers open with a one-line reminder, not the whole paragraph
+  const lastBot = [...history].reverse().find(m => m.role === 'assistant')?.content || '';
+  const warnedJustNow = flags.length > 0 && flags.every(f => f.id === 'alcohol-dependence') && /14446/.test(lastBot);
+  // (the same sentence can come from the product and the topic: say it once)
+  const productNotes = Object.fromEntries(products.map(id => [id, [...new Set([CATALOG.find(p => p.id === id).note, ...concerns.map(c => c.productNotes?.[id])].filter(Boolean))]]));
   // earlier turns go to the model only for a genuine follow-up about the same person; a new topic or a new subject
   // gets a clean context, so the model cannot copy an earlier reply about a friend
   const keepHistory = carried && prevSubject === subject;
@@ -373,7 +383,7 @@ function analyse(history, { semantic = null } = {}){
     : /^\s*(ok+|okay|k|kk|hmm+|cool|super|nice|great|awesome|fine|got\s*it|sari|seri|purinj\w*)\b/i.test(last) ? 'ok'
     : 'greeting';
   return { lang:language(last), mode, smallTalkKind, recommendQ, viaSemantic, subject, carried, keepHistory, productNotes, support:support.map(s => s.label), productInfo, smallTalk, named, condition, concerns:concerns.map(c => c.id), fresh, serious, tips:mode === 'tips' ? tips : [], doctor, products, heldBack, mentionable,
-    flags, about, stopMeds, childQ, prefix, suffix, explainProducts:targetExplain, suitabilityProducts:targetSuitability, allowed:new Set([...(mode === 'tips' ? allowed : []), ...named_allowed]), shop:mode === 'shop' };
+    flags, about, stopMeds, childQ, prefix, suffix, explainProducts:targetExplain, suitabilityProducts:targetSuitability, safetyProducts:mode === 'safety' ? safetyTarget : [], warnedJustNow, allowed:new Set([...(mode === 'tips' ? allowed : []), ...named_allowed]), shop:mode === 'shop' };
 }
 
 // The note the model sees right before the visitor's latest message.

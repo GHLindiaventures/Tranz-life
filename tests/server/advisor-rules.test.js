@@ -128,7 +128,7 @@ describe('fix brief: bugs A to M', () => {
   });
   it('K: a friend\'s drinking, then "en frnd ku enna product", recommends Liver Booster for the friend', () => {
     const k = run('en friend drinks daily', 'en frnd ku enna product use pannalam');
-    expect(k.subject).toBe('other'); expect(k.mode).toBe('recommend'); expect(k.products).toEqual(['liver-booster']); expect(fixedReply(k)).toMatch(/may help them/);
+    expect(k.subject).toBe('other'); expect(k.mode).toBe('recommend'); expect(k.products).toEqual(['liver-booster']); expect(fixedReply(k)).toMatch(/may help support their liver/);
   });
   it('L: ordinary messages get the closest topic or a clarifying question, never the dead end', () => {
     expect(run('stomach pain after eating outside food').concerns).toEqual(['acidity']);
@@ -523,5 +523,35 @@ describe('how it works and who can use it', () => {
     for (const q of ['how does the liver booster work?', 'how does cycle relief work?', 'how does reviva work?', 'who can use pulmoclear?', 'who can use craving control inhalers?', 'who can use energy booster?']){
       const { a, r } = reply(q); expect(r, q).not.toBe(''); expect(problems(r, a), q).toEqual([]);
     }
+  });
+});
+
+describe('helping a friend who may depend on alcohol', () => {
+  const FULL = "Shaking, sweating or feeling unwell without a drink, or needing a drink first thing in the morning, can mean the body depends on alcohol. Then stopping suddenly can be dangerous, so please see a doctor for help to cut down safely. India's free de-addiction helpline is 14446.";
+  it('knows "my alcoholic friend" is about the friend and keeps the warning on the follow-up', () => {
+    expect(ask('i want to help my alcoholic friend').subject).toBe('other');
+    const a = ask('i want to help my alcoholic friend', FULL, 'is there any product for my friend?');
+    expect(a.flags.map(f => f.id)).toEqual(['alcohol-dependence']);
+    expect(a.mode).toBe('recommend'); expect(a.products).toEqual(['liver-booster']);
+    const r = fixedReply(a);
+    expect(r).toMatch(/^Because of the drinking, please let a doctor guide them/);   // warning first, short after the full one
+    expect(r).toMatch(/While they cut down on alcohol, this may help support their liver/);
+    expect(r.match(/cannot undo the effects of heavy drinking/g)).toHaveLength(1);   // said once
+    expect(problems(r, a)).toEqual([]);
+  });
+  it('answers "is this safe?" about the product just suggested, warning first', () => {
+    const a = ask('i want to help my alcoholic friend', FULL, 'is there any product for my friend?', 'Because of the drinking ... 14446 ... Liver Booster (LiverDetox) ...', 'is this safe?');
+    expect(a.mode).toBe('safety'); expect(a.safetyProducts).toEqual(['liver-booster']);
+    const r = fixedReply(a);
+    expect(r).toMatch(/^Because of the drinking/); expect(r).toMatch(/for the Liver Booster \(LiverDetox\), please read the label/);
+    expect(r).not.toMatch(/current range/);
+  });
+  it('urgent warnings still block products on the same questions', () => {
+    const a = ask('my eyes look yellow', 'ok', 'is there any product for this?');
+    expect(a.mode).toBe('flag'); expect(a.products).toEqual([]);
+    expect(ask('my dad has blood in his stool', 'ok', 'is this safe?').mode).toBe('flag');
+  });
+  it('a new drinking warning in the latest message is always the full warning', () => {
+    expect(ask('my friend shakes when he does not drink, any product for him?').mode).toBe('flag');
   });
 });

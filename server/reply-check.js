@@ -121,10 +121,18 @@ const productText = a => a.named.map(id => { const p = CATALOG.find(x => x.id ==
   + (a.named.some(id => !CATALOG.find(x => x.id === id).price) ? '\n\nFor prices and orders, the team is happy to help through the Contact section.' : '');
 
 // Messages that are answered with fixed text and never go to the model: questions where any creative answer is a risk.
+// The drinking-habit warning that leads a product answer (urgent warnings never get here: they are flag mode).
+// Right after the bot gave the full warning, a one-line reminder instead of the same paragraph again.
+function warningLead(a){
+  if (!a.flags?.length) return [];
+  if (a.warnedJustNow) return [`Because of the drinking, please let a doctor guide ${a.about.other ? 'them' : 'you'} before starting anything new; the free helpline 14446 can help too.`];
+  return a.flags.map(f => f.say);
+}
+
 // Cautions about this person (pregnancy, a child, a condition or regular medicine), said before anything else about a product.
 function personCautions(a, ps){
   const whose = a.about.other ? 'their' : 'your';
-  const first = (a.flags || []).map(f => f.say);   // only the drinking-habit warning can reach here (urgent ones are flag mode)
+  const first = warningLead(a);
   if (a.about.pregnant || a.about.breastfeeding) first.push('During pregnancy or breastfeeding, please check with the doctor before using any of our products.');
   if (a.childQ || a.about.child) first.push('For children, please ask their doctor first: these products are made for adults.');
   if ((a.about.diabetes || a.about.chronic || a.about.onMeds) && ps.some(p => p.ingested))
@@ -136,8 +144,10 @@ function fixedReply(a){
   const meds = a.stopMeds ? MEDS_LINE : '';
   if (a.mode === 'identity') return 'I\'m Tulsi, TranzLife\'s virtual wellness assistant. I\'m not a doctor. I can share simple, general wellness tips from trusted public health guidance and help you find our products. For anything medical, a doctor is always the right person. 🌿';
   if (a.mode === 'safety'){
-    const what = a.named.length ? `the ${a.named.map(id => CATALOG.find(p => p.id === id).name).join(' and the ')}` : 'any of our products';
-    return `That's a good question to ask. No product can be promised to suit everyone, so for ${what}, please read the label and ingredients first, and stop using it if you notice any irritation or reaction. Please check with your doctor before using it if you're pregnant, breastfeeding, buying it for a child, or have a health condition or take regular medicine.${meds}`;
+    const ids = a.safetyProducts?.length ? a.safetyProducts : a.named;
+    const what = ids.length ? `the ${ids.map(id => CATALOG.find(p => p.id === id).name).join(' and the ')}` : 'any of our products';
+    const lead = a.flags.length ? `${warningLead(a).join(' ')}\n\n` : '';
+    return `${lead}That's a good question to ask. No product can be promised to suit everyone, so for ${what}, please read the label and ingredients first, and stop using it if you notice any irritation or reaction. Please check with your doctor before using it if you're pregnant, breastfeeding, buying it for a child, or have a health condition or take regular medicine.${meds}`;
   }
   if (a.mode === 'explain'){
     const ps = (a.explainProducts || []).map(id => CATALOG.find(x => x.id === id)).filter(Boolean);
@@ -185,10 +195,15 @@ function fixedReply(a){
     const lines = a.products.map(id => { const p = CATALOG.find(x => x.id === id);
       return `- **${p.name}**: ${p.pitch}.${(a.productNotes[id] || []).map(n => ` ${n}`).join('')}`; });
     const held = a.heldBack.map(id => CATALOG.find(x => x.id === id).name);
-    const body = lines.length ? `For ${label}, these may help ${who}:\n\n${lines.join('\n')}` : `For ${label}, our usual suggestions are ${held.join(' and ')}.`;
+    // drinking only: the product supports the liver, it is not a way to quit
+    const intro = a.concerns.length === 1 && a.concerns[0] === 'alcohol'
+      ? `While ${who === 'them' ? 'they cut' : 'you cut'} down on alcohol, this may help support ${who === 'them' ? 'their' : 'your'} liver:`
+      : `For ${label}, these may help ${who}:`;
+    const body = lines.length ? `${intro}\n\n${lines.join('\n')}` : `For ${label}, our usual suggestions are ${held.join(' and ')}.`;
     const heldLine = lines.length && held.length ? `\n\nWe also have ${held.join(' and ')}, but please check with the doctor before trying ${held.length > 1 ? 'those' : 'that'}.` : '';
     const after = a.suffix.length ? `\n\n${a.suffix.join(' ')}` : '';
-    return `${body}${heldLine}${after}\n\nTap Enquire on a card for the price and how to order.`;
+    const lead = a.flags.length ? `${warningLead(a).join(' ')}\n\n` : '';   // the drinking warning comes first
+    return `${lead}${body}${heldLine}${after}\n\nTap Enquire on a card for the price and how to order.`;
   }
   // small talk: instant fixed replies (the model kept answering "bye" and "ok" with "Hi there!")
   if (a.mode === 'smalltalk') return {
