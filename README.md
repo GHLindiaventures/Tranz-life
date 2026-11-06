@@ -45,7 +45,20 @@ npm test            # unit tests, including the chat rules
 npm run test:chat   # 86 realistic questions through the real model; every answer is saved to docs/tulsi-test-results.md
 ```
 
-Run `npm run test:chat` and read the answers after changing tips, rules or `CHAT_MODEL`.
+Run `npm run test:chat` and read the answers after changing tips, rules or `CHAT_MODEL`. `npm run test:real` checks how well Tulsi understands realistic customer questions (`tests/server/real-questions*.js`); add any miss you find there.
+
+### Customer insights (anonymous)
+
+Tulsi counts what customers ask about, so the team can see common problems and **product gaps** (issues people bring up often that we have no product for):
+
+```bash
+npm run insights                  # everything so far
+npm run insights -- --days 30     # the last 30 days
+```
+
+The report lists top topics, topics with no product, issues Tulsi could not match (as short labels like "dizziness"), medical conditions mentioned, how often each product was suggested and how often Enquire was clicked, warning signs and languages.
+
+**Privacy:** no message text, names, phone numbers, IP addresses or session ids are stored, only the day, topic ids, product ids, warning-sign ids, language and a 1-3 word generic label (checked by code before saving). The chat window tells visitors this. Data is saved in `data/insights.jsonl` on the server that runs the chat (kept out of git); set `INSIGHTS=off` to turn it off or `INSIGHTS_FILE` to save elsewhere. On a host where the disk is wiped on every deploy, point `INSIGHTS_FILE` at persistent storage.
 
 ## Going live
 
@@ -83,6 +96,8 @@ Copy `.env.example` to `.env`. All values are optional:
 | `CHAT_MODEL` | Ollama model for the Tulsi chat (default `gemma2:9b`) |
 | `OLLAMA_URL` | Where Ollama runs (default `http://localhost:11434`) |
 | `PORT` | Port for `npm start` (default 3000) |
+| `INSIGHTS` | `off` stops the anonymous issue counting |
+| `INSIGHTS_FILE` | Where insights are saved (default `data/insights.jsonl`) |
 
 Without them, checkout and the contact form show friendly placeholder messages. Anything starting with `VITE_` is public, so never put secret keys there.
 

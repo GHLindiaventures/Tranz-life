@@ -23,11 +23,13 @@ export default defineConfig(({ mode }) => {
     server: {
       host: true,
       port: 5173,
+      strictPort: true,
       allowedHosts: true
     },
     preview: {
       host: true,
       port: 5173,
+      strictPort: true,
       allowedHosts: true
     },
     plugins: single ? [viteSingleFile()] : [tulsiChat(env)],

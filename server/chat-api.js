@@ -8,6 +8,7 @@ import { emergencyReply, systemPrompt } from './advisor-prompt.js';
 import { analyse, routingNote } from './advisor-rules.js';
 import { fallbackReply, fixedReply, problems, suggestChips } from './reply-check.js';
 import { createUnderstanding } from './understand.js';
+import { createInsights } from './insights.js';
 
 const MAX_TURNS = 12, MAX_CHARS = 1500;
 
@@ -35,6 +36,10 @@ function createChatApi(env = {}){
   const SYSTEM = systemPrompt();
   // semantic understanding layer (embeddings + closed-set classifier); UNDERSTAND=off turns it off
   const understanding = env.UNDERSTAND === 'off' ? null : createUnderstanding(env);
+  // anonymous issue counts for the team (server/insights.js); a short label for unmatched issues comes from the model
+  const insights = createInsights(env, { generateLabel:prompt => fetch(`${OLLAMA}/api/generate`, { method:'POST', signal:AbortSignal.timeout(15000),
+    body:JSON.stringify({ model:MODEL, prompt, stream:false, keep_alive:'30m', options:{ temperature:0, num_predict:12 } }) })
+    .then(r => r.ok ? r.json() : null).then(j => j?.response || '') });
 
   async function generate(messages, temperature, signal){
     const limit = AbortSignal.timeout(45000);      // never leave a visitor waiting on a stuck model
@@ -91,6 +96,9 @@ function createChatApi(env = {}){
       res.writeHead(200, { 'Content-Type':'text/plain; charset=utf-8', 'Cache-Control':'no-cache',
         'X-Products':out.products.join(','), 'X-Suggest':(out.suggest || []).join('|'), 'Access-Control-Expose-Headers':'X-Products, X-Suggest' });
       res.end(out.text);
+      // after the reply is sent: save the anonymous counts (never the message itself)
+      insights.record(out.analysis, msgs[msgs.length - 1].content, { via:out.via, emergency:out.via === 'emergency',
+        first:msgs.filter(m => m.role === 'user').length === 1 });
     } catch(err){
       if (ctrl.signal.aborted) return;
       console.error('[tulsi]', err.message);
@@ -106,6 +114,11 @@ function createChatApi(env = {}){
     if (ORIGIN){ res.setHeader('Access-Control-Allow-Origin', ORIGIN); res.setHeader('Access-Control-Allow-Headers', 'Content-Type'); res.setHeader('Vary', 'Origin'); }
     if (req.method === 'OPTIONS'){ res.writeHead(204); return res.end(); }
     if (req.method === 'POST' && path === '/api/chat') return chat(req, res);
+    // "Enquire" clicked on a product card: only the product id is counted
+    if (req.method === 'POST' && path === '/api/insight'){
+      readJson(req).then(b => insights.enquire(String(b.enquire || ''))).catch(() => {});
+      res.writeHead(204); return res.end();
+    }
     if (req.method === 'GET' && path === '/api/health'){ res.writeHead(200, { 'Content-Type':'application/json' }); return res.end(JSON.stringify({ ok:true, model:MODEL })); }
     next();
   }
@@ -120,7 +133,7 @@ function createChatApi(env = {}){
       .catch(() => log.warn(`  Tulsi understanding layer off (embedding model unavailable). Run: ollama pull ${env.EMBED_MODEL || 'bge-m3'}`));
   }
 
-  return { handle, warmUp, respond, understanding, model:MODEL };
+  return { handle, warmUp, respond, understanding, insights, model:MODEL };
 }
 
 export { createChatApi };

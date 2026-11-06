@@ -35,7 +35,7 @@ function productCard(id){
   const meta = [p.form, p.size, p.price ? inr(p.price) : 'Price on request'].filter(Boolean).join(' · ');
   return `<div class="ch-prod"><span class="ch-prod-ic">${LEAF}</span>
     <div><b>${esc(p.name)}</b>${p.pitch ? `<span class="ch-prod-pitch">${esc(p.pitch)}</span>` : ''}<small>${esc(meta)}</small></div>
-    <a class="ch-enquire" href="#contact" data-product="${esc(p.name)}">Enquire</a></div>`;
+    <a class="ch-enquire" href="#contact" data-product="${esc(p.name)}" data-id="${esc(p.id)}">Enquire</a></div>`;
 }
 
 function bubble(m){
@@ -117,7 +117,7 @@ function initChat(){
         <textarea rows="1" placeholder="Tell me how you're feeling…" aria-label="Your message" maxlength="1500"></textarea>
         <button class="ch-send" type="submit" aria-label="Send">${SEND}</button>
       </form>
-      <p class="ch-note">General wellness tips, not medical advice. In an emergency, call 112.</p>
+      <p class="ch-note">General wellness tips, not medical advice. In an emergency, call 112. We count common topics anonymously to improve our products; your messages are not stored.</p>
     </section>
     <button class="ch-fab" type="button" aria-controls="chatPanel" aria-expanded="false">
       <span class="ch-fab-ic">${LEAF}</span><b>Ask Tulsi</b>
@@ -134,6 +134,8 @@ function initChat(){
   els.list.addEventListener('click', e => {
     const a = e.target.closest('.ch-enquire'); if (!a) return;
     const msg = $('#f-msg'); if (msg && !msg.value.trim()) msg.value = `Hi, I'd like to know more about the ${a.dataset.product} (price and how to order).`;
+    // count the enquiry anonymously (only the product id)
+    try { navigator.sendBeacon?.(API.replace(/chat$/, 'insight'), new Blob([JSON.stringify({ enquire:a.dataset.id })], { type:'application/json' })); } catch {}
     open(false);
   });
   els.chips.addEventListener('click', e => { const b = e.target.closest('button'); if (b) send(b.textContent); });
