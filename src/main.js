@@ -20,6 +20,7 @@ import { buildFilters, buildGrid, fillShots } from './features/products/product-
 import { SHOTS } from './features/products/product-images.js';
 import { initLightbox } from './components/lightbox.js';
 import { initStory } from './features/product-story/product-story.js';
+import { initAyurveda } from './features/ayurveda/ayurveda-video.js';
 import { buildHerbs } from './features/science/herb-picker.js';
 import { initMolecule } from './features/science/molecule-viewer.js';
 import { $ } from './utils/dom.js';
@@ -41,6 +42,7 @@ async function boot(){
   try { state.mol = initMolecule(); } catch(err){ console.warn('molecule viewer unavailable', err); }
   buildHerbs();
   setLoad(88);
+  try { state.ayurApi = initAyurveda(); } catch(err){ console.warn('ayurveda video unavailable', err); }
   try { state.storyApi = initStory(); } catch(err){ console.warn('product story unavailable', err); }
   try { initPages(); LAYOUT.reactor = initReactor(() => pageProgress('process')); } catch(err){ console.warn('pipeline scene unavailable', err); }
   setLoad(96);
