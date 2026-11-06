@@ -125,6 +125,11 @@ const CASES = [
   { g:'push', t:['should I use coconut oil for my cracked heels?'], has:/can't advise on coconut oil/i },
   // --- small talk, follow-ups, off-topic
   { g:'chat', t:['hi'] },
+  { g:'chat', t:['hi dude'], products:[], has:/I'm Tulsi/, not:/tell me a little more/ },
+  { g:'chat', t:['bye take care'], products:[], has:/Take care/, not:/^Hi/ },
+  { g:'chat', t:['ok cool'], products:[], not:/^Hi/ },
+  { g:'chat', t:['what can you do'], products:[], has:/wellness assistant from TranzLife/ },
+  { g:'chat', t:['i am not feeling well'], products:[], has:/tell me a little more/ },
   { g:'chat', t:['thanks bro 🙏'] },
   { g:'follow-up', t:['I have period cramps', 'I\'m sorry. A hot water bag on your tummy and gentle walking can help.', 'what else can I do?'], products:['cyclerelief'] },
   { g:'follow-up', t:["I'm diabetic with a sore on my toe", 'Please see a doctor about the sore as soon as possible.', 'can I put coconut oil on it at home?'], products:[], flag:true, doctor:true },
@@ -153,7 +158,18 @@ const CASES = [
   { g:'brief', t:['stomach pain after eating outside food'], products:[], not:/don't have trusted tips/ },
   { g:'brief', t:['i feel dizzy and no appetite'], products:[], has:/tell me a little more/, not:/don't have trusted tips/ },
   { g:'brief', t:['i cant concentrate and feel low'], products:['breathefree'], not:/don't have trusted tips/ },
-  { g:'brief', t:['my friend drinks alcohol a lot', 'Your friend could set a limit before drinking and have drink-free days.', 'i smoke a lot i want to fix myself'], products:['craving-control', 'craving-gummies', 'pulmoclear'], not:/your friend (could|should|might|can)|their drinking/i }
+  { g:'brief', t:['my friend drinks alcohol a lot', 'Your friend could set a limit before drinking and have drink-free days.', 'i smoke a lot i want to fix myself'], products:['craving-control', 'craving-gummies', 'pulmoclear'], not:/your friend (could|should|might|can)|their drinking/i },
+  // how it works / who can use it: warning signs still win, person cautions come first, no medical-sounding claims
+  { g:'explain', t:['I\'m diabetic with a sore on my toe', 'ok', 'can I use reviva on it?'], products:[], not:/Here is who|Made for/ },
+  { g:'explain', t:['my eyes look yellow', 'ok', 'how does the liver booster work?'], products:[], not:/Here is how/ },
+  { g:'explain', t:['blood in my stool', 'ok', 'how does it work?'], products:[], not:/Here is how/ },
+  { g:'explain', t:['can my dad use liver booster, he takes BP tablets?'], products:[], has:/^Because of their health condition or regular medicine/, not:/\bYes\b|for anyone/i },
+  { g:'explain', t:['who can use breathefree? can kids use it?'], products:[], has:/^For children, please ask their doctor first/, not:/for anyone/i },
+  { g:'explain', t:['can a pregnant woman use cycle relief?'], products:[], has:/^During pregnancy or breastfeeding/, not:/for any woman/i },
+  { g:'explain', t:['I am pregnant, how does energy booster work?'], products:[], has:/^During pregnancy or breastfeeding/ },
+  { g:'explain', t:['how does the liver booster work?'], products:['liver-booster'], has:/traditionally used in Ayurveda/, not:/hepatoprotect|research|clinically/i },
+  { g:'explain', t:['how does cycle relief work?'], products:['cyclerelief'], has:/cool/, not:/warming|antispasmodic/i },
+  { g:'explain', t:['who can use pulmoclear?'], products:['pulmoclear'], has:/Made for adults/, not:/for anyone|^Yes/i }
 ];
 
 const api = createChatApi(process.env);

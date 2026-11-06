@@ -144,6 +144,23 @@ describe('fix brief: bugs A to M', () => {
   });
 });
 
+describe('small talk and questions about Tulsi', () => {
+  it('answers greetings, thanks, okay and goodbye with the right fixed reply', () => {
+    const kind = { 'hi dude':'greeting', 'hey there':'greeting', 'vanakkam anna':'greeting', 'how are you doing today':'howareyou', 'epdi irukeenga':'howareyou',
+      'thank you so much dude':'thanks', 'ok cool':'ok', 'hmm':'ok', 'bye take care':'bye', 'good night':'bye' };
+    for (const [q, k] of Object.entries(kind)){ const a = ask(q); expect(a.mode, q).toBe('smalltalk'); expect(a.smallTalkKind, q).toBe(k); expect(fixedReply(a), q).toBeTruthy(); }
+    expect(fixedReply(ask('bye take care'))).toMatch(/Take care/); expect(fixedReply(ask('hi dude'))).not.toMatch(/tell me a little more/);
+    expect(suggestChips(ask('hi dude')).length).toBeGreaterThan(2);
+  });
+  it('answers "what can you do / can you help me / what is tranzlife" with an introduction', () => {
+    for (const q of ['what can you do', 'can you help me', 'i need help', 'what is tranzlife', 'tell me about your company', 'who made you'])
+      expect(fixedReply(ask(q)), q).toMatch(/I'm Tulsi, the wellness assistant from TranzLife Biosciences/);
+  });
+  it('does not treat a health message that starts with a greeting as small talk', () => {
+    expect(ask('hi i have a headache').mode).toBe('tips'); expect(ask('hello, can you help me with acidity').concerns).toEqual(['acidity']);
+  });
+});
+
 describe('who the message is about', () => {
   it('does not carry "my friend" or someone else\'s medicine into the visitor\'s own new message', () => {
     const a = ask('my friend drinks alcohol a lot', 'Your friend could...', 'my father takes BP tablets and is tired', 'Your father could...', 'i smoke a lot i want to fix myself');
@@ -267,7 +284,7 @@ describe('reply checker', () => {
     }
   });
   it('passes every fallback reply for model-written modes', () => {
-    for (const q of ['period cramps', 'my eyes are yellow', 'thanks bro', 'my child has a cough', 'quit smoking',
+    for (const q of ['period cramps', 'my eyes are yellow', 'my child has a cough', 'quit smoking',
       'I have diabetes and my feet are dry', 'eye pain', 'back pain']){
       const a = ask(q); expect(fixedReply(a), q).toBe(''); expect(problems(fallbackReply(a), a), q).toEqual([]);
     }
@@ -320,5 +337,191 @@ describe('reply checker', () => {
   it('accepts doctor wording that mentions medicine safely', () => {
     const a = ask('Can I stop my BP tablets?');
     expect(problems('Please don\'t stop your BP tablets without talking to your doctor first.', a)).toEqual([]);
+  });
+
+  it('handles explain queries by describing product mechanism', () => {
+    // Direct product explain with concern
+    const a1 = ask('how this inhaler reduce stress');
+    expect(a1.mode).toBe('explain');
+    expect(a1.explainProducts).toEqual(['breathefree']);
+    expect(fixedReply(a1)).toMatch(/Aromatherapy works through your sense of smell/);
+    expect(fixedReply(a1)).not.toMatch(/Pause for a few minutes and breathe slowly/); // not generic lifestyle tips
+
+    // Follow-up with anaphora ("how it works" after product recommendation)
+    const a2 = ask('is there any product for smoking persons?', 'We recommend Craving Control and PulmoClear Gummies...', 'how it works');
+    expect(a2.mode).toBe('explain');
+    expect(a2.explainProducts.length).toBeGreaterThan(0);
+    expect(fixedReply(a2)).toMatch(/Here is how these products may support you/);
+
+    // Follow-up with "how these product help me ?"
+    const a3 = ask('is there any product for smoking persons?', 'Here are products: Craving Control Inhaler and PulmoClear Gummies...', 'how these product help me ?');
+    expect(a3.mode).toBe('explain');
+    expect(fixedReply(a3)).toMatch(/Here is how these products may support you/);
+  });
+
+  it('handles suitability queries directly without dumping specs', () => {
+    const a1 = ask('does a normal peson can intake gummies ?');
+    expect(a1.mode).toBe('suitability');
+    expect(a1.suitabilityProducts).toEqual(['pulmoclear', 'craving-gummies', 'respira']);
+    const reply1 = fixedReply(a1);
+    expect(reply1).toMatch(/You do not need to be a smoker to use them/);
+    expect(reply1).toMatch(/Here is who these products are made for/);
+
+    const a2 = ask('inhaler use panlam ah venam ah');
+    expect(a2.mode).toBe('suitability');
+    expect(a2.suitabilityProducts).toEqual(['breathefree', 'craving-control']);
+    const reply2 = fixedReply(a2);
+    expect(reply2).toMatch(/who these products are made for/);
+  });
+
+  it('avoids repeating the product pitch suffix on consecutive turns', () => {
+    const a1 = ask('I am feeling so stressed at work');
+    expect(a1.suffix.join(' ')).toMatch(/You might also like our BreatheFree/);
+
+    // Follow-up turn where assistant already pitched BreatheFree in previous turn
+    const a2 = ask('I am feeling so stressed at work', 'Take a break. You might also like our BreatheFree Aromatherapy Inhaler...', 'what else can I do for stress?');
+    expect(a2.suffix.join(' ')).not.toMatch(/You might also like our BreatheFree/);
+  });
+
+  it('handles "how are you" as friendly small talk rather than symptom clarification', () => {
+    const a = ask('how are you');
+    expect(a.mode).toBe('smalltalk');
+    expect(a.concerns).toEqual([]);
+    expect(fixedReply(a)).not.toMatch(/Stress.*Trouble sleeping/);
+  });
+
+  it('prevents sticky red-flag loop from hijacking subsequent shop and product queries', () => {
+    // 1. Alcoholism warning triggers on initial question
+    const a1 = ask('my friend is alcoholic any product you suggest?');
+    expect(a1.mode).toBe('flag');
+    expect(a1.flags.map(f => f.id)).toContain('alcohol-dependence');
+
+    // 2. Asking about Liver Booster for the friend addresses suitability with honesty note & safety warning
+    const a2 = ask('my friend is alcoholic any product you suggest?', 'Shaking or sweating... see a doctor (Helpline 14446)...', 'can my friend use the liver booster to help him regain his health back?');
+    expect(a2.mode).toBe('suitability');
+    expect(a2.suitabilityProducts).toEqual(['liver-booster']);
+    const r2 = fixedReply(a2);
+    expect(r2).toMatch(/cannot undo the effects of heavy drinking/);
+    expect(r2).toMatch(/14446/);
+
+    // 3. Shop question is NOT hijacked by alcohol warning
+    const a3 = ask('my friend is alcoholic', 'Shaking or sweating...', 'what are the products you are having');
+    expect(a3.mode).toBe('shop');
+    expect(fixedReply(a3)).toMatch(/Here's our current range/);
+
+    // 4. Inhaler question is NOT hijacked by alcohol warning
+    const a4 = ask('my friend is alcoholic', 'Shaking or sweating...', 'how this inhaler reduce stress');
+    expect(a4.mode).toBe('explain');
+    expect(a4.explainProducts).toEqual(['breathefree']);
+
+    // 5. Follow-up "who can use this product?" on Liver Booster resolves to Liver Booster, NOT BreatheFree
+    const a5 = ask('how this inhaler reduce stress', 'Here is how BreatheFree works...', 'what is the health benefits of liver booster', 'Here is how Liver Booster helps...', 'who can use this product?');
+    expect(a5.mode).toBe('suitability');
+    expect(a5.suitabilityProducts).toEqual(['liver-booster']);
+    expect(fixedReply(a5)).toMatch(/Made for adults who want to support their liver health/);
+    expect(fixedReply(a5)).not.toMatch(/BreatheFree/);
+  });
+
+  it('addresses "tickling effect in chest" as airway / cough irritation and does not assume user smokes', () => {
+    const a = ask('tickling effect in chest');
+    expect(a.mode).toBe('tips');
+    expect(a.concerns).toEqual(['cold']);
+    expect(a.tips.some(t => t.text.includes('tickle in the throat or chest'))).toBe(true);
+
+    const reply = fallbackReply(a);
+    expect(reply).not.toMatch(/If you smoke, quitting/i);
+    expect(reply).toMatch(/tickle in the throat or chest/i);
+  });
+
+  it('recognizes Tanglish product inventory inquiries like "namma kita iruka products pathi unaku theriyuma"', () => {
+    const a = ask('namma kita iruka products pathi unaku theriyuma ?');
+    expect(a.mode).toBe('shop');
+    expect(a.lang).toBe('tanglish');
+    expect(fixedReply(a)).toMatch(/Here's our current range/);
+  });
+
+  it('maps realistic common-man questions across all product categories', () => {
+    // 1. Diabetes / Sugar control -> Reviva (support mode, doctor first)
+    const sugar1 = ask('sugar control panna namma kita enna irukku');
+    expect(sugar1.mode).toBe('support');
+    expect(sugar1.products).toEqual(['reviva']);
+    expect(fixedReply(sugar1)).toMatch(/Reviva Massage Roll-On/);
+    expect(fixedReply(sugar1)).toMatch(/does not replace diabetes medicine/);
+
+    const sugar2 = ask('blood sugar level maintain panna wellness product');
+    expect(sugar2.mode).toBe('support');
+    expect(sugar2.products).toEqual(['reviva']);
+
+    // 2. Stress / Anxiety moments -> BreatheFree
+    const stress1 = ask('exam fear pathattam ah iruku');
+    expect(stress1.products).toContain('breathefree');
+
+    const stress2 = ask('instant ah calm aaga oru aromatherapy product venum');
+    expect(stress2.products).toContain('breathefree');
+
+    // 3. Sudden cravings & tobacco habit -> Craving Control
+    const crave1 = ask('sudden craving varumpothu enna panlam');
+    expect(crave1.products).toContain('craving-control');
+
+    const crave2 = ask('night time la cigarette pidikanum nu thonuthu');
+    expect(crave2.products).toContain('craving-control');
+
+    // 4. Period cramps & menstrual discomfort -> CycleRelief
+    const period1 = ask('chums pain ethavathu product iruka');
+    expect(period1.products).toContain('cyclerelief');
+
+    const period2 = ask('monthly cycle pain relief product');
+    expect(period2.products).toContain('cyclerelief');
+
+    // 5. Liver health & digestion recovery -> Liver Booster
+    const liver1 = ask('fatty liver iruku nu scan la sonnanga, any herbal syrup?');
+    expect(liver1.products).toContain('liver-booster');
+
+    const liver2 = ask('daily fast food sapdren, liver detox panna tonic iruka');
+    expect(liver2.products).toContain('liver-booster');
+
+    // 6. Fatigue & stamina -> Energy Booster
+    const energy1 = ask('IT company night shift, body full ah drained and exhausted');
+    expect(energy1.products).toContain('energy-booster');
+
+    const energy2 = ask('daily evening dull and drowsy ah aagudhu');
+    expect(energy2.products).toContain('energy-booster');
+
+    // 7. Pollution & respiratory comfort -> PulmoClear
+    const lung1 = ask('chennai traffic la daily travel panren, pollution nala mooku adaikuthu');
+    expect(lung1.products).toContain('pulmoclear');
+
+    const lung2 = ask('frequent ah cold varuthu immunity increase panna ethavathu iruka');
+    expect(lung2.products).toContain('pulmoclear');
+  });
+});
+
+describe('how it works and who can use it', () => {
+  const reply = (...t) => { const a = ask(...t); return { a, r:a.mode === 'flag' ? '' : (fixedReply(a) || '') }; };
+  it('keeps warning signs first, even on a product follow-up', () => {
+    for (const t of [["I'm diabetic with a sore on my toe", 'ok', 'can I use reviva on it?'], ['my eyes look yellow', 'ok', 'how does the liver booster work?'], ['blood in my stool', 'ok', 'how does it work?']]){
+      const a = ask(...t); expect(a.mode, t.at(-1)).toBe('flag'); expect(a.products, t.at(-1)).toEqual([]);
+    }
+  });
+  it('puts the caution for this person before anything else', () => {
+    expect(reply('can my dad use liver booster, he takes BP tablets?').r).toMatch(/^Because of their health condition or regular medicine/);
+    const kids = reply('who can use breathefree? can kids use it?'); expect(kids.a.products).toEqual([]); expect(kids.r).toMatch(/^For children, please ask their doctor first/);
+    const preg = reply('can a pregnant woman use cycle relief?'); expect(preg.a.mode).toBe('suitability'); expect(preg.r).toMatch(/^During pregnancy or breastfeeding/);
+    expect(reply('I am pregnant, how does energy booster work?').r).toMatch(/^During pregnancy or breastfeeding/);
+  });
+  it('never says a product is for anyone and adds a general caution when none applied', () => {
+    const { r } = reply('who can use pulmoclear?');
+    expect(r).toMatch(/^Made for adults/); expect(r).toMatch(/pregnant or breastfeeding, have a long-term condition or take regular medicine/);
+  });
+  it('catalogue texts use traditional-use wording only', () => {
+    for (const p of CATALOG){
+      const t = `${p.mechanism || ''} ${p.suitability || ''}`;
+      expect(t, p.id).not.toMatch(/hepatoprotect|antispasmodic|research|clinically|proven|opens the airways|warming|for anyone|for any woman|^Yes\b/i);
+    }
+  });
+  it('explain and suitability replies pass the reply checker', () => {
+    for (const q of ['how does the liver booster work?', 'how does cycle relief work?', 'how does reviva work?', 'who can use pulmoclear?', 'who can use craving control inhalers?', 'who can use energy booster?']){
+      const { a, r } = reply(q); expect(r, q).not.toBe(''); expect(problems(r, a), q).toEqual([]);
+    }
   });
 });

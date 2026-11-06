@@ -20,6 +20,12 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');      // all .env values, for the chat API only (never sent to the browser)
   return {
     base: './',
+    server: {
+      allowedHosts: true
+    },
+    preview: {
+      allowedHosts: true
+    },
     plugins: single ? [viteSingleFile()] : [tulsiChat(env)],
     build: single
       ? { outDir: 'dist-single', assetsInlineLimit: Number.MAX_SAFE_INTEGER, cssCodeSplit: false }

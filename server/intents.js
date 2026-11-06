@@ -70,7 +70,8 @@ const CONCERN_EXAMPLES = {
   ],
   cold:[
     'I have a cold', 'runny nose', 'sore throat', 'cough', 'blocked nose', 'sneezing a lot', 'jaladosham', 'sali pidichiruku',
-    'irumal iruku', 'thondai vali', 'சளி', 'இருமல்', 'throat pain and cold', 'stuffy nose', 'chest congestion with cough'
+    'irumal iruku', 'thondai vali', 'சளி', 'இருமல்', 'throat pain and cold', 'stuffy nose', 'chest congestion with cough',
+    'tickling effect in chest', 'tickle in throat', 'tickly cough', 'throat tickle', 'tickle in chest'
   ],
   constipation:[
     'constipated', 'motion pogala', 'hard stools', 'not passing stool for days', 'malachikkal', 'மலச்சிக்கல்',
@@ -129,7 +130,8 @@ const INTENT_EXAMPLES = {
     'how to order', 'cash on delivery available', 'any discount', 'evlo price', 'is it in stock'
   ],
   smalltalk:[
-    'hi', 'hello', 'thanks', 'thank you so much', 'ok', 'good morning', 'bye', 'vanakkam', 'nandri', 'super'
+    'hi', 'hello', 'thanks', 'thank you so much', 'ok', 'good morning', 'bye', 'vanakkam', 'nandri', 'super',
+    'hi dude', 'hey there', 'how are you', 'epdi irukeenga', 'ok cool', 'hmm', 'bye take care', 'nice talking to you'
   ],
   other:[
     'who won the cricket match', 'what is the weather today', 'tell me a joke', 'what is the capital of France', 'write a poem',
@@ -140,7 +142,10 @@ const INTENT_EXAMPLES = {
   unsupported:[
     'I feel dizzy', 'giddiness', 'my head is spinning', 'I lost my appetite', 'not feeling hungry at all', 'skin rash',
     'white patches on my skin', 'ear pain', 'toothache', 'burning while passing urine', 'swelling in my legs', 'numbness in my hand',
-    'thalai suthuthu', 'pasi illa', 'kai kaal maraththu pogudhu', 'weight gain', 'irregular periods', 'missed my period'
+    'thalai suthuthu', 'pasi illa', 'kai kaal maraththu pogudhu', 'weight gain', 'irregular periods', 'missed my period',
+    // vague "I'm unwell" with no symptom: ask what is wrong instead of guessing a topic
+    'I am not feeling well', 'feeling unwell', 'I feel sick today', 'something is wrong with my body', 'udambu sari illa',
+    'enaku udambu sari illa', 'not feeling good', 'I feel off today'
   ],
   // healthy habits and neutral statements: these must NOT become a health topic ("I drink water a lot" is not alcohol)
   neutral:[

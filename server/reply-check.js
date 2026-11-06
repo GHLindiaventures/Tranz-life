@@ -80,7 +80,13 @@ function problems(text, a){
     if (key === 'soak' && a.allowed.has('soak-warning') && !text.replace(SOAK_WARNING, '').match(re)) continue;   // "do not soak" is fine
     out.push(`mentions a remedy that is not approved (${key}: "${text.match(re)[0]}")`);
   }
-  for (const [re, why] of CLAIMS) if (re.test(text)) out.push(why);
+  for (const [re, why] of CLAIMS){
+    if (!re.test(text)) continue;
+    // "It does not replace diabetes medicine" is a safety line, not a claim: only a negation right before the match counts
+    if (why === 'compares with or replaces medicine' && [...text.matchAll(new RegExp(re.source, 'gi'))]
+      .every(m => /(\bnot|n't|\bnever)\s+(\w+\s+)?$/i.test(text.slice(Math.max(0, m.index - 20), m.index)))) continue;
+    out.push(why);
+  }
   if (/\b100\s*(%|percent)/i.test(text)) out.push('uses a 100% claim');
   if (DIAGNOSIS.some(re => re.test(text))) out.push('suggests a diagnosis');
   for (const m of text.matchAll(STOP_MED)) if (!NEGATION.test(text.slice(Math.max(0, m.index - 60), m.index)) && !/^\s*without/i.test(text.slice(m.index + m[0].length, m.index + m[0].length + 12)))
@@ -115,12 +121,55 @@ const productText = a => a.named.map(id => { const p = CATALOG.find(x => x.id ==
   + (a.named.some(id => !CATALOG.find(x => x.id === id).price) ? '\n\nFor prices and orders, the team is happy to help through the Contact section.' : '');
 
 // Messages that are answered with fixed text and never go to the model: questions where any creative answer is a risk.
+// Cautions about this person (pregnancy, a child, a condition or regular medicine), said before anything else about a product.
+function personCautions(a, ps){
+  const whose = a.about.other ? 'their' : 'your';
+  const first = (a.flags || []).map(f => f.say);   // only the drinking-habit warning can reach here (urgent ones are flag mode)
+  if (a.about.pregnant || a.about.breastfeeding) first.push('During pregnancy or breastfeeding, please check with the doctor before using any of our products.');
+  if (a.childQ || a.about.child) first.push('For children, please ask their doctor first: these products are made for adults.');
+  if ((a.about.diabetes || a.about.chronic || a.about.onMeds) && ps.some(p => p.ingested))
+    first.push(`Because of ${whose} health condition or regular medicine, please check with the doctor before using ${ps.length > 1 ? 'these' : 'it'}.`);
+  return first;
+}
+
 function fixedReply(a){
   const meds = a.stopMeds ? MEDS_LINE : '';
   if (a.mode === 'identity') return 'I\'m Tulsi, TranzLife\'s virtual wellness assistant. I\'m not a doctor. I can share simple, general wellness tips from trusted public health guidance and help you find our products. For anything medical, a doctor is always the right person. 🌿';
   if (a.mode === 'safety'){
     const what = a.named.length ? `the ${a.named.map(id => CATALOG.find(p => p.id === id).name).join(' and the ')}` : 'any of our products';
     return `That's a good question to ask. No product can be promised to suit everyone, so for ${what}, please read the label and ingredients first, and stop using it if you notice any irritation or reaction. Please check with your doctor before using it if you're pregnant, breastfeeding, buying it for a child, or have a health condition or take regular medicine.${meds}`;
+  }
+  if (a.mode === 'explain'){
+    const ps = (a.explainProducts || []).map(id => CATALOG.find(x => x.id === id)).filter(Boolean);
+    const notePart = ps.flatMap(p => a.productNotes?.[p.id] || (p.note ? [p.note] : [])).filter(Boolean);
+    const notesStr = notePart.length ? `\n\n${[...new Set(notePart)].join(' ')}` : '';
+    const flagWarning = '';   // any warning now leads the reply (personCautions)
+    const care = personCautions(a, ps), lead = care.length ? `${care.join(' ')}\n\n` : '';
+    if (ps.length === 1){
+      const p = ps[0];
+      const mech = p.mechanism || p.about;
+      const usePart = p.use ? `\n\nHow to use: ${p.use}` : '';
+      const cautionPart = p.caution ? `\n\nCaution: ${p.caution}` : '';
+      return `${lead}Here is how the **${p.name}** helps:\n\n${mech}${notesStr}${flagWarning}${usePart}${cautionPart}`;
+    }
+    if (ps.length > 1){
+      const lines = ps.map(p => `- **${p.name}**: ${p.mechanism || p.about}`);
+      const quitNote = ps.some(p => /quit|craving|smoking/i.test(p.forProblems?.join(' ') || ''))
+        ? '\n\nFor free support while quitting tobacco, you can call India\'s National Tobacco Quit Line on 1800 112 356.' : '';
+      return `${lead}Here is how these products may support you:\n\n${lines.join('\n\n')}${notesStr}${flagWarning}${quitNote}\n\nTap Enquire on any card below for pricing and order details.`;
+    }
+  }
+  if (a.mode === 'suitability'){
+    const ps = (a.suitabilityProducts || []).map(id => CATALOG.find(x => x.id === id)).filter(Boolean);
+    if (ps.length){
+      // 1. any caution that applies to this person comes FIRST (never "Yes, for anyone" to a pregnant visitor or a father on BP tablets)
+      const first = personCautions(a, ps);
+      // 2. who it is made for, then the label's own caution
+      const body = ps.map(p => `${ps.length > 1 ? `- **${p.name}**: ` : ''}${p.suitability || `**${p.name}** is a plant-based wellness product made for adults.`} ${p.caution ? `Caution: ${p.caution}` : ''}`.trim());
+      const notePart = [...new Set(ps.flatMap(p => a.productNotes?.[p.id] || (p.note ? [p.note] : [])).filter(Boolean))];
+      const general = first.length ? '' : '\n\nIf you are pregnant or breastfeeding, have a long-term condition or take regular medicine, please check with your doctor first.';
+      return `${first.length ? `${first.join(' ')}\n\n` : ''}${ps.length > 1 ? 'Here is who these products are made for:\n\n' : ''}${body.join('\n\n')}${notePart.length ? `\n\n${notePart.join(' ')}` : ''}${general}`;
+    }
   }
   if (a.productInfo) return productText(a);
   if (a.mode === 'medical') return `Thank you for asking. TranzLife products are natural wellness products. They aren't meant for medical conditions${a.condition ? ` like ${a.condition}` : ''}, and I can't recommend herbs, remedies or doses for them. A doctor is the right person to guide you on this.${meds || MEDS_LINE}`;
@@ -141,6 +190,16 @@ function fixedReply(a){
     const after = a.suffix.length ? `\n\n${a.suffix.join(' ')}` : '';
     return `${body}${heldLine}${after}\n\nTap Enquire on a card for the price and how to order.`;
   }
+  // small talk: instant fixed replies (the model kept answering "bye" and "ok" with "Hi there!")
+  if (a.mode === 'smalltalk') return {
+    bye:'Take care! 🌿 I\'m here whenever you need a hand.',
+    thanks:'You\'re welcome! 🌿 Is there anything else on your mind?',
+    howareyou:'I\'m doing well, thanks for asking! 🌿 How are you feeling today? Tell me if anything is bothering you.',
+    ok:'Sure! 🌿 If anything is bothering you, like stress, sleep or tiredness, just tell me.',
+    greeting:'Hi! 🌿 I\'m Tulsi. How are you feeling today? Tell me what\'s on your mind, or pick one below.'
+  }[a.smallTalkKind || 'greeting'];
+  // about Tulsi / TranzLife (company line from the client's brochure)
+  if (a.mode === 'about') return 'I\'m Tulsi, the wellness assistant from TranzLife Biosciences, a Chennai-based life sciences company that develops natural, plant-based wellness products. I can share simple natural tips for everyday problems like stress, sleep, tiredness, acidity, colds or period cramps, and help you find the right TranzLife product. What\'s on your mind today? You can pick one below or just tell me.';
   if (a.mode === 'clarify') return a.recommendQ
     ? 'Happy to help you choose. What would you like support with? Pick one below or tell me in your own words.'
     : 'I want to make sure I help with the right thing. Could you tell me a little more about how you feel, or pick one of these? If it\'s something I can\'t advise on, a pharmacist or doctor is the best person to ask.';
@@ -165,6 +224,6 @@ function fallbackReply(a){
 // sent back as a message, it matches an approved topic.
 const SUGGEST_HEALTH = ['Stress', 'Trouble sleeping', 'Tiredness', 'Acidity', 'Cold or cough'];
 const SUGGEST_PRODUCTS = ['Quit smoking', 'Lung health', 'Liver care', 'Period cramps', 'Low energy'];
-const suggestChips = a => a.mode !== 'clarify' ? [] : a.recommendQ ? SUGGEST_PRODUCTS : SUGGEST_HEALTH;
+const suggestChips = a => a.mode === 'about' || (a.mode === 'smalltalk' && ['greeting', 'howareyou'].includes(a.smallTalkKind)) ? SUGGEST_HEALTH : a.mode !== 'clarify' ? [] : a.recommendQ ? SUGGEST_PRODUCTS : SUGGEST_HEALTH;
 
 export { problems, fixedReply, fallbackReply, suggestChips, REMEDIES, PRODUCT_NAMES };

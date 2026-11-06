@@ -905,5 +905,29 @@
   "subject": null,
   "emergency": false,
   "via": "embed"
+ },
+ "hello bro how are you": {
+  "concerns": [],
+  "products": [],
+  "intent": "smalltalk",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "enaku udambu sari illa": {
+  "concerns": [],
+  "products": [],
+  "intent": "other",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
+ },
+ "nice talking to you": {
+  "concerns": [],
+  "products": [],
+  "intent": "smalltalk",
+  "subject": null,
+  "emergency": false,
+  "via": "embed"
  }
 }

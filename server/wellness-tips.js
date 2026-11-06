@@ -24,7 +24,7 @@ const CONCERNS = [
   {
     id:'period', label:'period cramps', products:['cyclerelief'],
     // pain or cramps must be mentioned: late, missed or irregular periods are not this topic (they need a doctor)
-    match:/(period|menstrua|menses|mensus|maadhavidai|maathavidai|matha\s*vidai|பீரியட்|மாதவிடாய்).{0,45}(pain|painful|cramp|ache|hurt|discomfort|vali|வலி)|(pain|painful|cramp|ache|hurt|vali|வலி)\w*.{0,45}(period|menstrua|menses|maadhavidai|மாதவிடாய்)|\bcramps?\b|\bpms\b|month(ly)?\s*(pain|cramp)/i,
+    match:/(period|menstrua|menses|mensus|chums|maadhavidai|maathavidai|matha\s*vidai|பீரியட்|மாதவிடாய்).{0,45}(pain|painful|cramp|ache|hurt|discomfort|vali|வலி)|(pain|painful|cramp|ache|hurt|vali|வலி)\w*.{0,45}(period|menstrua|menses|chums|maadhavidai|மாதவிடாய்)|\bcramps?\b|\bpms\b|month(ly)?\s*(cycle\s*)?(pain|cramp|discomfort|vali)|\bcycle\s*(pain|cramp|vali)\b|chums\s*pain/i,
     tips:[
       { text:'Put a hot water bag or heat pad, wrapped in a towel, on your lower tummy.', kind:'heat', uses:['heat'] },
       { text:'A warm bath or shower can help.', kind:'lifestyle' },
@@ -36,7 +36,7 @@ const CONCERNS = [
   },
   {
     id:'stress', label:'stress', products:['breathefree'],
-    match:/stress|can'?t\s*(concentrate|focus)|(concentrat\w*|focus)\s*(panna\s*)?mudiyala|kavalai|anxious|anxiety|tension|overwhelm|restless|nervous|work\s*pressure|exam\s*(pressure|fear|tension)|deadlines?|burn\s*-?\s*out|overthink|pathattam|padapadappu|mana\s*azhutham|மன\s*அழுத்த|பதட்ட/i,
+    match:/stress|can'?t\s*(concentrate|focus)|(concentrat\w*|focus)\s*(panna\s*)?mudiyala|kavalai|anxious|anxiety|tension|overwhelm|restless|nervous|work\s*pressure|exam\s*(pressure|fear|tension)|deadlines?|burn\s*-?\s*out|overthink|pathattam|padapadap\w*|mana\s*azhutham|\b(calm|calming|relax|relaxing)\b|peace\s*of\s*mind|aromatherap\w*|மன\s*அழுத்த|பதட்ட/i,
     tips:[
       { text:'Pause for a few minutes and breathe slowly: in gently through your nose, and out slowly through your mouth.', kind:'lifestyle' },
       { text:'Break big tasks into small steps, and give yourself credit as you finish each one.', kind:'lifestyle' },
@@ -82,7 +82,7 @@ const CONCERNS = [
   },
   {
     id:'tired', label:'tiredness', products:['energy-booster'],
-    match:/(?<!\beyes?\s+(\w+\s+)?)tired(?!.{0,20}\b(feet|foot|kaal|eyes?)\b)|fatigue|exhaust|no\s*energy|low\s*energy|(low|less|no|poor)\s*stamina|stamina|night\s*shifts?|long\s*(working\s*|work\s*)?hours|after\s*(the\s*)?(gym|workout)|workouts?\s*(tired|recovery)|busy\s*schedule|energy\s*(illa|ille|kammi|kuraivu)|weak(ness)?\b(?!\s*(lungs?|immun))|run\s*down|dull\s*ah?\s*(iruk|feel)|sorv|soarv|kalaippu|kalaipa|சோர்வ|களைப்பு/i,
+    match:/(?<!\beyes?\s+(\w+\s+)?)tired(?!.{0,20}\b(feet|foot|kaal|eyes?)\b)|fatigue|exhaust\w*|drained|no\s*energy|low\s*energy|(low|less|no|poor)\s*stamina|stamina|night\s*shifts?|long\s*(working\s*|work\s*)?hours|after\s*(the\s*)?(gym|workout)|workouts?\s*(tired|recovery)|busy\s*schedule|energy\s*(illa|ille|kammi|kuraivu)|weak(ness)?\b(?!\s*(lungs?|immun))|run\s*down|dull\b|drows\w*|letharg\w*|sluggish|sorv|soarv|kalaippu|kalaipa|சோர்வ|களைப்பு/i,
     tips:[
       { text:'Go to bed and get up at the same times each day, aiming for 6 to 9 hours of sleep.', kind:'lifestyle' },
       { text:'Eat well and stay active, even a short walk each day helps.', kind:'lifestyle' },
@@ -95,7 +95,7 @@ const CONCERNS = [
   {
     id:'liver', label:'liver care', products:['liver-booster'],
     // also lifestyle habits that strain the liver: junk / fried food habits, eating out a lot, fatty liver risk
-    match:/\bliver\b|\bdetox|junk\s*food|fast\s*food|fried\s*food\s*(daily|a\s*lot|every|often)|eat(ing)?\s*(out|outside|hotel\s*food)\s*(daily|a\s*lot|every\s*day|often)|fatty\s*liver\s*risk|kalleeral|kalleral|கல்லீரல்/i,
+    match:/\bliver\b|\bdetox|junk\s*food|fast\s*food|fried\s*food\s*(daily|a\s*lot|every|often)|eat(ing)?\s*(out|outside|hotel\s*food)\s*(daily|a\s*lot|every\s*day|often)|(outside|hotel|street)\s*food\s*(daily|a\s*lot|every\s*day|often)|fatty\s*liver|heavy\s*(stomach|digestion)|digestion\s*(problem|trouble|tonic|syrup|support)|liver\s*(tonic|syrup|safe|health|damage|cleanse)|kalleeral|kalleral|கல்லீரல்/i,
     tips:[
       { text:'Eat a healthy, balanced diet.', kind:'lifestyle' },
       { text:'Keep alcohol low, or avoid it.', kind:'lifestyle' },
@@ -138,7 +138,7 @@ const CONCERNS = [
     id:'lungs', label:'lung health', products:['pulmoclear'], alwaysDoctor:true,
     match:/\blungs?\b|nurai\s*eeral|nuraiyeeral|breath(ing)?\s*(feels?\s*)?(heavy|weak|tight)|chest\s*feels?\s*congested|lung\s*(health|problem|weak)|weak\s*lungs?|நுரையீரல்/i,
     tips:[
-      { text:'If you smoke, stopping is the best thing you can do for your lungs, and free help is available.', kind:'lifestyle' },
+      { text:'Protect your lungs by staying away from tobacco smoke, dust and indoor air pollution.', kind:'lifestyle' },
       { text:'Stay active, like walking or cycling, but avoid exercising outdoors on very hot or very cold days.', kind:'lifestyle' },
       { text:'Keep warm and drink plenty of fluids.', kind:'lifestyle' },
       { text:'Check the air quality, and plan outdoor activity around days when the air is poor.', kind:'lifestyle' }
@@ -183,9 +183,10 @@ const CONCERNS = [
   },
   {
     id:'cold', label:'a cold or cough', products:['pulmoclear'],
-    match:/common\s*cold|\ba\s*cold\b|\bhave\s*(a\s*)?cold\b|caught\s*(a\s*)?cold|cold\s*(and|&)\s*cough|runny\s*nose|blocked\s*nose|stuffy\s*nose|sore\s*throat|throat\s*pain|cough|sneez|congestion|thummal|mookk?adaip+u|mooku\s*(ozhuguthu|adaippu|adaikuthu)|sali\s*pidi\w*|jaladosh|jalathosh|\bsali\b|irumal|thondai\s*vali|ஜலதோஷ|இருமல்|சளி/i,
+    match:/common\s*cold|\ba\s*cold\b|\bhave\s*(a\s*)?cold\b|caught\s*(a\s*)?cold|cold\s*(and|&)\s*cough|runny\s*nose|blocked\s*nose|stuffy\s*nose|sore\s*throat|throat\s*pain|cough|sneez|congestion|tickl\w*|thummal|mookk?adaip+u|mooku\s*(ozhuguthu|adaippu|adaikuthu)|sali\s*pidi\w*|jaladosh|jalathosh|\bsali\b|irumal|thondai\s*vali|ஜலதோஷ|இருமல்|சளி/i,
     tips:[
       { text:'Rest well and drink plenty of fluids, like water.', kind:'lifestyle' },
+      { text:'Sip warm water or warm fluids to soothe a tickle in the throat or chest.', kind:'lifestyle' },
       { text:'For a blocked nose, breathe in steam, for example by sitting in the bathroom with a hot shower running.', kind:'lifestyle' },
       { text:'Sip a warm lemon and honey drink to soothe a sore throat (never give honey to babies under 1 year).', kind:'food', uses:['lemon', 'honey'], sugar:true },
       { text:'Adults can gargle with salt water for a sore throat.', kind:'food', uses:['salt'], adult:true }
@@ -313,7 +314,7 @@ const CONCERNS = [
   {
     id:'smoking', label:'quitting smoking or tobacco', products:['craving-control', 'craving-gummies', 'pulmoclear'],
     // smoking, beedi, chewing tobacco, gutka, hookah, vaping; smoking also affects the lungs, so PulmoClear is suggested too
-    match:/smok|\bcig\w*|\bsig(a|e)ret\w*|\bpuffs?\b|\bbeedi|\bbidi|tobacco|nicotine|gutka|gutkha|pan\s*masala|\bkhaini\b|hookah|vape|vaping|quit\s*(smoking|tobacco)|thamm?\s*adik|pugai|புகை/i,
+    match:/smok|\bcig\w*|\bsig(a|e)ret\w*|\bpuffs?\b|\bbeedi|\bbidi|tobacco|nicotine|gutka|gutkha|pan\s*masala|\bkhaini\b|hookah|vape|vaping|quit\s*(smoking|tobacco)|thamm?\s*adik|\bcrav(e|es|ing|ings)\b|urge\s*to\s*smoke|chain\s*smok\w*|heavy\s*smok\w*|pugai|புகை/i,
     productNotes:{ pulmoclear:'It does not undo the harm of smoking; quitting is what helps your lungs most.' },
     tips:[
       { text:'Pick a quit date and plan for the moments that usually make you want to smoke or use tobacco.', kind:'lifestyle' },

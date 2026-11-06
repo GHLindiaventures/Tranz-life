@@ -34,7 +34,7 @@ function productCard(id){
   const p = CATALOG.find(x => x.id === id); if (!p) return '';
   const meta = [p.form, p.size, p.price ? inr(p.price) : 'Price on request'].filter(Boolean).join(' · ');
   return `<div class="ch-prod"><span class="ch-prod-ic">${LEAF}</span>
-    <div><b>${esc(p.name)}</b><small>${esc(meta)}</small></div>
+    <div><b>${esc(p.name)}</b>${p.pitch ? `<span class="ch-prod-pitch">${esc(p.pitch)}</span>` : ''}<small>${esc(meta)}</small></div>
     <a class="ch-enquire" href="#contact" data-product="${esc(p.name)}">Enquire</a></div>`;
 }
 

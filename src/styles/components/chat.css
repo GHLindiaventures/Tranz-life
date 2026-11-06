@@ -44,7 +44,8 @@
 .ch-prod-ic{width:48px;height:48px;border-radius:10px;background:var(--ground-2);color:var(--forest);display:grid;place-items:center;grid-row:span 2}
 .ch-prod-ic svg{width:22px;height:22px}
 .ch-prod b{display:block;font-size:14px;font-weight:700;line-height:1.2}
-.ch-prod small{color:var(--muted);font-size:12.5px}
+.ch-prod-pitch{display:block;font-size:12px;color:var(--forest);line-height:1.25;margin:2px 0 3px;font-style:italic}
+.ch-prod small{color:var(--muted);font-size:12px}
 .ch-prod .ch-enquire{justify-self:start;font-size:13px;font-weight:700;padding:5px 12px;border-radius:999px;background:var(--forest);color:#f4f8ef;transition:background .3s}
 .ch-prod .ch-enquire:hover{background:var(--sage)}
 

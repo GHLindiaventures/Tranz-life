@@ -2,14 +2,14 @@
 // may be used, which product (if any) may be shown, which warning signs mean "doctor first", and any fixed sentences.
 // The model only rewrites the result warmly. Keywords cover English plus common Tamil / Tanglish spellings.
 import { CONCERNS } from './wellness-tips.js';
-import { REMEDIES } from './reply-check.js';
+import { PRODUCT_NAMES, REMEDIES } from './reply-check.js';
 import { CATALOG, COMING_SOON_MATCH, KINDS } from '../src/data/catalog.js';
 
 // Products that are swallowed. These are held back whenever someone has diabetes, a long-term condition or regular
 // medicine, because we do not know how they interact; roll-ons and inhalers are not.
 const INGESTED = new Set(CATALOG.filter(p => p.ingested).map(p => p.id));
 // Remedy words a reply may use when that product is mentioned: the ingredients on its own label.
-const PRODUCT_WORDS = Object.fromEntries(CATALOG.map(p => [p.id, Object.keys(REMEDIES).filter(k => REMEDIES[k].test(`${p.about} ${p.use}`))]));
+const PRODUCT_WORDS = Object.fromEntries(CATALOG.map(p => [p.id, Object.keys(REMEDIES).filter(k => REMEDIES[k].test(`${p.about} ${p.use} ${p.mechanism || ''}`))]));
 
 const FOOT = '(foot|feet|toes?|heels?|kaal|kaalu|sole|paadham)';
 const WOUND = '(wound|sore|ulcer|infect|pus\\b|blister|swollen|swelling|numb|punn|seezh|cut|black\\s*(spot|patch|colou?r))';
@@ -83,10 +83,32 @@ const namedIn = text => {
 // a short follow-up that continues the previous topic ("what else?", "anything more?", "innum enna?")
 const FOLLOW_UP_START = /^\s*(and\s*|ok(ay)?\s*|so\s*)?(what\s*else|anything\s*else|any\s*(more|other)|more\s*(tips|ideas|help)?|other\s*(tips|ideas|ways)|what\s*more|then\s*what|what\s*(now|next)|what\s*(should|can|do)\s*i\s*do|how|why|and\b|then\b|innum|vera\s*enna|apram|aprom|enna\s*pannalam|really)/i;
 const isFollowUp = text => (FOLLOW_UP_START.test(text) && text.trim().split(/\s+/).length <= 8) || (RECOMMEND.test(text) && text.trim().split(/\s+/).length <= 14);
+
+// Questions about how a product works, mechanisms, or benefits
+const EXPLAIN_Q = /\bhow\s*(does|do|will|can|is)?\s*(it|this|these|that|the\s+products?|the\s+inhaler|the\s+gumm\w*|the\s+roll[- ]?on|the\s+tonic)\s*(work|help|reduce|ease|soothe|calm|support|act|function)\b|\bhow\s+(it|this|that|these)\s+(works?|helps?)\b|\bhow\s+(these|this|the|your)\s+products?\s+(work|help|helps)\b|\bhow\s+(does|do|this|these)\s+(\w+\s+){1,3}(reduce|ease|soothe|calm|work)\b|\b(epdi|eppadi)\s*(work|help|aagum|pannum)\b|\bwhat\s*(is|are)\s*(the\s*)?(health\s*)?(benefits?|uses?|advantages?)\b|\b(health\s*)?(benefits?|uses?)\s*of\b/i;
+
+// Questions about who can use a product or suitability ("can a normal person intake gummies", "inhaler use panlam ah venam ah", "who can use this product?", "can my friend use...")
+const SUITABILITY_Q = /\bwho\s*can\s*(use|take|buy|try|have|consume|drink)\b|\b(can|should|could)\s+(i|we|he|she|they|my\s*\w+|en\s*\w+|appa|amma|friend)\s+(use|take|buy|try|drink|consume|have|sapda|eduka)\b|\b(can|should|could|is\s*it\s*(ok|okay|safe|good|fine|advisable)|who\s*can|does|do)\b.{0,35}\b(normal|healthy|non[- ]?smok\w*|anyone|anybody|every\w+|regular|person|peson|people|adults?)\b|\b(normal|healthy|non[- ]?smok\w*|regular)\s*(person|peson|people|adults?)?\b.{0,30}\b(take|intake|eat|use|have|consume|can|pannalama)\b|\b(use\s*pan+alama|pan+alam\s*ah|venama|venam\s*ah|eduk+alama|kudik+alama|sap+dalama|eduthuk+alama)\b|\b(should\s*i\s*(use|take|buy|try)|can\s*i\s*(use|take|buy|try))\b|\b(can|should|could)\s+(an?\s+)?(pregnant|breastfeeding|diabetic|elderly|old|kids?|child(ren)?|bab(y|ies)|teen\w*|women|woman|ladies|lady|mothers?|patients?)\s+(\w+\s+){0,2}(use|take|try|have|consume)\b/i;
+
+// Anaphora words that refer back to earlier products or topics
+const ANAPHORA = /\b(it|this|these|that|those|the\s+products?|these\s+products?|this\s+product)\b/i;
+
+function previousProducts(history){
+  if (!Array.isArray(history)) return [];
+  for (let i = history.length - 2; i >= 0; i--){
+    const msg = history[i];
+    if (!msg || !msg.content) continue;
+    const ids = namedIn(msg.content);
+    if (ids.length) return ids;
+    const found = CATALOG.filter(p => new RegExp(`\\b${p.id}\\b|${p.short.replace(/[+]/g, '\\+')}|${p.name.replace(/[+]/g, '\\+')}`, 'i').test(msg.content)).map(p => p.id);
+    if (found.length) return [...new Set(found)];
+  }
+  return [];
+}
 // asking which product to use ("which product should I use", "enna product use pannalam", "anything for this")
 const RECOMMEND = /\b(which|what|any|best|good)\s+(\w+\s+){0,2}(products?|one|thing)\b|which\s*(one|product)|what\s*(should|can|do)\s*i\s*(use|take|buy|try|need)|\b(recommend|suggest)\w*|(anything|something)\s*(for|to\s*help\s*with)\s*(this|that|it|me)|\b(enna|endha|edhu|ethu)\s*(product|nalla)|product\s*(sollunga|suggest|venum)|use\s*pannalam|\bbest\s+product/i;
 // explicit catalogue, price or delivery questions (the shop list is only for these)
-const SHOP_EXPLICIT = /\b(what|which)\s+products?\s+(do\s+|does\s+)?(you|u|tranzlife)\s+(sell|have|make|offer)\b(?!.{0,15}\bfor\b)|\ball\s+(your\s+)?products\b|\bproducts?\s*(list|range|catalog)|\b(price|cost|rate|evlo|evvalavu|how\s*much)\b|\b(delivery|deliver|shipping|order|buy|purchase|cod|cash\s*on|discount|offer|coupon|stock)\b/i;
+const SHOP_EXPLICIT = /\b(what|which)\s+products?\s+(do\s+|does\s+)?(you|u|tranzlife)\s+(sell|have|having|make|offer)\b(?!.{0,15}\bfor\b)|\bwhat\s+are\s+(all\s+)?(the|your)\s+products(\s*(you\s+|u\s+)?(have|having|sell|make|offer))?\b(?!.{0,15}\bfor\b)|\ball\s+(your\s+)?products\b|\bproducts?\s*(list|range|catalog)\b|\b(price|cost|rate|evlo|evvalavu|how\s*much)\b|\b(delivery|deliver|shipping|order|buy|purchase|cod|cash\s*on|discount|offer|coupon|stock)\b|\b(do\s+you\s+know|tell\s+me)\s+(about\s+)?(all\s+)?(the\s+|your\s+|our\s+)?products?\b|\b(products?|product)\s*(pathi|paththi)\s*(theriyuma|theriyum\s*ah|sollu|sollunga)\b|\b(namma|unga|ungala)\s*(kitta|kita)?\s*(enna|iruka|irukka)?\s*products?\b/i;
 // the visitor says it is severe, long-lasting, repeated or getting worse: only then do tips end with when to see a doctor
 const SERIOUS = /sever|really\s*bad|very\s*bad|so\s*bad|worst|unbearable|getting\s*worse|worse\s*(and\s*worse|every|now)|won'?t\s*(go|stop|settle)|not\s*(going\s*away|getting\s*better|improving|stopping)|for\s*(weeks|months|a\s*long\s*time|ages|years)|\b\d+\s*(weeks?|months?|years?)\b|since\s*(last\s*)?(weeks?|months?|year)|every\s*(day|night|week)|daily|always|all\s*the\s*time|keeps?\s*(coming|happening|getting)|again\s*and\s*again|frequent|often|romba\s*naala|rombo\s*naala|neraya\s*naal|ரொம்ப\s*நாள/i;
 const SHOP = /\b(what|which)\s+(\w+\s+){0,2}(products?|items?)|\b(products?|items?)\s*(list|range|enna|ennenna)|\b(price|cost|rate|evlo|evvalavu|how\s*much)\b|\b(delivery|deliver|shipping|order|buy|purchase|cod|cash\s*on|discount|offer|coupon|stock)\b/i;
@@ -99,16 +121,18 @@ const CONDITION = /\b(an(a)?emia|thyroid|diabetes|bp|blood\s*pressure|cholestero
 // alongside the doctor's treatment, with "check with your doctor first". Breathing diseases (asthma, COPD) are
 // deliberately not here: no product may be suggested for them.
 const SUPPORT = [
-  { label:'diabetes', product:'reviva', re:/diabet|\b(have|has|got)\s*sugar\b|sugar\s*(patient|problem|iruk|irruk|irukku|undu|disease)|\bsugar\b.{0,12}(iruku|irukku|irukkudhu|irukudhu)|neerizhivu|நீரிழிவு/i },
+  { label:'diabetes', product:'reviva', re:/diabet|\b(have|has|got)\s*sugar\b|sugar\s*(patient|patients|problem|level|control|care|maintain|management|manage|tablet|tablets|medicine|iruk|irruk|irukku|undu|disease|erang|kurai)|\b(blood\s*sugar|high\s*sugar|diabetic)\b|\bsugar\b.{0,20}(iruku|irukku|irukkudhu|irukudhu|control|manage|maintain|kuraika|product|roll\s*on|help)|neerizhivu|நீரிழிவு/i },
   { label:'fatty liver', product:'liver-booster', re:/fatty\s*liver(?!\s*risk)|fat\s*in\s*(my\s*|the\s*)?liver/i }
 ];
 const DIAGNOSE_Q = /what\s*(disease|illness|condition|problem|sickness)\s*(do\s*|does\s*)?(i|she|he|they|my\s*\w+)\s*(have|has|got)|diagnos|what('?s|\s*is)\s*wrong\s*with\s*(me|her|him)|what\s*is\s*(causing|the\s*cause)|enna\s*(noi|vyadhi|vyaadhi)/i;
 const DOSE_Q = /\b(dose|dosage|how\s*much\s*(should|to|can)\s*(i\s*|we\s*)?(take|eat|drink|give)|how\s*many\s*(times|tablets|spoons|capsules|drops))\b/i;
 
-const SMALL_TALK = /^\s*(hi+|hello+|hey+|hai|vanakkam|good\s*(morning|afternoon|evening|night)|thanks?|thank\s*you|thx|tq|ok+|okay|k|sari|seri|nandri|super|nice|great|bye|cool|fine|got\s*it|purinjuthu|purinjudhu)\b[\s!.,🙏😊❤️💚👍]*(bro|da|ma|tulsi|so\s*much)?[\s!.,🙏😊❤️💚👍]*$/i;
+const SMALL_TALK = /^\s*(hi+|hello+|helo+|hey+|hai|yo|sup|wassup|whats\s*up|hola|vanakkam|good\s*(morning|afternoon|evening|night)|thanks?|thank\s*(you|u)|thx|tq|ty|ok+|okay|k|kk|hmm+|sari|seri|nandri|super|nice|great|awesome|bye|take\s*care|see\s*(you|ya)|cool|fine|got\s*it|purinjuthu|purinjudhu|how\s*(are|r)\s*(you|u)(\s*doing)?(\s*today)?|how\s*is\s*it\s*going|epdi\s*(irukeenga|irukinga|iruka|irukka)|nalla\s*(irukeengala|irukingala|irukiya)|nice\s*talking\s*to\s*you)\b[\s!.,?🙏😊❤️💚👍]*((bro|da|ma|tulsi|dude|man|buddy|anna|akka|machi|machan|there|friend|so\s*much|a\s*lot|again|take\s*care|cool|super|nice|great|fine|thanks?|thank\s*(you|u)|got\s*it)[\s!.,?🙏😊❤️💚👍]*){0,3}$/iu;
+// questions about Tulsi or TranzLife ("what can you do", "can you help me", "what is tranzlife", "who made you")
+const ABOUT_Q = /what\s*(can|do)\s*(you|u)\s*do|how\s*(can|do)\s*(you|u)\s*help|^\s*(can|could)\s*(you|u)\s*help(\s*me)?\s*[?.!]*\s*$|^\s*(i\s*)?need\s*(some\s*)?help\s*[?.!]*\s*$|^\s*help(\s*me)?\s*[?.!]*\s*$|what\s*(is|'s)\s*tranz\s*life|about\s*(your|the|this)\s*company|tell\s*me\s*about\s*(tranz\s*life|your\s*company|yourself|you)|who\s*(made|built|created|owns|runs)\s*(you|u|tranz\s*life)|what\s*is\s*this\s*(site|website|chat)/i;
 
 // Common Tamil words typed in English letters. Two or more hits = Tanglish.
-const TANGLISH = /\b(iruku|irukku|irukken|romba|rombo|enaku|enakku|ennaku|panna|pannu|pannanum|mudiyala|mudiyalai|aaguthu|aagudhu|agudhu|illa|ille|venum|vendum|epdi|eppadi|enna|yenna|konjam|nalla|naan|nee|neenga|unga|enga|amma|appa|ku|la|ah|da|di|bro|machi|vali|valikuthu|valikudhu|sapadu|saapadu|thookam|thoongave|kaal|kai|udambu|seri|sari|theriyala|pa|ma|nu|than|thaan|dhaan|kooda|ipo|ippo|apo|appo|varala|pogala|aachu|aagala)\b/gi;
+const TANGLISH = /\b(iruku|irukku|irukken|iruka|irukka|romba|rombo|enaku|enakku|ennaku|unaku|unakku|ungalku|ungalukku|namma|kita|kitta|pathi|paththi|theriyuma|theriyum|theriyala|solla|sollu|sollunga|panna|pannu|pannanum|mudiyala|mudiyalai|aaguthu|aagudhu|agudhu|illa|ille|venum|vendum|epdi|eppadi|enna|yenna|konjam|nalla|naan|nee|neenga|unga|enga|amma|appa|ku|la|ah|da|di|bro|machi|vali|valikuthu|valikudhu|sapadu|saapadu|thookam|thoongave|kaal|kai|udambu|seri|sari|pa|ma|nu|than|thaan|dhaan|kooda|ipo|ippo|apo|appo|varala|pogala|aachu|aagala)\b/gi;
 
 function language(text){
   if (/[஀-௿]/.test(text)) return 'tamil';
@@ -132,7 +156,12 @@ function analyse(history, { semantic = null } = {}){
   const last = users[users.length - 1] || '';
   // Who each message is about (self / other). A message with no marker ("which product?") inherits the subject of the
   // message before it; the first message defaults to the visitor. The semantic layer decides only when there is no marker.
-  const subjects = []; users.forEach((u, i) => subjects.push(subjectOf(u) || (i === users.length - 1 && semantic?.subject) || subjects[i - 1] || 'self'));
+  const subjects = []; users.forEach((u, i) => {
+    const s = subjectOf(u);
+    if (s) subjects.push(s);
+    else if (SHOP_EXPLICIT.test(u) || IDENTITY.test(u) || SMALL_TALK.test(u)) subjects.push('self');
+    else subjects.push((i === users.length - 1 && semantic?.subject) || subjects[i - 1] || 'self');
+  });
   const subject = subjects[subjects.length - 1] || 'self';
   // Facts and warning signs come only from the last few messages about the SAME person as the latest message, so a
   // friend's diabetes, BP tablets, pregnancy or child never changes the visitor's products or disclaimers (and back).
@@ -143,6 +172,7 @@ function analyse(history, { semantic = null } = {}){
   about.other = now.other = subject === 'other';
   const prevSubject = subjects[subjects.length - 2];
 
+  const nowFlags = RED_FLAGS.filter(f => f.re.test(last) && (!f.with || now[f.with]));
   // warning signs stay on for the next few messages about that person, so a follow-up cannot get home tips for a red-flag problem
   let flags = RED_FLAGS.filter(f => f.re.test(recent) && (!f.with || about[f.with]));
   if (flags.some(f => f.id.startsWith('diabetic'))) flags = flags.filter(f => f.id !== 'foot-wound');
@@ -152,7 +182,8 @@ function analyse(history, { semantic = null } = {}){
     say:'This may need urgent medical help. If it is sudden or severe, please call 112 or go to the nearest hospital now; otherwise please see a doctor today.' });
 
   const named = namedIn(last);
-  const smallTalk = SMALL_TALK.test(last);
+  // small talk: the greeting rule, or the understanding layer for short messages with no health topic ("hi dude")
+  const smallTalk = SMALL_TALK.test(last) || (semantic?.intent === 'smalltalk' && !named.length && !concernsIn(last).length && last.trim().split(/\s+/).length <= 8);
   const found = (last.match(CONDITION) || [])[0] || '';
   const condition = /^bp$/i.test(found) ? 'blood pressure' : /^uti$/i.test(found) ? 'urine infection' : /^(pcos|pcod)$/i.test(found) ? found.toUpperCase() : found.toLowerCase();
   const support = SUPPORT.filter(s => s.re.test(last));
@@ -172,27 +203,77 @@ function analyse(history, { semantic = null } = {}){
   }
   // a follow-up ("what else?", "which product should I use?", "enna product?") continues the previous topic, products included
   const recommendQ = RECOMMEND.test(last) || semantic?.intent === 'recommend';
-  if (!concerns.length && !named.length && (isFollowUp(last) || (semantic?.intent === 'recommend' && last.trim().split(/\s+/).length <= 14))) for (let i = users.length - 2; i >= Math.max(0, users.length - 3) && !concerns.length; i--){
-    concerns = concernsIn(CATALOG.reduce((t, p) => t.replace(new RegExp(p.match.source, 'gi'), ' '), users[i])).slice(0, 2); carried = concerns.length > 0;
+  if (!concerns.length && !named.length && (isFollowUp(last) || (semantic?.intent === 'recommend' && last.trim().split(/\s+/).length <= 14))){
+    for (let i = users.length - 2; i >= Math.max(0, users.length - 3) && !concerns.length; i--){
+      const u = users[i];
+      const prevNamed = namedIn(u);
+      if (prevNamed.length){
+        const prodConcern = CONCERNS.find(c => c.products.includes(prevNamed[0]));
+        if (prodConcern){
+          concerns = [prodConcern];
+          carried = true;
+          break;
+        }
+      }
+      concerns = concernsIn(CATALOG.reduce((t, p) => t.replace(new RegExp(p.match.source, 'gi'), ' '), u)).slice(0, 2);
+      carried = concerns.length > 0;
+      if (carried) break;
+    }
+  }
+
+  const prevProds = previousProducts(history);
+  const explainQ = EXPLAIN_Q.test(last);
+  const suitabilityQ = SUITABILITY_Q.test(last);
+
+  let targetExplain = [];
+  if (explainQ){
+    if (named.length){
+      const matchingConcern = concerns.find(c => named.some(id => c.products.includes(id)));
+      if (matchingConcern) targetExplain = named.filter(id => matchingConcern.products.includes(id));
+      if (!targetExplain.length) targetExplain = named;
+    } else if (ANAPHORA.test(last) || last.trim().split(/\s+/).length <= 8){
+      targetExplain = prevProds;
+    }
+  }
+
+  let targetSuitability = [];
+  if (suitabilityQ){
+    if (named.length){
+      targetSuitability = named;
+    } else if (ANAPHORA.test(last) || last.trim().split(/\s+/).length <= 8){
+      targetSuitability = prevProds;
+    }
   }
 
   // what kind of message is this? (first match wins)
+  // A warning sign in this message, or in the last few messages about the same person, always comes first: the doctor
+  // message, no tips, no product, no "how it works" or "who can use it" pitch ("diabetic toe sore" -> "can I use Reviva
+  // on it?" must still get the doctor message). Only small talk, "who are you / what can you do" and pure price or
+  // delivery questions with no product named are answered normally. One exception: when the only warning is the
+  // drinking-habit one (not an urgent symptom), a question about a named product gets an honest answer that leads
+  // with that warning ("can my friend use the liver booster?" -> "it cannot undo heavy drinking ... 14446").
+  const habitOnly = flags.length && flags.every(f => f.id === 'alcohol-dependence');
+  const flagOff = smallTalk || IDENTITY.test(last) || ABOUT_Q.test(last) || (SHOP_EXPLICIT.test(last) && !named.length && !explainQ && !suitabilityQ)
+    || (habitOnly && named.length && (explainQ || suitabilityQ));
   let mode;
-  if (flags.length) mode = 'flag';
+  if (nowFlags.length || flags.some(f => f.id === 'possible-emergency') || (flags.length && !flagOff)) mode = 'flag';
   else if (IDENTITY.test(last)) mode = 'identity';
+  else if (ABOUT_Q.test(last) && !fresh && !named.length) mode = 'about';
+  else if (smallTalk) mode = 'smalltalk';
   else if (SAFETY_Q.test(last) && (named.length || /\b(your|these|this|tranzlife)\s*(products?|gumm|inhaler|roll|liquid)/i.test(last))) mode = 'safety';
   else if (stopMeds && !fresh && !named.length) mode = 'medical';
   // a diagnosed condition with a support product ("I have diabetes"), not a cure or stop-medicine question
   else if (support.length && !cureQ && !stopMeds && !fresh && !named.length) mode = 'support';
   // (a cure question, or a condition with no product named: "Reviva for diabetes?" is a product question)
   else if ((condition || cureQ) && !fresh && (cureQ || !named.length)) mode = 'medical';
+  else if (suitabilityQ && targetSuitability.length) mode = 'suitability';
+  else if (explainQ && targetExplain.length) mode = 'explain';
   else if (named.length && (PRODUCT_Q.test(last) || !fresh)) mode = 'product';
   else if (COMING_SOON_MATCH.test(last) && !fresh) mode = 'soon';
-  else if (smallTalk) mode = 'smalltalk';
+  else if (SHOP_EXPLICIT.test(last) || semantic?.intent === 'shop') mode = 'shop';
   // "which product should I use?" with a health topic (in this message or just before) recommends that topic's products
   else if (recommendQ && concerns.length) mode = 'recommend';
   else if (concerns.length) mode = 'tips';
-  else if (SHOP_EXPLICIT.test(last) || semantic?.intent === 'shop') mode = 'shop';
   else if (named.length) mode = 'product';
   // no topic we can help with (or "which product?" with no topic yet): ask a short clarifying question with quick replies
   else mode = 'clarify';
@@ -208,6 +289,19 @@ function analyse(history, { semantic = null } = {}){
     if (serious || v.alwaysDoctor || c.alwaysDoctor) doctor.push(v.doctor);
   });
 
+  if (tips.length > 1){
+    const queryWords = last.toLowerCase().replace(/[^a-z0-9\s]/g, ' ').split(/\s+/).filter(w => w.length > 2);
+    const tipScore = t => {
+      let s = 0;
+      const tl = t.text.toLowerCase();
+      for (const w of queryWords){
+        if (tl.includes(w) || (w.length >= 4 && tl.includes(w.slice(0, 4)))) s += 2;
+      }
+      return s;
+    };
+    tips.sort((a, b) => tipScore(b) - tipScore(a));
+  }
+
   // products: only for a topic raised in this message or a product asked about by name; never with a warning sign,
   // a medicine, diagnosis or cure-of-a-condition question; never in pregnancy, breastfeeding or for children;
   // nothing swallowed with diabetes, a long-term condition or regular medicine
@@ -215,14 +309,19 @@ function analyse(history, { semantic = null } = {}){
   // (follow-ups keep the products; each topic gets at least its first product, in topic order, up to 4)
   // (main topic's products first, then the first product of each other topic, then the rest)
   const byTopic = [...(concerns[0]?.products || []), ...concerns.slice(1).map(c => c.products[0]).filter(Boolean), ...concerns.slice(1).flatMap(c => c.products.slice(1))];
-  const wanted = ['tips', 'recommend', 'product', 'support'].includes(mode)
-    ? [...new Set([...(fresh || carried ? byTopic : []), ...named, ...(cureQ || stopMeds ? [] : support.map(s => s.product))])].slice(0, 4) : [];
+  const wanted = ['tips', 'recommend', 'product', 'support', 'explain', 'suitability'].includes(mode)
+    ? [...new Set([...(fresh || carried ? byTopic : []), ...named, ...(mode === 'explain' ? targetExplain : []), ...(mode === 'suitability' ? targetSuitability : []), ...(cureQ || stopMeds ? [] : support.map(s => s.product))])].slice(0, 4) : [];
   let products = wanted;
-  if (stopMeds || careful || diagnoseQ || (cureQ && condition)) products = [];
+  // "can kids use it?" counts as a child being involved
+  const childQ = /\b(kids?|children|child|baby|babies|toddlers?|infants?|kuzhandh\w*|kozhandh\w*|pasanga|pillainga)\b/i.test(last);
+  if (stopMeds || careful || childQ || diagnoseQ || (cureQ && condition)) products = [];
   if (about.diabetes || about.chronic || about.onMeds) products = products.filter(id => !INGESTED.has(id));
   const heldBack = wanted.filter(id => !products.includes(id));
   // product names the reply may say
-  const mentionable = mode === 'flag' ? [] : mode === 'shop' ? CATALOG.map(p => p.id) : [...new Set([...products, ...named])];
+  // products the catalogue's own "how it works / who can use it" text points to ("if you do not smoke, the BreatheFree Inhaler is a better fit")
+  const pointedTo = [...targetExplain, ...targetSuitability].map(id => CATALOG.find(p => p.id === id)).filter(Boolean)
+    .flatMap(p => Object.keys(PRODUCT_NAMES).filter(id => PRODUCT_NAMES[id].test(`${p.mechanism || ''} ${p.suitability || ''}`)));
+  const mentionable = mode === 'flag' ? [] : mode === 'shop' ? CATALOG.map(p => p.id) : [...new Set([...products, ...named, ...targetExplain, ...targetSuitability, ...pointedTo])];
 
   const allowed = new Set(tips.flatMap(t => t.uses || []));
   products.forEach(id => (PRODUCT_WORDS[id] || []).forEach(w => allowed.add(w)));
@@ -246,7 +345,8 @@ function analyse(history, { semantic = null } = {}){
   else if (helps && (about.pregnant || about.breastfeeding || about.child || ((about.diabetes || about.chronic || about.onMeds) && heldBack.length)))
     suffix.push('If you are pregnant or breastfeeding, it is for a child, or you have a long-term condition or take regular medicine, please check with your doctor before starting any new product or supplement.');
   // the product suggestion is written by code from the catalogue, never by the model
-  if (mode === 'tips' && products.length){
+  const alreadyPitched = history.slice(-4).some(m => m.role === 'assistant' && products.some(id => m.content.includes(CATALOG.find(p => p.id === id)?.name)));
+  if (mode === 'tips' && products.length && !alreadyPitched){
     const ps = products.map(id => CATALOG.find(x => x.id === id));
     // topic-specific honesty notes, e.g. Liver Booster for drinking: "it cannot undo the effects of heavy drinking"
     const notes = ps.flatMap(p => [p.note, ...concerns.map(c => c.productNotes?.[p.id])]).filter(Boolean);
@@ -265,8 +365,15 @@ function analyse(history, { semantic = null } = {}){
   // earlier turns go to the model only for a genuine follow-up about the same person; a new topic or a new subject
   // gets a clean context, so the model cannot copy an earlier reply about a friend
   const keepHistory = carried && prevSubject === subject;
-  return { lang:language(last), mode, recommendQ, viaSemantic, subject, carried, keepHistory, productNotes, support:support.map(s => s.label), productInfo, smallTalk, named, condition, concerns:concerns.map(c => c.id), fresh, serious, tips:mode === 'tips' ? tips : [], doctor, products, heldBack, mentionable,
-    flags, about, stopMeds, prefix, suffix, allowed:new Set([...(mode === 'tips' ? allowed : []), ...named_allowed]), shop:mode === 'shop' };
+  // which kind of small talk, for the fixed small-talk replies
+  const smallTalkKind = mode !== 'smalltalk' ? null
+    : /\b(bye|take\s*care|see\s*(you|ya)|good\s*night)\b/i.test(last) ? 'bye'
+    : /\b(thanks?|thank|thx|tq|ty|nandri)\b/i.test(last) ? 'thanks'
+    : /how\s*(are|r)\s*(you|u)|how\s*is\s*it\s*going|epdi|nalla\s*iruk/i.test(last) ? 'howareyou'
+    : /^\s*(ok+|okay|k|kk|hmm+|cool|super|nice|great|awesome|fine|got\s*it|sari|seri|purinj\w*)\b/i.test(last) ? 'ok'
+    : 'greeting';
+  return { lang:language(last), mode, smallTalkKind, recommendQ, viaSemantic, subject, carried, keepHistory, productNotes, support:support.map(s => s.label), productInfo, smallTalk, named, condition, concerns:concerns.map(c => c.id), fresh, serious, tips:mode === 'tips' ? tips : [], doctor, products, heldBack, mentionable,
+    flags, about, stopMeds, childQ, prefix, suffix, explainProducts:targetExplain, suitabilityProducts:targetSuitability, allowed:new Set([...(mode === 'tips' ? allowed : []), ...named_allowed]), shop:mode === 'shop' };
 }
 
 // The note the model sees right before the visitor's latest message.

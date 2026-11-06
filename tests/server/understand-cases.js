@@ -106,7 +106,10 @@ const CASES = [
   { g:'none', t:['I go for a walk every morning'], concerns:[], products:[] },
   { g:'none', t:['hi'], concerns:[], products:[] },
   { g:'none', t:['thanks'], concerns:[], products:[] },
-  { g:'none', t:['dizzy and no appetite'], concerns:[], products:[] }
+  { g:'none', t:['dizzy and no appetite'], concerns:[], products:[] },
+  { g:'none', t:['hello bro how are you'], concerns:[], products:[] },
+  { g:'none', t:['enaku udambu sari illa'], concerns:[], products:[] },
+  { g:'none', t:['nice talking to you'], concerns:[], products:[] }
 ];
 
 export { CASES };
