@@ -15,8 +15,9 @@ p{margin:0}
 .page{position:relative;isolation:isolate;overflow:clip;background:var(--ground);color:var(--ink)}
 .band{padding-block:clamp(84px,11vw,150px)}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-.eyebrow{font-family:var(--f-body);font-stretch:90%;font-size:13px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--sage);display:flex;align-items:center;gap:14px}
-.eyebrow::after{content:"";width:64px;height:2px;border-radius:2px;background:currentColor;opacity:.5}
+.eyebrow{font-family:var(--f-body);font-stretch:90%;font-size:13px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--sage);display:flex;align-items:center;gap:14px;overflow:hidden}
+.eyebrow::after{content:"";width:64px;height:2px;border-radius:2px;background:currentColor;opacity:.5;transform-origin:left center;transform:scaleX(var(--line-scale,0));transition:transform .8s var(--ease-entrance,cubic-bezier(.215,.61,.355,1))}
+.eyebrow.drawn{--line-scale:1}
 .h2{font-size:clamp(2.8rem,6.2vw,5.6rem);line-height:.92}
 .h2 em,.h2 .lt{font-style:normal;color:var(--leafy)}
 .sub{color:var(--muted);max-width:52ch;font-size:1.1rem}
