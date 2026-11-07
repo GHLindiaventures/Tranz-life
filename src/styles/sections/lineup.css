@@ -28,14 +28,27 @@
 }
 
 .lineup-wrap {
+  position: relative;
   width: 100%;
   max-width: 1320px;
   margin-inline: auto;
   padding-inline: max(24px, env(safe-area-inset-left, 0px));
 }
 
+/* 3D Model Canvas for Lineup */
+#lineupCanvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 2;
+}
+
 /* Row of 5 product slots */
 .lineup-grid {
+  position: relative;
+  z-index: 1;
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: clamp(16px, 2.8vw, 36px);
@@ -50,6 +63,7 @@
   align-items: center;
   width: 100%;
   max-width: 210px;
+  cursor: pointer;
 }
 
 /* Individual slot container with fixed aspect ratio */
@@ -62,27 +76,23 @@
   justify-content: center;
 }
 
-/* Static shot inside slot */
-.lineup-slot [data-shot] {
+/* Soft contact shadow under each 3D model */
+.lineup-shadow {
   position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: opacity 0.25s ease;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 68%;
+  height: 14px;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(22, 36, 18, 0.28), rgba(22, 36, 18, 0.08) 55%, transparent);
+  filter: blur(4px);
+  pointer-events: none;
+  transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
-.lineup-slot [data-shot] img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  filter: drop-shadow(0 14px 24px rgba(28, 54, 30, 0.15));
-}
-
-/* When live product is landing, the slot static shot is temporarily hidden */
-.lineup-slot.landing [data-shot] {
+/* When active landing jar is flying, shadow is temporarily hidden */
+.lineup-slot.landing .lineup-shadow {
   opacity: 0;
 }
 
@@ -125,3 +135,4 @@
     margin-top: 10px;
   }
 }
+
