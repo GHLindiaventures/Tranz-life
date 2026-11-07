@@ -52,6 +52,7 @@ async function boot(){
   initScroll();
   initTransitions();
   try { state.handOffApi = initProductHandOff(); } catch(err){ console.warn('product hand-off unavailable', err); }
+  window.state = state;
   intro();
 }
 
