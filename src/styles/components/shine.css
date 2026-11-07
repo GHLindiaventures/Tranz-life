@@ -1,109 +1,4 @@
-/* ---------- Premium Finish: High-Intensity Headline & Navigation Sheen ---------- */
-
-/* ==========================================================================
-   PART 2: HIGH-INTENSITY LIGHT-SWEEP INSIDE HEADLINE TEXT
-   ========================================================================== */
-
-/* 1.4s sweep within a 4.8s loop (0% -> 29% = 1.4s) */
-@keyframes headline-sweep-white {
-  0% {
-    background-position: 210% 0;
-    opacity: 1;
-  }
-  29% {
-    background-position: -70% 0;
-    opacity: 1;
-  }
-  30%, 100% {
-    background-position: -70% 0;
-    opacity: 0;
-  }
-}
-
-@keyframes headline-sweep-green {
-  0% {
-    background-position: 210% 0;
-    opacity: 1;
-  }
-  29% {
-    background-position: -70% 0;
-    opacity: 1;
-  }
-  30%, 100% {
-    background-position: -70% 0;
-    opacity: 0;
-  }
-}
-
-/* Headline Lines Container */
-.hero__title .ln {
-  position: relative;
-  display: inline-block;
-  vertical-align: baseline;
-}
-
-/* Exact Glyph-Aligned Shine Overlay (pixel-for-pixel match, background-clip: text) */
-.hero__title .ln::after {
-  content: attr(data-text);
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  user-select: none;
-  font-family: inherit;
-  font-size: inherit;
-  font-stretch: inherit;
-  font-weight: inherit;
-  line-height: inherit;
-  letter-spacing: inherit;
-  text-transform: inherit;
-  white-space: inherit;
-  color: transparent;
-  -webkit-background-clip: text;
-  background-clip: text;
-  background-repeat: no-repeat;
-  background-size: 260% 100%;
-  will-change: background-position;
-  opacity: 1;
-  z-index: 2;
-  transform: translate3d(calc(var(--headline-shine-shift, 0) * 12px), 0, 0);
-  transition: transform 0.2s cubic-bezier(0.25, 1, 0.5, 1);
-}
-
-/* White Word ("Nature"): Metallic glint with warm champagne-gold core + trailing shadow ride */
-.hero__title .ln:first-child::after {
-  background-image: linear-gradient(
-    105deg,
-    transparent 24%,
-    rgba(14, 38, 18, 0.35) 35%,       /* Subtle shadow ride trailing the light */
-    rgba(235, 198, 120, 0.95) 47%,     /* Radiant warm champagne-gold core */
-    rgba(255, 255, 255, 1) 50%,        /* Pure white specular center */
-    rgba(245, 220, 150, 0.9) 53%,      /* Front edge glow */
-    transparent 68%                    /* Soft tail (~22% width) */
-  );
-  animation: headline-sweep-white 4.8s ease-in-out infinite;
-  animation-delay: 2.0s; /* Starts right after hero entrance settles */
-}
-
-/* Dark Green Words ("meets science"): High-intensity mint-white core with zero grey cast */
-.hero__title .ln:last-child::after {
-  background-image: linear-gradient(
-    105deg,
-    transparent 26%,
-    rgba(190, 245, 210, 0.4) 40%,
-    rgba(255, 255, 255, 0.98) 50%,     /* Pure high-intensity mint-white core */
-    rgba(200, 248, 215, 0.4) 60%,
-    transparent 74%
-  );
-  animation: headline-sweep-green 4.8s ease-in-out infinite;
-  animation-delay: 2.18s; /* 0.18s smooth continuous flow across both lines */
-}
-
-/* Pausing when hero is scrolled away or tab is hidden */
-.hero-shine-paused .hero__title .ln::after,
-.hero-shine-paused .brand .logo-em::after,
-.hero-shine-paused .brand .logo-word::after {
-  animation-play-state: paused !important;
-}
+/* ---------- Premium Finish: Navigation & Logo Sheen ---------- */
 
 /* ==========================================================================
    PART 3: PREMIUM SHINE ON LOGO & NAV BARS
@@ -257,8 +152,7 @@
 }
 
 .nav-pills a,
-.nav-act .bag,
-.pill {
+.nav-act .bag {
   position: relative;
   overflow: hidden !important;
   border-radius: 999px;
@@ -280,8 +174,7 @@
 
 /* Glint Ray Element: Strictly clipped inside border-radius */
 .nav-pills a::after,
-.nav-act .bag::after,
-.pill::after {
+.nav-act .bag::after {
   content: "";
   position: absolute;
   top: -50%;
@@ -309,8 +202,7 @@
 
 /* Immediate hover sweep */
 .nav-pills a:hover::after,
-.nav-act .bag:hover::after,
-.pill:hover::after {
+.nav-act .bag:hover::after {
   animation: nav-glint-sweep 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
 }
 
@@ -368,7 +260,6 @@
 
 /* Prefers-reduced-motion: disable sweeps and spins */
 @media (prefers-reduced-motion: reduce) {
-  .hero__title .ln::after,
   .brand .logo-em::after,
   .brand .logo-word::after,
   .dock-menu::before {
@@ -376,7 +267,6 @@
   }
   .nav-pills a::after,
   .nav-act .bag::after,
-  .pill::after,
   .dock-menu::after {
     display: none !important;
   }

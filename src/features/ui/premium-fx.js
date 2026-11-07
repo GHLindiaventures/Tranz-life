@@ -42,16 +42,7 @@ function injectFilterDefs() {
   }
 }
 
-// 2. Set exact data-text attribute on each line of the headline
-function setupHeadlineShine() {
-  const lines = $$('.hero__title .ln');
-  lines.forEach(line => {
-    const txt = line.textContent.trim().replace(/\s+/g, ' ');
-    line.setAttribute('data-text', txt);
-  });
-}
-
-// 3. Setup Water-Droplet Badges interactive tactile effects & splash satellites
+// 2. Setup Water-Droplet Badges interactive tactile effects & splash satellites
 function setupDropletBadges() {
   const badges = $$('.facts .fact');
   if (!badges.length) return;
@@ -173,27 +164,10 @@ function setupDropletBadges() {
   });
 }
 
-// 4. Pointer-tracking shift for headline shine and visibility pausing
+// 3. Visibility pausing for background and logo sweeps
 function setupShineControls() {
   const heroStage = $('#home');
   if (!heroStage) return;
-
-  // Track pointer X across hero for slight shine band nudge
-  let targetX = 0, currentX = 0, rafId = 0;
-  const updateShinePointer = () => {
-    currentX += (targetX - currentX) * 0.08;
-    heroStage.style.setProperty('--headline-shine-shift', currentX.toFixed(3));
-    if (Math.abs(targetX - currentX) > 0.001) {
-      rafId = requestAnimationFrame(updateShinePointer);
-    } else {
-      rafId = 0;
-    }
-  };
-
-  heroStage.addEventListener('pointermove', e => {
-    targetX = (e.clientX / window.innerWidth) - 0.5;
-    if (!rafId) rafId = requestAnimationFrame(updateShinePointer);
-  }, { passive: true });
 
   // Pause sweep animations when hero is scrolled out of view or tab is hidden
   const togglePause = (shouldPause) => {
@@ -223,7 +197,6 @@ function setupShineControls() {
 // Master initialization
 function initPremiumFx() {
   injectFilterDefs();
-  setupHeadlineShine();
   setupDropletBadges();
   setupShineControls();
 }
