@@ -1,0 +1,336 @@
+/* ---------- Premium Finish: Light-Sweep Headline & Navigation Sheen ---------- */
+
+/* ==========================================================================
+   PART 2: LIGHT-SWEEP SHINE INSIDE HEADLINE TEXT
+   ========================================================================== */
+
+@keyframes headline-sweep-white {
+  0% {
+    background-position: 200% 0;
+  }
+  18%, 100% {
+    background-position: -60% 0;
+  }
+}
+
+@keyframes headline-sweep-green {
+  0% {
+    background-position: 200% 0;
+  }
+  18%, 100% {
+    background-position: -60% 0;
+  }
+}
+
+/* Headline Lines Container */
+.hero__title .ln {
+  position: relative;
+  display: inline-block;
+  vertical-align: baseline;
+}
+
+/* Exact Glyph-Aligned Shine Overlay */
+.hero__title .ln::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  user-select: none;
+  font-family: inherit;
+  font-size: inherit;
+  font-stretch: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  white-space: inherit;
+  color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+  background-repeat: no-repeat;
+  background-size: 260% 100%;
+  will-change: background-position;
+  opacity: 1;
+  z-index: 2;
+  transform: translate3d(calc(var(--headline-shine-shift, 0) * 12px), 0, 0);
+  transition: transform 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* Warm golden-white light band for white line ("Nature") */
+.hero__title .ln:first-child::after {
+  background-image: linear-gradient(
+    108deg,
+    transparent 36%,
+    rgba(255, 245, 220, 0.15) 44%,
+    rgba(255, 252, 240, 0.88) 50%,
+    rgba(255, 245, 220, 0.15) 56%,
+    transparent 64%
+  );
+  animation: headline-sweep-white 6.4s ease-in-out infinite;
+  animation-delay: 2.2s; /* Starts right after hero entrance settles */
+}
+
+/* Brighter, cool daylight light band for dark green line ("meets science") */
+.hero__title .ln:last-child::after {
+  background-image: linear-gradient(
+    108deg,
+    transparent 36%,
+    rgba(255, 255, 255, 0.25) 44%,
+    rgba(255, 255, 255, 0.95) 50%,
+    rgba(255, 255, 255, 0.25) 56%,
+    transparent 64%
+  );
+  animation: headline-sweep-green 6.4s ease-in-out infinite;
+  animation-delay: 2.36s; /* 0.16s stagger so the light glides across the entire sentence */
+}
+
+/* When hero is scrolled away or tab is hidden, pause animations */
+.hero-shine-paused .hero__title .ln::after,
+.hero-shine-paused .brand .logo-em::after,
+.hero-shine-paused .brand .logo-word::after {
+  animation-play-state: paused !important;
+}
+
+/* ==========================================================================
+   PART 3: PREMIUM SHINE ON LOGO & NAV BARS
+   ========================================================================== */
+
+/* 1. Brand Logo: Mask-Clipped Diagonal Sheen */
+@keyframes logo-sheen {
+  0%, 75% {
+    background-position: 220% 0;
+    opacity: 0;
+  }
+  80% {
+    opacity: 0.9;
+  }
+  90% {
+    opacity: 0.9;
+    background-position: -80% 0;
+  }
+  95%, 100% {
+    opacity: 0;
+    background-position: -120% 0;
+  }
+}
+
+.brand {
+  position: relative;
+}
+
+.brand .logo-em,
+.brand .logo-word {
+  position: relative;
+}
+
+/* Logo Emblem Masked Shine Pass */
+.brand .logo-em::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    115deg,
+    transparent 32%,
+    rgba(255, 255, 255, 0.3) 44%,
+    rgba(255, 255, 255, 0.88) 50%,
+    rgba(255, 255, 255, 0.3) 56%,
+    transparent 68%
+  );
+  background-size: 260% 100%;
+  -webkit-mask-image: url('../../assets/logo/logo-emblem.webp');
+  mask-image: url('../../assets/logo/logo-emblem.webp');
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  animation: logo-sheen 7.8s ease-in-out infinite 3.5s;
+}
+
+/* Logo Wordmark Masked Shine Pass */
+.brand .logo-word::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    115deg,
+    transparent 32%,
+    rgba(255, 255, 255, 0.35) 44%,
+    rgba(255, 255, 255, 0.92) 50%,
+    rgba(255, 255, 255, 0.35) 56%,
+    transparent 68%
+  );
+  background-size: 260% 100%;
+  -webkit-mask-image: url('../../assets/logo/logo-word.webp');
+  mask-image: url('../../assets/logo/logo-word.webp');
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  animation: logo-sheen 7.8s ease-in-out infinite 3.65s;
+}
+
+.nav.t-green .brand .logo-word::after {
+  -webkit-mask-image: url('../../assets/logo/logo-word-light.webp');
+  mask-image: url('../../assets/logo/logo-word-light.webp');
+}
+
+/* Logo Hover: trigger single immediate glide */
+.brand:hover .logo-em::after,
+.brand:hover .logo-word::after {
+  animation: logo-hover-sweep 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+}
+
+@keyframes logo-hover-sweep {
+  0% {
+    background-position: 220% 0;
+    opacity: 0.9;
+  }
+  100% {
+    background-position: -80% 0;
+    opacity: 0;
+  }
+}
+
+/* 2. Nav Pills & Buttons: Glass Sheen, 1px Gradient Border & Hover Glint */
+@keyframes nav-glint-sweep {
+  0% {
+    transform: translate3d(-140%, -100%, 0) rotate(35deg);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.85;
+  }
+  80% {
+    opacity: 0.85;
+  }
+  100% {
+    transform: translate3d(240%, 100%, 0) rotate(35deg);
+    opacity: 0;
+  }
+}
+
+.nav-pills a,
+.nav-act .bag,
+.pill {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.65),
+    inset 0 -1px 1px rgba(18, 48, 22, 0.08),
+    0 4px 14px -3px rgba(18, 48, 22, 0.1);
+}
+
+/* Active Nav Pill: steady warm sheen */
+.nav-pills a.on {
+  border-color: rgba(231, 198, 128, 0.55);
+  box-shadow:
+    inset 0 1px 1.5px rgba(255, 255, 255, 0.9),
+    0 6px 18px -4px rgba(20, 52, 26, 0.18),
+    0 0 12px rgba(231, 198, 128, 0.25);
+}
+
+/* Hover Glint Ray */
+.nav-pills a::after,
+.nav-act .bag::after,
+.pill::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 50%;
+  height: 200%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.65) 50%,
+    transparent 100%
+  );
+  transform: translate3d(-140%, -100%, 0) rotate(35deg);
+  pointer-events: none;
+  opacity: 0;
+}
+
+.nav-pills a:hover::after,
+.nav-act .bag:hover::after,
+.pill:hover::after {
+  animation: nav-glint-sweep 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* 3. Dock Menu Button: Subtle Rotating Conic Highlight on the Ring */
+@keyframes dock-conic-spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.dock-menu {
+  position: relative;
+  overflow: visible;
+}
+
+.dock-menu::before {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0%,
+    rgba(231, 198, 128, 0.45) 25%,
+    rgba(255, 255, 255, 0.7) 32%,
+    transparent 45%,
+    transparent 100%
+  );
+  pointer-events: none;
+  z-index: 0;
+  animation: dock-conic-spin 9s linear infinite;
+  mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #fff calc(100% - 2.5px));
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #fff calc(100% - 2.5px));
+}
+
+.dock-menu::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: linear-gradient(
+    125deg,
+    transparent 20%,
+    rgba(255, 255, 255, 0.55) 50%,
+    transparent 80%
+  );
+  transform: translate3d(-120%, -120%, 0) rotate(30deg);
+  pointer-events: none;
+  opacity: 0;
+  overflow: hidden;
+}
+
+.dock-menu:hover::after {
+  animation: nav-glint-sweep 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Prefers-reduced-motion: disable sweeps and spins */
+@media (prefers-reduced-motion: reduce) {
+  .hero__title .ln::after,
+  .brand .logo-em::after,
+  .brand .logo-word::after,
+  .dock-menu::before {
+    animation: none !important;
+  }
+  .nav-pills a::after,
+  .nav-act .bag::after,
+  .pill::after,
+  .dock-menu::after {
+    display: none !important;
+  }
+}

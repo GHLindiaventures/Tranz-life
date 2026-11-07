@@ -9,6 +9,8 @@
 @import './components/drawer.css';
 @import './components/lightbox.css';
 @import './components/transitions.css';
+@import './components/droplet.css';
+@import './components/shine.css';
 @import './sections/hero.css';
 @import './sections/lineup.css';
 @import './sections/insider.css';
