@@ -1,0 +1,48 @@
+/* ---------- Stacking Rounded Cards & Section Transitions ---------- */
+:root {
+  --card-radius: 40px;
+  --card-margin: 16px;
+  --card-scale: 0.94;
+  --card-dim: 0.75;
+}
+
+@media (max-width: 768px) {
+  :root {
+    --card-radius: 24px;
+    --card-margin: 8px;
+    --card-scale: 0.97;
+    --card-dim: 0.85;
+  }
+}
+
+/* Stacking card base */
+.card {
+  position: sticky;
+  top: var(--sticky-top, 0px);
+  border-radius: var(--card-radius);
+  margin-inline: var(--card-margin);
+  box-shadow: 0 -16px 36px rgba(0, 0, 0, 0.08);
+  transform-origin: 50% 10%;
+  will-change: transform, filter;
+  overflow: clip;
+}
+
+/* Specific styling for #contact rising over #shop */
+#contact.card {
+  border-radius: var(--card-radius) var(--card-radius) 0 0;
+  box-shadow: 0 -20px 48px rgba(0, 0, 0, 0.12);
+}
+
+/* Respect prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  .card {
+    position: relative !important;
+    top: auto !important;
+    transform: none !important;
+    filter: none !important;
+    margin-inline: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+}
+

@@ -4,12 +4,14 @@ import { intro } from './app/intro.js';
 import { setLoad } from './app/loader.js';
 import { LAYOUT, initPages, pageProgress } from './app/page-sections.js';
 import { initScroll } from './app/scroll-animations.js';
+import { initTransitions } from './app/section-transitions.js';
 import { initSmooth } from './app/smooth-scroll.js';
 import { state, thumbs } from './app/state.js';
 import { initCart, renderCart } from './features/cart/cart.js';
 import { initContactForm } from './features/contact/contact-form.js';
 import { buildNeeds, selectNeed } from './features/finder/product-finder.js';
 import { initHeroJar } from './features/hero/hero-jar.js';
+import { initProductHandOff } from './features/hero/product-hand-off.js';
 import { initLayeredDepth } from './features/hero/layered-depth.js';
 import { initMossReveal } from './features/hero/moss-reveal.js';
 import { buildMarquee } from './features/hero/marquee.js';
@@ -48,6 +50,8 @@ async function boot(){
   setLoad(96);
   initSmooth();
   initScroll();
+  initTransitions();
+  try { state.handOffApi = initProductHandOff(); } catch(err){ console.warn('product hand-off unavailable', err); }
   intro();
 }
 

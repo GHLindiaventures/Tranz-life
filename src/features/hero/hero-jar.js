@@ -64,6 +64,7 @@ function initHeroJar(){
   };
 
   let at = -1, tNow = 0, last = performance.now();
+  let isHeld = false, isHidden = false;
   (function frame(now){
     requestAnimationFrame(frame);
     const r = stage.getBoundingClientRect(); if (r.bottom < 0) { last = now; return; }
@@ -71,25 +72,58 @@ function initHeroJar(){
     mouse.x += (mouse.tx - mouse.x)*.05; mouse.y += (mouse.ty - mouse.y)*.05;
     measure();
     const e = at < 0 ? 0 : ease.back(clamp((now - at)/1700, 0, 1));
-    if (at >= 0){ const ns = now/1000; if (!nextAt) nextAt = ns + HOLD; if (ns >= nextAt){ progT += 1; nextAt = ns + HOLD; } }
+    if (at >= 0){
+      const ns = now/1000;
+      if (!isHeld){
+        if (!nextAt) nextAt = ns + HOLD;
+        if (ns >= nextAt){ progT += 1; nextAt = ns + HOLD; }
+      } else {
+        nextAt = ns + HOLD;
+      }
+    }
     prog += (progT - prog)*(1 - Math.exp(-dt*3.2));
     const cur = ((Math.round(prog) % N) + N) % N; if (cur !== shown){ shown = cur; tint(PRODUCTS[cur]); }
     const pxH = table.ph;
     // the outgoing product shrinks and spins away while the next one grows and spins in, both on the plinth
     let bigH = 0;
-    jars.forEach((jar, i) => { const d = wrap(prog - i), w = sm(clamp(1 - Math.abs(d)*1.6, 0, 1)), on = w > 0.001; jar.G.visible = on; if (!on) return;
+    jars.forEach((jar, i) => { const d = wrap(prog - i), w = sm(clamp(1 - Math.abs(d)*1.6, 0, 1)), on = w > 0.001 && !isHidden; jar.G.visible = on; if (!on) return;
       const jh = pxH*jar.fit*(.6 + .4*e)*w; if (jh > bigH) bigH = jh;
       L.size(jar, Math.max(1, jh));
       L.place(jar.G, table.x, table.y - jh/2 + (1 - e)*L.H*.5);
       jar.G.rotation.set(.04 + mouse.y*.08, -.35 + (1 - e)*-5 + Math.sin(tNow*.45)*.25 + mouse.x*.35 - d*3.2, -.02 + Math.sin(tNow*.6)*.015); });
-    setShadow(table.x, table.y + 4, bigH*.58*e);
+    setShadow(table.x, table.y + 4, isHidden ? 0 : bigH*.58*e);
     const jar = jars[cur], u = pxH/L.ppu(), gw = sm(clamp(1 - Math.abs(wrap(prog - cur))*1.6, 0, 1));
-    props.forEach((o, k) => { const a = o.a + tNow*o.sp, rr = o.r*u*.42*(1 + (1 - e)*.6);
+    props.forEach((o, k) => {
+      o.m.visible = !isHidden;
+      if (isHidden) return;
+      const a = o.a + tNow*o.sp, rr = o.r*u*.42*(1 + (1 - e)*.6);
       o.m.position.set(jar.G.position.x + Math.cos(a)*rr, jar.G.position.y + o.y*u*.45 + Math.sin(tNow + k)*u*.03, Math.sin(a)*rr*.6);
       o.m.scale.setScalar(o.s*u*(o.leaf ? .16 : .1)*e*gw); o.m.rotation.set(tNow*.4 + k, tNow*.3 + a, o.leaf ? .6 : k); });
     L.renderer.render(L.scene, L.cam);
   })(performance.now());
-  return { start(){ if (at < 0) at = performance.now(); play(); } };
+  return {
+    start(){ if (at < 0) at = performance.now(); play(); },
+    current(){
+      return {
+        index: shown,
+        product: PRODUCTS[shown],
+        table: { ...table },
+        canvas: canvas,
+        rotY: jars[shown] ? jars[shown].G.rotation.y : 0,
+        jarFit: jars[shown] ? jars[shown].fit : 1
+      };
+    },
+    hold(freeze){
+      isHeld = !!freeze;
+      if (freeze && Math.abs(progT - prog) > 0.05) {
+        prog = progT = Math.round(progT);
+      }
+    },
+    setVisible(visible){
+      isHidden = !visible;
+      if (shadow) shadow.style.opacity = visible ? '1' : '0';
+    }
+  };
 }
 
 export { initHeroJar };

@@ -1,5 +1,6 @@
 // Tracks the current section and theme, and scrolls to sections.
 import { state } from './state.js';
+import { ScrollTrigger } from '../lib/gsap.js';
 import { NSTAGE } from '../data/pipeline.js';
 import { $, $$ } from '../utils/dom.js';
 import { clamp } from '../utils/math.js';
@@ -11,7 +12,16 @@ const GROUND = { green:'#112117', cream:'#eee3c6' };
 
 function scrollToY(y){ if (state.lenis){ state.lenis.scrollTo(Math.max(0, y), { duration:1.4 }); return; } window.scrollTo({ top:Math.max(0, y), behavior: reduce ? 'auto' : 'smooth' }); }
 
-function scrollToPage(id){ const el = document.getElementById(id); if (el) scrollToY(el.getBoundingClientRect().top + window.scrollY); }
+function scrollToPage(id){
+  const pages = LAYOUT.pages || [];
+  const i = pages.findIndex(p => p.id === id);
+  if (i >= 0 && LAYOUT.tops && LAYOUT.tops[i] !== undefined) {
+    scrollToY(LAYOUT.tops[i]);
+    return;
+  }
+  const el = document.getElementById(id);
+  if (el) scrollToY(el.offsetTop || (el.getBoundingClientRect().top + window.scrollY));
+}
 
 function pageProgress(id){
   const el = document.getElementById(id); if (!el) return { p:0, visible:false };
@@ -25,10 +35,16 @@ function initPages(){
   function measure(){
     LAYOUT.vh = window.innerHeight;
     LAYOUT.hs = pages.map(p => p.offsetHeight);
-    LAYOUT.tops = pages.map(p => p.getBoundingClientRect().top + window.scrollY);
+    let acc = 0;
+    LAYOUT.tops = pages.map(p => {
+      const top = acc;
+      acc += p.offsetHeight;
+      return top;
+    });
     // where two themes meet, the upper colour fades into the next page
     pages.forEach((p, i) => { if (i && !p.querySelector(':scope > .show, :scope > .pin')) p.style.setProperty('--prev', GROUND[last(pages[i - 1])] + ' '); });
     update();
+    if (ScrollTrigger && ScrollTrigger.refresh) ScrollTrigger.refresh();
   }
   function update(){
     const y = window.scrollY;

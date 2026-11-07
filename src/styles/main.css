@@ -8,7 +8,9 @@
 @import './components/menu.css';
 @import './components/drawer.css';
 @import './components/lightbox.css';
+@import './components/transitions.css';
 @import './sections/hero.css';
+@import './sections/lineup.css';
 @import './sections/insider.css';
 @import './sections/ayurveda.css';
 @import './sections/product-story.css';

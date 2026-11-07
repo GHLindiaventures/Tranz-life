@@ -1,6 +1,7 @@
 // Page sections listed in the dock and the full-screen menu.
 const SECTIONS = [
   { id:'home', name:'Home', sub:'Nature meets science', tags:['3D jar','Facts arc','Marquee'] },
+  { id:'lineup', name:'Lineup', sub:'All five products', tags:['The lineup','5 products'] },
   { id:'insider', name:'Why TranzLife', sub:'You deserve the best', tags:['Our products','Our promise'] },
   { id:'products', name:'Products', sub:'The product story', tags:['3D products','5 cards','Finale'] },
   { id:'benefits', name:'Benefits', sub:'See the difference', tags:['Comparison'] },

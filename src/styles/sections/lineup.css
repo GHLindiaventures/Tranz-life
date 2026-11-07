@@ -1,0 +1,127 @@
+/* ---------- Section 2: Lineup & Flight Layer ---------- */
+
+/* Fixed flight canvas spanning the viewport */
+#flightCanvas {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 45; /* above sections, below nav(50), menu(58), dock(60), drawer(80) */
+  pointer-events: none;
+  display: none;
+}
+
+#flightCanvas.active {
+  display: block;
+}
+
+/* Section styling */
+.lineup {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-block: clamp(80px, 12vh, 140px);
+  background: var(--ground);
+}
+
+.lineup-wrap {
+  width: 100%;
+  max-width: 1320px;
+  margin-inline: auto;
+  padding-inline: max(24px, env(safe-area-inset-left, 0px));
+}
+
+/* Row of 5 product slots */
+.lineup-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: clamp(16px, 2.8vw, 36px);
+  align-items: end;
+  justify-items: center;
+  width: 100%;
+}
+
+.lineup-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 210px;
+}
+
+/* Individual slot container with fixed aspect ratio */
+.lineup-slot {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1.35;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Static shot inside slot */
+.lineup-slot [data-shot] {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.25s ease;
+}
+
+.lineup-slot [data-shot] img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 14px 24px rgba(28, 54, 30, 0.15));
+}
+
+/* When live product is landing, the slot static shot is temporarily hidden */
+.lineup-slot.landing [data-shot] {
+  opacity: 0;
+}
+
+/* Existing short product label below each slot */
+.lineup-name {
+  margin-top: 18px;
+  font-family: var(--f-display);
+  font-stretch: 72%;
+  font-weight: 800;
+  font-size: clamp(14px, 1.4vw, 18px);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--forest);
+  opacity: 0.85;
+}
+
+/* Responsive: 2 + 3 grid on mobile */
+@media (max-width: 768px) {
+  .lineup {
+    min-height: auto;
+    padding-block: 90px 60px;
+  }
+  .lineup-grid {
+    grid-template-columns: repeat(6, 1fr);
+    gap: 16px 12px;
+  }
+  .lineup-item:nth-child(1),
+  .lineup-item:nth-child(2) {
+    grid-column: span 3;
+    max-width: 160px;
+  }
+  .lineup-item:nth-child(3),
+  .lineup-item:nth-child(4),
+  .lineup-item:nth-child(5) {
+    grid-column: span 2;
+    max-width: 130px;
+  }
+  .lineup-name {
+    font-size: 13px;
+    margin-top: 10px;
+  }
+}
