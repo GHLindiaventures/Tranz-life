@@ -69,7 +69,18 @@ function initNav(){
     if (changed && !menu.classList.contains('open')){ dock.classList.add('peek'); clearTimeout(peekT); peekT = setTimeout(() => dock.classList.remove('peek'), 1600); }
   };
   setOn('home'); window.addEventListener('resize', place);
-  window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 40), { passive:true });
+  let lastScrollY = window.scrollY;
+  window.addEventListener('scroll', () => {
+    const y = window.scrollY;
+    nav.classList.toggle('scrolled', y > 40);
+    // Auto-hide when scrolling down past 120px; smoothly reveal on upward scroll
+    if (y > 120 && y > lastScrollY + 6 && !menu.classList.contains('open')) {
+      nav.classList.add('nav-hidden');
+    } else if (y < lastScrollY - 4 || y <= 40) {
+      nav.classList.remove('nav-hidden');
+    }
+    lastScrollY = y;
+  }, { passive: true });
   // the dark footer counts as a green page for the dock and nav
   let pageDark = false; const foot = $('footer');
   const tone = () => { const dark = pageDark || foot.getBoundingClientRect().top < innerHeight*.5; nav.classList.toggle('t-green', dark); dock.classList.toggle('t-green', dark); };

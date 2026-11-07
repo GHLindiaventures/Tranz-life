@@ -24,12 +24,18 @@ p{margin:0}
 .hand{font-family:var(--f-hand);font-weight:600;font-stretch:normal;color:var(--forest);line-height:1}
 .wl{display:inline-block;overflow:hidden;vertical-align:top;padding-bottom:.06em;margin-bottom:-.06em}
 .wl>span{display:inline-block}
-/* pills: dot + label, like stickers */
-.pill{display:inline-flex;align-items:center;gap:2px;font-weight:700;font-stretch:80%;font-size:16px;color:var(--on-cream);transition:transform .35s var(--ease)}
-.pill i{width:32px;height:32px;border-radius:50%;background:var(--cream);display:grid;place-items:center;font-style:normal;font-size:15px;transition:transform .4s var(--ease)}
-.pill b{background:var(--cream);border-radius:999px;padding:6px 14px;font-weight:700;line-height:1.25}
-.pill:hover i{transform:rotate(45deg)}
-.pill:hover{transform:translateY(-1px)}
+/* pills: dot + label, tactile interactive buttons */
+.pill{display:inline-flex;align-items:center;gap:2px;font-weight:700;font-stretch:80%;font-size:16px;color:var(--on-cream);transition:transform .3s var(--ease-expo),box-shadow .3s ease;will-change:transform}
+.pill i{width:32px;height:32px;border-radius:50%;background:var(--cream);display:grid;place-items:center;font-style:normal;font-size:15px;transition:transform .35s var(--ease-expo)}
+.pill b{background:var(--cream);border-radius:999px;padding:6px 14px;font-weight:700;line-height:1.25;transition:background .3s ease}
+.pill:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(22,54,28,.18)}
+.pill:hover i{transform:scale(1.08) rotate(45deg)}
+.pill:active{transform:translateY(1px) scale(.97);box-shadow:0 2px 6px rgba(22,54,28,.12)}
 .pill.light{color:var(--forest)}.pill.light i,.pill.light b{background:#fff}
+
+/* Animated link underlines */
+a.link-under, .link-anim{position:relative;display:inline-flex}
+a.link-under::after, .link-anim::after{content:"";position:absolute;left:0;bottom:-2px;width:100%;height:1.5px;background:currentColor;transform-origin:right center;transform:scaleX(0);transition:transform .35s var(--ease-expo)}
+a.link-under:hover::after, .link-anim:hover::after{transform-origin:left center;transform:scaleX(1)}
 /* keep content clear of the left dock on desktop */
 @media (min-width:981px){.wrap{padding-left:max(24px,calc(112px - (100vw - 1320px)/2))}}
