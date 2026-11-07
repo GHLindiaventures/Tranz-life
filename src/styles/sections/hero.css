@@ -19,7 +19,7 @@
   background: #b6cba5; /* the site's light green, matches the video while it loads */
   --mx: 0;
   --my: 0;
-  --rock-dy: 4vh; /* raise the rock so its visible top aligns with the red-line marker */
+  --rock-dy: 18vh; /* lowered the rock down to match the user's line marker */
 }
 
 /* Layer 1: Ambient background video (swaying tree shadows) */
