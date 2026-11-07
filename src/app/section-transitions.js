@@ -105,51 +105,7 @@ function initTransitions() {
     );
   }
 
-  // 6. Atmospheric Mist Wipe between #process (green) and #science (cream)
-  const fogGate = document.getElementById('fogProcessScience');
-  const fogPanel = document.getElementById('fogPanel');
-  const fogL1 = document.getElementById('fogL1');
-  const fogL2 = document.getElementById('fogL2');
-  const fogL3 = document.getElementById('fogL3');
-  const fogLeaves = $$('#fogLeaves .fog-leaf');
 
-  if (fogGate && fogPanel && fogL1 && fogL2 && fogL3) {
-    const fogTl = gsap.timeline({
-      scrollTrigger: {
-        trigger: fogGate,
-        start: 'top top',
-        end: 'bottom bottom',
-        scrub: 0.6,
-        onUpdate: (self) => {
-          // At midpoint (when screen is obscured by rising mist), swap background color
-          if (self.progress >= 0.5) {
-            fogPanel.style.backgroundColor = '#e9efe3'; // cream
-          } else {
-            fogPanel.style.backgroundColor = '#1d4424'; // green
-          }
-        }
-      }
-    });
-
-    // Mist layers rise at staggered speeds to obscure the screen
-    fogTl.fromTo(fogL1, { yPercent: 120 }, { yPercent: -30, ease: 'none' }, 0);
-    fogTl.fromTo(fogL2, { yPercent: 140 }, { yPercent: -45, ease: 'none' }, 0);
-    fogTl.fromTo(fogL3, { yPercent: 160 }, { yPercent: -60, ease: 'none' }, 0);
-
-    // Floating leaves with rotation and parallax drift
-    fogLeaves.forEach((leaf, idx) => {
-      const rot = (idx % 2 === 0 ? 1 : -1) * (40 + idx * 10);
-      fogTl.fromTo(
-        leaf,
-        { yPercent: 80 + idx * 15, rotation: -rot * 0.5 },
-        { yPercent: -80 - idx * 15, rotation: rot, ease: 'none' },
-        0
-      );
-    });
-
-    // In the second half (progress 0.55 -> 1.0), mist disperses revealing #science
-    fogTl.to([fogL1, fogL2, fogL3], { opacity: 0, ease: 'power2.inOut' }, 0.55);
-  }
 
   return { updateStickyTops };
 }
