@@ -1,6 +1,7 @@
 // Tracks the current section and theme, and scrolls to sections.
 import { state } from './state.js';
 import { ScrollTrigger } from '../lib/gsap.js';
+import { MOTION } from './motion-tokens.js';
 import { NSTAGE } from '../data/pipeline.js';
 import { $, $$ } from '../utils/dom.js';
 import { clamp } from '../utils/math.js';
@@ -10,17 +11,28 @@ const LAYOUT = { pages:[], tops:[], hs:[], vh:window.innerHeight, cur:-1, theme:
 
 const GROUND = { green:'#112117', cream:'#eee3c6' };
 
-function scrollToY(y){ if (state.lenis){ state.lenis.scrollTo(Math.max(0, y), { duration:1.4 }); return; } window.scrollTo({ top:Math.max(0, y), behavior: reduce ? 'auto' : 'smooth' }); }
+function scrollToY(y){
+  if (state.lenis){
+    state.lenis.scrollTo(Math.max(0, y), {
+      duration: 1.2,
+      easing: MOTION.ease.easedScroll
+    });
+    return;
+  }
+  window.scrollTo({ top:Math.max(0, y), behavior: reduce ? 'auto' : 'smooth' });
+}
 
 function scrollToPage(id){
+  const el = document.getElementById(id);
+  if (!el) return;
   const pages = LAYOUT.pages || [];
   const i = pages.findIndex(p => p.id === id);
   if (i >= 0 && LAYOUT.tops && LAYOUT.tops[i] !== undefined) {
     scrollToY(LAYOUT.tops[i]);
     return;
   }
-  const el = document.getElementById(id);
-  if (el) scrollToY(el.offsetTop || (el.getBoundingClientRect().top + window.scrollY));
+  const r = el.getBoundingClientRect();
+  scrollToY(r.top + window.scrollY);
 }
 
 function pageProgress(id){
