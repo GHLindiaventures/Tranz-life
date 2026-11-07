@@ -1,58 +1,44 @@
-/* ---------- Section Transitions: Stacking Rounded Cards, Card Morph, and Mist Wipe ---------- */
+/* ---------- Section Transitions: Full-Bleed Layered Sheets ---------- */
 :root {
-  --card-radius: 36px;
-  --card-margin: 16px;
-  --card-scale: 0.94;
-  --card-dim: 0.75;
+  --sheet-max-radius: 36px;
+  --sheet-radius: 0px;
 }
 
 @media (max-width: 768px) {
   :root {
-    --card-radius: 20px;
-    --card-margin: 8px;
-    --card-scale: 0.97;
-    --card-dim: 0.85;
+    --sheet-max-radius: 24px;
   }
 }
 
-/* Stacking card base */
-.card {
+/* Layered sheet base: 100% full-width, edge-to-edge, zero side gaps */
+.sheet-stack {
   position: sticky;
   top: var(--sticky-top, 0px);
-  border-radius: var(--card-radius);
-  margin-inline: var(--card-margin);
-  box-shadow: 0 -16px 40px rgba(18, 38, 20, 0.07), 0 -2px 10px rgba(18, 38, 20, 0.04);
-  transform-origin: 50% 12%;
-  will-change: transform, filter;
-  overflow: clip;
+  width: 100% !important;
+  max-width: 100% !important;
+  margin-inline: 0 !important;
+  border-top-left-radius: var(--sheet-radius, 0px);
+  border-top-right-radius: var(--sheet-radius, 0px);
+  border-bottom-left-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+  box-shadow: 0 -14px 36px rgba(14, 32, 16, 0.07);
+  will-change: border-radius;
   background-color: var(--ground);
 }
 
-/* Specific styling for #contact rising over #shop */
-#contact.card {
-  border-radius: var(--card-radius) var(--card-radius) 0 0;
-  box-shadow: 0 -24px 56px rgba(16, 36, 18, 0.12);
-  margin-inline: 0;
-}
-
-/* Card to Fullscreen Morph (#products 3D scene) */
-.card-morph {
-  clip-path: inset(var(--card-margin) round var(--card-radius));
-  will-change: clip-path;
+/* Contact footer sheet rising over #shop */
+#contact.sheet-stack {
+  border-top-left-radius: var(--sheet-radius, 36px);
+  border-top-right-radius: var(--sheet-radius, 36px);
+  box-shadow: 0 -20px 48px rgba(10, 28, 12, 0.12);
 }
 
 /* Reduced motion accessibility */
 @media (prefers-reduced-motion: reduce) {
-  .card {
+  .sheet-stack {
     position: relative !important;
     top: auto !important;
-    transform: none !important;
-    filter: none !important;
-    margin-inline: 0 !important;
     border-radius: 0 !important;
     box-shadow: none !important;
-  }
-  .card-morph {
-    clip-path: none !important;
   }
 }

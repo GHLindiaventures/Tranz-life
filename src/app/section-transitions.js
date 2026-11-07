@@ -1,22 +1,19 @@
-// Section transitions: Stacking rounded cards, Card-to-Fullscreen Morph, and Atmospheric Mist Wipe.
+// Section transitions: Full-bleed layered sheets with top-corner radius transition.
 import { ScrollTrigger, gsap, hasGsap } from '../lib/gsap.js';
 import { reduce } from '../utils/media.js';
-import { MOTION } from './motion-tokens.js';
-import { $, $$ } from '../utils/dom.js';
 
 const CONFIG = {
-  stackIds: ['insider', 'benefits', 'science', 'lab', 'finder', 'shop'],
+  // Only key storytelling cover moments: #insider over lineup/hero, #lab over science
+  stackIds: ['insider', 'lab'],
   contactId: 'contact',
-  outgoingScale: 0.94,
-  dimBrightness: 0.75
+  maxRadius: 36
 };
 
 function initTransitions() {
   if (reduce) return null;
 
   const isMobile = window.innerWidth < 768;
-  const targetScale = isMobile ? 0.97 : CONFIG.outgoingScale;
-  const targetDim = isMobile ? 0.85 : CONFIG.dimBrightness;
+  const maxR = isMobile ? 24 : CONFIG.maxRadius;
 
   // 1. Establish natural DOM z-index hierarchy across all main > .page sections
   const pages = Array.from(document.querySelectorAll('main > .page'));
@@ -24,29 +21,28 @@ function initTransitions() {
     page.style.zIndex = i + 1;
   });
 
-  // 2. Mark stack sections as .card
-  const cardElements = [];
+  // 2. Mark only the curated sheet sections as .sheet-stack
+  const sheetElements = [];
   CONFIG.stackIds.forEach(id => {
     const el = document.getElementById(id);
     if (el) {
-      el.classList.add('card');
-      cardElements.push(el);
+      el.classList.add('sheet-stack');
+      sheetElements.push(el);
     }
   });
 
-  // #contact also reveals as a rounded card rising over #shop
   const contactEl = document.getElementById(CONFIG.contactId);
   if (contactEl) {
-    contactEl.classList.add('card');
-    cardElements.push(contactEl);
+    contactEl.classList.add('sheet-stack');
+    sheetElements.push(contactEl);
   }
 
   // 3. For sections taller than viewport, set sticky top so user sees full content before stacking
   function updateStickyTops() {
     const vh = window.innerHeight;
-    cardElements.forEach(card => {
-      const topOffset = Math.min(0, vh - card.offsetHeight);
-      card.style.setProperty('--sticky-top', `${topOffset}px`);
+    sheetElements.forEach(sheet => {
+      const topOffset = Math.min(0, vh - sheet.offsetHeight);
+      sheet.style.setProperty('--sticky-top', `${topOffset}px`);
     });
   }
 
@@ -55,28 +51,19 @@ function initTransitions() {
 
   if (!hasGsap || !ScrollTrigger) return { updateStickyTops };
 
-  // 4. Scroll-driven outgoing card scaling & brightness dimming
-  CONFIG.stackIds.forEach(id => {
-    const currentCard = document.getElementById(id);
-    if (!currentCard) return;
-
-    // Find the next section in main that covers this card
-    let nextEl = currentCard.nextElementSibling;
-    while (nextEl && !nextEl.classList.contains('page')) {
-      nextEl = nextEl.nextElementSibling;
-    }
-    if (!nextEl) return;
-
+  // 4. While a sheet is sliding over the previous section, top corners are rounded (36px).
+  // Once it reaches top and is settled, radius eases to 0px so the page reads as continuous.
+  sheetElements.forEach(sheet => {
+    // Set initial rounded state when approaching
     gsap.fromTo(
-      currentCard,
-      { scale: 1, filter: 'brightness(1)' },
+      sheet,
+      { '--sheet-radius': `${maxR}px` },
       {
-        scale: targetScale,
-        filter: `brightness(${targetDim})`,
-        ease: 'none',
+        '--sheet-radius': '0px',
+        ease: 'power2.inOut',
         scrollTrigger: {
-          trigger: nextEl,
-          start: 'top bottom',
+          trigger: sheet,
+          start: 'top 85%',
           end: 'top top',
           scrub: true,
           invalidateOnRefresh: true
@@ -84,28 +71,6 @@ function initTransitions() {
       }
     );
   });
-
-  // 5. Card-to-Fullscreen Morph: #products 3D scene expands from rounded card to full bleed
-  const productsSec = document.getElementById('products');
-  if (productsSec && !isMobile) {
-    productsSec.classList.add('card-morph');
-    gsap.fromTo(
-      productsSec,
-      { clipPath: 'inset(16px round 36px)' },
-      {
-        clipPath: 'inset(0px round 0px)',
-        ease: 'none',
-        scrollTrigger: {
-          trigger: productsSec,
-          start: 'top bottom',
-          end: 'top 20%',
-          scrub: true
-        }
-      }
-    );
-  }
-
-
 
   return { updateStickyTops };
 }

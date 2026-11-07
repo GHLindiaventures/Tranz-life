@@ -4,12 +4,12 @@ import { $, $$ } from '../../utils/dom.js';
 import { reduce } from '../../utils/media.js';
 
 const CONFIG = {
-  sweepInterval: 6.4,
-  bandWidth: 0.16,
+  sweepInterval: 4.8,
+  bandWidth: 0.22,
   dropletBlur: 8,
-  displacementScale: 7,
+  displacementScale: 6,
   wobbleAmplitude: 1.06,
-  morphSpeed: 7.5
+  morphSpeed: 8.0
 };
 
 // 1. Inject SVG refraction filter defs once into DOM
@@ -27,7 +27,7 @@ function injectFilterDefs() {
   svg.innerHTML = `
     <defs>
       <filter id="drop-refract" x="-20%" y="-20%" width="140%" height="140%" color-interpolation-filters="sRGB">
-        <feTurbulence type="fractalNoise" baseFrequency="0.038" numOctaves="1" result="noise" />
+        <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="1" result="noise" />
         <feDisplacementMap in="SourceGraphic" in2="noise" scale="${CONFIG.displacementScale}" xChannelSelector="R" yChannelSelector="G" />
       </filter>
     </defs>
@@ -51,25 +51,59 @@ function setupHeadlineShine() {
   });
 }
 
-// 3. Setup Water-Droplet Badges interactive tactile effects
+// 3. Setup Water-Droplet Badges interactive tactile effects & splash satellites
 function setupDropletBadges() {
   const badges = $$('.facts .fact');
   if (!badges.length) return;
 
-  badges.forEach(badge => {
-    // Add micro glint bar element if not present
-    if (!badge.querySelector('.drop-glint-bar')) {
+  badges.forEach((badge, idx) => {
+    // 3a. Strict clipping shell: .fact-liquid keeps glints strictly inside badge
+    let liquid = badge.querySelector('.fact-liquid');
+    if (!liquid) {
+      liquid = document.createElement('div');
+      liquid.className = 'fact-liquid';
+      liquid.setAttribute('aria-hidden', 'true');
+      badge.appendChild(liquid);
+    }
+
+    if (!liquid.querySelector('.drop-glint-bar')) {
       const glint = document.createElement('div');
       glint.className = 'drop-glint-bar';
       glint.setAttribute('aria-hidden', 'true');
-      badge.appendChild(glint);
+      liquid.appendChild(glint);
+    }
+
+    // 3b. Satellite micro-droplets (splash feel: "like water dropped on surface")
+    if (!badge.querySelector('.micro-drop')) {
+      const md1 = document.createElement('div');
+      md1.className = 'micro-drop md-1';
+      md1.setAttribute('aria-hidden', 'true');
+
+      const md2 = document.createElement('div');
+      md2.className = 'micro-drop md-2';
+      md2.setAttribute('aria-hidden', 'true');
+
+      badge.appendChild(md1);
+      badge.appendChild(md2);
+
+      if (idx !== 1) {
+        const md3 = document.createElement('div');
+        md3.className = 'micro-drop md-3';
+        md3.setAttribute('aria-hidden', 'true');
+        badge.appendChild(md3);
+      }
+
+      // Settle in with an ease-out when hero loads
+      setTimeout(() => {
+        badge.querySelectorAll('.micro-drop').forEach(md => md.classList.add('settled'));
+      }, 700 + idx * 120);
     }
 
     if (reduce) return;
 
-    // Hover ripple effect & elastic wobble
+    // 3c. Hover ripple effect & elastic wobble
     badge.addEventListener('pointerenter', () => {
-      // Create expanding water ripples
+      // Concentric expanding water ripples
       const r1 = document.createElement('div');
       r1.className = 'droplet-ripple';
       r1.setAttribute('aria-hidden', 'true');
@@ -101,7 +135,7 @@ function setupDropletBadges() {
             onComplete: () => {
               gsap.to(badge, {
                 '--drop-scale': 1,
-                duration: 0.4,
+                duration: 0.45,
                 ease: 'elastic.out(1, 0.4)'
               });
             }
@@ -110,11 +144,11 @@ function setupDropletBadges() {
       }
     });
 
-    // Press squish & spring back
+    // 3d. Press squish & spring back
     badge.addEventListener('pointerdown', () => {
       if (hasGsap) {
         gsap.to(badge, {
-          '--drop-sx': 1.06,
+          '--drop-sx': 1.05,
           '--drop-sy': 0.93,
           duration: 0.12,
           ease: 'power1.out'
@@ -139,7 +173,7 @@ function setupDropletBadges() {
   });
 }
 
-// 4. Subtle pointer-tracking shift for headline shine and visibility pausing
+// 4. Pointer-tracking shift for headline shine and visibility pausing
 function setupShineControls() {
   const heroStage = $('#home');
   if (!heroStage) return;
