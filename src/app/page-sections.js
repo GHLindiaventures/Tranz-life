@@ -47,12 +47,7 @@ function initPages(){
   function measure(){
     LAYOUT.vh = window.innerHeight;
     LAYOUT.hs = pages.map(p => p.offsetHeight);
-    let acc = 0;
-    LAYOUT.tops = pages.map(p => {
-      const top = acc;
-      acc += p.offsetHeight;
-      return top;
-    });
+    LAYOUT.tops = pages.map(p => p.offsetTop);
     // where two themes meet, the upper colour fades into the next page
     pages.forEach((p, i) => { if (i && !p.querySelector(':scope > .show, :scope > .pin')) p.style.setProperty('--prev', GROUND[last(pages[i - 1])] + ' '); });
     update();

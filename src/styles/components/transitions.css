@@ -1,6 +1,6 @@
-/* ---------- Stacking Rounded Cards & Section Transitions ---------- */
+/* ---------- Section Transitions: Stacking Rounded Cards, Card Morph, and Mist Wipe ---------- */
 :root {
-  --card-radius: 40px;
+  --card-radius: 36px;
   --card-margin: 16px;
   --card-scale: 0.94;
   --card-dim: 0.75;
@@ -8,7 +8,7 @@
 
 @media (max-width: 768px) {
   :root {
-    --card-radius: 24px;
+    --card-radius: 20px;
     --card-margin: 8px;
     --card-scale: 0.97;
     --card-dim: 0.85;
@@ -21,19 +21,110 @@
   top: var(--sticky-top, 0px);
   border-radius: var(--card-radius);
   margin-inline: var(--card-margin);
-  box-shadow: 0 -16px 36px rgba(0, 0, 0, 0.08);
-  transform-origin: 50% 10%;
+  box-shadow: 0 -16px 40px rgba(18, 38, 20, 0.07), 0 -2px 10px rgba(18, 38, 20, 0.04);
+  transform-origin: 50% 12%;
   will-change: transform, filter;
   overflow: clip;
+  background-color: var(--ground);
 }
 
 /* Specific styling for #contact rising over #shop */
 #contact.card {
   border-radius: var(--card-radius) var(--card-radius) 0 0;
-  box-shadow: 0 -20px 48px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 -24px 56px rgba(16, 36, 18, 0.12);
+  margin-inline: 0;
 }
 
-/* Respect prefers-reduced-motion */
+/* Card to Fullscreen Morph (#products 3D scene) */
+.card-morph {
+  clip-path: inset(var(--card-margin) round var(--card-radius));
+  will-change: clip-path;
+}
+
+/* ---------- Fog Gate (Mist Curtain Wipe between #process and #science) ---------- */
+.fog-gate {
+  position: relative;
+  height: 180vh;
+  pointer-events: none;
+  z-index: 10;
+  overflow: clip;
+}
+
+.fog-sticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100svh;
+  width: 100%;
+  overflow: hidden;
+}
+
+.fog-panel {
+  position: absolute;
+  inset: 0;
+  background: var(--ground);
+  transition: background-color 0.3s ease;
+}
+
+.fog-layers {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.fog-l {
+  position: absolute;
+  inset: -25% -10%;
+  width: 120%;
+  height: 150%;
+  background-repeat: repeat-x;
+  background-size: cover;
+  background-position: center bottom;
+  pointer-events: none;
+}
+
+.fog-l.l1 {
+  background-image: url('/fog/fog-1.webp');
+  opacity: 0.88;
+  mix-blend-mode: screen;
+}
+
+.fog-l.l2 {
+  background-image: url('/fog/fog-2.webp');
+  opacity: 0.72;
+  mix-blend-mode: screen;
+}
+
+.fog-l.l3 {
+  background-image: url('/fog/fog-3.webp');
+  opacity: 0.92;
+  mix-blend-mode: screen;
+}
+
+/* Floating decorative leaves */
+.fog-leaves {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.fog-leaf {
+  position: absolute;
+  width: clamp(24px, 2.5vw, 42px);
+  height: clamp(24px, 2.5vw, 42px);
+  opacity: 0.75;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.18));
+}
+
+.fl-1 { top: 20%; left: 15%; }
+.fl-2 { top: 35%; left: 80%; }
+.fl-3 { top: 50%; left: 25%; }
+.fl-4 { top: 65%; left: 70%; }
+.fl-5 { top: 40%; left: 45%; }
+.fl-6 { top: 75%; left: 35%; }
+
+/* Reduced motion accessibility */
 @media (prefers-reduced-motion: reduce) {
   .card {
     position: relative !important;
@@ -44,5 +135,10 @@
     border-radius: 0 !important;
     box-shadow: none !important;
   }
+  .card-morph {
+    clip-path: none !important;
+  }
+  .fog-gate {
+    display: none !important;
+  }
 }
-
