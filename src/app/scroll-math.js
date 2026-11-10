@@ -8,7 +8,7 @@ const smoothstep = (a, b, v) => { const t = clamp01((v - a) / (b - a)); return t
 // Returns y offset in vh (0 = resting spot), opacity and a small scale.
 function badgeState(t, k){
   const enter = smoothstep(k * .07, k * .07 + .3, t);
-  const exit = smoothstep(.68 + k * .04, .94, t);
+  const exit = smoothstep(.55 + k * .04, .8, t);
   const y = (1 - enter) * 70 - exit * 45 - (t - .5) * 8;   // a slow drift even while resting
   return { y, o: Math.min(1, enter * 2.5) * (1 - exit), s: .8 + .2 * enter };
 }

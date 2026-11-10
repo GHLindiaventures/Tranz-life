@@ -8,7 +8,7 @@ import { state } from './state.js';
 import { $, $$ } from '../utils/dom.js';
 import { reduce } from '../utils/media.js';
 import { LAYOUT, scrollToPage, pageProgress } from './page-sections.js';
-import { badgeState, badgeSpot, pad3 } from './scroll-math.js';
+import { badgeState, badgeSpot, pad3, smoothstep } from './scroll-math.js';
 import { PRODUCTS } from '../data/products.js';
 import { STORY } from '../data/product-story.js';
 
@@ -17,7 +17,6 @@ const CONFIG = {
   menu: { stagger: MOTION.stagger.menu, staggerSmall: 0.04 },
   benefits: { table: '#benefits table.tbl', rowStagger: 0.05, settle: 0.6 },
   pills: { insider: '#insider .in-h .lt', story: '#seqTitle .l2', storyFinal: '#seqFinal', duration: 0.7, delay: 0.45 },
-  shop: { quickMedia: '(hover:hover) and (pointer:fine) and (min-width:768px)' },
   // B1/B2: scallop edges (row of half-circles) on these sections' tops; the shop turns dark green
   scallop: { dark: '#shop', edges: ['#shop', '#contact', 'footer'], from: 0.35, settle: 0.45, scrub: 0.4 },
   // Palmo-style extras
@@ -103,20 +102,39 @@ function initPills(){
   }
 }
 
-// ---- A4: shop cards: hover tint (CSS) and a quick-add panel built from the card's own price row ----
+// ---- A4 (Palmo flavour cards): framed tile, colour fill + tilted product + line-art on hover, rolling name ----
+// Nothing is removed: the name is split into letter spans (same text, read out via aria-label), and decorative
+// leaf outlines are added to the photo tile. The price row stays in the card; its "Add to bag" label opens on hover.
+const DOODLE = '<svg class="pc-doodle" viewBox="0 0 200 200" aria-hidden="true"><path d="M30 168c10-46 40-82 92-104M30 168c40-6 78-34 92-104-40 4-76 30-92 104z"/><path d="M150 40c-8 22-4 44 14 60 6-24 0-44-14-60zM150 40c4 30 10 46 14 60"/><path d="M118 176c14-14 34-18 54-10-16 14-36 16-54 10zM118 176c20-4 38-8 54-10"/></svg>';
 function initShopCards(){
   const grid = $('#grid'); if (!grid) return;
-  const mq = matchMedia(CONFIG.shop.quickMedia);
-  const place = () => {
-    $$('.pc', grid).forEach(card => {
-      const foot = $('.pc-foot', card), media = $('.pc-media', card), body = $('.pc-body', card);
-      if (!foot || !media || !body) return;
-      if (mq.matches && foot.parentElement !== media){ media.appendChild(foot); foot.classList.add('pc-quick'); card.classList.add('has-quick'); }
-      else if (!mq.matches && foot.parentElement === media){ body.appendChild(foot); foot.classList.remove('pc-quick'); card.classList.remove('has-quick'); }
-    });
-  };
-  place();
-  if (mq.addEventListener) mq.addEventListener('change', place);
+  $$('.pc', grid).forEach(card => {
+    card.classList.add('pc-palmo');
+    const media = $('.pc-media', card); if (media && !$('.pc-doodle', media)) media.insertAdjacentHTML('beforeend', DOODLE);
+    const h = $('h3', card);
+    if (h && !h.dataset.rolled){
+      const name = h.textContent.trim(); let i = 0;
+      h.setAttribute('aria-label', name); h.dataset.rolled = '1';
+      h.innerHTML = name.split(/(\s+)/).map(w => /^\s+$/.test(w) ? ' ' :
+        `<span class="pw" aria-hidden="true">${[...w].map(ch => `<span class="pl" style="--i:${i++}">${ch}</span>`).join('')}</span>`).join('');
+    }
+  });
+  // the shop heading spreads to one line with a leaf mark between its two halves (desktop)
+  const head = $(CONFIG.split.shop);
+  if (head && !$('.sh-mark', head)){
+    const l2 = $('.lt', head);
+    if (l2) l2.insertAdjacentHTML('beforebegin', '<span class="sh-mark" aria-hidden="true"><svg viewBox="0 0 120 120"><g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><circle cx="60" cy="60" r="14"/>' +
+      Array.from({ length: 12 }, (_, k) => `<path transform="rotate(${k * 30} 60 60)" d="M60 38c-5-8-5-16 0-24 5 8 5 16 0 24z"/>`).join('') + '</g></svg></span>');
+    // group the first line's words so the flex row keeps them together
+    const mk = $('.sh-mark', head), l1 = document.createElement('span'); l1.className = 'sh-l1';
+    while (head.firstChild && head.firstChild !== mk) l1.appendChild(head.firstChild);
+    head.insertBefore(l1, mk);
+    head.classList.add('sh-spread');
+    if (!reduce && hasGsap && ScrollTrigger){
+      const mark = $('.sh-mark svg', head);
+      gsap.to(mark, { rotation: 180, ease: 'none', scrollTrigger: { trigger: head, start: 'top bottom', end: 'bottom top', scrub: .6 } });
+    }
+  }
 }
 
 // ---- B1/B2: Palmo-style scallop edges ----
@@ -181,7 +199,16 @@ function initSplitHeads(){
   };
   // shop: first line's words (masked by rv-words) from the left, the accent line from the right
   const h = $(CONFIG.split.shop);
-  if (h){ const l2 = $('.lt', h); pair($$('.wl', h).filter(w => !l2 || !l2.contains(w)), l2 ? [l2] : [], { trigger: h, start: 'top bottom', end: 'top 35%', scrub: .5 }); }
+  if (h){
+    const l2 = $('.lt', h), l1 = $('.sh-l1', h), st = { trigger: h, start: 'top bottom', end: 'top 35%', scrub: .5, invalidateOnRefresh: true };
+    if (l1 && l2 && matchMedia('(min-width:900px)').matches){
+      // spread on one line (Palmo): the halves start beside the leaf mark and open out to the edges
+      const inward = () => innerWidth * .06;
+      gsap.fromTo(l1, { x: () => inward() }, { x: 0, ease: 'none', scrollTrigger: st });
+      gsap.fromTo(l2, { x: () => -inward() }, { x: 0, ease: 'none', scrollTrigger: { ...st } });
+      gsap.fromTo($('.sh-mark', h), { scale: .4 }, { scale: 1, ease: 'none', scrollTrigger: { ...st } });
+    } else pair($$('.wl', h).filter(w => !l2 || !l2.contains(w)), l2 ? [l2] : [], st);
+  }
   // footer wordmark: settles exactly at the bottom of the page
   const big = $(CONFIG.split.footer);
   if (big){ const ls = $$('.fb-l', big); pair(ls.slice(0, 1), ls.slice(1), { trigger: 'footer', start: 'top bottom', end: 'bottom bottom', scrub: .5 }); }
@@ -208,7 +235,8 @@ function initStoryBadges(){
   gsap.ticker.add(() => {
     if (!active) return;
     if (api.small() || matchMedia(CONFIG.small).matches){ hideAll(); return; }          // no stickers on small screens
-    const p = api.progress();
+    const p = api.progress(), fin = $('#seqFinal');
+    if (fin && fin.classList.contains('play')){ hideAll(); return; }
     items.forEach(b => {
       const { start, dur } = api.slot(b.i), st = badgeState((p - start) / dur, b.k);
       const on = st.o > .002;
@@ -216,6 +244,46 @@ function initStoryBadges(){
       if (on){ b.el.style.opacity = st.o.toFixed(3); b.el.style.transform = `translate(-50%,-50%) translateY(${st.y.toFixed(2)}vh) rotate(${b.tilt}deg) scale(${st.s.toFixed(3)})`; }
     });
   });
+}
+
+// ---- Palmo showcase for the product story: big title with a masked rise, page tint in the product's colour,
+// and a bottom-left progress row ("01 / 05", bar, 000-100). product-story.js still moves the jars and toggles
+// each card's visibility; here the card is restyled (CSS .seq.palmo) and only its opacity / "on" state is driven.
+function initStoryShowcase(){
+  const api = state.storyApi, seq = $('#seq'), pin = $('#seqPin'), fin = $('#seqFinal');
+  if (!api || !api.progress || !seq || !pin) return;
+  seq.classList.add('palmo');
+  const cards = $$('.sc', seq);
+  // title lines rise out of a mask: wrap each line's text (same words) in an inner span
+  cards.forEach(c => $$('h3 > span', c).forEach(l => { if (!$('.sr-in', l)){ const i = document.createElement('span'); i.className = 'sr-in'; while (l.firstChild) i.appendChild(l.firstChild); l.appendChild(i); } }));
+  const prog = document.createElement('div');
+  prog.className = 'seq-prog'; prog.setAttribute('aria-hidden', 'true');
+  prog.innerHTML = '<span class="sp-no">01 / 05</span><i class="pp-track"><b></b></i><span class="sp-n">000</span>';
+  pin.appendChild(prog);
+  const no = $('.sp-no', prog), fill = $('.pp-track b', prog), n = $('.sp-n', prog);
+  let active = !ScrollTrigger, lastNo = '', lastN = '', lastTint = '';
+  if (ScrollTrigger) ScrollTrigger.create({ trigger: seq, start: 'top bottom', end: 'bottom top', onToggle: s => { active = s.isActive; } });
+  const tick = () => {
+    if (!active) return;
+    const p = api.progress(), ended = !!(fin && fin.classList.contains('play'));
+    let best = 0, bestW = -1;
+    cards.forEach((c, i) => {
+      const { start, dur } = api.slot(i), t = (p - start) / dur;
+      const o = ended ? 0 : smoothstep(0, .14, t) * (1 - smoothstep(.6, .78, t));
+      c.style.opacity = o.toFixed(3);
+      c.classList.toggle('is-on', !ended && t > .02 && t < .7);
+      if (o > bestW){ bestW = o; best = i; }
+    });
+    prog.classList.toggle('done', ended);
+    const lbl = `${(PRODUCTS[best] || {}).no || '01'} / ${String(PRODUCTS.length).padStart(2, '0')}`;
+    if (lbl !== lastNo){ lastNo = lbl; no.textContent = lbl; }
+    const v = Math.min(1, p / .8);                                   // the five products fill the bar; the finale follows
+    fill.style.transform = `scaleX(${v.toFixed(4)})`;
+    const nv = pad3(v * 100); if (nv !== lastN){ lastN = nv; n.textContent = nv; }
+    const tint = (STORY[best] || {}).c || '';
+    if (tint !== lastTint){ lastTint = tint; pin.style.setProperty('--seq-tint', tint); }
+  };
+  if (hasGsap) gsap.ticker.add(tick); else (function loop(){ requestAnimationFrame(loop); tick(); })();
 }
 
 // ---- Palmo 3: process progress: a thin bar and a three-digit counter (000 to 100) in the pinned scene ----
@@ -254,6 +322,7 @@ function initProductMotion(){
   initBackToTop();
   initFooterMotion();
   initSplitHeads();
+  initStoryShowcase();
   initStoryBadges();
   initProcessBar();
   initInsiderFlyIn();
