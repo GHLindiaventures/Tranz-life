@@ -25,5 +25,6 @@
 @import './sections/contact.css';
 @import './sections/about.css';
 @import './sections/catalog.css';
+@import './sections/product-details.css';
 @import './sections/footer.css';
 @import './responsive.css';

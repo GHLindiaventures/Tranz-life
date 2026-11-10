@@ -17,7 +17,8 @@ export default defineConfig(({ mode }) => {
             input: {
               main: 'index.html',
               about: 'about.html',
-              products: 'products.html'
+              products: 'products.html',
+              productDetails: 'product-details.html'
             }
           }
         },
