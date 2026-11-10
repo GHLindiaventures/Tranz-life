@@ -10,7 +10,16 @@ export default defineConfig(({ mode }) => {
     plugins: single ? [viteSingleFile()] : [],
     build: single
       ? { outDir: 'dist-single', assetsInlineLimit: Number.MAX_SAFE_INTEGER, cssCodeSplit: false }
-      : { outDir: 'dist', chunkSizeWarningLimit: 900 },
+      : {
+          outDir: 'dist',
+          chunkSizeWarningLimit: 900,
+          rollupOptions: {
+            input: {
+              main: 'index.html',
+              about: 'about.html'
+            }
+          }
+        },
     test: { environment: 'node', include: ['tests/**/*.test.js'] }
   };
 });
