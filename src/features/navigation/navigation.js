@@ -9,8 +9,22 @@ import { reduce } from '../../utils/media.js';
 function initNav(){
   const nav = $('#nav'), dock = $('#dock'), btn = $('#dockMenu'), menu = $('#menu'), ind = $('#dockInd');
   const pad = n => String(n).padStart(2, '0');
+  const SITE_PAGES = [
+    { no: '01', name: 'Home', sub: 'Nature meets science', href: 'index.html#home' },
+    { no: '02', name: 'About Us', sub: 'Our mission & innovation', href: 'about.html' },
+    { no: '03', name: 'Our Products', sub: 'All five formulations', href: 'products.html' },
+    { no: '04', name: 'Science & Innovation', sub: 'Molecular delivery & 3D lab', href: 'science.html' },
+    { no: '05', name: 'Our Ingredients', sub: 'Botanical pharmacopeia', href: 'ingredients.html' },
+    { no: '06', name: 'Quality & Manufacturing', sub: 'Cleanrooms & batch audit', href: 'quality.html' },
+    { no: '07', name: 'Sustainability', sub: 'Regeneration & zero-plastic', href: 'sustainability.html' },
+    { no: '08', name: 'Certifications & Compliance', sub: 'Regulatory accreditations', href: 'certifications.html' },
+    { no: '09', name: 'News & Insights', sub: 'Clinical research & updates', href: 'news.html' },
+    { no: '10', name: 'Careers', sub: 'Join our research team', href: 'careers.html' },
+    { no: '11', name: 'Contact', sub: 'Say hello', href: 'contact.html' }
+  ];
+
   $('#dockList').innerHTML = SECTIONS.map((s, i) => `<li style="--i:${i}"><a href="#${s.id}" data-sec="${s.id}" aria-label="${s.name}" tabindex="-1">${svgI(SEC_IC[s.id])}<b>${s.name}</b></a></li>`).join('');
-  $('#menuList').innerHTML = SECTIONS.map((s, i) => `<li data-sec="${s.id}" style="--i:${i}"><a href="#${s.id}"><span class="mi-no">${pad(i + 1)}</span><span class="mi-name">${s.name}</span><span class="mi-sub">${s.sub}</span></a></li>`).join('');
+  $('#menuList').innerHTML = SITE_PAGES.map((p, i) => `<li style="--i:${i}"><a href="${p.href}"><span class="mi-no">${p.no}</span><span class="mi-name">${p.name}</span><span class="mi-sub">${p.sub}</span></a></li>`).join('');
   const links = $$('#dockList a');
 
   // featured product card inside the menu
