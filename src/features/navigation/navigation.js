@@ -5,6 +5,7 @@ import { SECTIONS } from '../../data/sections.js';
 import { SEC_IC, svgI } from './nav-icons.js';
 import { $, $$ } from '../../utils/dom.js';
 import { reduce } from '../../utils/media.js';
+import { scrollToPage } from '../../app/page-sections.js';
 
 function initNav(){
   const nav = $('#nav'), dock = $('#dock'), btn = $('#dockMenu'), menu = $('#menu'), ind = $('#dockInd');
@@ -18,13 +19,19 @@ function initNav(){
   const showFeat = i => { fi = i; const p = PRODUCTS[i]; $$('img', fImg).forEach((im, k) => im.classList.toggle('on', k === i)); $('#mfName').textContent = p.name; $('#mfNo').textContent = `Product ${p.no} · ${p.tag}`; $('#mfAdd').dataset.id = p.id; };
   const startFeat = () => { if (!fImg.children.length && thumbs.gummies) fImg.innerHTML = PRODUCTS.map(p => `<img src="${thumbs[p.id]}" alt="${p.name}">`).join(''); showFeat(fi); clearInterval(ft); if (!reduce) ft = setInterval(() => showFeat((fi + 1) % PRODUCTS.length), 2800); };
 
-  const setOpen = open => {
+  const applyOpen = open => {
     const r = btn.getBoundingClientRect(); menu.style.setProperty('--ox', (r.left + r.width/2).toFixed(0) + 'px'); menu.style.setProperty('--oy', (r.top + r.height/2).toFixed(0) + 'px');
     menu.classList.toggle('open', open); menu.setAttribute('aria-hidden', !open);
     btn.setAttribute('aria-expanded', open); btn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
     document.documentElement.classList.toggle('menu-open', open);
     if (state.lenis) open ? state.lenis.stop() : state.lenis.start();
     if (open) startFeat(); else clearInterval(ft);
+  };
+  // state.menuWipe (set by product-motion.js) plays the split wipe and calls applyOpen at its midpoint;
+  // `after` runs once the menu has changed (e.g. the jump to the chosen section, hidden behind the wipe)
+  const setOpen = (open, after) => {
+    if (state.menuWipe && open !== menu.classList.contains('open')) { state.menuWipe(open, () => { applyOpen(open); if (after) after(); }); return; }
+    applyOpen(open); if (after) after();
   };
   // the dock rests as a single symbol; hover (or a first tap on touch) unfolds the bar
   const touch = !matchMedia('(hover:hover) and (pointer:fine)').matches; dock.classList.toggle('touch', touch);
@@ -52,7 +59,13 @@ function initNav(){
     unfold(false); setOpen(!menu.classList.contains('open'));
   });
   $('#menuX').addEventListener('click', () => setOpen(false));
-  menu.addEventListener('click', e => { if (e.target.closest('a')) setOpen(false); });
+  menu.addEventListener('click', e => {
+    const a = e.target.closest('a'); if (!a) return;
+    const href = a.getAttribute('href') || '', id = href.startsWith('#') ? href.slice(1) : '';
+    // with the wipe, jump to the section while the wipe covers the page (smooth scroll is paused while the menu is open)
+    if (state.menuWipe && id && document.getElementById(id)) { e.preventDefault(); e.stopPropagation(); setOpen(false, () => scrollToPage(id, { immediate:true })); return; }
+    setOpen(false);
+  });
   window.addEventListener('keydown', e => { if (e.key === 'Escape') setOpen(false); });
 
   // the dock follows the page: a sliding dot marks the current section, its label peeks out

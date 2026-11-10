@@ -179,11 +179,15 @@ function initScroll() {
   }
 
   // 6. Multi-Layer Parallax Depth
-  // 6a. #insider: tilted studio product cards drift and turn at 1.25x depth
+  // 6a. #insider: tilted studio product cards drift and turn, each at its own speed (lighter on small screens);
+  // the hover lift is a separate CSS `translate`, so it composes with this transform
+  const inSmall = window.innerWidth < 768 ? 0.55 : 1;
+  const IN_DRIFT = [{ from: 60, to: -50, rot: -7 }, { from: 130, to: -150, rot: 11 }, { from: 90, to: -95, rot: -9 }];
   $$('.in-card').forEach((c, k) => {
+    const d = IN_DRIFT[k % IN_DRIFT.length];
     gsap.fromTo(c,
-      { y: 70 + k * 35 },
-      { y: -60 - k * 25, rotation: [-5, 8, -7][k], ease: 'none', scrollTrigger: { trigger: '#insider', start: 'top bottom', end: 'bottom top', scrub: 0.5 } }
+      { y: d.from * inSmall },
+      { y: d.to * inSmall, rotation: d.rot, ease: 'none', scrollTrigger: { trigger: '#insider', start: 'top bottom', end: 'bottom top', scrub: 0.5 } }
     );
   });
 

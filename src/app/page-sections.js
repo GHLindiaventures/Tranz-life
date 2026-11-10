@@ -12,28 +12,29 @@ const LAYOUT = { pages:[], tops:[], hs:[], vh:window.innerHeight, cur:-1, theme:
 
 const GROUND = { green:'#112117', cream:'#eee3c6' };
 
-function scrollToY(y){
+// opts.immediate: jump without the smooth scroll (used behind the menu / back-to-top wipe)
+function scrollToY(y, opts = {}){
   if (state.lenis){
-    state.lenis.scrollTo(Math.max(0, y), {
+    state.lenis.scrollTo(Math.max(0, y), opts.immediate ? { immediate:true, force:true } : {
       duration: 1.2,
       easing: MOTION.ease.easedScroll
     });
     return;
   }
-  window.scrollTo({ top:Math.max(0, y), behavior: reduce ? 'auto' : 'smooth' });
+  window.scrollTo({ top:Math.max(0, y), behavior: opts.immediate || reduce ? 'auto' : 'smooth' });
 }
 
-function scrollToPage(id){
+function scrollToPage(id, opts = {}){
   const el = document.getElementById(id);
   if (!el) return;
   const pages = LAYOUT.pages || [];
   const i = pages.findIndex(p => p.id === id);
   if (i >= 0 && LAYOUT.tops && LAYOUT.tops[i] !== undefined) {
-    scrollToY(LAYOUT.tops[i]);
+    scrollToY(LAYOUT.tops[i], opts);
     return;
   }
   const r = el.getBoundingClientRect();
-  scrollToY(r.top + window.scrollY);
+  scrollToY(r.top + window.scrollY, opts);
 }
 
 function pageProgress(id){
@@ -87,4 +88,4 @@ function initPages(){
   return { measure, update };
 }
 
-export { LAYOUT, pageProgress, initPages };
+export { LAYOUT, pageProgress, initPages, scrollToPage };

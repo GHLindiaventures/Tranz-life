@@ -24,4 +24,6 @@
 @import './sections/shop.css';
 @import './sections/contact.css';
 @import './sections/footer.css';
+/* after the sections so the scroll-choreography extras can refine their rules */
+@import './components/motion-extras.css';
 @import './responsive.css';

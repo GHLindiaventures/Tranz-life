@@ -5,6 +5,7 @@ import { setLoad } from './app/loader.js';
 import { LAYOUT, initPages, pageProgress } from './app/page-sections.js';
 import { initScroll } from './app/scroll-animations.js';
 import { initTransitions } from './app/section-transitions.js';
+import { initProductMotion } from './app/product-motion.js';
 import { initSmooth } from './app/smooth-scroll.js';
 import { state, thumbs } from './app/state.js';
 import { initCart, renderCart } from './features/cart/cart.js';
@@ -52,6 +53,7 @@ async function boot(){
   initSmooth();
   initScroll();
   initTransitions();
+  try { initProductMotion(); } catch(err){ console.warn('product motion unavailable', err); }
   try { state.handOffApi = initProductHandOff(); } catch(err){ console.warn('product hand-off unavailable', err); }
   window.state = state;
   intro();
