@@ -86,3 +86,22 @@ footer.tl-scallop{--sc-c:var(--forest);position:relative;z-index:20;padding-top:
 .f-big .fb-l:first-child{color:inherit}
 .f-big .fb-i{display:block;color:inherit;will-change:transform}
 
+
+/* ---------- Palmo-style extras ---------- */
+/* story badges: round stickers made from each product's ingredient chips (JS positions and scrubs them) */
+.seq-badges{position:absolute;inset:0;z-index:3;pointer-events:none}
+.seq-badges .sb{position:absolute;display:grid;place-items:center;width:clamp(118px,10vw,158px);aspect-ratio:1;padding:14px;border-radius:50%;
+  border:3px solid var(--forest);background:#f6efd9;color:var(--forest);text-align:center;font-family:var(--f-display);font-stretch:66%;font-weight:850;
+  text-transform:uppercase;font-size:clamp(15px,1.3vw,20px);line-height:.95;box-shadow:0 18px 30px -18px rgba(31,70,35,.5);visibility:hidden;will-change:transform,opacity}
+.seq-badges .sb.sb-alt{background:var(--c);border-color:#f6efd9;color:#fff;text-shadow:0 1px 0 rgba(31,70,35,.2)}
+@media (max-width:767px){.seq-badges{display:none}}
+
+/* process progress: thin bar and a three-digit counter, bottom right of the pinned scene */
+.pp-bar{position:absolute;z-index:5;right:clamp(16px,3vw,44px);bottom:clamp(18px,3.4vh,34px);width:min(24vw,340px);display:flex;align-items:center;gap:14px;
+  color:var(--forest);pointer-events:none;transition:color .4s}
+.pp-bar.on-green{color:#e9efe3}
+.pp-track{position:relative;flex:1;height:6px;border-radius:99px;overflow:hidden}
+.pp-track{background:color-mix(in srgb,currentColor 18%,transparent)}
+.pp-track b{position:absolute;inset:0;border-radius:inherit;background:currentColor;transform:scaleX(0);transform-origin:0 50%}
+.pp-n{font-family:var(--f-display);font-stretch:70%;font-weight:850;font-size:clamp(18px,1.6vw,24px);letter-spacing:.04em;font-variant-numeric:tabular-nums}
+@media (max-width:767px){.pp-bar{width:44vw}}

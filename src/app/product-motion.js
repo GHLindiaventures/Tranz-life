@@ -7,7 +7,10 @@ import { MOTION } from './motion-tokens.js';
 import { state } from './state.js';
 import { $, $$ } from '../utils/dom.js';
 import { reduce } from '../utils/media.js';
-import { LAYOUT, scrollToPage } from './page-sections.js';
+import { LAYOUT, scrollToPage, pageProgress } from './page-sections.js';
+import { badgeState, badgeSpot, pad3 } from './scroll-math.js';
+import { PRODUCTS } from '../data/products.js';
+import { STORY } from '../data/product-story.js';
 
 const CONFIG = {
   wipe: { half: MOTION.dur.wipe, ease: MOTION.ease.wipe, slitDelay: 0.55 },  // two halves = 0.8s
@@ -17,6 +20,12 @@ const CONFIG = {
   shop: { quickMedia: '(hover:hover) and (pointer:fine) and (min-width:768px)' },
   // B1/B2: scallop edges (row of half-circles) on these sections' tops; the shop turns dark green
   scallop: { dark: '#shop', edges: ['#shop', '#contact', 'footer'], from: 0.35, settle: 0.45, scrub: 0.4 },
+  // Palmo-style extras
+  // badges: round stickers with each product's own ingredient chips rise around its jar in the product story
+  // (spots are [x vw, y vh] for a product whose jar sits right of centre; odd products mirror)
+  badges: { spots: [[82, 20], [91, 64], [70, 84]], tilt: [-9, 7, -4] },
+  split: { shop: '#shop .shop-head .h2', footer: 'footer .f-big', shift: 14, shiftSmall: 6 },
+  insider: { cards: '#insider .in-card', from: [-150, 40, 170], scale: 0.86 },
   footer: { logo: 'footer .f-brand', big: 'footer .f-big', cols: 'footer .f-row > div', bottom: 'footer .f-bot', stagger: 0.09 },
   small: '(max-width:767px)'
 };
@@ -162,6 +171,80 @@ function initFooterMotion(){
   } });
 }
 
+// ---- Palmo 1: split headings: the two lines of a big heading slide in from opposite sides as you scroll ----
+function initSplitHeads(){
+  if (reduce || !hasGsap || !ScrollTrigger) return;
+  const shift = () => innerWidth * (matchMedia(CONFIG.small).matches ? CONFIG.split.shiftSmall : CONFIG.split.shift) / 100;
+  const pair = (a, b, st) => {
+    if (a.length) gsap.fromTo(a, { x: () => -shift() }, { x: 0, ease: 'none', scrollTrigger: { ...st, invalidateOnRefresh: true } });
+    if (b.length) gsap.fromTo(b, { x: () => shift() }, { x: 0, ease: 'none', scrollTrigger: { ...st, invalidateOnRefresh: true } });
+  };
+  // shop: first line's words (masked by rv-words) from the left, the accent line from the right
+  const h = $(CONFIG.split.shop);
+  if (h){ const l2 = $('.lt', h); pair($$('.wl', h).filter(w => !l2 || !l2.contains(w)), l2 ? [l2] : [], { trigger: h, start: 'top bottom', end: 'top 35%', scrub: .5 }); }
+  // footer wordmark: settles exactly at the bottom of the page
+  const big = $(CONFIG.split.footer);
+  if (big){ const ls = $$('.fb-l', big); pair(ls.slice(0, 1), ls.slice(1), { trigger: 'footer', start: 'top bottom', end: 'bottom bottom', scrub: .5 }); }
+}
+
+// ---- Palmo 2: round badges rise around each product as it turns in the product story ----
+function initStoryBadges(){
+  const api = state.storyApi, pin = $('#seqPin');
+  if (!api || !api.progress || !pin || reduce || !hasGsap || !ScrollTrigger) return;
+  const layer = document.createElement('div');
+  layer.className = 'seq-badges'; layer.setAttribute('aria-hidden', 'true');   // same words as the shop cards' chips
+  const items = [];
+  PRODUCTS.forEach((p, i) => (p.ing || []).slice(0, CONFIG.badges.spots.length).forEach((txt, k) => {
+    const el = document.createElement('span'), at = badgeSpot(CONFIG.badges.spots[k], i);
+    el.className = 'sb'; el.textContent = txt;
+    el.style.cssText = `left:${at.x}vw;top:${at.y}%;--c:${(STORY[i] || {}).c || '#8cb86a'}`;
+    if (k % 2) el.classList.add('sb-alt');
+    layer.appendChild(el); items.push({ el, i, k, tilt: CONFIG.badges.tilt[k] * (i % 2 ? -1 : 1), shown: false });
+  }));
+  pin.appendChild(layer);
+  let active = false;
+  ScrollTrigger.create({ trigger: '#seq', start: 'top bottom', end: 'bottom top', onToggle: s => { active = s.isActive; if (!active) hideAll(); } });
+  const hideAll = () => items.forEach(b => { if (b.shown){ b.el.style.visibility = 'hidden'; b.shown = false; } });
+  gsap.ticker.add(() => {
+    if (!active) return;
+    if (api.small() || matchMedia(CONFIG.small).matches){ hideAll(); return; }          // no stickers on small screens
+    const p = api.progress();
+    items.forEach(b => {
+      const { start, dur } = api.slot(b.i), st = badgeState((p - start) / dur, b.k);
+      const on = st.o > .002;
+      if (on !== b.shown){ b.el.style.visibility = on ? 'visible' : 'hidden'; b.shown = on; }
+      if (on){ b.el.style.opacity = st.o.toFixed(3); b.el.style.transform = `translate(-50%,-50%) translateY(${st.y.toFixed(2)}vh) rotate(${b.tilt}deg) scale(${st.s.toFixed(3)})`; }
+    });
+  });
+}
+
+// ---- Palmo 3: process progress: a thin bar and a three-digit counter (000 to 100) in the pinned scene ----
+function initProcessBar(){
+  const pin = $('#pin'); if (!pin || !hasGsap) return;
+  const bar = document.createElement('div');
+  bar.className = 'pp-bar'; bar.setAttribute('aria-hidden', 'true');
+  bar.innerHTML = '<i class="pp-track"><b></b></i><span class="pp-n">000</span>';
+  pin.appendChild(bar);
+  const fill = $('b', bar), n = $('.pp-n', bar);
+  let last = '';
+  gsap.ticker.add(() => {
+    const pr = pageProgress('process'); if (!pr.visible) return;
+    fill.style.transform = `scaleX(${pr.p.toFixed(4)})`;
+    const v = pad3(pr.p * 100); if (v !== last){ last = v; n.textContent = v; }
+    bar.classList.toggle('on-green', !!(LAYOUT.reactor && LAYOUT.reactor.theme && LAYOUT.reactor.theme() === 'green'));
+  });
+}
+
+// ---- Palmo 4: insider photo cards fly in from scattered spots, then keep their tilted scroll drift ----
+function initInsiderFlyIn(){
+  const cards = $$(CONFIG.insider.cards);
+  if (!cards.length || reduce || !hasGsap || !ScrollTrigger) return;
+  const k = matchMedia(CONFIG.small).matches ? .45 : 1;
+  // x / scale / opacity only: y and rotation belong to the scroll drift in scroll-animations.js
+  gsap.from(cards, { x: i => CONFIG.insider.from[i % 3] * k, scale: CONFIG.insider.scale, opacity: 0, duration: 1.1,
+    stagger: .12, ease: 'back.out(1.3)', scrollTrigger: { trigger: cards[0].parentElement, start: 'top 82%', once: true } });
+}
+
 function initProductMotion(){
   initMenuMotion();
   initBenefits();
@@ -170,6 +253,10 @@ function initProductMotion(){
   initScallops();
   initBackToTop();
   initFooterMotion();
+  initSplitHeads();
+  initStoryBadges();
+  initProcessBar();
+  initInsiderFlyIn();
   return { slitWipe, CONFIG };
 }
 

@@ -104,7 +104,8 @@ function initStory(){
       o.m.rotation.set(o.r0 + tNow*.35, o.r0*.7 + tNow*.25, o.leaf ? .4 : o.r0); });
     L.renderer.render(L.scene, L.cam);
   })(performance.now());
-  return { resize };
+  // read-only hooks for the scroll extras (product-motion.js): smoothed progress and each product's glide window
+  return { resize, progress: () => cur, slot: i => ({ start: sOf(i), dur: DUR }), count: NP, small: () => mobile };
 }
 
 export { initStory };
