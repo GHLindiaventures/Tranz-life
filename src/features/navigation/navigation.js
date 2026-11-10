@@ -96,12 +96,7 @@ function initNav(){
   }, { passive: true });
   // the dark footer counts as a green page for the dock and nav
   let pageDark = false; const foot = $('footer');
-  // state.curtainOver(el) (product-motion.js) returns true while a green section curtain sits behind el
-  const tone = () => {
-    const dark = pageDark || foot.getBoundingClientRect().top < innerHeight*.5, over = state.curtainOver;
-    nav.classList.toggle('t-green', (over && over(nav)) || dark); dock.classList.toggle('t-green', (over && over(dock)) || dark);
-  };
-  state.navTone = tone;
+  const tone = () => { const dark = pageDark || foot.getBoundingClientRect().top < innerHeight*.5; nav.classList.toggle('t-green', dark); dock.classList.toggle('t-green', dark); };
   window.addEventListener('scroll', tone, { passive:true });
   window.addEventListener('tl:page', e => { setOn(e.detail.id); pageDark = e.detail.theme === 'green'; tone(); });
 }

@@ -1,5 +1,5 @@
 // Product-site motion for the sections below the hero. Phase A: split-wipe menu, benefits column highlight,
-// highlighter pills, shop quick-add. Phase B: leaf curtains, back-to-top wipe, footer reveal.
+// highlighter pills, shop quick-add. Phase B: scallop edges, back-to-top wipe, footer reveal.
 // The hero (#home) and #lineup are not touched.
 // Styles: src/styles/components/motion-extras.css
 import { ScrollTrigger, gsap, hasGsap } from '../lib/gsap.js';
@@ -8,7 +8,6 @@ import { state } from './state.js';
 import { $, $$ } from '../utils/dom.js';
 import { reduce } from '../utils/media.js';
 import { LAYOUT, scrollToPage } from './page-sections.js';
-import { leafEdgePath, leafVeinPath, curtainCovers, VB_W, VB_H } from './curtain-geometry.js';
 
 const CONFIG = {
   wipe: { half: MOTION.dur.wipe, ease: MOTION.ease.wipe, slitDelay: 0.55 },  // two halves = 0.8s
@@ -16,9 +15,8 @@ const CONFIG = {
   benefits: { table: '#benefits table.tbl', rowStagger: 0.05, settle: 0.6 },
   pills: { insider: '#insider .in-h .lt', story: '#seqTitle .l2', storyFinal: '#seqFinal', duration: 0.7, delay: 0.45 },
   shop: { quickMedia: '(hover:hover) and (pointer:fine) and (min-width:768px)' },
-  // B1/B2: a green curtain with leaf edges passes over the screen as these sections arrive;
-  // it fully covers at the halfway point and is gone exactly when the section top reaches the top
-  curtain: { ids: ['process', 'contact'], range: 1, leaves: 12, leavesSmall: 6, edge: 0.11, edgeSmall: 0.07, scrub: 0.5, drift: 3 },
+  // B1/B2: scallop edges (row of half-circles) on these sections' tops; the shop turns dark green
+  scallop: { dark: '#shop', edges: ['#shop', '#contact', 'footer'], from: 0.35, settle: 0.45, scrub: 0.4 },
   footer: { logo: 'footer .f-brand', big: 'footer .f-big', cols: 'footer .f-row > div', bottom: 'footer .f-bot', stagger: 0.09 },
   small: '(max-width:767px)'
 };
@@ -112,54 +110,20 @@ function initShopCards(){
   if (mq.addEventListener) mq.addEventListener('change', place);
 }
 
-// ---- B1/B2: leaf-scallop curtains on #process and #contact ----
-// One fixed layer per section, scrubbed by scroll: rises from below, covers the whole screen when the section top
-// is halfway up, and has left the top of the screen when the section top reaches it (so anchor jumps land clean).
-// It sits under the nav and dock, which take the green tone while the curtain is behind them.
-function buildCurtain(small){
-  const n = small ? CONFIG.curtain.leavesSmall : CONFIG.curtain.leaves;
-  const edge = `<svg viewBox="0 0 ${VB_W} ${VB_H}" preserveAspectRatio="none" aria-hidden="true"><path class="tc-fill" d="${leafEdgePath(n)}"/><path class="tc-vein" d="${leafVeinPath(n)}"/></svg>`;
-  const el = document.createElement('div');
-  el.className = 'tl-curtain'; el.setAttribute('aria-hidden', 'true');
-  el.innerHTML = `<div class="tc-edge tc-top">${edge}</div><div class="tc-body"></div><div class="tc-edge tc-bot">${edge}</div>`;
-  document.body.appendChild(el);
-  return el;
-}
-function initCurtains(){
-  if (reduce || !hasGsap || !ScrollTrigger) return;
-  const small = matchMedia(CONFIG.small).matches;
-  const edgeH = () => Math.round(innerHeight * (small ? CONFIG.curtain.edgeSmall : CONFIG.curtain.edge));
-  const live = [];
-  CONFIG.curtain.ids.forEach(id => {
-    const sec = document.getElementById(id); if (!sec) return;
-    const el = buildCurtain(small), edges = $$('.tc-edge', el);
-    sec.classList.add('has-curtain');
-    // body height from innerHeight, not CSS 100vh (taller than the visible area on phones with a collapsing address bar)
-    const size = () => { const e = edgeH(); el.style.setProperty('--tc-edge', e + 'px'); el.style.setProperty('--tc-vh', innerHeight + 'px'); return e; };
-    size();
-    // section top in page coordinates: LAYOUT.tops (not the trigger's own box, which reports a stuck position on sticky sheets)
-    const top = () => { const i = LAYOUT.pages.indexOf(sec); return i >= 0 && LAYOUT.tops[i] !== undefined ? LAYOUT.tops[i] : sec.offsetTop; };
-    const c = { el, edge: size, active: false };
-    live.push(c);
-    gsap.set(el, { y: innerHeight });
-    gsap.timeline({
-      scrollTrigger: {
-        start: () => top() - innerHeight * CONFIG.curtain.range, end: () => top(),
-        scrub: CONFIG.curtain.scrub, invalidateOnRefresh: true,
-        onRefresh: size,
-        onToggle: self => { c.active = self.isActive; gsap.set(el, { visibility: self.isActive ? 'visible' : 'hidden' }); if (state.navTone) state.navTone(); }
-      },
-      onUpdate: () => { if (state.navTone) state.navTone(); }
-    })
-      .fromTo(el, { y: () => innerHeight }, { y: () => -(innerHeight + 2 * edgeH()), ease: 'none' }, 0)
-      .fromTo(edges, { xPercent: 0 }, { xPercent: -CONFIG.curtain.drift, ease: 'none' }, 0);
-  });
-  if (!live.length) return;
-  // nav/dock tone: true while a curtain's solid part is behind the element's centre
-  state.curtainOver = target => {
-    const r = target.getBoundingClientRect(), cy = r.top + r.height / 2;
-    return live.some(c => c.active && curtainCovers(gsap.getProperty(c.el, 'y'), edgeH(), innerHeight, cy));
-  };
+// ---- B1/B2: Palmo-style scallop edges ----
+// A row of half-circles in a section's own colour overlaps the bottom of the section above (CSS shape: .tl-scallop
+// in motion-extras.css; the section moves up by one radius and its content padding grows by the same, so nothing shifts).
+// The shop becomes a dark green band like Palmo's flavours block; the bumps grow from small as each edge comes into view.
+function initScallops(){
+  const shop = $(CONFIG.scallop.dark);
+  if (shop){ shop.classList.add('t-green', 'tl-dark'); shop.dataset.theme = 'green'; }
+  const edges = CONFIG.scallop.edges.map(sel => $(sel)).filter(Boolean);
+  edges.forEach(el => el.classList.add('tl-scallop'));
+  if (reduce || !hasGsap || !ScrollTrigger) return;                      // bumps stay at full size
+  // page-coordinate top: LAYOUT.tops for <main> sections (sticky sheets report a stuck offsetTop), offsetTop for the footer
+  const top = el => { const i = LAYOUT.pages.indexOf(el); return i >= 0 && LAYOUT.tops[i] !== undefined ? LAYOUT.tops[i] : el.offsetTop; };
+  edges.forEach(el => gsap.fromTo(el, { '--sc-k': CONFIG.scallop.from }, { '--sc-k': 1, ease: 'none', scrollTrigger: {
+    start: () => top(el) - innerHeight, end: () => top(el) - innerHeight * CONFIG.scallop.settle, scrub: CONFIG.scallop.scrub, invalidateOnRefresh: true } }));
 }
 
 // ---- B3: back to top: the footer logo plays the split wipe and jumps to the top behind it ----
@@ -203,7 +167,7 @@ function initProductMotion(){
   initBenefits();
   initPills();
   initShopCards();
-  initCurtains();
+  initScallops();
   initBackToTop();
   initFooterMotion();
   return { slitWipe, CONFIG };
