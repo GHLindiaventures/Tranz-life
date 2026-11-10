@@ -20,7 +20,8 @@ export default defineConfig(({ mode }) => {
               products: 'products.html',
               productDetails: 'product-details.html',
               science: 'science.html',
-              ingredients: 'ingredients.html'
+              ingredients: 'ingredients.html',
+              quality: 'quality.html'
             }
           }
         },
