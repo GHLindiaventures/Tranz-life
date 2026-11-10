@@ -126,6 +126,7 @@
   color: var(--sage);
   background: linear-gradient(135deg, #24502a 0%, #6f9e4c 65%, #d6a23a 100%);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
@@ -350,3 +351,4 @@
     overflow-x: auto;
   }
 }
+

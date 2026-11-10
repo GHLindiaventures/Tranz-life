@@ -195,3 +195,4 @@ if (document.readyState === 'loading') {
 }
 
 export { initNewsPage };
+

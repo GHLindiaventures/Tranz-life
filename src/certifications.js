@@ -161,3 +161,4 @@ if (document.readyState === 'loading') {
 }
 
 export { initCertificationsPage };
+

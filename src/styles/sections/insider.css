@@ -324,6 +324,7 @@
   letter-spacing: -0.015em;
   background: linear-gradient(135deg, #103b18 0%, #226b34 45%, #3d9e52 100%);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
   position: relative;
   text-shadow: 0 4px 20px rgba(34, 107, 52, 0.15);
@@ -404,6 +405,7 @@
   text-transform: uppercase;
   background: linear-gradient(135deg, #0d3d20 0%, #1e7d4d 48%, #28af7c 100%);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
   position: relative;
   text-shadow: 0 4px 22px rgba(30, 125, 77, 0.18);
@@ -482,6 +484,7 @@
   background: linear-gradient(115deg, #0d3314 0%, #1c5e2a 28%, #cca238 58%, #206b32 82%, #0d3314 100%);
   background-size: 240% auto;
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
   animation: flShimmer 9s ease-in-out infinite;
   display: inline-block;
