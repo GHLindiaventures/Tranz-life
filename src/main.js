@@ -25,6 +25,7 @@ import { initStory } from './features/product-story/product-story.js';
 import { initAyurveda } from './features/ayurveda/ayurveda-video.js';
 import { buildHerbs } from './features/science/herb-picker.js';
 import { initMolecule } from './features/science/molecule-viewer.js';
+import { initTaglineMotion } from './features/tagline/tagline-motion.js';
 import { initPremiumFx } from './features/ui/premium-fx.js';
 import { $ } from './utils/dom.js';
 
@@ -53,6 +54,7 @@ async function boot(){
   initScroll();
   initTransitions();
   try { state.handOffApi = initProductHandOff(); } catch(err){ console.warn('product hand-off unavailable', err); }
+  try { state.taglineMotion = initTaglineMotion(); } catch(err){ console.warn('tagline motion unavailable', err); }
   window.state = state;
   intro();
   try { initPremiumFx(); } catch(err){ console.warn('premium fx unavailable', err); }

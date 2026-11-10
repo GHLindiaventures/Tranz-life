@@ -2,7 +2,7 @@
 const SECTIONS = [
   { id:'home', name:'Home', sub:'Nature meets science', tags:['3D jar','Facts arc','Marquee'] },
   { id:'lineup', name:'Lineup', sub:'All five products', tags:['The lineup','5 products'] },
-  { id:'insider', name:'Why TranzLife', sub:'You deserve the best', tags:['Our products','Our promise'] },
+  { id:'insider', name:'Our Vision', sub:'Company Tagline', tags:['Roots of nature','Infinity of science'] },
   { id:'products', name:'Products', sub:'The product story', tags:['3D products','5 cards','Finale'] },
   { id:'benefits', name:'Benefits', sub:'See the difference', tags:['Comparison'] },
   { id:'process', name:'Pipeline', sub:'Seed to shelf', tags:['6 stages','Molecules','Timeline'] },

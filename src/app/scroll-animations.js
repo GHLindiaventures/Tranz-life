@@ -179,23 +179,58 @@ function initScroll() {
   }
 
   // 6. Multi-Layer Parallax Depth
-  // 6a. #insider: tilted studio product cards drift and turn at 1.25x depth
-  $$('.in-card').forEach((c, k) => {
-    gsap.fromTo(c,
-      { y: 70 + k * 35 },
-      { y: -60 - k * 25, rotation: [-5, 8, -7][k], ease: 'none', scrollTrigger: { trigger: '#insider', start: 'top bottom', end: 'bottom top', scrub: 0.5 } }
-    );
-  });
+  // 6a. #insider: Official TranzLife Tagline Monumental Reveals
+  const insiderSec = $('#insider');
+  if (insiderSec) {
+    const badge = $('.in-tagline-badge', insiderSec);
+    const lines = $$('.it-line', insiderSec);
+    const footer = $('.in-creed-footer', insiderSec);
+    const infDraw = $('.it-inf-draw', insiderSec);
 
-  // 6b. #insider: handwritten vector arrows draw themselves
-  $$('.in-why .draw').forEach(p => {
-    const len = p.getTotalLength();
-    p.style.strokeDasharray = len;
-    gsap.fromTo(p,
-      { strokeDashoffset: len },
-      { strokeDashoffset: 0, duration: 1.4, ease: MOTION.ease.smooth, scrollTrigger: { trigger: p, start: 'top 85%', once: true } }
-    );
-  });
+    const tlTagline = gsap.timeline({
+      scrollTrigger: {
+        trigger: insiderSec,
+        start: 'top 75%',
+        once: true
+      }
+    });
+
+    if (badge) {
+      tlTagline.from(badge, {
+        y: -24,
+        opacity: 0,
+        duration: 0.9,
+        ease: 'power3.out'
+      }, 0);
+    }
+
+    if (lines.length) {
+      tlTagline.from(lines, {
+        y: 46,
+        opacity: 0,
+        duration: 1.1,
+        stagger: 0.16,
+        ease: 'power3.out'
+      }, 0.15);
+    }
+
+    if (infDraw) {
+      tlTagline.fromTo(infDraw,
+        { strokeDashoffset: 170 },
+        { strokeDashoffset: 0, duration: 1.6, ease: 'power2.out' },
+        0.4
+      );
+    }
+
+    if (footer) {
+      tlTagline.from(footer, {
+        y: 28,
+        opacity: 0,
+        duration: 1.0,
+        ease: 'power3.out'
+      }, 0.7);
+    }
+  }
 
   // 6c. #science: floating DNA helix with subtle 3D-like parallax rotation
   const sciDna = $('#sciDna');

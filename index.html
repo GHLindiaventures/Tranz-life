@@ -7,7 +7,9 @@
 <meta name="description" content="TranzLife Biosciences: nature meets science. Plant-based gummies, a calming inhaler, soothing roll-ons and a liver tonic.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Caveat:wght@500;600&display=swap">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Caveat:wght@500;600&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap">
 <link rel="icon" type="image/png" href="/favicon.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <meta name="theme-color" content="#b6cba5">
@@ -139,20 +141,127 @@
   </div>
 </section>
 
-<section class="page insider" id="insider" data-theme="cream"><div class="band">
-  <div class="wrap">
-    <h2 class="in-h rv-words">You deserve the best. <span class="lt">You deserve TranzLife.</span></h2>
-    <div class="in-grid">
-      <div class="in-cards" aria-hidden="true"><div class="in-card"><div data-shot="reviva"></div></div><div class="in-card"><div data-shot="gummies"></div></div><div class="in-card"><div data-shot="liver"></div></div></div>
-      <div class="in-copy">
-        <p class="in-lead reveal">We want to make plant-based wellness simple, honest and easy to keep up, so you can feel a little better every single day.</p>
-        <p class="in-body reveal">Five products for everyday life: gummies for daily wellbeing, a calming nasal inhaler, a period relief roll-on, Reviva for tired feet and a liver tonic. Plant-based inside, sustainably packed outside.</p>
-        <div class="in-row reveal"><a class="pill" href="#shop"><i aria-hidden="true">↗</i><b>Shop now</b></a><span>Five products · Plant-based · Sustainable packs</span></div>
-      </div>
-    </div>
-    <div class="in-why" aria-hidden="true"><p class="hand">Why people<br>love it<svg viewBox="0 0 40 70"><path class="draw" d="M24 4C8 22 6 44 20 64m0 0l-8-9m8 9l6-10"/></svg></p></div>
+<section class="page insider" id="insider" data-theme="cream">
+  <!-- Subtle Nature & Science Animated Canvas (Flowing root tendrils, energy waves & floating bio-motes) -->
+  <canvas class="in-motion-canvas" id="inMotionCanvas" aria-hidden="true"></canvas>
+
+  <!-- Ambient Bioluminescent & Botanical Halo Orbs -->
+  <div class="in-glow in-glow-roots" aria-hidden="true"></div>
+  <div class="in-glow in-glow-science" aria-hidden="true"></div>
+  <div class="in-glow in-glow-future" aria-hidden="true"></div>
+
+  <!-- Organic Botanical & Scientific Constellation SVG Accents -->
+  <div class="in-decor-layer" aria-hidden="true">
+    <svg class="in-decor-svg" viewBox="0 0 1440 800" preserveAspectRatio="none">
+      <path class="in-wave-line in-wave-1" d="M-60 620 C 220 540, 480 660, 720 580 S 1180 520, 1500 600" />
+      <path class="in-wave-line in-wave-2" d="M-40 680 C 260 600, 520 720, 760 640 S 1220 580, 1480 670" />
+      <path class="in-wave-line in-wave-3" d="M-80 320 C 300 240, 560 380, 800 290 S 1260 220, 1520 310" />
+      <circle class="in-orbit-circle in-oc-1" cx="240" cy="400" r="180" />
+      <circle class="in-orbit-circle in-oc-2" cx="1200" cy="380" r="220" />
+    </svg>
   </div>
-</div></section>
+
+  <div class="in-hero-wrap">
+    <!-- Brand Creed Eyebrow Badge -->
+    <div class="in-tagline-badge" aria-label="Official TranzLife Vision">
+      <span class="itb-icon" aria-hidden="true">
+        <svg viewBox="0 0 20 20" class="itb-leaf"><path d="M10 2C6 6 4 11 6 15c2 4 7 4 9 2 2-2 1-7-3-9-2-1-2-6-2-6z" fill="currentColor"/></svg>
+      </span>
+      <span class="itb-text">Official TranzLife Creed</span>
+      <span class="itb-sep" aria-hidden="true">·</span>
+      <span class="itb-sub">Brand Identity &amp; Vision</span>
+      <span class="itb-spark" aria-hidden="true">✦</span>
+    </div>
+
+    <!-- The Monumental Official Tagline -->
+    <h2 class="in-tagline-hero" aria-label="From the roots of nature to the infinity of science, TranzLife is shaping the future of Life.">
+      <!-- Line 1: From the roots of nature -->
+      <span class="it-line it-line-1">
+        <span class="it-plain">From the </span>
+        <span class="it-word it-roots">
+          <span class="it-roots-text">roots</span>
+          <svg class="it-rootlet-svg" viewBox="0 0 70 20" aria-hidden="true">
+            <path d="M2 4 C 18 16, 38 4, 54 13 S 68 8, 68 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            <path d="M26 12 C 32 18, 42 16, 46 19" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+          </svg>
+        </span>
+        <span class="it-plain"> of </span>
+        <span class="it-highlight it-nature">
+          <span class="it-nature-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/>
+              <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>
+            </svg>
+          </span>
+          <em class="it-nature-text">nature</em>
+        </span>
+      </span>
+
+      <!-- Line 2: to the infinity of science, -->
+      <span class="it-line it-line-2">
+        <span class="it-plain">to the </span>
+        <span class="it-word it-infinity">
+          <span class="it-inf-glyph" aria-hidden="true">
+            <svg viewBox="0 0 38 18" class="it-inf-svg">
+              <path class="it-inf-track" d="M10 2 A 7 7 0 0 0 3 9 A 7 7 0 0 0 10 16 C 14.5 16 16.8 11.5 19 9 C 21.2 6.5 23.5 2 28 2 A 7 7 0 0 1 35 9 A 7 7 0 0 1 28 16 C 23.5 16 21.2 11.5 19 9 C 16.8 6.5 14.5 2 10 2 Z"/>
+              <path class="it-inf-draw" d="M10 2 A 7 7 0 0 0 3 9 A 7 7 0 0 0 10 16 C 14.5 16 16.8 11.5 19 9 C 21.2 6.5 23.5 2 28 2 A 7 7 0 0 1 35 9 A 7 7 0 0 1 28 16 C 23.5 16 21.2 11.5 19 9 C 16.8 6.5 14.5 2 10 2 Z"/>
+            </svg>
+          </span>
+          <span class="it-inf-text">infinity</span>
+        </span>
+        <span class="it-plain"> of </span>
+        <span class="it-highlight it-science">
+          <span class="it-sci-spark" aria-hidden="true">✦</span>
+          <span class="it-science-text">science<span class="it-comma">,</span></span>
+          <span class="it-sci-ring" aria-hidden="true"></span>
+        </span>
+      </span>
+
+      <!-- Line 3: TranzLife is shaping the -->
+      <span class="it-line it-line-3">
+        <span class="it-brand">
+          <span class="it-brand-logo" aria-hidden="true"></span>
+          <strong class="it-brand-name">TranzLife</strong>
+        </span>
+        <span class="it-plain">&nbsp;is shaping the</span>
+      </span>
+
+      <!-- Line 4: future of Life. -->
+      <span class="it-line it-line-4">
+        <span class="it-highlight it-future-life">
+          <span class="it-fl-text">future of Life<span class="it-fl-period">.</span></span>
+          <span class="it-fl-halo" aria-hidden="true"></span>
+        </span>
+      </span>
+    </h2>
+
+    <!-- Philosophical Creed Seal & Values Anchor -->
+    <div class="in-creed-footer">
+      <div class="icf-line-wrap" aria-hidden="true">
+        <span class="icf-line"></span>
+        <span class="icf-gem">◆</span>
+        <span class="icf-line"></span>
+      </div>
+      <div class="icf-pillars">
+        <div class="icf-pillar">
+          <span class="icfp-dot"></span>
+          <span class="icfp-t">100% Ayurvedic Roots</span>
+        </div>
+        <span class="icf-divider" aria-hidden="true">·</span>
+        <div class="icf-pillar">
+          <span class="icfp-dot"></span>
+          <span class="icfp-t">Bio-Active Molecular Science</span>
+        </div>
+        <span class="icf-divider" aria-hidden="true">·</span>
+        <div class="icf-pillar">
+          <span class="icfp-dot"></span>
+          <span class="icfp-t">Clinical Innovation</span>
+        </div>
+      </div>
+      <p class="icf-motto">Rooted in Nature · Perfected by Science · Shaping Everyday Longevity</p>
+    </div>
+  </div>
+</section>
 
 <section class="page story" id="products" data-theme="cream">
   <!-- Scroll-Driven Botanical Video Animation & Living Ayurveda Frame -->
