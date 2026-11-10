@@ -9,21 +9,31 @@
 }
 #statement.tl-scallop { margin-top: -100vh !important; margin-top: -100svh !important; }
 
-/* soft edge: a band along the scalloped edge blurs whatever is behind it (the page and the product going under)
-   and the scallops themselves, fading in towards the edge, so the curtain melts into the page instead of cutting it */
-#statement.statement::before {
-  content: "";
+/* soft edge: a progressive blur along the scalloped edge. Four stacked layers blur what is behind them (the page,
+   the product going under, the scallops' own edge) more and more strongly towards the edge; each layer fades in and
+   out through its mask, so the blur grows smoothly with no visible line where it starts. */
+.stm-blur {
   position: absolute;
+  z-index: 0;
   left: 0;
   right: 0;
-  top: calc(-1 * var(--sc-r) * .9);
-  height: calc(var(--sc-r) * 2.1);
+  top: calc(-1 * var(--sc-r) * 1.6);
+  height: calc(var(--sc-r) * 2.7);
   pointer-events: none;
-  -webkit-backdrop-filter: blur(9px);
-  backdrop-filter: blur(9px);
-  -webkit-mask: linear-gradient(to bottom, transparent, #000 45%, #000 70%, transparent);
-  mask: linear-gradient(to bottom, transparent, #000 45%, #000 70%, transparent);
 }
+.stm-blur i {
+  position: absolute;
+  inset: 0;
+  -webkit-backdrop-filter: blur(var(--b));
+  backdrop-filter: blur(var(--b));
+  -webkit-mask: linear-gradient(to bottom, transparent var(--m0), #000 var(--m1), #000 var(--m2), transparent var(--m3));
+  mask: linear-gradient(to bottom, transparent var(--m0), #000 var(--m1), #000 var(--m2), transparent var(--m3));
+}
+.stm-blur i:nth-child(1) { --b: 1.5px; --m0: 0%;  --m1: 22%; --m2: 62%; --m3: 84%; }
+.stm-blur i:nth-child(2) { --b: 3px;   --m0: 18%; --m1: 38%; --m2: 66%; --m3: 86%; }
+.stm-blur i:nth-child(3) { --b: 6px;   --m0: 34%; --m1: 52%; --m2: 70%; --m3: 90%; }
+.stm-blur i:nth-child(4) { --b: 10px;  --m0: 48%; --m1: 62%; --m2: 74%; --m3: 96%; }
+@media (prefers-reduced-motion: reduce) { .stm-blur { display: none; } }
 
 .stm-pin {
   position: relative;                    /* not pinned: the page scrolls past 1:1, as the reference does */

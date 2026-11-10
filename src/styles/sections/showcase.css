@@ -8,9 +8,11 @@
   height: 450vh;
   height: 450svh;
   --sc-tint: #b6cba5;
-  background: color-mix(in srgb, var(--sc-tint) 16%, var(--ground));
+  /* one standard background for every product: the soft mint of the Aroma Inhaler page (its STORY colour #38a58b at
+     16% on the ground). The product's own colour still tints the icon, badges and title (--sc-tint). */
+  --sc-page: color-mix(in srgb, #38a58b 16%, var(--ground));
+  background: var(--sc-page);
   color: var(--forest);
-  transition: background-color .9s ease;
 }
 
 /* pinned layer: holds only the progress row (above the flowing content) */
