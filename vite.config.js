@@ -24,7 +24,8 @@ export default defineConfig(({ mode }) => {
               quality: 'quality.html',
               sustainability: 'sustainability.html',
               news: 'news.html',
-              contact: 'contact.html'
+              contact: 'contact.html',
+              careers: 'careers.html'
             }
           }
         },
