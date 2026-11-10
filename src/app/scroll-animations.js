@@ -111,14 +111,14 @@ function initScroll() {
   }
 
   // 4b. Benefits comparison table rows
-  const benTable = $('.ben-table');
+  const benTable = $('#benefits table.tbl');
   if (benTable) {
     ScrollTrigger.create({
       trigger: benTable,
       start: 'top 85%',
       once: true,
       onEnter: () => {
-        gsap.fromTo('.ben-table tbody tr',
+        gsap.fromTo('#benefits table.tbl tbody tr',
           { opacity: 0, y: 18 },
           { opacity: 1, y: 0, stagger: 0.05, duration: MOTION.dur.base, ease: MOTION.ease.entrance }
         );
@@ -126,15 +126,15 @@ function initScroll() {
     });
   }
 
-  // 4c. Product finder need cards
-  const needsGrid = $('.needs-grid');
+  // 4c. Product finder need buttons (built into #needs by product-finder.js)
+  const needsGrid = $('#needs');
   if (needsGrid) {
     ScrollTrigger.create({
       trigger: needsGrid,
       start: 'top 85%',
       once: true,
       onEnter: () => {
-        gsap.fromTo('.need-card',
+        gsap.fromTo('#needs > button',
           { opacity: 0, y: 28 },
           { opacity: 1, y: 0, stagger: MOTION.stagger.fast, duration: MOTION.dur.base, ease: MOTION.ease.entrance }
         );

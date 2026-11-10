@@ -5,6 +5,7 @@ import { MOTION } from './motion-tokens.js';
 import { NSTAGE } from '../data/pipeline.js';
 import { $, $$ } from '../utils/dom.js';
 import { clamp } from '../utils/math.js';
+import { cumulativeTops } from './page-geometry.js';
 import { reduce } from '../utils/media.js';
 
 const LAYOUT = { pages:[], tops:[], hs:[], vh:window.innerHeight, cur:-1, theme:'green', reactor:null };
@@ -47,7 +48,9 @@ function initPages(){
   function measure(){
     LAYOUT.vh = window.innerHeight;
     LAYOUT.hs = pages.map(p => p.offsetHeight);
-    LAYOUT.tops = pages.map(p => p.offsetTop);
+    // not offsetTop: sticky .sheet-stack pages report their stuck position while scrolled
+    const main = pages.length ? pages[0].parentElement : null;
+    LAYOUT.tops = cumulativeTops(main ? main.offsetTop : 0, pages.map(p => { const cs = getComputedStyle(p); return { h:p.offsetHeight, mt:parseFloat(cs.marginTop) || 0, mb:parseFloat(cs.marginBottom) || 0 }; }));
     // where two themes meet, the upper colour fades into the next page
     pages.forEach((p, i) => { if (i && !p.querySelector(':scope > .show, :scope > .pin')) p.style.setProperty('--prev', GROUND[last(pages[i - 1])] + ' '); });
     update();
