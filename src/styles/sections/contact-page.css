@@ -1,0 +1,444 @@
+/* ==========================================================================
+   TranzLife Biosciences - Official Contact Page Styles
+   Strictly aligned with tokens.css, global.css, and existing design language
+   ========================================================================== */
+
+/* Page Wrapper */
+.contact-page {
+  position: relative;
+  isolation: isolate;
+  background: var(--ground);
+  color: var(--ink);
+  overflow-x: clip;
+}
+
+/* --------------------------------------------------------------------------
+   SECTION 1: HERO
+   -------------------------------------------------------------------------- */
+.cp-hero {
+  position: relative;
+  min-height: 75vh;
+  min-height: 75svh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: clamp(120px, 16vh, 180px);
+  padding-bottom: clamp(60px, 8vh, 100px);
+  background: radial-gradient(ellipse 130% 95% at 50% 15%, #faf8ee 0%, #f3ede0 45%, #e9e1d1 80%, var(--ground) 100%);
+  text-align: center;
+  overflow: hidden;
+}
+
+.cp-hero-bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.cp-hero-glow-1 {
+  position: absolute;
+  top: -20%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 900px;
+  height: 600px;
+  background: radial-gradient(ellipse at center, rgba(140, 184, 106, 0.28) 0%, rgba(231, 198, 128, 0.16) 45%, transparent 70%);
+  filter: blur(60px);
+}
+
+.cp-hero-content {
+  position: relative;
+  z-index: 1;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.cp-breadcrumb {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--faint);
+  margin-bottom: 24px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.cp-breadcrumb a {
+  color: var(--muted);
+  transition: color 0.2s ease;
+}
+
+.cp-breadcrumb a:hover {
+  color: var(--forest);
+}
+
+.cp-breadcrumb span {
+  opacity: 0.5;
+}
+
+.cp-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 18px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid var(--line-strong);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--forest);
+  margin-bottom: 22px;
+  box-shadow: 0 4px 14px rgba(20, 52, 26, 0.06);
+}
+
+.cp-badge i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--moss);
+  display: inline-block;
+  box-shadow: 0 0 8px var(--moss);
+}
+
+.cp-hero h1 {
+  font-size: clamp(2.6rem, 5.8vw, 4.8rem);
+  font-weight: 850;
+  font-stretch: 78%;
+  line-height: 1.04;
+  letter-spacing: -0.025em;
+  color: var(--forest);
+  max-width: 22ch;
+  margin: 0 auto 24px;
+}
+
+.cp-hero h1 em {
+  font-style: normal;
+  color: var(--sage);
+  background: linear-gradient(135deg, #24502a 0%, #6f9e4c 65%, #d6a23a 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.cp-hero-sub {
+  font-size: clamp(1.05rem, 1.8vw, 1.28rem);
+  line-height: 1.55;
+  color: var(--muted);
+  max-width: 66ch;
+}
+
+/* --------------------------------------------------------------------------
+   SECTION 2: 4 CONTACT CHANNELS
+   -------------------------------------------------------------------------- */
+.cp-channels-sec {
+  padding: 40px 0 60px;
+  background: var(--ground);
+}
+
+.cp-channels-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.cp-channel-card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 28px 22px;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.cp-channel-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(20, 52, 26, 0.08);
+}
+
+.cp-channel-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  background: var(--panel-2);
+  display: grid;
+  place-items: center;
+  color: var(--forest);
+  margin-bottom: 18px;
+}
+
+.cp-channel-card h3 {
+  font-size: 1.25rem;
+  font-weight: 850;
+  color: var(--forest);
+  margin-bottom: 8px;
+}
+
+.cp-channel-card p {
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--muted);
+  margin-bottom: 16px;
+}
+
+.cp-channel-card a {
+  font-size: 13.5px;
+  font-weight: 750;
+  color: var(--forest);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  margin-top: auto;
+}
+
+/* --------------------------------------------------------------------------
+   SECTION 3: FORM & VISIT SPLIT
+   -------------------------------------------------------------------------- */
+.cp-split-sec {
+  padding: clamp(64px, 10vw, 120px) 0;
+  background: var(--ground-2);
+  border-top: 1px solid var(--line);
+}
+
+.cp-split-box {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.95fr);
+  gap: clamp(32px, 5vw, 64px);
+  align-items: start;
+}
+
+.cp-form-card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 28px;
+  padding: clamp(32px, 4vw, 48px);
+  box-shadow: 0 16px 40px rgba(20, 52, 26, 0.06);
+}
+
+.cp-form-card h2 {
+  font-size: clamp(1.8rem, 2.8vw, 2.4rem);
+  font-weight: 850;
+  font-stretch: 80%;
+  color: var(--forest);
+  margin-bottom: 8px;
+}
+
+.cp-form-card p {
+  font-size: 14.5px;
+  color: var(--muted);
+  margin-bottom: 28px;
+}
+
+.cp-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.cp-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cp-field.full {
+  grid-column: 1 / -1;
+}
+
+.cp-field label {
+  font-family: var(--f-mono);
+  font-size: 11.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--forest);
+}
+
+.cp-field input,
+.cp-field select,
+.cp-field textarea {
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--line-strong);
+  background: var(--panel-2);
+  color: var(--ink);
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.25s ease, background 0.25s ease;
+}
+
+.cp-field input:focus,
+.cp-field select:focus,
+.cp-field textarea:focus {
+  border-color: var(--forest);
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(36, 80, 42, 0.12);
+}
+
+.cp-submit-btn {
+  margin-top: 12px;
+  padding: 14px 28px;
+  border-radius: 999px;
+  background: var(--cream);
+  color: var(--on-cream);
+  font-weight: 800;
+  font-size: 15px;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.cp-submit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(20, 52, 26, 0.25);
+}
+
+/* Right Side Location / Hours */
+.cp-loc-card {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.cp-info-box {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  padding: 32px 28px;
+}
+
+.cp-info-box h3 {
+  font-size: 1.35rem;
+  font-weight: 850;
+  color: var(--forest);
+  margin-bottom: 12px;
+}
+
+.cp-info-box p {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+.cp-hours-list {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cp-hours-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+}
+
+.cp-hours-item span {
+  color: var(--faint);
+}
+
+.cp-hours-item strong {
+  color: var(--forest);
+  font-weight: 700;
+}
+
+/* --------------------------------------------------------------------------
+   SECTION 4: FAQ ACCORDIONS
+   -------------------------------------------------------------------------- */
+.cp-faq-sec {
+  padding: clamp(64px, 10vw, 120px) 0;
+  background: var(--ground);
+  border-top: 1px solid var(--line);
+}
+
+.cp-faq-list {
+  max-width: 840px;
+  margin: 40px auto 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.cp-faq-item {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  overflow: hidden;
+  transition: border-color 0.25s ease;
+}
+
+.cp-faq-item.open {
+  border-color: var(--sage);
+}
+
+.cp-faq-trigger {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 22px 24px;
+  background: transparent;
+  border: none;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--forest);
+  cursor: pointer;
+  text-align: left;
+}
+
+.cp-faq-trigger svg {
+  width: 20px;
+  height: 20px;
+  transition: transform 0.3s ease;
+}
+
+.cp-faq-item.open .cp-faq-trigger svg {
+  transform: rotate(180deg);
+}
+
+.cp-faq-body {
+  display: none;
+  padding: 0 24px 22px;
+  font-size: 14.5px;
+  line-height: 1.65;
+  color: var(--muted);
+}
+
+.cp-faq-item.open .cp-faq-body {
+  display: block;
+}
+
+/* --------------------------------------------------------------------------
+   RESPONSIVE DESIGN (TABLET & MOBILE)
+   -------------------------------------------------------------------------- */
+@media (max-width: 1024px) {
+  .cp-channels-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .cp-split-box {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .cp-channels-grid {
+    grid-template-columns: 1fr;
+  }
+  .cp-form-grid {
+    grid-template-columns: 1fr;
+  }
+}
