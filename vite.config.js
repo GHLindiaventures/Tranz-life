@@ -18,7 +18,8 @@ export default defineConfig(({ mode }) => {
               main: 'index.html',
               about: 'about.html',
               products: 'products.html',
-              productDetails: 'product-details.html'
+              productDetails: 'product-details.html',
+              science: 'science.html'
             }
           }
         },
