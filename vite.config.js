@@ -21,7 +21,8 @@ export default defineConfig(({ mode }) => {
               productDetails: 'product-details.html',
               science: 'science.html',
               ingredients: 'ingredients.html',
-              quality: 'quality.html'
+              quality: 'quality.html',
+              sustainability: 'sustainability.html'
             }
           }
         },
