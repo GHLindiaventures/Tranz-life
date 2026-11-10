@@ -201,6 +201,10 @@
 .fact b { font-family: var(--f-display); font-stretch: 68%; font-weight: 850; font-size: clamp(30px, 3.6vh, 40px); line-height: .9; }
 .fact span { font-size: 12px; font-weight: 600; line-height: 1.1; margin-top: 3px; padding-inline: 8px; }
 
+/* Matte finish on the rocks (plain and mossy): SVG filter #rockMatte in index.html */
+.hero__slab { filter: url(#rockMatte); }
+.hero__defs { position: absolute; width: 0; height: 0; overflow: hidden; pointer-events: none; }
+
 /* Moss-covered twin of the rock, stacked exactly on it (same .hero__slab sizing); drawn only under the brush */
 .hero__slab--moss { aspect-ratio: 16 / 9; height: auto; }
 

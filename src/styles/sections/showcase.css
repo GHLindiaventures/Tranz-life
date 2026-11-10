@@ -1,0 +1,216 @@
+/* ---------- Product showcase: the product holds still, the page falls past it ---------- */
+/* As on the reference: the product (drawn on the fixed #flightCanvas) stays in one place in the middle of the screen
+   and only turns, while the page around it (the old product display's card, badges, note, swooshes) scrolls up past
+   it like a normal page. That is what makes the product feel like it is falling. Only the progress row is pinned.
+   Positions in .sc-flow are percentages of the section's height, so phones (a shorter section) keep the rhythm. */
+.showcase {
+  position: relative;
+  height: 450vh;
+  height: 450svh;
+  --sc-tint: #b6cba5;
+  background: color-mix(in srgb, var(--sc-tint) 16%, var(--ground));
+  color: var(--forest);
+  transition: background-color .9s ease;
+}
+
+/* pinned layer: holds only the progress row (above the flowing content) */
+.showcase-pin {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  height: 100vh;
+  height: 100svh;
+  pointer-events: none;
+}
+
+/* the flowing page: absolute over the whole section, so it scrolls 1:1 with the page */
+.sc-flow { position: absolute; inset: 0; z-index: 1; overflow: hidden; pointer-events: none; }
+
+/* white swooshes running down the whole section; JS draws them with the scroll */
+.sc-arcs { position: absolute; inset: 0; width: 100%; height: 100%; }
+.sc-arcs path { fill: none; stroke: #fff; stroke-width: 34; stroke-linecap: round; stroke-dasharray: 0 99999; }
+
+/* the card, at the top of the section: icon, kicker, big two-line title, description */
+.sc-card {
+  position: absolute;
+  top: 2.2%;
+  left: max(104px, 6vw);
+  width: min(470px, 31vw);
+}
+.sc-ico { display: grid; place-items: center; width: 52px; height: 52px; margin-bottom: 14px; border-radius: 50%; background: var(--sc-tint); color: #fff; }
+.sc-ico svg { width: 26px; height: 26px; }
+.sc-kick { margin: 0; font-weight: 700; font-stretch: 85%; font-size: 13px; letter-spacing: .12em; text-transform: uppercase; color: var(--forest); opacity: .72; }
+.sc-h {
+  margin: 6px 0 0;
+  font-family: var(--f-display);
+  font-size: clamp(4rem, 12vh, 9rem);
+  font-stretch: 64%;
+  font-weight: 850;
+  line-height: .86;
+  text-transform: uppercase;
+  color: var(--forest);
+}
+.sc-h__line { display: block; white-space: nowrap; }
+.sc-h__line + .sc-h__line { color: color-mix(in srgb, var(--sc-tint) 72%, #1f4423); }
+.sc-ch { display: inline-block; overflow: hidden; vertical-align: top; padding-block: .06em; margin-block: -.06em; }
+.sc-chi { display: inline-block; transform: translate3d(0, 115%, 0); will-change: transform; }
+.sc-d { display: flex; gap: 12px; align-items: flex-start; margin: 16px 0 0; max-width: 34ch; font-size: clamp(15px, 1.25vw, 18px); font-weight: 500; line-height: 1.3; }
+.sc-i { flex: none; width: 26px; height: 26px; margin-top: 2px; color: var(--sc-tint); }
+
+/* round ingredient badges placed down the page, left and right of where the product stands */
+.sc-badges { position: absolute; inset: 0; }
+.sc-badge {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  width: clamp(118px, 10vw, 158px);
+  aspect-ratio: 1;
+  padding: 14px;
+  border-radius: 50%;
+  border: 3px solid var(--forest);
+  background: #f6efd9;
+  color: var(--forest);
+  text-align: center;
+  font-family: var(--f-display);
+  font-stretch: 66%;
+  font-weight: 850;
+  text-transform: uppercase;
+  font-size: clamp(15px, 1.3vw, 20px);
+  line-height: .95;
+  box-shadow: 0 18px 30px -18px rgba(31, 70, 35, .5);
+  transform: scale(0);
+  will-change: transform;
+}
+.sc-badge--alt { background: var(--sc-tint); border-color: #f6efd9; color: #fff; text-shadow: 0 1px 0 rgba(31, 70, 35, .2); }
+
+/* hand-written note with an arrow pointing at the product */
+.sc-note {
+  position: absolute;
+  top: 20%;
+  right: 62vw;
+  margin: 0;
+  text-align: right;
+  font-family: var(--f-hand);
+  font-weight: 600;
+  font-size: 30px;
+  white-space: nowrap;
+  opacity: 0;
+}
+.sc-note svg { display: block; width: 110px; height: 56px; margin: 4px 0 0 auto; fill: none; stroke: var(--forest); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; transform: scaleX(-1); }
+
+/* big outlined title line passing behind the product (decorative, the same words as the title) */
+.sc-big {
+  position: absolute;
+  top: 35%;
+  left: 0;
+  right: 0;
+  margin: 0;
+  text-align: center;
+  white-space: nowrap;
+  font-family: var(--f-display);
+  font-stretch: 62%;
+  font-weight: 850;
+  font-size: 17vw;
+  line-height: .85;
+  text-transform: uppercase;
+  color: transparent;
+  -webkit-text-stroke: 2px color-mix(in srgb, var(--sc-tint) 70%, #1f4423);
+  opacity: .55;
+}
+.sc-big--2 { top: 70%; -webkit-text-stroke-color: var(--forest); opacity: .3; }
+
+/* ---- the product page blocks down both sides of the still product (built in showcase-scene.js) ---- */
+.sc-blocks { position: absolute; inset: 0; }
+.sc-blk {
+  position: absolute;
+  width: min(470px, 31vw);
+  opacity: 0;
+  font-size: clamp(15px, 1.2vw, 18px);
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--forest);
+  will-change: transform, opacity;
+}
+.sc-blk--l { left: max(104px, 6vw); }
+.sc-blk--r { right: max(56px, 5vw); }
+.sc-blk p { margin: 0; }
+.sc-blk .sc-kick { margin-bottom: 12px; }
+.sc-blk__h { margin: 0 0 14px; font-family: var(--f-display); font-stretch: 64%; font-weight: 850; font-size: clamp(2.2rem, 5.4vh, 3.8rem); line-height: .9; text-transform: uppercase; color: var(--forest); }
+.sc-tagline { font-family: var(--f-hand); font-weight: 600; font-size: clamp(28px, 2.6vw, 42px); line-height: 1.05; color: color-mix(in srgb, var(--sc-tint) 60%, #1f4423); }
+.sc-lede { font-size: clamp(18px, 1.5vw, 23px); line-height: 1.35; }
+.sc-quote { font-family: var(--f-hand); font-weight: 600; font-size: clamp(30px, 2.8vw, 44px); line-height: 1.05; margin-bottom: 12px !important; }
+
+/* lists: botanicals / highlights, a dashed rule between rows; rows step in when the block arrives */
+.sc-list { list-style: none; margin: 0; padding: 0; }
+.sc-list li {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 3px;
+  padding: 12px 0;
+  border-top: 1px dashed color-mix(in srgb, var(--forest) 30%, transparent);
+  opacity: 0;
+  transform: translate3d(0, 14px, 0);
+  transition: opacity .5s ease, transform .6s var(--ease);
+  transition-delay: calc(var(--i) * 60ms);
+}
+.sc-blk.in .sc-list li { opacity: 1; transform: none; }
+.sc-list b { font-family: var(--f-display); font-stretch: 70%; font-weight: 850; font-size: clamp(17px, 1.45vw, 22px); text-transform: uppercase; letter-spacing: .01em; }
+.sc-list span { font-size: clamp(14px, 1.05vw, 16px); opacity: .85; }
+.sc-list--num li { grid-template-columns: auto 1fr; column-gap: 14px; }
+.sc-list--num i { grid-row: span 2; font-style: normal; font-family: var(--f-display); font-stretch: 70%; font-weight: 850; font-size: clamp(22px, 2vw, 32px); line-height: 1; color: var(--sc-tint); }
+
+/* the product photo and the design board, in a white frame, slightly tilted */
+.sc-photo { margin: 0; padding: 10px 10px 14px; background: #fff; border-radius: 6px; box-shadow: 0 30px 60px -34px rgba(31, 70, 35, .55); transform: rotate(-4deg); }
+.sc-photo img { display: block; width: 100%; height: auto; border-radius: 3px; }
+.sc-photo figcaption { margin-top: 10px; font-family: var(--f-hand); font-weight: 600; font-size: 22px; text-align: center; }
+.sc-blk--photo { width: min(360px, 24vw); }
+.sc-blk--photo .sc-photo--wide { transform: rotate(3deg); }
+.sc-blk--l.sc-blk--photo { width: min(460px, 30vw); }
+
+/* price and add to bag (the only thing here you can click) */
+.sc-blk--buy { pointer-events: auto; }
+.sc-price { font-family: var(--f-display); font-stretch: 64%; font-weight: 850; font-size: clamp(3rem, 8vh, 5.6rem); line-height: .9; }
+.sc-size { margin: 6px 0 18px !important; font-weight: 700; font-stretch: 85%; font-size: 13px; letter-spacing: .12em; text-transform: uppercase; opacity: .72; }
+
+/* the botanicals named on the product (from the science section's library) */
+.sc-herb { padding: 12px 0; border-top: 1px dashed color-mix(in srgb, var(--forest) 30%, transparent); opacity: 0; transform: translate3d(0, 14px, 0); transition: opacity .5s ease, transform .6s var(--ease); transition-delay: calc(var(--i) * 80ms); }
+.sc-blk.in .sc-herb { opacity: 1; transform: none; }
+.sc-herb b { display: block; font-family: var(--f-display); font-stretch: 70%; font-weight: 850; font-size: clamp(20px, 1.8vw, 28px); text-transform: uppercase; }
+.sc-herb em { display: block; font-size: 14px; opacity: .75; }
+.sc-herb span { display: block; margin-top: 2px; font-weight: 700; font-stretch: 85%; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; }
+
+/* small print */
+.sc-blk--fine p { font-size: 12.5px; line-height: 1.45; opacity: .7; max-width: 52ch; }
+
+/* progress row: "01 / 05", bar, 000 to 100, pinned bottom left */
+.sc-progress {
+  position: absolute;
+  left: max(104px, 6vw);
+  bottom: clamp(20px, 4vh, 40px);
+  width: min(28vw, 380px);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  color: var(--forest);
+}
+.sc-progress__label, .sc-progress__num { font-family: var(--f-display); font-stretch: 70%; font-weight: 850; font-size: clamp(16px, 1.4vw, 22px); letter-spacing: .04em; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.sc-progress__bar { position: relative; flex: 1; height: 4px; border-radius: 4px; background: color-mix(in srgb, var(--forest) 18%, transparent); overflow: hidden; }
+.sc-progress__fill { position: absolute; inset: 0; transform-origin: 0 50%; transform: scaleX(0); background: var(--forest); }
+
+/* phones: shorter section, card full width, badges smaller, note hidden */
+@media (max-width: 767px) {
+  .showcase { height: 300vh; height: 300svh; }
+  .sc-card { top: 3%; left: 16px; right: 16px; width: auto; }
+  .sc-ico { display: none; }
+  .sc-h { font-size: clamp(2.8rem, 13vw, 4rem); }
+  .sc-badge { width: 96px; font-size: 13px; padding: 10px; }
+  /* the product holds at the right edge on phones; the page runs down the left 60% */
+  .sc-blk, .sc-blk--l, .sc-blk--r, .sc-blk--photo, .sc-blk--l.sc-blk--photo { left: 16px; right: auto; width: 58vw; }
+  .sc-big { font-size: 22vw; }
+  .sc-m-hide { display: none; }   /* one column on phones: keep the blocks that do not overlap */
+  .sc-progress { left: 16px; right: 16px; width: auto; bottom: 22px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .showcase { display: none; }
+}

@@ -1,0 +1,144 @@
+/* ---------- Statement: dark pinned page behind the scalloped curtain ---------- */
+/* The curtain is the page's own top edge (.tl-scallop, motion-extras.css): a row of semicircles one 5.5th of the
+   viewport wide (--sc-r = 9.1vw, the repo default), the same size at every width. The page overlaps the last 100vh of
+   the showcase pin, so as you scroll its scalloped edge rises over the pinned scene and covers it. */
+#statement.statement {
+  z-index: 46 !important;                /* above #flightCanvas (45) so the curtain covers the product */
+  color: var(--ink);
+  overflow: visible;                     /* lets the blur band below sit just above the scallops */
+}
+#statement.tl-scallop { margin-top: -100vh !important; margin-top: -100svh !important; }
+
+/* soft edge: a band along the scalloped edge blurs whatever is behind it (the page and the product going under)
+   and the scallops themselves, fading in towards the edge, so the curtain melts into the page instead of cutting it */
+#statement.statement::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(-1 * var(--sc-r) * .9);
+  height: calc(var(--sc-r) * 2.1);
+  pointer-events: none;
+  -webkit-backdrop-filter: blur(9px);
+  backdrop-filter: blur(9px);
+  -webkit-mask: linear-gradient(to bottom, transparent, #000 45%, #000 70%, transparent);
+  mask: linear-gradient(to bottom, transparent, #000 45%, #000 70%, transparent);
+}
+
+.stm-pin {
+  position: relative;                    /* not pinned: the page scrolls past 1:1, as the reference does */
+  display: grid;
+  place-items: center;
+  /* tall enough that the dark page covers the screen as the curtain finishes, no taller */
+  min-height: 76vh;
+  min-height: 76svh;
+  padding: calc(var(--sc-r) + 14vh) 4vw 4vw;
+  overflow: hidden;
+}
+
+/* big centred statement: 8vw type, tight leading, 85vw wide (as the reference sets it) */
+.stm-title {
+  position: relative;
+  z-index: 2;
+  width: 85vw;
+  text-align: center;
+  font-family: var(--f-display);
+  font-stretch: 62%;
+  font-weight: 850;
+  font-size: min(10.5vw, 19vh);
+  will-change: transform;
+  line-height: .86;
+  letter-spacing: -.005em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+/* masked words: each rises from below its own mask */
+.stw { display: inline-block; overflow: hidden; vertical-align: top; padding: .06em .14em; margin: -.06em -.14em; }
+.stw-i { display: inline-block; will-change: transform; }
+.stm-title .stw-i { transform: none; }
+
+/* highlighter pill behind one word: a gold block that draws left to right (--hl); the word turns dark inside it */
+.stw-hl { position: relative; isolation: isolate; }
+.stw-hl::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: .02em; right: .02em; top: .06em; bottom: .02em;
+  border-radius: .2em;
+  background: var(--gold);
+  transform: scaleX(var(--hl, 0));
+  transform-origin: 0 50%;
+}
+.stw-hl .stw-i { transition: color .25s ease; }
+.stw-hl.on .stw-i { color: var(--on-cream); }
+
+/* floating cream line-art: drifts at different speeds with the scroll (--p set by JS, 0..1) */
+.stm-art {
+  position: absolute;
+  z-index: 1;
+  width: 11vw;
+  min-width: 110px;
+  fill: none;
+  stroke: var(--cream);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: .55;
+  transform: translate3d(0, calc(var(--p, 0) * var(--s, .3) * -100vh), 0) rotate(calc(var(--r, 0deg) + var(--p, 0) * 40deg));
+  will-change: transform;
+}
+.stm-art--a { right: 6%; top: 8%; width: 12vw; }
+.stm-art--b { left: 5%; bottom: 8%; width: 13vw; }
+.stm-art--c { left: 22%; top: 12%; width: 8vw; }
+.stm-art--d { right: 20%; bottom: 14%; width: 9vw; }
+
+/* round gold icon, top left (a leaf, no text) */
+.stm-seed {
+  position: absolute;
+  z-index: 3;
+  left: 4.5vw;
+  top: 4vh;
+  width: clamp(64px, 6.4vw, 96px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--gold);
+  color: var(--on-cream);
+  transform: rotate(calc(var(--p, 0) * 200deg));
+}
+.stm-seed svg { width: 56%; height: 56%; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+
+/* hand-written note with a curved arrow (the insider page's own "Why people love it") */
+.stm-note {
+  position: absolute;
+  z-index: 3;
+  right: 9vw;
+  bottom: 3vw;
+  font-family: var(--f-hand);
+  font-weight: 600;
+  font-size: clamp(18px, 1.9vw, 30px);
+  line-height: 1.05;
+  color: var(--gold);
+  transform: rotate(-6deg);
+}
+.stm-note svg { position: absolute; right: 105%; bottom: 70%; width: 3.2em; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+
+@media (max-width: 767px) {
+  .stm-title { font-size: 13.7vw; width: 90vw; line-height: .85; }
+  .stm-art--c, .stm-art--d { display: none; }
+  .stm-art { transform: rotate(var(--r, 0deg)); }   /* no heavy drift on phones */
+  .stm-art--a { width: 26vw; } .stm-art--b { width: 28vw; }
+  .stm-seed { width: 56px; left: 18px; }
+  .stm-note { right: 6vw; bottom: 8vh; font-size: 18px; }
+}
+
+/* reduced motion: no pin or curtain rise; the page is shown static (JS shows the words) */
+@media (prefers-reduced-motion: reduce) {
+  #statement.tl-scallop { margin-top: calc(-1 * var(--sc-r)) !important; }
+  .stm-pin { height: auto; min-height: 70vh; }
+  .stw-hl::before { transform: scaleX(1); }
+  .stw-hl .stw-i { color: var(--on-cream); }
+  .stm-art, .stm-seed { transform: none; }
+}

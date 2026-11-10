@@ -62,7 +62,7 @@ function initPages(){
     let cur = 0; pages.forEach((p, i) => { if (LAYOUT.tops[i] <= y + 72) cur = i; });
     const id = pages[cur].id; let theme = pages[cur].dataset.theme;
     if (id === 'process' && LAYOUT.reactor) theme = LAYOUT.reactor.theme();
-    if (cur !== LAYOUT.cur || theme !== LAYOUT.theme){ LAYOUT.cur = cur; LAYOUT.theme = theme; window.dispatchEvent(new CustomEvent('tl:page', { detail:{ id, theme, index:cur, count:pages.length } })); }
+    if (cur !== LAYOUT.cur || theme !== LAYOUT.theme){ LAYOUT.cur = cur; LAYOUT.theme = theme; window.dispatchEvent(new CustomEvent('tl:page', { detail:{ id, dock:pages[cur].dataset.dock || id, theme, index:cur, count:pages.length } })); }
     document.documentElement.style.setProperty('--sp', clamp(y/Math.max(1, document.documentElement.scrollHeight - LAYOUT.vh), 0, 1).toFixed(4));
   }
   let ticking = false;

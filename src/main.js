@@ -13,6 +13,7 @@ import { initContactForm } from './features/contact/contact-form.js';
 import { buildNeeds, selectNeed } from './features/finder/product-finder.js';
 import { initHeroJar } from './features/hero/hero-jar.js';
 import { initProductHandOff } from './features/hero/product-hand-off.js';
+import { initStatementPage } from './features/showcase/statement-page.js';
 import { initLayeredDepth } from './features/hero/layered-depth.js';
 import { initMossReveal } from './features/hero/moss-reveal.js';
 import { buildMarquee } from './features/hero/marquee.js';
@@ -54,6 +55,7 @@ async function boot(){
   initScroll();
   initTransitions();
   try { initProductMotion(); } catch(err){ console.warn('product motion unavailable', err); }
+  try { initStatementPage(); } catch(err){ console.warn('statement page unavailable', err); }
   try { state.handOffApi = initProductHandOff(); } catch(err){ console.warn('product hand-off unavailable', err); }
   window.state = state;
   intro();

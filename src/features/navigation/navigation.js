@@ -98,7 +98,7 @@ function initNav(){
   let pageDark = false; const foot = $('footer');
   const tone = () => { const dark = pageDark || foot.getBoundingClientRect().top < innerHeight*.5; nav.classList.toggle('t-green', dark); dock.classList.toggle('t-green', dark); };
   window.addEventListener('scroll', tone, { passive:true });
-  window.addEventListener('tl:page', e => { setOn(e.detail.id); pageDark = e.detail.theme === 'green'; tone(); });
+  window.addEventListener('tl:page', e => { setOn(e.detail.dock || e.detail.id); pageDark = e.detail.theme === 'green'; tone(); });
 }
 
 export { initNav };

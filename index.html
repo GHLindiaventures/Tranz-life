@@ -79,6 +79,22 @@
   <img class="hero__slab" id="slab" src="/layered-depth-slab-set.webp" alt="Sculpted mossy stone plinth" aria-hidden="true" draggable="false">
   <!-- the same rock covered in moss, revealed under the pointer (moss-reveal.js) -->
   <canvas class="hero__slab hero__slab--moss" id="slabMoss" width="960" height="540" aria-hidden="true"></canvas>
+  <!-- matte finish for the rocks: softer saturation, flattened highlights, fine grain inside the rock shape only -->
+  <svg class="hero__defs" width="0" height="0" aria-hidden="true" focusable="false">
+    <filter id="rockMatte" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+      <feColorMatrix in="SourceGraphic" type="saturate" values="0.86" result="desat"/>
+      <feComponentTransfer in="desat" result="flat">
+        <feFuncR type="linear" slope="0.88" intercept="0.045"/>
+        <feFuncG type="linear" slope="0.88" intercept="0.045"/>
+        <feFuncB type="linear" slope="0.88" intercept="0.045"/>
+      </feComponentTransfer>
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch" result="noise"/>
+      <feColorMatrix in="noise" type="matrix" values="0 0 0 0 0.5  0 0 0 0 0.5  0 0 0 0 0.5  0 0 0 0.9 0" result="grey"/>
+      <feComposite in="grey" in2="SourceAlpha" operator="in" result="grain"/>
+      <feComponentTransfer in="grain" result="grainSoft"><feFuncA type="linear" slope="0.18"/></feComponentTransfer>
+      <feBlend in="grainSoft" in2="flat" mode="overlay"/>
+    </filter>
+  </svg>
 
   <!-- Layer 5: Interactive Bird Video System -->
   <div class="birds" id="birds" aria-hidden="true">
@@ -102,38 +118,92 @@
   <div class="mq" aria-hidden="true"><div class="mq-track" id="mq"></div></div>
 </section>
 
-<section class="page lineup" id="lineup" data-theme="cream">
-  <div class="lineup-wrap">
-    <div class="lineup-grid" id="lineupGrid">
-      <div class="lineup-item" data-product="gummies">
-        <div class="lineup-slot" data-slot="gummies">
-          <div class="lineup-shadow" aria-hidden="true"></div>
-        </div>
-        <span class="lineup-name">Lung Booster</span>
+<section class="page showcase" id="showcase" data-theme="cream" data-dock="lineup">
+  <!-- stays on screen: only the progress row. The product (on #flightCanvas) also stays in one place and turns. -->
+  <div class="showcase-pin" id="showcasePin">
+    <div class="sc-progress" id="scProgress" aria-hidden="true">
+      <span class="sc-progress__label" id="scProgLabel">01 / 05</span>
+      <i class="sc-progress__bar"><b class="sc-progress__fill" id="scProgFill"></b></i>
+      <span class="sc-progress__num" id="scProgNum">000</span>
+    </div>
+  </div>
+
+  <!-- scrolls past the product like a normal page, so the product seems to fall through it -->
+  <div class="sc-flow" id="scFlow">
+    <svg class="sc-arcs" viewBox="0 0 1440 6000" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M-80 700C260 420 640 560 600 900s-420 520-120 880 980 120 1100 560-560 760-360 1160 720 300 900 760"/>
+      <path d="M1520 300C1180 160 820 420 980 760s560 540 220 980-1040 300-980 900 900 520 780 1120-760 640-420 1100"/>
+    </svg>
+
+    <article class="sc-card" id="scCard">
+      <span class="sc-ico" id="scIco" aria-hidden="true"></span>
+      <p class="sc-kick" id="scKick"></p>
+      <h2 class="sc-h" id="scHead"><span class="sc-h__line" id="scHeadA"></span><span class="sc-h__line" id="scHeadB"></span></h2>
+      <p class="sc-d" id="scDesc"></p>
+    </article>
+
+    <div class="sc-badges" id="scStickers" aria-hidden="true"></div>
+    <!-- the rest of the product page, built from the existing write-ups (product-details.js and the catalogue) -->
+    <div class="sc-blocks" id="scBlocks"></div>
+  </div>
+</section>
+
+<section class="page statement t-green tl-scallop" id="statement" data-theme="green" data-dock="lineup">
+  <div class="stm-pin" id="stmPin">
+    <svg class="stm-art stm-art--a" viewBox="0 0 200 200" aria-hidden="true" style="--s:.32;--r:-18deg"><path d="M30 168c10-46 40-82 92-104M30 168c40-6 78-34 92-104-40 4-76 30-92 104z"/><path d="M62 134l22-6M80 108l22-4M54 148l-4-22M74 124l-6-20"/></svg>
+    <svg class="stm-art stm-art--b" viewBox="0 0 200 200" aria-hidden="true" style="--s:.55;--r:24deg"><path d="M100 188V70M100 120c-26-6-40-26-40-50 26 4 40 22 40 50zM100 96c24-6 38-24 38-48-24 4-38 22-38 48zM100 150c-22-4-34-20-34-40 22 4 34 18 34 40z"/></svg>
+    <svg class="stm-art stm-art--c" viewBox="0 0 200 200" aria-hidden="true" style="--s:.22;--r:8deg"><path d="M40 160C50 100 90 52 170 40c-6 70-48 118-130 120z"/><path d="M40 160c34-36 66-68 108-98"/></svg>
+    <svg class="stm-art stm-art--d" viewBox="0 0 200 200" aria-hidden="true" style="--s:.45;--r:-30deg"><path d="M100 30c26 26 26 66 0 96-26-30-26-70 0-96zM100 126v62M100 150c-16-4-26-14-30-28M100 164c14-4 24-12 28-26"/></svg>
+    <span class="stm-seed" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="M10 38C12 22 22 12 40 10 38 28 28 38 10 38z"/><path d="M10 38L28 20"/></svg></span>
+    <p class="stm-note" aria-hidden="true">Why people<br>love it<svg viewBox="0 0 60 40"><path d="M4 6C26 2 46 14 52 34m0 0l-12-6m12 6l2-13"/></svg></p>
+    <h2 class="stm-title" id="stmTitle" aria-label="Nature, just the way you need it."><span class="stw"><span class="stw-i">Nature,</span></span> <span class="stw"><span class="stw-i">just</span></span> <span class="stw"><span class="stw-i">the</span></span> <span class="stw"><span class="stw-i">way</span></span> <span class="stw"><span class="stw-i">you</span></span> <span class="stw stw-hl"><span class="stw-i">need</span></span> <span class="stw"><span class="stw-i">it.</span></span></h2>
+  </div>
+</section>
+
+<section class="page lineup t-green" id="lineup" data-theme="green">
+  <div class="lineup-pin" id="lineupPin">
+    <div class="lineup-wrap">
+      <h2 class="lu-h" id="luHead" aria-label="Which one is yours?">
+        <span class="lu-half lu-l"><span class="stw"><span class="stw-i">Which one</span></span></span>
+        <span class="lu-sun" aria-hidden="true"><svg viewBox="0 0 120 120"><g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><circle cx="60" cy="60" r="14"/><path transform="rotate(0 60 60)" d="M60 38c-5-8-5-16 0-24 5 8 5 16 0 24z"/><path transform="rotate(30 60 60)" d="M60 38c-5-8-5-16 0-24 5 8 5 16 0 24z"/><path transform="rotate(60 60 60)" d="M60 38c-5-8-5-16 0-24 5 8 5 16 0 24z"/><path transform="rotate(90 60 60)" d="M60 38c-5-8-5-16 0-24 5 8 5 16 0 24z"/><path transform="rotate(120 60 60)" d="M60 38c-5-8-5-16 0-24 5 8 5 16 0 24z"/><path transform="rotate(150 60 60)" d="M60 38c-5-8-5-16 0-24 5 8 5 16 0 24z"/><path transform="rotate(180 60 60)" d="M60 38c-5-8-5-16 0-24 5 8 5 16 0 24z"/><path transform="rotate(210 60 60)" d="M60 38c-5-8-5-16 0-24 5 8 5 16 0 24z"/><path transform="rotate(240 60 60)" d="M60 38c-5-8-5-16 0-24 5 8 5 16 0 24z"/><path transform="rotate(270 60 60)" d="M60 38c-5-8-5-16 0-24 5 8 5 16 0 24z"/><path transform="rotate(300 60 60)" d="M60 38c-5-8-5-16 0-24 5 8 5 16 0 24z"/><path transform="rotate(330 60 60)" d="M60 38c-5-8-5-16 0-24 5 8 5 16 0 24z"/></g></svg></span>
+        <span class="lu-half lu-r"><span class="stw"><span class="stw-i">is yours?</span></span></span>
+      </h2>
+      <div class="lineup-grid" id="lineupGrid">
+      <div class="lineup-card" data-product="gummies">
+        <button class="lineup-item" type="button" data-product="gummies">
+          <span class="lineup-slot" data-slot="gummies"><span class="lineup-shadow" aria-hidden="true"></span></span>
+          <span class="lineup-name">Lung Booster</span>
+        </button>
+        <button class="mini-add lu-add" type="button" data-id="gummies" aria-label="Add to bag"><span aria-hidden="true">+</span></button>
       </div>
-      <div class="lineup-item" data-product="inhaler">
-        <div class="lineup-slot" data-slot="inhaler">
-          <div class="lineup-shadow" aria-hidden="true"></div>
-        </div>
-        <span class="lineup-name">Aroma Inhaler</span>
+      <div class="lineup-card" data-product="inhaler">
+        <button class="lineup-item" type="button" data-product="inhaler">
+          <span class="lineup-slot" data-slot="inhaler"><span class="lineup-shadow" aria-hidden="true"></span></span>
+          <span class="lineup-name">Aroma Inhaler</span>
+        </button>
+        <button class="mini-add lu-add" type="button" data-id="inhaler" aria-label="Add to bag"><span aria-hidden="true">+</span></button>
       </div>
-      <div class="lineup-item" data-product="rollon">
-        <div class="lineup-slot" data-slot="rollon">
-          <div class="lineup-shadow" aria-hidden="true"></div>
-        </div>
-        <span class="lineup-name">CycleRelief</span>
+      <div class="lineup-card" data-product="rollon">
+        <button class="lineup-item" type="button" data-product="rollon">
+          <span class="lineup-slot" data-slot="rollon"><span class="lineup-shadow" aria-hidden="true"></span></span>
+          <span class="lineup-name">CycleRelief</span>
+        </button>
+        <button class="mini-add lu-add" type="button" data-id="rollon" aria-label="Add to bag"><span aria-hidden="true">+</span></button>
       </div>
-      <div class="lineup-item" data-product="reviva">
-        <div class="lineup-slot" data-slot="reviva">
-          <div class="lineup-shadow" aria-hidden="true"></div>
-        </div>
-        <span class="lineup-name">Reviva</span>
+      <div class="lineup-card" data-product="reviva">
+        <button class="lineup-item" type="button" data-product="reviva">
+          <span class="lineup-slot" data-slot="reviva"><span class="lineup-shadow" aria-hidden="true"></span></span>
+          <span class="lineup-name">Reviva</span>
+        </button>
+        <button class="mini-add lu-add" type="button" data-id="reviva" aria-label="Add to bag"><span aria-hidden="true">+</span></button>
       </div>
-      <div class="lineup-item" data-product="liver">
-        <div class="lineup-slot" data-slot="liver">
-          <div class="lineup-shadow" aria-hidden="true"></div>
-        </div>
-        <span class="lineup-name">Liver Booster</span>
+      <div class="lineup-card" data-product="liver">
+        <button class="lineup-item" type="button" data-product="liver">
+          <span class="lineup-slot" data-slot="liver"><span class="lineup-shadow" aria-hidden="true"></span></span>
+          <span class="lineup-name">Liver Booster</span>
+        </button>
+        <button class="mini-add lu-add" type="button" data-id="liver" aria-label="Add to bag"><span aria-hidden="true">+</span></button>
+      </div>
       </div>
     </div>
   </div>
