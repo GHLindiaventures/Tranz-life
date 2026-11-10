@@ -46,10 +46,9 @@ function initMossReveal(){
   };
   const kick = () => { idle = 0; if (!running){ running = true; last = performance.now(); requestAnimationFrame(frame); } };
 
-  window.addEventListener('pointermove', e => {
-    const r = view.getBoundingClientRect();
-    if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom){ lx = ly = null; return; }
-    const x = (e.clientX - r.left)/r.width*RES.w, y = (e.clientY - r.top)/r.height*RES.h;
+  view.addEventListener('pointermove', e => {
+    const w = view.clientWidth || RES.w, h = view.clientHeight || RES.h;
+    const x = (e.offsetX / w) * RES.w, y = (e.offsetY / h) * RES.h;
     // paint a smooth stroke from the last point, not just separate dots
     if (lx !== null){
       const d = Math.hypot(x - lx, y - ly), steps = Math.min(40, Math.ceil(d/(BRUSH*.35)));
@@ -57,6 +56,8 @@ function initMossReveal(){
     } else dab(x, y);
     lx = x; ly = y; kick();
   }, { passive: true });
+
+  view.addEventListener('pointerleave', () => { lx = ly = null; }, { passive: true });
 
   return {};
 }

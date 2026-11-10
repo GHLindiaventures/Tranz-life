@@ -37,8 +37,9 @@ function initHeroJar(){
   };
   // stand the product on the slab's top face, read from where the slab actually is on screen
   // (its size, scroll and parallax offsets included), so it always sits on the rock
-  const slab = $('#slab');
+  let needsMeasure = true;
   const measure = () => {
+    needsMeasure = false;
     const c = canvas.getBoundingClientRect();
     if (slab && slab.offsetWidth){
       const r = slab.getBoundingClientRect();
@@ -50,7 +51,12 @@ function initHeroJar(){
       table.x = r.left - c.left + r.width/2; table.y = r.top - c.top + r.height*.5; table.ph = r.height*PHOTO.productH;
     }
   };
-  window.addEventListener('resize', layout); phone.addEventListener('change', layout); layout();
+  const requestMeasure = () => { needsMeasure = true; };
+  window.addEventListener('resize', () => { layout(); requestMeasure(); });
+  window.addEventListener('scroll', requestMeasure, { passive: true });
+  phone.addEventListener('change', () => { layout(); requestMeasure(); });
+  layout();
+  measure();
   const play = () => { if (photo && photo.paused) { const p = photo.play(); if (p && p.catch) p.catch(() => {}); } };
   document.addEventListener('visibilitychange', () => { if (!document.hidden) play(); });
 
@@ -64,13 +70,14 @@ function initHeroJar(){
   };
 
   let at = -1, tNow = 0, last = performance.now();
-  let isHeld = false, isHidden = false;
-  (function frame(now){
-    requestAnimationFrame(frame);
-    const r = stage.getBoundingClientRect(); if (r.bottom < 0) { last = now; return; }
+  let isHeld = false, isHidden = false, isVisible = true, rafId = 0;
+
+  function frame(now){
+    if (!isVisible) { rafId = 0; return; }
+    rafId = requestAnimationFrame(frame);
     const dt = Math.min(.05, (now - last)/1000); last = now; tNow += dt;
     mouse.x += (mouse.tx - mouse.x)*.05; mouse.y += (mouse.ty - mouse.y)*.05;
-    measure();
+    if (needsMeasure) measure();
     const e = at < 0 ? 0 : ease.back(clamp((now - at)/1700, 0, 1));
     if (at >= 0){
       const ns = now/1000;
@@ -100,7 +107,19 @@ function initHeroJar(){
       o.m.position.set(jar.G.position.x + Math.cos(a)*rr, jar.G.position.y + o.y*u*.45 + Math.sin(tNow + k)*u*.03, Math.sin(a)*rr*.6);
       o.m.scale.setScalar(o.s*u*(o.leaf ? .16 : .1)*e*gw); o.m.rotation.set(tNow*.4 + k, tNow*.3 + a, o.leaf ? .6 : k); });
     L.renderer.render(L.scene, L.cam);
-  })(performance.now());
+  }
+
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(([entry]) => {
+      isVisible = entry.isIntersecting;
+      if (isVisible && !rafId) {
+        last = performance.now();
+        rafId = requestAnimationFrame(frame);
+      }
+    }, { rootMargin: '100px 0px' }).observe(stage);
+  }
+
+  rafId = requestAnimationFrame(frame);
   return {
     start(){ if (at < 0) at = performance.now(); play(); },
     current(){

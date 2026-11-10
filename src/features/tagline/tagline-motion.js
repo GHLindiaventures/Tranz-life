@@ -39,16 +39,20 @@ function initTaglineMotion() {
     }
   }
 
-  // Mouse parallax interaction
+  // Mouse parallax interaction (attached to section with cached dimensions to avoid layout thrashing)
   const mouse = { x: 0, y: 0, targetX: 0, targetY: 0 };
   function onPointerMove(e) {
-    const rect = section.getBoundingClientRect();
-    if (e.clientY >= rect.top && e.clientY <= rect.bottom) {
-      mouse.targetX = (e.clientX / window.innerWidth - 0.5) * 35;
-      mouse.targetY = ((e.clientY - rect.top) / rect.height - 0.5) * 25;
-    }
+    if (!isVisible) return;
+    const h = height || window.innerHeight;
+    mouse.targetX = ((e.clientX / window.innerWidth) - 0.5) * 35;
+    mouse.targetY = ((e.offsetY / h) - 0.5) * 25;
   }
-  window.addEventListener('pointermove', onPointerMove, { passive: true });
+  function onPointerLeave() {
+    mouse.targetX = 0;
+    mouse.targetY = 0;
+  }
+  section.addEventListener('pointermove', onPointerMove, { passive: true });
+  section.addEventListener('pointerleave', onPointerLeave, { passive: true });
 
   function resize() {
     const rect = section.getBoundingClientRect();
@@ -180,7 +184,8 @@ function initTaglineMotion() {
     destroy: () => {
       observer.disconnect();
       window.removeEventListener('resize', resize);
-      window.removeEventListener('pointermove', onPointerMove);
+      section.removeEventListener('pointermove', onPointerMove);
+      section.removeEventListener('pointerleave', onPointerLeave);
       if (rafId) cancelAnimationFrame(rafId);
     }
   };

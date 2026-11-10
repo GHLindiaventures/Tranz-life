@@ -50,10 +50,13 @@ function initStory(){
   const S0 = .03, ST = .148, DUR = .25, FIN = .8;
   const sOf = i => S0 + i*ST, cOf = i => sOf(i) + DUR/2, mOf = i => i < NP - 1 ? (cOf(i) + cOf(i + 1))/2 : 2;
   let cur = 0, tNow = 0, last = performance.now(), finAt = -1, finDir = 0, finV = 0, playing = false;
-  (function frame(now){
-    requestAnimationFrame(frame);
+  let isVisible = false, rafId = null;
+
+  function frame(now){
+    if (!isVisible){ rafId = null; return; }
+    rafId = requestAnimationFrame(frame);
     const rect = root.getBoundingClientRect(), vh = window.innerHeight;
-    if (rect.bottom < -vh*.2 || rect.top > vh*1.2){ last = now; return; }
+    if (rect.bottom < 0 || rect.top > vh){ last = now; return; }
     const dt = Math.min(.1, (now - last)/1000); last = now; tNow += Math.min(dt, .05);
     const target = clamp(-rect.top/Math.max(1, rect.height - vh), 0, 1);
     cur += (target - cur)*(1 - Math.exp(-dt*(reduce ? 60 : 10))); if (Math.abs(target - cur) < 1e-5) cur = target;
@@ -103,8 +106,24 @@ function initStory(){
       o.m.position.z = 2; o.m.scale.setScalar(Math.max(.0001, o.s*(H*(mobile ? .05 : .075))/ppu*(o.leaf ? 1.3 : 1)*clamp(e, 0, 1.4)));
       o.m.rotation.set(o.r0 + tNow*.35, o.r0*.7 + tNow*.25, o.leaf ? .4 : o.r0); });
     L.renderer.render(L.scene, L.cam);
-  })(performance.now());
-  return { resize };
+  }
+
+  const observer = new IntersectionObserver(entries => {
+    isVisible = entries[0].isIntersecting;
+    if (isVisible){
+      last = performance.now();
+      if (!rafId) rafId = requestAnimationFrame(frame);
+    }
+  }, { rootMargin: '150px 0px' });
+  observer.observe(root);
+
+  return {
+    resize,
+    destroy: () => {
+      observer.disconnect();
+      if (rafId) cancelAnimationFrame(rafId);
+    }
+  };
 }
 
 export { initStory };

@@ -123,8 +123,21 @@ function initLayeredDepth() {
 
   if (canHover && !reduceMotion) {
     let tx = 0, ty = 0, cx = 0, cy = 0, rafId = 0;
+    let stageVisible = true;
+
+    new IntersectionObserver(entries => {
+      stageVisible = entries[0].isIntersecting;
+      if (!stageVisible && rafId) {
+        cancelAnimationFrame(rafId);
+        rafId = 0;
+      }
+    }).observe(stage);
 
     const renderParallax = () => {
+      if (!stageVisible) {
+        rafId = 0;
+        return;
+      }
       cx += (tx - cx) * 0.08;
       cy += (ty - cy) * 0.08;
 
@@ -139,6 +152,7 @@ function initLayeredDepth() {
     };
 
     window.addEventListener('pointermove', (e) => {
+      if (!stageVisible) return;
       tx = (e.clientX / window.innerWidth) - 0.5;
       ty = (e.clientY / window.innerHeight) - 0.5;
       if (!rafId) rafId = requestAnimationFrame(renderParallax);

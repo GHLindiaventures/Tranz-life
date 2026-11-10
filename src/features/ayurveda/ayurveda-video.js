@@ -24,9 +24,10 @@ function initAyurveda() {
   let loadedCount = 0;
   let lastDrawnIndex = -1;
 
-  // Render a specific frame to canvas
+  // Render a specific frame to canvas (skips redundant redraws if already displaying target frame)
   function drawFrame(index) {
     const idx = Math.max(0, Math.min(TOTAL_FRAMES - 1, Math.round(index)));
+    if (idx === lastDrawnIndex) return true;
     const img = frames[idx];
     if (img && img.complete && img.naturalWidth > 0) {
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
@@ -83,14 +84,21 @@ function initAyurveda() {
   let livingDir = 1;
   let lastLivingStep = performance.now();
 
+  let isVisible = false;
+  let rafId = null;
+
   function tick(now) {
-    requestAnimationFrame(tick);
+    if (!isVisible) {
+      rafId = null;
+      return;
+    }
+    rafId = requestAnimationFrame(tick);
 
     const rect = root.getBoundingClientRect();
     const vh = window.innerHeight;
 
-    // Sleep when completely out of viewport
-    if (rect.bottom < -vh * 0.2 || rect.top > vh * 1.2) {
+    // Fast bounds check
+    if (rect.bottom < 0 || rect.top > vh) {
       lastTime = now;
       return;
     }
@@ -176,10 +184,27 @@ function initAyurveda() {
     }
   }
 
-  requestAnimationFrame(tick);
+  // IntersectionObserver to pause tick RAF when out of view
+  const observer = new IntersectionObserver(
+    entries => {
+      const entry = entries[0];
+      isVisible = entry.isIntersecting;
+      if (isVisible) {
+        lastTime = performance.now();
+        if (!rafId) rafId = requestAnimationFrame(tick);
+      }
+    },
+    { rootMargin: '150px 0px' }
+  );
+
+  observer.observe(root);
 
   return {
-    redraw: () => drawFrame(lastDrawnIndex >= 0 ? lastDrawnIndex : 0)
+    redraw: () => drawFrame(lastDrawnIndex >= 0 ? lastDrawnIndex : 0),
+    destroy: () => {
+      observer.disconnect();
+      if (rafId) cancelAnimationFrame(rafId);
+    }
   };
 }
 

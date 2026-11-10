@@ -28,8 +28,13 @@ function initProductHandOff() {
 
   // Pre-calculate document coordinates of slots to avoid getBoundingClientRect() during scroll
   let slotMetrics = [];
+  let lineupTop = 0;
+  let lineupHeight = 0;
+
   function measureSlots() {
     L.resize();
+    lineupTop = lineupSec.offsetTop;
+    lineupHeight = lineupSec.offsetHeight;
     slotMetrics = slotEls.map((slot, i) => {
       if (!slot) return { docX: 0, docY: 0, h: 220, fit: 1 };
       const r = slot.getBoundingClientRect();
@@ -98,14 +103,19 @@ function initProductHandOff() {
   }
 
   // Unified 60fps render loop
+  let isHandOffVisible = true;
+
   function loop(now) {
+    if (!isHandOffVisible) {
+      rafId = 0;
+      return;
+    }
     rafId = requestAnimationFrame(loop);
     const scrollY = window.scrollY;
-    const lineupRect = lineupSec.getBoundingClientRect();
 
-    // Check if visible in transition zone or inside lineup section
-    const inLineupZone = (lineupRect.bottom > 0 && lineupRect.top < window.innerHeight);
-    const inFlightZone = (scrollY > 0 && scrollY < lineupSec.offsetTop + 100);
+    // Check if visible in transition zone or inside lineup section without layout thrashing
+    const inLineupZone = (scrollY + window.innerHeight > lineupTop && scrollY < lineupTop + lineupHeight);
+    const inFlightZone = (scrollY >= 0 && scrollY < lineupTop + 100);
 
     if (!inLineupZone && !inFlightZone) {
       if (flightCanvas.classList.contains('active')) {
@@ -201,6 +211,23 @@ function initProductHandOff() {
 
     L.renderer.render(L.scene, L.cam);
   }
+
+  let heroVisible = true;
+  let lineupVisible = false;
+
+  const handOffObserver = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      if (entry.target === heroStage) heroVisible = entry.isIntersecting;
+      if (entry.target === lineupSec) lineupVisible = entry.isIntersecting;
+    });
+    isHandOffVisible = heroVisible || lineupVisible;
+    if (isHandOffVisible && !rafId) {
+      rafId = requestAnimationFrame(loop);
+    }
+  }, { rootMargin: '100px 0px' });
+
+  handOffObserver.observe(heroStage);
+  handOffObserver.observe(lineupSec);
 
   rafId = requestAnimationFrame(loop);
 

@@ -65,8 +65,10 @@ function initPages(){
   window.addEventListener('scroll', () => { if (ticking) return; ticking = true; requestAnimationFrame(() => { ticking = false; update(); }); }, { passive:true });
   window.addEventListener('resize', () => requestAnimationFrame(measure));
   if ('ResizeObserver' in window){ let t; new ResizeObserver(() => { clearTimeout(t); t = setTimeout(measure, 80); }).observe($('main')); }
-  // the nav theme follows the reaction slides, which change after scrolling stops
-  (function tick(){ requestAnimationFrame(tick); if (LAYOUT.reactor && pages[LAYOUT.cur] && pages[LAYOUT.cur].id === 'process') update(); })();
+  // the nav theme follows the reaction slides reactively when theme changes
+  window.addEventListener('tl:reactor-theme', () => {
+    if (pages[LAYOUT.cur] && pages[LAYOUT.cur].id === 'process') update();
+  });
 
   // anchors: smooth scroll to a section
   document.addEventListener('click', e => {

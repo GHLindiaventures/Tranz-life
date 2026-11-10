@@ -74,10 +74,20 @@ function initNav(){
     nav.classList.toggle('scrolled', y > 20);
   }, { passive: true });
   // the dark footer counts as a green page for the dock and nav
-  let pageDark = false; const foot = $('footer');
-  const tone = () => { const dark = pageDark || foot.getBoundingClientRect().top < innerHeight*.5; nav.classList.toggle('t-green', dark); dock.classList.toggle('t-green', dark); };
-  window.addEventListener('scroll', tone, { passive:true });
-  window.addEventListener('tl:page', e => { setOn(e.detail.id); pageDark = e.detail.theme === 'green'; tone(); });
+  let pageDark = false, footDark = false;
+  const foot = $('footer');
+  const updateTone = () => {
+    const dark = pageDark || footDark;
+    nav.classList.toggle('t-green', dark);
+    dock.classList.toggle('t-green', dark);
+  };
+  if (foot && 'IntersectionObserver' in window) {
+    new IntersectionObserver(([entry]) => {
+      footDark = entry.isIntersecting;
+      updateTone();
+    }, { rootMargin: '0px 0px -50% 0px' }).observe(foot);
+  }
+  window.addEventListener('tl:page', e => { setOn(e.detail.id); pageDark = e.detail.theme === 'green'; updateTone(); });
 }
 
 export { initNav };

@@ -187,14 +187,22 @@ function initReactor(getProgress){
     tag.textContent = RX[k].p; tag.classList.toggle('on', tagOn && wp < .5);
     const halfH = Math.tan(THREE.MathUtils.degToRad(17.5))*15, rpx = Math.min(H*.3, (3.5*sc*fit/halfH)*(H/2));
     tag.style.left = (W/2 + (world.position.x/(halfH*cam.aspect))*(W/2)) + 'px'; tag.style.top = (H/2 - (world.position.y/halfH)*(H/2) + rpx + 14) + 'px';
+    const prevTheme = lastTheme;
     lastTheme = wp > .6 ? (k + 1) % 2 === 0 ? 'cream' : 'green' : (k % 2 === 0 ? 'cream' : 'green');
+    if (prevTheme !== lastTheme) {
+      window.dispatchEvent(new CustomEvent('tl:reactor-theme', { detail: lastTheme }));
+    }
     activeStage = wp > .5 ? Math.min(k + 1, NSTAGE - 1) : k;
   }
   let lastTheme = 'cream', activeStage = 0;
 
+  const processSec = $('#process') || pin;
+  let isSecVisible = false, rafId = null;
+
   let last = performance.now();
   function frame(now){
-    requestAnimationFrame(frame);
+    if (!isSecVisible){ rafId = null; return; }
+    rafId = requestAnimationFrame(frame);
     const dt = Math.min(.05, (now - last)/1000); last = now; tNow += dt;
     const st = getProgress();
     visible = st.visible; if (!visible) return;
@@ -204,8 +212,26 @@ function initReactor(getProgress){
     renderer.render(scene, cam);
   }
   window.addEventListener('resize', resize); resize(); apply(0);
-  requestAnimationFrame(frame);
-  return { resize, theme:() => lastTheme, stage:() => activeStage, count:NSTAGE };
+
+  const observer = new IntersectionObserver(entries => {
+    isSecVisible = entries[0].isIntersecting;
+    if (isSecVisible){
+      last = performance.now();
+      if (!rafId) rafId = requestAnimationFrame(frame);
+    }
+  }, { rootMargin: '150px 0px' });
+  if (processSec) observer.observe(processSec);
+
+  return {
+    resize,
+    theme:() => lastTheme,
+    stage:() => activeStage,
+    count:NSTAGE,
+    destroy: () => {
+      observer.disconnect();
+      if (rafId) cancelAnimationFrame(rafId);
+    }
+  };
 }
 
 export { initReactor };
