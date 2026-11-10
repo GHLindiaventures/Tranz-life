@@ -55,3 +55,30 @@
   .pc-media .pc-foot.pc-quick{transform:none;transition:opacity .2s}
   .in-card,.in-card:hover{translate:none !important;transition:none}
 }
+
+/* ---------- Phase B ---------- */
+/* B1/B2 leaf curtain: fixed layer under the nav (50) and dock (60), over the page; JS scrubs its y */
+.tl-curtain{--tc-edge:90px;--tc-green:#16331d;position:fixed;left:0;top:0;width:100%;height:calc(var(--tc-vh,100vh) + 2 * var(--tc-edge));z-index:45;pointer-events:none;visibility:hidden;will-change:transform;overflow:hidden}
+.tl-curtain .tc-body{position:absolute;left:0;right:0;top:var(--tc-edge);height:var(--tc-vh,100vh);background:var(--tc-green)}
+.tl-curtain .tc-edge{position:absolute;left:-4%;width:108%;height:calc(var(--tc-edge) + 1px)}
+.tl-curtain .tc-top{top:0}
+.tl-curtain .tc-bot{bottom:0;scale:1 -1}
+.tl-curtain svg{display:block;width:100%;height:100%}
+.tl-curtain .tc-fill{fill:var(--tc-green)}
+.tl-curtain .tc-vein{fill:none;stroke:rgba(203,226,163,.16);stroke-width:2;vector-effect:non-scaling-stroke}
+/* #contact: the curtain replaces the rounded sheet corners (both would mark the same hand-off) */
+#contact.sheet-stack.has-curtain{--sheet-radius:0px !important}
+
+/* B3 back to top: the footer logo is clickable */
+.f-brand .to-top{cursor:pointer;transition:opacity .3s}
+.f-brand .to-top:hover{opacity:.82}
+.f-brand .logo-word.to-top:focus-visible{outline:2px solid var(--moss);outline-offset:6px;border-radius:4px}
+
+/* B4 footer wordmark: each line rises out of its own mask (padding keeps the caps clear of the mask edge) */
+.f-big .fb-l{display:block;overflow:clip;padding-block:.06em;margin-block:-.06em}
+.f-big .fb-l:first-child{color:inherit}
+.f-big .fb-i{display:block;color:inherit;will-change:transform}
+
+@media (prefers-reduced-motion:reduce){
+  .tl-curtain{display:none}
+}
