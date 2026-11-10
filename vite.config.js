@@ -26,7 +26,9 @@ export default defineConfig(({ mode }) => {
               news: 'news.html',
               contact: 'contact.html',
               careers: 'careers.html',
-              certifications: 'certifications.html'
+              certifications: 'certifications.html',
+              privacy: 'privacy.html',
+              terms: 'terms.html'
             }
           }
         },
