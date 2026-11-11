@@ -5,6 +5,7 @@ import { SECTIONS } from '../../data/sections.js';
 import { SEC_IC, svgI } from './nav-icons.js';
 import { $, $$ } from '../../utils/dom.js';
 import { reduce } from '../../utils/media.js';
+import { initNavDropdowns } from './dropdown.js';
 
 function initNav(){
   const nav = $('#nav'), dock = $('#dock'), btn = $('#dockMenu'), menu = $('#menu'), ind = $('#dockInd');
@@ -76,13 +77,14 @@ function initNav(){
     const changed = id !== cur; cur = id;
     links.forEach(a => a.classList.toggle('on', a.dataset.sec === id));
     $$('#menuList li').forEach(li => li.classList.toggle('on', li.dataset.sec === id));
-    $$('.nav-pills a').forEach(a => a.classList.toggle('on', a.dataset.sec === id));
+    $$('.nav-pills > a').forEach(a => a.classList.toggle('on', a.dataset.sec === id));
     const si = Math.max(0, SECTIONS.findIndex(s => s.id === id)), cl = $('#dockCur');
     cl.textContent = SECTIONS[si].name; cl.dataset.no = pad(si + 1);
     place();
     if (changed && !menu.classList.contains('open')){ dock.classList.add('peek'); clearTimeout(peekT); peekT = setTimeout(() => dock.classList.remove('peek'), 1600); }
   };
   setOn('home'); window.addEventListener('resize', place);
+  initNavDropdowns();
   window.addEventListener('scroll', () => {
     const y = window.scrollY;
     nav.classList.toggle('scrolled', y > 20);

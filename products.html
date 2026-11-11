@@ -36,14 +36,18 @@
         </a>
         <button class="menu-x" id="menuX" type="button">Close <i aria-hidden="true">×</i></button>
       </div>
-      <ol class="menu-list">
-        <li><a href="index.html#home"><span class="mi-no">01</span><span class="mi-name">Home</span><span class="mi-sub">Nature meets science</span></a></li>
-        <li><a href="about.html"><span class="mi-no">02</span><span class="mi-name">About Us</span><span class="mi-sub">Our mission &amp; innovation</span></a></li>
-        <li><a href="products.html" class="active"><span class="mi-no">03</span><span class="mi-name">Our Products</span><span class="mi-sub">All five formulations</span></a></li>
-        <li><a href="index.html#insider"><span class="mi-no">04</span><span class="mi-name">Our Vision</span><span class="mi-sub">Company Tagline</span></a></li>
-        <li><a href="index.html#process"><span class="mi-no">05</span><span class="mi-name">Pipeline</span><span class="mi-sub">Seed to shelf</span></a></li>
-        <li><a href="index.html#science"><span class="mi-no">06</span><span class="mi-name">Science</span><span class="mi-sub">Rooted in nature</span></a></li>
-        <li><a href="index.html#contact"><span class="mi-no">07</span><span class="mi-name">Contact</span><span class="mi-sub">Say hello</span></a></li>
+      <ol class="menu-list" id="menuList">
+        <li style="--i:0"><a href="index.html#home"><span class="mi-no">01</span><span class="mi-name">Home</span><span class="mi-sub">Nature meets science</span></a></li>
+        <li style="--i:1"><a href="about.html"><span class="mi-no">02</span><span class="mi-name">About Us</span><span class="mi-sub">Our mission & innovation</span></a></li>
+        <li style="--i:2"><a href="products.html" class="active"><span class="mi-no">03</span><span class="mi-name">Our Products</span><span class="mi-sub">All five formulations</span></a></li>
+        <li style="--i:3"><a href="science.html"><span class="mi-no">04</span><span class="mi-name">Science & Innovation</span><span class="mi-sub">Molecular delivery & 3D lab</span></a></li>
+        <li style="--i:4"><a href="ingredients.html"><span class="mi-no">05</span><span class="mi-name">Our Ingredients</span><span class="mi-sub">Botanical pharmacopeia</span></a></li>
+        <li style="--i:5"><a href="quality.html"><span class="mi-no">06</span><span class="mi-name">Quality & Manufacturing</span><span class="mi-sub">Cleanrooms & batch audit</span></a></li>
+        <li style="--i:6"><a href="sustainability.html"><span class="mi-no">07</span><span class="mi-name">Sustainability</span><span class="mi-sub">Regeneration & zero-plastic</span></a></li>
+        <li style="--i:7"><a href="certifications.html"><span class="mi-no">08</span><span class="mi-name">Certifications & Compliance</span><span class="mi-sub">Regulatory accreditations</span></a></li>
+        <li style="--i:8"><a href="news.html"><span class="mi-no">09</span><span class="mi-name">News & Insights</span><span class="mi-sub">Clinical research & updates</span></a></li>
+        <li style="--i:9"><a href="careers.html"><span class="mi-no">10</span><span class="mi-name">Careers</span><span class="mi-sub">Join our research team</span></a></li>
+        <li style="--i:10"><a href="contact.html"><span class="mi-no">11</span><span class="mi-name">Contact</span><span class="mi-sub">Say hello</span></a></li>
       </ol>
       <aside class="menu-side">
         <div class="menu-note">
@@ -62,11 +66,103 @@
     </a>
     <nav class="nav-pills" aria-label="Main">
       <a href="index.html#home">Home</a>
-      <a href="about.html">About</a>
-      <a href="products.html" class="on" aria-current="page">Products</a>
-      <a href="index.html#process">Process</a>
-      <a href="index.html#science">Science</a>
-      <a href="index.html#contact">Contact</a>
+
+      <!-- Company Dropdown -->
+      <div class="nav-drop">
+        <button class="nav-drop-btn" type="button" aria-expanded="false">
+          Company <svg class="nav-caret" viewBox="0 0 12 12"><path d="M2.5 4.5L6 8L9.5 4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="nav-drop-menu" role="menu">
+          <a href="about.html" class="nav-drop-item">
+            <strong>About Us</strong>
+            <small>Mission &amp; Innovation</small>
+          </a>
+          <a href="news.html" class="nav-drop-item">
+            <strong>News &amp; Insights</strong>
+            <small>Clinical Whitepapers &amp; Updates</small>
+          </a>
+          <a href="careers.html" class="nav-drop-item">
+            <strong>Careers</strong>
+            <small>Join Our Biotech Team</small>
+          </a>
+          <a href="contact.html" class="nav-drop-item">
+            <strong>Contact Us</strong>
+            <small>Chennai HQ &amp; Support</small>
+          </a>
+        </div>
+      </div>
+
+      <!-- Products Dropdown -->
+      <div class="nav-drop">
+        <button class="nav-drop-btn on" type="button" aria-expanded="false">
+          Products <svg class="nav-caret" viewBox="0 0 12 12"><path d="M2.5 4.5L6 8L9.5 4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="nav-drop-menu" role="menu">
+          <a href="products.html" class="nav-drop-item featured on" aria-current="page">
+            <strong>All Formulations (5)</strong>
+            <small>Browse Complete Catalog</small>
+          </a>
+          <div class="nav-drop-divider"></div>
+          <a href="product-details.html?id=gummies" class="nav-drop-item">
+            <strong>PulmoClear™ Gummies</strong>
+            <small>Lung Booster &amp; Craving Control</small>
+          </a>
+          <a href="product-details.html?id=inhaler" class="nav-drop-item">
+            <strong>Craving Control™ Inhaler</strong>
+            <small>Tobacco Cessation Aromatherapy</small>
+          </a>
+          <a href="product-details.html?id=rollon" class="nav-drop-item">
+            <strong>CycleRelief™ Roll-On</strong>
+            <small>Menstrual Comfort &amp; Cramps</small>
+          </a>
+          <a href="product-details.html?id=reviva" class="nav-drop-item">
+            <strong>Reviva™ Roll-On</strong>
+            <small>Diabetes &amp; Vitality Support</small>
+          </a>
+          <a href="product-details.html?id=liver" class="nav-drop-item">
+            <strong>LiverDetox™ Concoction</strong>
+            <small>100% Ayurvedic Liver Booster</small>
+          </a>
+        </div>
+      </div>
+
+      <!-- Science Dropdown -->
+      <div class="nav-drop">
+        <button class="nav-drop-btn" type="button" aria-expanded="false">
+          Science <svg class="nav-caret" viewBox="0 0 12 12"><path d="M2.5 4.5L6 8L9.5 4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="nav-drop-menu" role="menu">
+          <a href="science.html" class="nav-drop-item">
+            <strong>Science &amp; Innovation</strong>
+            <small>3D Compound Lab &amp; Delivery</small>
+          </a>
+          <a href="ingredients.html" class="nav-drop-item">
+            <strong>Our Ingredients</strong>
+            <small>Botanical Pharmacopeia</small>
+          </a>
+        </div>
+      </div>
+
+      <!-- Standards Dropdown -->
+      <div class="nav-drop">
+        <button class="nav-drop-btn" type="button" aria-expanded="false">
+          Standards <svg class="nav-caret" viewBox="0 0 12 12"><path d="M2.5 4.5L6 8L9.5 4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="nav-drop-menu" role="menu">
+          <a href="quality.html" class="nav-drop-item">
+            <strong>Quality &amp; Manufacturing</strong>
+            <small>ISO 7 Cleanrooms &amp; Batch COA</small>
+          </a>
+          <a href="certifications.html" class="nav-drop-item">
+            <strong>Certifications &amp; Compliance</strong>
+            <small>AYUSH GMP &amp; NABL Testing</small>
+          </a>
+          <a href="sustainability.html" class="nav-drop-item">
+            <strong>Sustainability</strong>
+            <small>Regenerative Ecosystems</small>
+          </a>
+        </div>
+      </div>
     </nav>
     <div class="nav-act">
       <button class="menu-btn" id="dockMenu" type="button" aria-expanded="false" aria-label="Open menu">
