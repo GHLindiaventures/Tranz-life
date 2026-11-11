@@ -32,3 +32,4 @@ export const milestones = [
     description: '9 market-ready wellness formulations, 14 products in research and development pipeline, and 6 specialized delivery formats.'
   }
 ];
+

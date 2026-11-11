@@ -4,8 +4,11 @@ import { state } from './app/state.js';
 import { initCart } from './features/cart/cart.js';
 import { $ } from './utils/dom.js';
 import { milestones } from './data/milestones.js';
+import { initAnimations } from './about/animations.js';
 
 function initAboutPage() {
+  // Mark body so CSS animation states activate
+  document.body.classList.add('js-loaded');
   // 1. Initialize shopping bag state
   try {
     initCart();
@@ -110,8 +113,9 @@ function initAboutPage() {
 
 // Boot on DOM ready
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initAboutPage);
+  document.addEventListener('DOMContentLoaded', () => { initAboutPage(); initAnimations(); });
 } else {
   initAboutPage();
+  initAnimations();
 }
 
