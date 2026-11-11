@@ -150,3 +150,4 @@ for (const [file, key] of Object.entries(pageConfig)) {
 }
 
 console.log(`Done. Successfully updated ${modifiedCount} files.`);
+

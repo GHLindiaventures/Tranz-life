@@ -17,3 +17,4 @@ pages.forEach(p => {
     console.log('No .menu-list found');
   }
 });
+

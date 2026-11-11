@@ -10,3 +10,4 @@ pages.forEach(p => {
   const content = fs.readFileSync(p, 'utf8');
   console.log(`${p}: has #menu? ${content.includes('id="menu"')}`);
 });
+
