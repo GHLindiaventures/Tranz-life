@@ -671,7 +671,7 @@ function initParticleCanvas() {
 
 /* ─────────────────────────────────────────────
    DNA PARTICLE LAYER for Chapter 06
-   Floating helix-pattern dots
+   Interactive double-helix canvas with bioluminescent glow
 ───────────────────────────────────────────── */
 function initDNACanvas() {
   if (!motionEnabled || prefersReduced) return;
@@ -681,7 +681,7 @@ function initDNACanvas() {
   const canvas = document.createElement('canvas');
   canvas.className = 'tl-dna-canvas';
   canvas.setAttribute('aria-hidden', 'true');
-  canvas.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:0.35;';
+  canvas.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0;opacity:0.85;';
   ch6.style.position = 'relative';
   ch6.style.overflow = 'hidden';
   ch6.insertBefore(canvas, ch6.firstChild);
@@ -695,38 +695,115 @@ function initDNACanvas() {
   resize();
   window.addEventListener('resize', resize, { passive: true });
 
+  // Mouse interaction: track pointer over Chapter 6
+  let mouseX = 0.5;
+  let mouseY = 0.5;
+  let targetSpeed = 1;
+  let currentSpeed = 1;
+
+  ch6.addEventListener('mousemove', (e) => {
+    const rect = ch6.getBoundingClientRect();
+    mouseX = (e.clientX - rect.left) / rect.width;
+    mouseY = (e.clientY - rect.top) / rect.height;
+    targetSpeed = 1.8;
+  }, { passive: true });
+
+  ch6.addEventListener('mouseleave', () => {
+    targetSpeed = 1;
+  }, { passive: true });
+
+  // Floating ambient biotech sparks
+  const sparks = [];
+  const SPARK_COUNT = 30;
+  for (let i = 0; i < SPARK_COUNT; i++) {
+    sparks.push({
+      x: Math.random() * (canvas.width || 1200),
+      y: Math.random() * (canvas.height || 800),
+      r: Math.random() * 2 + 1,
+      vy: -(Math.random() * 0.4 + 0.15),
+      vx: (Math.random() - 0.5) * 0.25,
+      alpha: Math.random() * 0.6 + 0.2,
+      phase: Math.random() * Math.PI * 2,
+    });
+  }
+
   let raf;
+  let accumulatedTime = 0;
+
   function draw(t) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    const time = t * 0.001;
-    const cx = canvas.width * 0.5;
-    const spread = canvas.width * 0.28;
+    const dt = 0.016;
+    currentSpeed += (targetSpeed - currentSpeed) * 0.05;
+    accumulatedTime += dt * currentSpeed;
 
-    // Draw two sinusoidal strands
-    for (let strand = 0; strand < 2; strand++) {
-      const offset = strand * Math.PI;
-      for (let y = 0; y < canvas.height; y += 14) {
-        const x = cx + Math.sin(y * 0.018 + time * 0.5 + offset) * spread;
-        const alpha = 0.15 + 0.1 * Math.sin(y * 0.025 + time);
-        const r = 2.5 + Math.sin(y * 0.03 + time) * 1;
+    const time = accumulatedTime;
+    const cx = canvas.width * (0.35 + mouseX * 0.3); // Follows mouse horizontally
+    const spread = Math.min(canvas.width * 0.35, 420);
 
+    // 1. Draw floating ambient sparks
+    sparks.forEach(s => {
+      s.x += s.vx;
+      s.y += s.vy;
+      if (s.y < -10) { s.y = canvas.height + 10; s.x = Math.random() * canvas.width; }
+      if (s.x < -10) s.x = canvas.width + 10;
+      if (s.x > canvas.width + 10) s.x = -10;
+
+      const pAlpha = s.alpha * (0.7 + 0.3 * Math.sin(time * 2 + s.phase));
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(94, 230, 208, ${pAlpha.toFixed(2)})`;
+      ctx.fill();
+    });
+
+    // 2. Draw cross-links (hydrogen bonds between base pairs)
+    for (let y = 30; y < canvas.height; y += 38) {
+      const angle1 = y * 0.014 + time * 0.8;
+      const x1 = cx + Math.sin(angle1) * spread;
+      const x2 = cx + Math.sin(angle1 + Math.PI) * spread;
+      const depth = Math.cos(angle1); // 3D depth illusion (-1 back to +1 front)
+      const linkAlpha = 0.12 + Math.max(0, depth) * 0.28;
+
+      ctx.beginPath();
+      ctx.moveTo(x1, y);
+      ctx.lineTo(x2, y);
+      ctx.strokeStyle = `rgba(94, 230, 208, ${linkAlpha.toFixed(2)})`;
+      ctx.lineWidth = depth > 0 ? 1.8 : 0.8;
+      ctx.stroke();
+
+      // Midpoint base pair node
+      if (depth > 0) {
+        const mx = (x1 + x2) * 0.5;
         ctx.beginPath();
-        ctx.arc(x, y, r, 0, Math.PI * 2);
-        ctx.fillStyle = strand === 0 ? `rgba(94,230,208,${alpha})` : `rgba(78,186,224,${alpha})`;
+        ctx.arc(mx, y, 2.2, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(231, 198, 128, ${(linkAlpha * 1.4).toFixed(2)})`; // Gold accent
         ctx.fill();
       }
     }
 
-    // Cross-links
-    for (let y = 30; y < canvas.height; y += 42) {
-      const x1 = cx + Math.sin(y * 0.018 + time * 0.5) * spread;
-      const x2 = cx + Math.sin(y * 0.018 + time * 0.5 + Math.PI) * spread;
-      ctx.beginPath();
-      ctx.moveTo(x1, y);
-      ctx.lineTo(x2, y);
-      ctx.strokeStyle = `rgba(94,230,208,0.08)`;
-      ctx.lineWidth = 1;
-      ctx.stroke();
+    // 3. Draw dual helical strands with bioluminescent glowing nodes
+    for (let strand = 0; strand < 2; strand++) {
+      const offset = strand * Math.PI;
+      const color = strand === 0 ? '94, 230, 208' : '78, 186, 224'; // Cyan & Bio-blue
+
+      for (let y = 0; y < canvas.height; y += 16) {
+        const angle = y * 0.014 + time * 0.8 + offset;
+        const x = cx + Math.sin(angle) * spread;
+        const depth = Math.cos(angle); // -1 back, +1 front
+        const scale = 0.6 + (depth + 1) * 0.4; // 0.6 to 1.4 scale
+        const r = 3.8 * scale;
+        const alpha = Math.max(0.2, (depth + 1) * 0.45);
+
+        ctx.save();
+        if (depth > 0.2) {
+          ctx.shadowColor = `rgba(${color}, 0.8)`;
+          ctx.shadowBlur = 10 * scale;
+        }
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${color}, ${alpha.toFixed(2)})`;
+        ctx.fill();
+        ctx.restore();
+      }
     }
 
     raf = requestAnimationFrame(draw);
