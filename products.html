@@ -111,11 +111,11 @@
       <div class="wrap">
         <nav class="catalog-filters" id="catalogFilters" aria-label="Product categories">
           <button class="on" data-f="all" type="button">All Products (5)</button>
-          <button data-f="gummies" type="button">Daily Immunity &amp; Vitality</button>
-          <button data-f="inhaler" type="button">Calm &amp; Respiratory</button>
-          <button data-f="rollon" type="button">Period Comfort &amp; Relief</button>
-          <button data-f="reviva" type="button">Diabetic &amp; Foot Care</button>
-          <button data-f="liquid" type="button">Liver Health &amp; Detox</button>
+          <button data-f="gummies" type="button">Lung Booster &amp; Detox</button>
+          <button data-f="inhaler" type="button">Tobacco Cessation Inhalers</button>
+          <button data-f="rollon" type="button">Menstrual Comfort (CycleRelief)</button>
+          <button data-f="reviva" type="button">Diabetes &amp; Vitality (Reviva)</button>
+          <button data-f="liquid" type="button">Liver Booster (LiverDetox)</button>
         </nav>
       </div>
     </div>
@@ -125,6 +125,22 @@
       <div class="wrap">
         <div class="catalog-grid" id="catalogGrid">
           <!-- Dynamically populated from PRODUCTS array in src/products.js -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Pipeline Formulations Grid -->
+    <section class="catalog-pipeline-sec band" id="pipeline" style="padding: clamp(48px, 6vw, 80px) 0; border-top: 1px solid var(--line); background: var(--ground-2);">
+      <div class="wrap">
+        <div class="sci-sec-header">
+          <span class="sci-kicker">Clinical &amp; Commercial Pipeline</span>
+          <h2 class="sci-sec-title">Upcoming Bioactive Formulations</h2>
+          <p class="sci-sec-desc">
+            From Rasayana longevity phytosomes to women's hormonal balance and paediatric neuro-nutrition, explore the advanced TranzLife pipeline scheduled for release across 2027–2028.
+          </p>
+        </div>
+        <div id="pipelineGrid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; margin-top: 36px;">
+          <!-- Dynamically populated from PIPELINE_PRODUCTS in src/products.js -->
         </div>
       </div>
     </section>

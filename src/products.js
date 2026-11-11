@@ -1,7 +1,7 @@
 // TranzLife Biosciences - Products Catalog Page Interactive Controller
 import './styles/main.css';
 import { thumbs } from './app/state.js';
-import { PRODUCTS } from './data/products.js';
+import { PRODUCTS, PIPELINE_PRODUCTS } from './data/products.js';
 import { SHOTS } from './features/products/product-images.js';
 import { initCart, renderCart } from './features/cart/cart.js';
 import { inr } from './utils/format.js';
@@ -55,6 +55,27 @@ function initProductsPage() {
         </article>
       `;
     }).join('');
+  }
+
+  // 2b. Render Pipeline Formulations
+  const pipeGrid = $('#pipelineGrid');
+  if (pipeGrid && PIPELINE_PRODUCTS) {
+    pipeGrid.innerHTML = PIPELINE_PRODUCTS.map(p => `
+      <article class="pipeline-card" style="background: var(--panel); border: 1px solid var(--line); border-radius: 20px; padding: 28px 24px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 4px 16px rgba(20, 52, 26, 0.04);">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <span style="font-size: 11px; font-weight: 750; color: var(--forest); background: rgba(36, 80, 42, 0.08); padding: 4px 10px; border-radius: 999px; text-transform: uppercase;">${p.category}</span>
+          <span style="font-size: 11.5px; font-weight: 700; color: var(--moss);">${p.stage}</span>
+        </div>
+        <h4 style="font-size: 18px; font-weight: 850; color: var(--forest); margin: 0;">${p.name}</h4>
+        <p style="font-size: 13.5px; line-height: 1.55; color: var(--muted); margin: 0;">${p.desc}</p>
+        <div style="font-size: 12.5px; color: var(--ink); background: var(--panel-2); padding: 10px 12px; border-radius: 10px;">
+          <strong style="color: var(--forest);">Key Actives:</strong> ${p.actives}
+        </div>
+        <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-top: auto; padding-top: 8px;">
+          ${p.formats.map(fmt => `<span style="font-size: 11px; font-family: var(--f-mono); background: rgba(255,255,255,0.7); border: 1px solid var(--line); padding: 3px 8px; border-radius: 6px; color: var(--faint);">${fmt}</span>`).join('')}
+        </div>
+      </article>
+    `).join('');
   }
 
   // 3. Category / Need Filters

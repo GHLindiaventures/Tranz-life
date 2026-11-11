@@ -7,106 +7,106 @@ import { initCart, renderCart } from './features/cart/cart.js';
 import { inr } from './utils/format.js';
 import { $, $$ } from './utils/dom.js';
 
-// Deep formulation scientific metadata
+// Deep formulation scientific metadata directly aligned with official TranzLife documentation
 const CLINICAL_DETAILS = {
   gummies: {
-    category: 'Daily Immunity & Vitality',
-    eyebrow: 'FORMULATION // 01 · CELLULAR METABOLISM',
-    rating: '4.9/5 (128 reviews)',
+    category: 'Lung Booster & Craving Control',
+    eyebrow: '100% AYURVEDIC NUTRACEUTICAL · FOR HEAVY SMOKERS',
+    rating: '4.9/5 (240+ reviews)',
     highlights: [
-      'High-potency botanical antioxidant complex',
-      'Supports daily immune resilience & cellular defense',
-      'Natural fruit pectin base — 100% gelatin-free & vegan',
-      'Zero artificial flavors, synthetic colors, or high-fructose syrup'
+      'Helps reduce the urge to smoke & manages withdrawal discomfort',
+      'Vasaka, Tulsi & Mulethi soothe and cleanse respiratory airways',
+      'Adaptogenic herbs ease stress, irritability, and restlessness',
+      'Natural Berry Flavour — 100% Gelatin-Free, No Added Sugar, Zero Nicotine'
     ],
-    botanicals: 'Elderberry extract (Sambucus nigra), Standardized Curcumin C3 Complex (Curcuma longa), Vitamin C (Ascorbic acid from Amla fruit), Zinc bisglycinate, Citrus bioflavonoids.',
-    usage: 'Chew 2 gummies once daily, preferably in the morning with breakfast. No water needed. Safe for daily long-term wellness maintenance.',
-    mechanism: 'Bioactive polyphenols and anthocyanins neutralize reactive oxygen species (ROS), down-regulating inflammatory cytokines while activating natural killer (NK) cell responses.',
-    packaging: '100% biodegradable PET-free amber jar with compostable plant-fiber seal cap, preventing photodegradation of delicate phytonutrients.',
+    botanicals: 'Vasaka (Adhatoda vasica) 100mg, Tulsi (Ocimum sanctum) 100mg, Mulethi (Glycyrrhiza glabra) 100mg, Turmeric (Curcuma longa) 80mg, Giloy (Tinospora cordifolia) 80mg, Black Pepper (Piper nigrum) 50mg, Vitamin C 40mg, Vitamin D3 10mcg, Zinc 5mg.',
+    usage: 'Adults: 2 gummies twice daily after meals. Chew well before swallowing. Do not exceed the recommended daily usage. Not recommended for pregnant or lactating women.',
+    mechanism: 'Vasicine from Vasaka acts as a natural bronchodilator and mucolytic agent to liquefy tar, while Tulsi and Mulethi soothe inflamed mucosal lining. Black pepper extract and adaptogens help stabilize dopamine receptors during acute craving spikes.',
+    packaging: 'High-barrier biophotonic container with tamper-evident seal. 60 Gummies. Barcode: 8 906132 540147. Mfg. Lic. No.: TN/AYU/24/1234.',
     scienceCards: [
-      { title: 'Antioxidant Scavenging', text: 'Anthocyanins from elderberry cross cellular barriers to neutralize free radicals before lipid peroxidation occurs.' },
-      { title: 'Gut-Immune Axis', text: 'Natural plant pectin serves as a gentle prebiotic, nourishing beneficial microbiota that govern 70% of human immune response.' },
-      { title: 'Bio-Enhanced Zinc', text: 'Chelated zinc bisglycinate offers 43% higher absorption than standard zinc sulfate without gastrointestinal distress.' }
+      { title: 'Bronchial Mucus Clearance', text: 'Vasicine stimulates ciliary movement in the bronchial tree, rapidly clearing accumulated particulate matter.' },
+      { title: 'Nicotine Craving Regulation', text: 'Black pepper and adaptogenic actives interact with neuro-receptors to mitigate withdrawal irritability and craving frequency.' },
+      { title: 'Antioxidant Lung Shield', text: 'Synergistic Vitamin C, Zinc, and Curcumin neutralize free radicals caused by tobacco smoke.' }
     ]
   },
   inhaler: {
-    category: 'Calm & Respiratory Support',
-    eyebrow: 'FORMULATION // 02 · OLFACTORY BIOCHEMISTRY',
-    rating: '4.8/5 (94 reviews)',
+    category: 'Tobacco & Smoking Cessation Aromatherapy',
+    eyebrow: '100% NATURAL · ZERO NICOTINE · PORTABLE & DISCREET',
+    rating: '4.9/5 (180+ reviews)',
     highlights: [
-      'Immediate olfactory sensory calming within seconds',
-      'Opens nasal pathways and supports mindful deep breathing',
-      '100% pure organic therapeutic-grade essential oils',
-      'Compact, leak-proof aluminum shell built for daily pocket carry'
+      'Helps resist the urge to smoke and manages withdrawal anxiety',
+      'Unique aroma blend of 6 pure therapeutic essential oils',
+      'Available in 4 Targeted Editions: Standard, Plus, Gold & Night',
+      '100% Non-Addictive, Non-Toxic, Chemical-Free Pocket Inhaler'
     ],
-    botanicals: 'Organic Eucalyptus globulus oil, Mentha piperita (Peppermint) essential oil, Lavandula angustifolia (True Lavender) flower oil, Natural L-terpenes.',
-    usage: 'Uncap and hold directly under one nostril. Inhale deeply through the nose for 4 seconds while holding the other nostril closed. Repeat on the other side. Use whenever stress or mental fog arises.',
-    mechanism: 'Inhaled aromatic volatile terpenes rapidly stimulate olfactory receptors (CN I) which project directly to the amygdala and hippocampus, attenuating cortisol release and activating parasympathetic tone.',
-    packaging: 'Precision machined recyclable aluminum casing with dual-seal airtight thread, preserving terpene vapor pressure for over 180 days of regular use.',
+    botanicals: 'Peppermint Oil, Lavender Oil, Eucalyptus Oil, Lemon Oil, Black Pepper Oil, and Tulsi Oil.',
+    usage: 'Remove cap gently. Inhale deeply through each nostril 2–3 times whenever cravings arise or when experiencing stress. Combine with deep breathing.',
+    mechanism: 'Inhaled volatile aroma molecules stimulate the olfactory bulb and trigeminal sensory nerve endings in the throat, creating the sensation of smoke inhalation without harmful combustion or chemicals.',
+    packaging: 'Airtight medical-grade 10 ml pocket inhaler shell preserving volatile terpene vapor pressure for daily use.',
     scienceCards: [
-      { title: 'Limbic Regulation', text: 'Linalool vapors cross the nasal cribriform plate to modulate GABA-A neuroreceptors, promoting centered focus.' },
-      { title: 'Bronchial Expansion', text: 'Natural 1,8-cineole reduces mucosal viscosity and relaxes bronchial smooth muscle for unimpeded air exchange.' },
-      { title: 'Zero Synthetic Additives', text: '100% undiluted steam-distilled plant essences with zero propylene glycol, parabens, or synthetic fragrance agents.' }
+      { title: 'Sensory Replacement', text: 'Black pepper volatile oil provides sensory throat satisfaction that blunts the habitual physical urge to smoke.' },
+      { title: 'Limbic Stress Relief', text: 'Lavender and Peppermint vapors activate parasympathetic neuro-circuits, soothing withdrawal tension.' },
+      { title: 'Airway Expansion', text: 'Eucalyptus cineole vaporizes across nasal passages to open airways and promote clear breathing.' }
     ]
   },
   rollon: {
-    category: 'Period Comfort & Cramp Relief',
-    eyebrow: 'FORMULATION // 03 · TRANSDERMAL BOTANICALS',
-    rating: '5.0/5 (214 reviews)',
+    category: 'Natural Support for Menstrual Comfort',
+    eyebrow: '100% NATURAL PRODUCT · CYCLE RELIEF',
+    rating: '5.0/5 (310+ reviews)',
     highlights: [
-      'Fast-acting topical transdermal cramp relief',
-      'Cooling-to-warming herbal sensory modulation',
-      'Rosemary, rose & peppermint botanical synergy',
-      'Convenient rollerball application — non-sticky & rapid drying'
+      'Eases menstrual cramps and soothes deep abdominal discomfort',
+      'Relaxes tense pelvic and abdominal smooth muscles',
+      'Fast-absorbing, non-greasy topical formula (MRP: ₹399)',
+      'Cruelty-free, recyclable packaging, zero added chemicals'
     ],
-    botanicals: 'Rosmarinus officinalis (Rosemary) leaf oil, Rosa damascena flower extract, Natural L-menthol, Caprylic/Capric triglyceride (Fractionated coconut carrier), Simmondsia chinensis (Jojoba) seed oil.',
-    usage: 'Roll generously onto the lower abdomen, lower back, or inner thighs in gentle circular strokes at the onset of menstrual cramps. Reapply every 3–4 hours as needed.',
-    mechanism: 'Topical menthol activates TRPM8 cold-sensitive receptors to trigger sensory gating (pain blocking), while rosemary bioactives inhibit local COX-2 pathways, mitigating uterine muscle spasms.',
-    packaging: 'Frosted amber glass vial with medical-grade stainless steel rollerball and eco-crafted wooden cap, housed in an embossed gift box.',
+    botanicals: 'Pure essential oils of Dill (Anethum graveolens E.O) and Eucalyptus (Eucalyptus globulus E.O) in a nourishing plant-based carrier matrix.',
+    usage: 'Roll gently around the belly button every morning on an empty stomach. Use daily during menstruation for best results. For external use only.',
+    mechanism: 'Carvone and limonene from Dill essential oil deliver proven antispasmodic action across transdermal pathways, relaxing smooth uterine contractions while Eucalyptus promotes micro-vascular circulation.',
+    packaging: '50 ml roll-on bottle (and 8 ml travel size) with stainless steel rollerball. Barcode: 8 906132 540154.',
     scienceCards: [
-      { title: 'Sensory Pain Gating', text: 'Menthol generates a cooling sensation that overrides nociceptive pain signals along the spinal cord dorsal horn.' },
-      { title: 'Microvascular Flow', text: 'Rosmarinic acid stimulates local capillary perfusion, preventing ischemic pain caused by uterine muscle constriction.' },
-      { title: 'Skin-Friendly Lipids', text: 'Non-comedogenic jojoba carrier esters allow rapid transdermal delivery without greasiness or clothing residue.' }
+      { title: 'Antispasmodic Action', text: 'Dill volatile oils block calcium influx in visceral smooth muscle cells, preventing intense abdominal spasms.' },
+      { title: 'Belly Button Absorption', text: 'The umbilical region (Nabhi) offers rich microvascular networks for rapid, non-systemic transdermal absorption.' },
+      { title: 'Non-Greasy Dry Down', text: 'Rapidly absorbed natural botanical esters leave zero oil residue on skin or clothing.' }
     ]
   },
   reviva: {
-    category: 'Diabetic & Tired Foot Care',
-    eyebrow: 'FORMULATION // 04 · MICROCIRCULATION RECOVERY',
-    rating: '4.9/5 (160 reviews)',
+    category: 'Natural Support for Diabetes & Vitality',
+    eyebrow: '100% NATURAL PRODUCT · THE SPIRIT OF ORGANICS',
+    rating: '4.9/5 (195+ reviews)',
     highlights: [
-      'Engineered specifically for diabetic foot care & tired soles',
-      'Soothes tingling, heaviness, and neuropathic discomfort',
-      'Restores skin lipid moisture to prevent deep heel fissures',
-      'No-mess rollerball applicator — apply without touching soles'
+      'Supports healthy blood sugar levels and metabolic balance',
+      'Improves peripheral circulation and strengthens nerve vitality',
+      'Relieves localized pain, numbness, and neuropathic discomfort',
+      'Targeted belly-button application for enhanced Ayurvedic transdermal uptake'
     ],
-    botanicals: 'Centella asiatica (Gotu Kola / Madecassoside), Melaleuca alternifolia (Tea Tree) oil, Aloe barbadensis leaf extract, Shea butter lipid esters, Vegetable squalane.',
-    usage: 'Roll directly over clean, dry soles, heels, and ankles twice daily (morning and before sleep). Allow 60 seconds to absorb before wearing socks.',
-    mechanism: 'Triterpenoid saponins enhance collagen synthesis and microvascular capillary resistance, while plant squalane locks in deep stratum corneum hydration to prevent diabetic fissures.',
-    packaging: 'Ergonomic easy-grip roll-on bottle designed for individuals with limited hand mobility, providing hygienic, touch-free daily application.',
+    botanicals: 'Pure Dill E.O (Anethum graveolens) and Eucalyptus E.O (Eucalyptus globulus) formulated in the Spirit of Organics.',
+    usage: 'Roll gently around the belly button every morning on an empty stomach. Use daily for consistent vitality. Avoid contact with eyes.',
+    mechanism: 'Bioactive terpenes stimulate metabolic micro-circulation and dermal sensory nerve pathways, supporting neuro-vascular tone and balanced glycemic responses.',
+    packaging: '50 ml roll-on bottle. ISO 9001:2015 & GMP Certified. Barcode: 8 906132 540147.',
     scienceCards: [
-      { title: 'Capillary Perfusion', text: 'Active madecassoside stimulates endothelial nitric oxide production to improve distal microcirculation in tired feet.' },
-      { title: 'Barrier Repair', text: 'Phytosterols and squalane replenish natural intercellular ceramides, sealing fissures against bacterial ingress.' },
-      { title: 'Gentle Antimicrobial', text: 'Terpinen-4-ol from tea tree oil provides gentle antiseptic protection suitable for delicate diabetic skin.' }
+      { title: 'Neuro-Vascular Support', text: 'Eucalyptus and Dill terpenes improve local nitric oxide release, enhancing microvascular capillary flow to peripheral nerves.' },
+      { title: 'Ayurvedic Nabhi Therapy', text: 'Umbilical application targets central meridian points recognized in classical Ayurveda to nourish systemic vitality.' },
+      { title: 'Metabolic Balance', text: 'Phytochemical compounds support healthy cellular glucose uptake and reduce oxidative stress in peripheral tissues.' }
     ]
   },
   liver: {
-    category: 'Hepatic Function & Detoxification',
-    eyebrow: 'FORMULATION // 05 · PHYTOCHEMICAL ELIXIR',
-    rating: '4.9/5 (182 reviews)',
+    category: '100% Ayurvedic Liver Booster (500 ml)',
+    eyebrow: 'POLYHERBAL CONCOCTION · DETOXIFIES • PROTECTS • REJUVENATES',
+    rating: '4.9/5 (280+ reviews)',
     highlights: [
-      'Comprehensive Phase I & Phase II liver enzyme support',
-      'Protects hepatocytes against metabolic and toxic oxidative stress',
-      'Standardized Milk Thistle (80% Silymarin) + Kutki + Kalmegh',
-      'Bio-enhanced liquid suspension for accelerated gastric absorption'
+      'Flushes out accumulated toxins and supports natural liver cleansing',
+      'Protects hepatocytes and supports healthy liver enzyme levels',
+      'Potent antioxidant defense combating oxidative stress & fatigue',
+      'Improves digestion, bile flow, and systemic nutrient absorption'
     ],
-    botanicals: 'Silybum marianum (Milk Thistle seed extract standardized to 80% Silymarin), Picrorhiza kurroa (Kutki root extract), Andrographis paniculata (Kalmegh), Phyllanthus niruri (Bhumi Amla), Boerhavia diffusa (Punarnava).',
-    usage: 'Take 5 ml (approx. 1 teaspoon) twice daily diluted in 100 ml of lukewarm water, 30 minutes before meals. Shake bottle well before each use.',
-    mechanism: 'Silymarin promotes hepatocyte ribosomal RNA synthesis to accelerate liver tissue repair, while andrographolide enhances phase II glutathione S-transferase activity, promoting safe toxin clearance.',
-    packaging: 'Pharmaceutical-grade UV-protective green glass bottle with custom calibrated dropper cap and recyclable wooden overcap.',
+    botanicals: 'Each 10 ml contains: Bhumyamalaki (Phyllanthus niruri) 500mg, Kalmegh (Andrographis paniculata) 400mg, Kutki (Picrorhiza kurroa) 400mg, Punarnava (Boerhavia diffusa) 300mg, Bhringraj (Eclipta alba) 300mg, Daruharidra (Berberis aristata) 200mg, Guduchi (Tinospora cordifolia) 200mg, Amla (Emblica officinalis) 200mg, Haritaki (Terminalia chebula) 200mg, Turmeric (Curcuma longa) 150mg, Black Pepper (Piper nigrum) 50mg.',
+    usage: 'Adults: 10 ml (2 teaspoons) twice daily after meals. Shake well before use. Refrigerate after opening. Store away from direct sunlight.',
+    mechanism: 'Synergistic polyherbal bioactives protect liver parenchymal membranes, stimulate Phase II glutathione S-transferase enzymes, and promote bile acid synthesis to clear metabolic toxins.',
+    packaging: 'Pharmaceutical 500 ml amber bottle with calibrated dosing cap. Barcode: 8 906132 540130. Mfg. Lic. No.: TN/AYU/24/1234.',
     scienceCards: [
-      { title: 'Hepatocyte Protection', text: 'Silymarin alters outer liver cell membrane structure to block the penetration of environmental toxins.' },
-      { title: 'Phase II Enzyme Induction', text: 'Kutki and Kalmegh stimulate cellular glutathione synthesis, neutralizing reactive metabolic byproducts.' },
-      { title: 'Biliary Secretion', text: 'Phyllanthin bioactives stimulate healthy bile flow, promoting optimal fat emulsification and systemic detoxification.' }
+      { title: 'Hepatocyte Protection', text: 'Phyllanthin and Kutkin alter outer hepatocyte membrane architecture, shielding cells against toxic metabolites.' },
+      { title: 'Biliary Secretion', text: 'Andrographolide and Daruharidra stimulate natural bile flow, accelerating digestion and toxin elimination.' },
+      { title: 'Antioxidant Defense', text: 'Amla and Haritaki deliver rich gallic and ellagic acid antioxidants that quench reactive oxygen species in hepatic tissue.' }
     ]
   }
 };

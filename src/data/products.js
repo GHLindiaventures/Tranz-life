@@ -1,21 +1,179 @@
-// Product catalogue: the five TranzLife products from the client's design boards.
-// Prices are placeholders until the client confirms them.
-const PRODUCTS = [
-  { id:'gummies', no:'01', short:'Gummies', name:'TranzLife Gummies', cat:'gummies', tag:'Daily', price:549, size:'60 gummies',
-    desc:'Plant-based gummies with natural flavours and colours, made to support immunity, energy and everyday wellbeing. Packed in a biodegradable jar with a plant-fibre eco cap.',
-    ing:['Plant-based','Natural flavours & colours','60 gummies'], model:'jar', fit:1, gummy:['#d2161f', '#ee7a12', '#f2a12c', '#97182c', '#e8551a'] },
-  { id:'inhaler', no:'02', short:'Calm Inhaler', name:'Calm Inhaler', cat:'inhaler', tag:'Calm', price:249, size:'Premium nasal inhaler',
-    desc:'A premium nasal inhaler made with 100% natural, organic ingredients. Slip it into a pocket and take two slow breaths whenever you need a calm moment.',
-    ing:['100% natural','Organic ingredients','Pocket size'], model:'inhaler', fit:1.16 },
-  { id:'rollon', no:'03', short:'Calm Roll-On', name:'Calm Period Relief Roll-On', cat:'rollon', tag:'Relief', price:349, size:'Roll-on with gift box',
-    desc:'A period cramp relief roll-on with rosemary, rose and peppermint, in a pocket-size bottle with its own gift box.',
-    ing:['Rosemary','Rose','Peppermint'], model:'rollon', fit:1.06 },
-  { id:'reviva', no:'04', short:'Reviva', name:'Reviva Roll-On', cat:'rollon', tag:'Foot care', price:449, size:'Roll-on',
-    desc:'Diabetic foot care in a roll-on: soothing, plant-based and skin-friendly care for dry, tired feet, every day.',
-    ing:['Plant-based','Skin friendly','Everyday care'], model:'reviva', fit:1.06 },
-  { id:'liver', no:'05', short:'Liver Booster', name:'Liver Booster Liquid', cat:'liquid', tag:'Liver care', price:649, size:'100 ml',
-    desc:'A plant-based liquid that supports healthy liver function and detoxification.* Liver care, naturally.',
-    ing:['Plant-based formula','Detox support*','Overall wellness*'], model:'liver', fit:1.14 }
+// Product catalogue: TranzLife Biosciences official commercial & pipeline range.
+// Formulations, dosages, sizes, and barcodes directly aligned with official TranzLife documentation.
+
+export const PRODUCTS = [
+  {
+    id: 'gummies',
+    no: '01',
+    short: 'PulmoClear™',
+    name: 'PulmoClear™ Lung Booster Gummies',
+    cat: 'gummies',
+    tag: 'Lung Detox',
+    price: 549,
+    size: '60 Gummies',
+    desc: '100% Ayurvedic Lung Booster & Craving Control Gummies for heavy smokers. Detoxifies, cleanses, and strengthens respiratory health with Vasaka, Tulsi, Mulethi, Vitamin C & Zinc. Natural Berry Flavour.',
+    ing: ['Vasaka 100mg', 'Tulsi 100mg', 'Mulethi 100mg', 'Turmeric 80mg', 'Giloy 80mg', 'Vitamin C 40mg', 'Zinc 5mg'],
+    model: 'jar',
+    fit: 1,
+    gummy: ['#d2161f', '#ee7a12', '#f2a12c', '#97182c', '#e8551a'],
+    barcode: '8906132540147',
+    mfgLic: 'TN/AYU/24/1234',
+    dosage: 'Adults: 2 gummies twice daily after meals'
+  },
+  {
+    id: 'inhaler',
+    no: '02',
+    short: 'Craving Control™',
+    name: 'Craving Control™ Aromatherapy Inhaler',
+    cat: 'inhaler',
+    tag: 'Quit Smoking',
+    price: 249,
+    size: '10 ml Pocket Inhaler',
+    desc: '100% natural, non-addictive aromatherapy inhaler for tobacco and smoking cessation. Pure therapeutic blend of Peppermint, Black Pepper, Tulsi, Lavender and Eucalyptus oils to curb nicotine cravings instantly on the go.',
+    ing: ['Black Pepper Oil', 'Peppermint Oil', 'Tulsi Oil', 'Lavender Oil', 'Eucalyptus Oil'],
+    model: 'inhaler',
+    fit: 1.16,
+    dosage: 'Inhale deeply through each nostril 2–3 times whenever cravings arise'
+  },
+  {
+    id: 'rollon',
+    no: '03',
+    short: 'CycleRelief™',
+    name: 'CycleRelief™ Menstrual Comfort Roll-On',
+    cat: 'rollon',
+    tag: 'Period Relief',
+    price: 399,
+    size: '50 ml Roll-On (8 ml pocket)',
+    desc: '100% natural plant-based formula that eases menstrual cramps, soothes abdominal discomfort, and relaxes tense pelvic muscles with pure Dill and Eucalyptus essential oils. Fast-absorbing and non-greasy.',
+    ing: ['Dill E.O', 'Eucalyptus E.O', '100% Plant-Based', 'Non-Greasy Formula'],
+    model: 'rollon',
+    fit: 1.06,
+    barcode: '8906132540154',
+    dosage: 'Roll gently around the belly button every morning on an empty stomach'
+  },
+  {
+    id: 'reviva',
+    no: '04',
+    short: 'Reviva™',
+    name: 'Reviva™ Diabetes & Vitality Roll-On',
+    cat: 'rollon',
+    tag: 'Blood Sugar & Vitality',
+    price: 449,
+    size: '50 ml Massage Roll-On',
+    desc: 'Natural support for diabetes, circulation, and vitality. Formulated with Dill and Eucalyptus in the Spirit of Organics to support healthy blood sugar levels, relieve neuropathic discomfort, and improve circulation.',
+    ing: ['Dill E.O', 'Eucalyptus E.O', 'Blood Sugar Support', 'Nerve Vitality'],
+    model: 'reviva',
+    fit: 1.06,
+    barcode: '8906132540147',
+    dosage: 'Roll gently around the belly button every morning on an empty stomach'
+  },
+  {
+    id: 'liver',
+    no: '05',
+    short: 'LiverDetox™',
+    name: 'LiverDetox™ Polyherbal Concoction',
+    cat: 'liquid',
+    tag: 'Liver Booster',
+    price: 649,
+    size: '500 ml Classical Concoction',
+    desc: '100% Ayurvedic Liver Booster. Detoxifies, protects, and rejuvenates liver parenchyma cells with 11 classical botanicals including Bhumyamalaki, Kalmegh, Kutki, Punarnava, and Daruharidra.',
+    ing: ['Bhumyamalaki 500mg', 'Kalmegh 400mg', 'Kutki 400mg', 'Punarnava 300mg', 'Bhringraj 300mg', 'Daruharidra 200mg'],
+    model: 'liver',
+    fit: 1.14,
+    barcode: '8906132540130',
+    mfgLic: 'TN/AYU/24/1234',
+    dosage: 'Adults: 10 ml (2 tsp) twice daily after meals'
+  }
 ];
 
-export { PRODUCTS };
+// Pipeline Formulations & Formats
+export const PIPELINE_PRODUCTS = [
+  {
+    id: 'rasayana-elite',
+    name: 'TranzLife Rasayana Elite',
+    category: 'Adults Longevity',
+    stage: 'Clinical Pilot',
+    formats: ['Capsule (60s)', 'Gummies (60s)', 'Effervescent (20s)'],
+    actives: 'Amalaki Rasayana, Chyawanprash, Guduchi Satva, Ashwagandha 250mg, Shilajit 100mg, Curcumin C3 100mg, Piperine 2mg',
+    desc: 'Daily Rasayana for immunity, vitality and longevity bridging classical Ayurvedic rejuvenation with high-bioavailability phytosome science.'
+  },
+  {
+    id: 'total-360',
+    name: 'TranzLife Total360™',
+    category: 'Daily Nutrition',
+    stage: 'Formulation Finalized',
+    formats: ['Effervescent Tablet'],
+    actives: 'Amla, Ashwagandha, Ginseng, Spirulina, Wheatgrass, 12 Essential Vitamins & Trace Minerals',
+    desc: 'Complete daily micronutrient defense and mitochondrial cellular energy support in a refreshing effervescent drink.'
+  },
+  {
+    id: 'golden-years-longevity',
+    name: 'Golden Years Longevity & Active',
+    category: 'Healthy Ageing',
+    stage: 'Pilot Batching',
+    formats: ['Longevity Gummies (60s)', 'Active Capsules (60s)', 'Immune Effervescent'],
+    actives: 'Resveratrol, NMN, Pomegranate Extract, CoQ10, Omega-3, UC-II® Collagen 250mg, Vitamin K2',
+    desc: 'Cellular longevity and joint independence for seniors, enhancing vitality, arterial elasticity, and bone density.'
+  },
+  {
+    id: 'femina-series',
+    name: 'Femina™ Women’s Health Suite',
+    category: 'Women’s Wellness',
+    stage: 'Clinical Validation',
+    formats: ['Radiance Effervescent', 'Balance Capsules', 'Energy Gummies'],
+    actives: 'Marine Collagen 200mg, Biotin, Shatavari, Lodhra, Ashoka, Chasteberry, Iron Bisglycinate, Folate',
+    desc: 'Holistic hormonal equilibrium, skin dermal elasticity, cycle ease, and cellular blood building for every stage of womanhood.'
+  },
+  {
+    id: 'viryamax-prime',
+    name: 'Viryamax™ Men’s Performance Range',
+    category: 'Men’s Vitality',
+    stage: 'Bioassay Testing',
+    formats: ['Prime Gummies', 'Performance Capsules', 'Energy Effervescent'],
+    actives: 'Ashwagandha KSM-66 130mg, Purified Shilajit 100mg, Korean Ginseng, Fenugreek, L-Arginine, Safed Musli',
+    desc: 'Peak metabolic endurance, muscular strength, reproductive stamina, and stress adaptation for the modern man.'
+  },
+  {
+    id: 'kidzen-paediatric',
+    name: 'KidZen™ Paediatric Growth & Focus',
+    category: 'Paediatric Growth',
+    stage: 'Stability Testing',
+    formats: ['Smart Effervescent', 'Grow Capsules', 'Daily Gummies'],
+    actives: 'Calcium + D3 + K2, DHA 100mg, L-Theanine, Shankhpushpi, Organic Amla, Zinc Bisglycinate',
+    desc: 'Clean, bioavailable cognitive focus, immune resilience, and bone matrix development for growing children.'
+  }
+];
+
+// R&D Breakthrough Discoveries
+export const RD_PROGRAMS = [
+  {
+    id: 'autism-spectrum',
+    title: 'Autism Spectrum Disorder (ASD) Bioactive Research',
+    status: 'Discovery & Phytochemical Profiling',
+    timeline: '2027–2028',
+    bioactives: [
+      { name: 'Bacopa monnieri', role: 'Bacosides A & B neuro-protection and synaptic plasticity modulation' },
+      { name: 'Juglans regia', role: 'Nutty walnut polyphenols and neuro-lipid membrane integrity' },
+      { name: 'Curcuma caesia', role: 'Black turmeric bio-actives with potent cerebral anti-neuroinflammatory markers' }
+    ],
+    summary: 'Investigating synergistic neuro-active phytochemicals to modulate neuro-inflammation, sensory gating, and cognitive adaptation in neurodevelopmental conditions.'
+  },
+  {
+    id: 'oncology-bioactive',
+    title: 'Oncology / Cancer Preventive Bioactive Program',
+    status: 'Preclinical Cellular Assay',
+    timeline: '2028',
+    bioactives: [
+      { name: 'Annona muricata', role: 'Annonaceous acetogenins (ACGs) targeting mitochondrial ATP synthesis in abnormal cells' }
+    ],
+    summary: 'Preclinical evaluation of Annonaceous acetogenins isolated from soursop leaf matrix for selective cellular apoptosis and anti-proliferative activity.'
+  },
+  {
+    id: 'precision-genetics',
+    title: 'Precision Genomics & AI Biomarker Discovery',
+    status: 'Platform Conceptualization',
+    timeline: '2027–2029',
+    pillars: ['Genetic Innovation', 'Biomarker Discovery', 'AI-Powered Diagnostic Engines', 'Prenatal & Genetic Screening', 'Preventive Healthcare Solutions'],
+    summary: 'Developing predictive AI algorithms and molecular genetic screening panels to personalize botanical dosage algorithms before symptoms arise.'
+  }
+];
