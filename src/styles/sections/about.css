@@ -550,7 +550,7 @@
   font-size: clamp(1.3rem, 2vw, 1.65rem);
   font-weight: 800;
   font-stretch: 70%;
-  color: var(--ink);
+  color: #ffffff;
   margin-bottom: 12px;
   line-height: 1.1;
 }
@@ -558,7 +558,7 @@
 .do-card p {
   font-size: 0.95rem;
   line-height: 1.5;
-  color: var(--muted);
+  color: rgba(244, 238, 226, 0.88);
 }
 
 /* --------------------------------------------------------------------------

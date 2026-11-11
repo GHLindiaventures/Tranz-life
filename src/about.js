@@ -3,6 +3,7 @@ import './styles/main.css';
 import { state } from './app/state.js';
 import { initCart } from './features/cart/cart.js';
 import { $ } from './utils/dom.js';
+import { milestones } from './data/milestones.js';
 
 function initAboutPage() {
   // 1. Initialize shopping bag state
@@ -69,7 +70,9 @@ function initAboutPage() {
   if (scrim) scrim.addEventListener('click', () => setDrawerOpen(false));
 
   // 5. Scroll entrance animation observer for eyebrows and cards
-  const animatedEls = document.querySelectorAll('.eyebrow, .vis-mis-card, .value-card, .do-card, .future-card, .why-card');
+  const animatedEls = document.querySelectorAll(
+    '.eyebrow, .vis-mis-card, .value-card, .do-card, .future-card, .why-card, .strength-card, .milestone-item'
+  );
   if ('IntersectionObserver' in window) {
     const observer = new IntersectionObserver((entries, obs) => {
       entries.forEach(entry => {
