@@ -54,3 +54,4 @@ if (c.includes(target)) {
 } else {
   console.error('Could not find </main> in index.html');
 }
+

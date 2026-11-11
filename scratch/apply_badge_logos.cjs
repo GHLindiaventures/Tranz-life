@@ -83,3 +83,4 @@ if (oldBadgesRegex.test(aboutHtml)) {
 } else {
   console.error('Could not find prestige-badge-row in about.html');
 }
+

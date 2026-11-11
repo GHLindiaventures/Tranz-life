@@ -6,3 +6,4 @@ badges.forEach(b => {
   const s = fs.statSync(p);
   console.log(b, (s.size / 1024).toFixed(1) + ' KB');
 });
+
