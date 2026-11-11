@@ -59,3 +59,4 @@ const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 120" width
 
 fs.writeFileSync('public/assets/badges/ayush.svg', svg);
 console.log('Saved public/assets/badges/ayush.svg');
+

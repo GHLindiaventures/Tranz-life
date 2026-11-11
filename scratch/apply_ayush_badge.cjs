@@ -87,3 +87,4 @@ if (about.includes(oldAboutTarget)) {
     console.log('Failed to match in about.html');
   }
 }
+
