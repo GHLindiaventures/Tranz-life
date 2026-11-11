@@ -10,15 +10,13 @@ const SITE_PAGES = [
   { no: '06', name: 'Quality & Manufacturing', sub: 'Cleanrooms & batch audit', href: 'quality.html', key: 'quality' },
   { no: '07', name: 'Sustainability', sub: 'Regeneration & zero-plastic', href: 'sustainability.html', key: 'sustainability' },
   { no: '08', name: 'Certifications & Compliance', sub: 'Regulatory accreditations', href: 'certifications.html', key: 'certifications' },
-  { no: '09', name: 'News & Insights', sub: 'Clinical research & updates', href: 'news.html', key: 'news' },
-  { no: '10', name: 'Careers', sub: 'Join our research team', href: 'careers.html', key: 'careers' },
-  { no: '11', name: 'Contact', sub: 'Say hello', href: 'contact.html', key: 'contact' }
+  { no: '09', name: 'Contact', sub: 'Say hello', href: 'contact.html', key: 'contact' }
 ];
 
 const subpages = [
-  'about.html', 'products.html', 'product-details.html', 'science.html',
+  'index.html', 'about.html', 'products.html', 'product-details.html', 'science.html',
   'ingredients.html', 'quality.html', 'certifications.html', 'sustainability.html',
-  'news.html', 'contact.html', 'careers.html', 'privacy.html', 'terms.html'
+  'contact.html', 'privacy.html', 'terms.html'
 ];
 
 function generateMenuList(activeKey) {
@@ -50,5 +48,4 @@ subpages.forEach(file => {
   }
 });
 
-console.log(`Finished updating overlay menu across ${updated} subpages.`);
-
+console.log(`Finished updating overlay menu across ${updated} pages.`);

@@ -19,9 +19,7 @@ function initNav(){
     { no: '06', name: 'Quality & Manufacturing', sub: 'Cleanrooms & batch audit', href: 'quality.html' },
     { no: '07', name: 'Sustainability', sub: 'Regeneration & zero-plastic', href: 'sustainability.html' },
     { no: '08', name: 'Certifications & Compliance', sub: 'Regulatory accreditations', href: 'certifications.html' },
-    { no: '09', name: 'News & Insights', sub: 'Clinical research & updates', href: 'news.html' },
-    { no: '10', name: 'Careers', sub: 'Join our research team', href: 'careers.html' },
-    { no: '11', name: 'Contact', sub: 'Say hello', href: 'contact.html' }
+    { no: '09', name: 'Contact', sub: 'Say hello', href: 'contact.html' }
   ];
 
   $('#dockList').innerHTML = SECTIONS.map((s, i) => `<li style="--i:${i}"><a href="#${s.id}" data-sec="${s.id}" aria-label="${s.name}" tabindex="-1">${svgI(SEC_IC[s.id])}<b>${s.name}</b></a></li>`).join('');

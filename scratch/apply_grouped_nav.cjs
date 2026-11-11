@@ -11,16 +11,14 @@ const pageConfig = {
   'quality.html': 'quality',
   'certifications.html': 'certifications',
   'sustainability.html': 'sustainability',
-  'news.html': 'news',
   'contact.html': 'contact',
-  'careers.html': 'careers',
   'privacy.html': 'privacy',
   'terms.html': 'terms'
 };
 
 function generateNavPills(pageKey) {
   const isHome = pageKey === 'home';
-  const isCompany = ['about', 'news', 'careers', 'contact'].includes(pageKey);
+  const isCompany = ['about', 'contact'].includes(pageKey);
   const isProducts = ['products', 'pdp'].includes(pageKey);
   const isScience = ['science', 'ingredients'].includes(pageKey);
   const isStandards = ['quality', 'certifications', 'sustainability'].includes(pageKey);
@@ -39,14 +37,6 @@ function generateNavPills(pageKey) {
           <a href="about.html" class="nav-drop-item${pageKey === 'about' ? ' on" aria-current="page' : ''}">
             <strong>About Us</strong>
             <small>Mission &amp; Innovation</small>
-          </a>
-          <a href="news.html" class="nav-drop-item${pageKey === 'news' ? ' on" aria-current="page' : ''}">
-            <strong>News &amp; Insights</strong>
-            <small>Clinical Whitepapers &amp; Updates</small>
-          </a>
-          <a href="careers.html" class="nav-drop-item${pageKey === 'careers' ? ' on" aria-current="page' : ''}">
-            <strong>Careers</strong>
-            <small>Join Our Biotech Team</small>
           </a>
           <a href="contact.html" class="nav-drop-item${pageKey === 'contact' ? ' on" aria-current="page' : ''}">
             <strong>Contact Us</strong>
@@ -150,4 +140,3 @@ for (const [file, key] of Object.entries(pageConfig)) {
 }
 
 console.log(`Done. Successfully updated ${modifiedCount} files.`);
-

@@ -45,9 +45,7 @@ export default defineConfig(({ mode }) => {
               ingredients: 'ingredients.html',
               quality: 'quality.html',
               sustainability: 'sustainability.html',
-              news: 'news.html',
               contact: 'contact.html',
-              careers: 'careers.html',
               certifications: 'certifications.html',
               privacy: 'privacy.html',
               terms: 'terms.html'

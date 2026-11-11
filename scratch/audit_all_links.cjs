@@ -4,7 +4,7 @@ const path = require('path');
 const pages = [
   'index.html', 'about.html', 'products.html', 'product-details.html',
   'science.html', 'ingredients.html', 'quality.html', 'certifications.html',
-  'sustainability.html', 'news.html', 'contact.html', 'careers.html',
+  'sustainability.html', 'contact.html',
   'privacy.html', 'terms.html'
 ];
 
@@ -13,7 +13,6 @@ let brokenLinks = 0;
 
 pages.forEach(p => {
   const content = fs.readFileSync(p, 'utf8');
-  // Match href="something"
   const hrefMatches = [...content.matchAll(/href="([^":]+)"/g)];
   hrefMatches.forEach(m => {
     let raw = m[1].trim();
@@ -26,7 +25,6 @@ pages.forEach(p => {
     totalLinks++;
 
     let fullPath = path.join(__dirname, '..', clean);
-    // If it starts with slash, also check public directory
     let publicPath = clean.startsWith('/') ? path.join(__dirname, '..', 'public', clean.slice(1)) : null;
 
     if (!fs.existsSync(fullPath) && (!publicPath || !fs.existsSync(publicPath))) {
