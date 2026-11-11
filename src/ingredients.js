@@ -6,159 +6,107 @@ import { $ } from './utils/dom.js';
 export const BOTANICAL_INGREDIENTS = [
   {
     id: 'curcumin',
-    name: 'Curcumin C3 Complex',
-    latin: 'Curcuma longa L.',
-    category: 'immunity',
-    part: 'Supercritical Rhizome',
-    origin: 'Western Ghats, Kerala',
-    compound: 'Curcuminoids (95%)',
-    target: 'NF-κB Inflammatory Blockade & Longevity',
-    product: 'Reviva Drops & Liver Protect',
-    productId: 'reviva',
-    desc: 'Extracted via subcritical CO₂ and formulated into phytosome liposomal complexes, Curcumin C3 targets nuclear inflammatory signaling switches, delivering 29x higher bioavailability than standard raw turmeric root.'
-  },
-  {
-    id: 'milk-thistle',
-    name: 'Milk Thistle (Silymarin)',
-    latin: 'Silybum marianum',
-    category: 'liver',
-    part: 'Standardized Seed Extract',
-    origin: 'Mediterranean Bio-Zone',
-    compound: 'Silymarin (80% Silybin A/B)',
-    target: 'Hepatocyte Membrane Stabilization',
-    product: 'Liver Protect Drops',
-    productId: 'liver',
-    desc: 'Silymarin reinforces hepatic outer cell membranes against xenobiotics and metabolic waste products, while stimulating intracellular protein synthesis and accelerating endogenous glutathione replenishment.'
+    name: 'Curcumin (Turmeric Extract)',
+    latin: 'Curcuma longa',
+    category: ['immunity', 'liver'],
+    part: 'Standardized Rhizome Extract',
+    origin: 'Certified Cultivation, India',
+    compound: 'Curcuminoids (Curcumin C3 Complex)',
+    target: 'Antioxidant Defense & Anti-Inflammatory Support',
+    product: 'PulmoClear™ Gummies & LiverDetox™',
+    productId: 'gummies',
+    desc: 'A powerful natural anti-inflammatory and antioxidant. Protects lung and liver cells from oxidative stress, neutralizes free radicals, and strengthens the body\'s natural defenses.'
   },
   {
     id: 'peppermint',
-    name: 'Peppermint',
+    name: 'Peppermint Oil',
     latin: 'Mentha × piperita',
-    category: 'stress',
+    category: ['respiratory', 'stress'],
     part: 'Steam-Distilled Leaf Oil',
-    origin: 'Nilgiri Foothills, Tamil Nadu',
-    compound: 'L-Menthol (High Purity)',
-    target: 'TRPM8 Cold Sensory Receptors',
-    product: 'Calm Roll-On',
-    productId: 'rollon',
-    desc: 'Standardized L-menthol stimulates TRPM8 neuro-receptors to provoke a biological cooling feedback cascade, soothing tense cranial muscles, relaxing temples, and refreshing sensory nerve endings.'
+    origin: 'Pure Steam Distillation, India',
+    compound: 'Natural Menthol',
+    target: 'Craving Reduction & Airway Sensory Refreshment',
+    product: 'BreatheFree™ & Craving Control™ Inhalers',
+    productId: 'inhaler',
+    desc: 'Pure therapeutic essential oil that reduces nicotine cravings, refreshes the senses, and opens airways to support an easy, natural smoke-free journey.'
   },
   {
     id: 'eucalyptus',
-    name: 'Tasmanian Blue Gum',
+    name: 'Eucalyptus Oil',
     latin: 'Eucalyptus globulus',
-    category: 'respiratory',
-    part: 'Supercritical Leaf Oil',
-    origin: 'Nilgiri High Altitudes',
-    compound: '1,8-Cineole (99.2%)',
-    target: 'Bronchial Ciliary Motility',
-    product: 'Forest Breathe Inhaler',
+    category: ['respiratory'],
+    part: 'Pure Leaf Essential Oil (E.O)',
+    origin: 'Steam-Distilled, Nilgiri Foothills',
+    compound: '1,8-Cineole',
+    target: 'Airway Clearing & Muscle Comfort',
+    product: 'BreatheFree™ Inhaler, CycleRelief™ & Reviva™',
     productId: 'inhaler',
-    desc: 'Standardized 1,8-cineole vapor liquefies thick mucosal secretions and elevates ciliary beat frequency in the upper respiratory tract, creating instantaneous open-air breathing comfort.'
-  },
-  {
-    id: 'rose',
-    name: 'Damask Rose',
-    latin: 'Rosa damascena',
-    category: 'stress',
-    part: 'Hydro-Distilled Petals',
-    origin: 'Valley of Roses / Kannauj',
-    compound: 'Geraniol & Citronellol',
-    target: 'Central GABA-A Receptors',
-    product: 'Calm Roll-On',
-    productId: 'rollon',
-    desc: 'Rare volatile monoterpenoids interact with olfactory-limbic autonomic centers, dialing down stress-induced sympathetic hyperactivity and blunting acute cortisol secretion.'
+    desc: 'Opens up airways and supports easy breathing. In topical roll-on formulations (CycleRelief™ & Reviva™), it eases discomfort and relaxes tense muscles.'
   },
   {
     id: 'tulsi',
-    name: 'Holy Basil (Tulsi)',
-    latin: 'Ocimum tenuiflorum',
-    category: 'respiratory',
-    part: 'Flowering Aerial Tops',
-    origin: 'Organic Farms, Madhya Pradesh',
-    compound: 'Eugenol & Ursolic Acid',
-    target: 'COX-2 & 5-LOX Enzyme Inhibition',
-    product: 'Forest Breathe Inhaler',
-    productId: 'inhaler',
-    desc: 'Eugenol and ursolic acid fortify delicate mucosal barriers against environmental micro-pollutants and urban PM2.5 particulate matter while providing potent adaptogenic antioxidant cellular defense.'
+    name: 'Tulsi (Holy Basil)',
+    latin: 'Ocimum sanctum',
+    category: ['respiratory', 'immunity'],
+    part: 'Leaf Extract & Pure Essential Oil',
+    origin: 'Organic Ayurvedic Cultivation, India',
+    compound: 'Eugenol',
+    target: 'Lung Detoxification & Natural Immunity',
+    product: 'PulmoClear™ Gummies & BreatheFree™ Inhaler',
+    productId: 'gummies',
+    desc: 'Holy Basil purifies, detoxifies, and supports respiratory health naturally. Strengthens the body\'s natural defenses, clears congestion, and protects lung tissue from oxidative stress.'
   },
   {
     id: 'ashwagandha',
     name: 'Ashwagandha',
     latin: 'Withania somnifera',
-    category: 'stress',
+    category: ['stress', 'immunity'],
     part: 'Standardized Root Extract',
-    origin: 'Semi-Arid Rajasthan Terroir',
-    compound: 'Withaferin A (5% Withanolides)',
-    target: 'HPA Axis Homeostasis & REM Sleep',
-    product: 'Reviva Drops & Focus Gummies',
-    productId: 'reviva',
-    desc: 'Bio-standardized withanolide glycosides recalibrate the hypothalamic-pituitary-adrenal stress axis, calming baseline adrenaline spikes and fostering deep restorative cellular recovery during night rest.'
-  },
-  {
-    id: 'gotu-kola',
-    name: 'Gotu Kola (Brahmi)',
-    latin: 'Centella asiatica',
-    category: 'focus',
-    part: 'Whole Fresh Leaf Extract',
-    origin: 'Sub-Himalayan Wetlands',
-    compound: 'Asiaticoside & Madecassoside',
-    target: 'Cerebral Microvascular Circulation',
-    product: 'Focus Gummies',
+    origin: 'Ayurvedic Cultivation, India',
+    compound: 'Withanolides (Root Extract)',
+    target: 'Stress Reduction, Calm Mind & Vitality',
+    product: 'PulmoClear™ Craving Control Gummies & Rasayana Elite™',
     productId: 'gummies',
-    desc: 'Potent triterpenic saponins stimulate brain-derived neurotrophic factor (BDNF) synthesis and microvascular oxygen delivery to cerebral cortex tissues, sharpening focus and cognitive retention.'
-  },
-  {
-    id: 'elderberry',
-    name: 'Black Elderberry',
-    latin: 'Sambucus nigra',
-    category: 'immunity',
-    part: 'Cold-Pressed Whole Berries',
-    origin: 'Alpine European Orchards',
-    compound: 'Anthocyanins (Cyanidin-3-Glucoside)',
-    target: 'Viral Envelope Glycoprotein Blockade',
-    product: 'Focus Gummies & Reviva',
-    productId: 'gummies',
-    desc: 'Rich in dark bio-flavonoid anthocyanins that prevent viral adherence to mucosal membranes while accelerating innate natural killer (NK) cell mobilization during seasonal weather shifts.'
+    desc: 'Premier adaptogenic herb that reduces stress, calms the mind, and relieves anxiety and irritability, supporting stamina, inner balance, and healthy living.'
   },
   {
     id: 'kutki',
     name: 'Kutki',
     latin: 'Picrorhiza kurroa',
-    category: 'liver',
-    part: 'Alpine Wildcrafted Rhizome',
-    origin: 'Himalayan Slopes (3,200m+)',
-    compound: 'Kutkin & Picrosides I/II',
-    target: 'Hepatic Bile Secretion & Detox',
-    product: 'Liver Protect Drops',
+    category: ['liver'],
+    part: 'Standardized Rhizome Extract',
+    origin: 'Himalayan Herbal Reserves',
+    compound: 'Kutkin & Picrosides (400 mg)',
+    target: 'Liver Detoxification & Hepatoprotection',
+    product: 'LiverDetox™ Polyherbal Concoction',
     productId: 'liver',
-    desc: 'A revered alpine bitter tonic whose iridoid glycosides stimulate natural bile acid flow, accelerate lipid excretion from hepatocytes, and neutralize systemic free radical lipid peroxidation.'
+    desc: 'Classical Ayurvedic hepatoprotective herb. Flushes out toxins, shields liver cells from oxidative stress, and rejuvenates natural liver function.'
   },
   {
     id: 'kalmegh',
-    name: 'Kalmegh (Andrographis)',
+    name: 'Kalmegh',
     latin: 'Andrographis paniculata',
-    category: 'liver',
-    part: 'Matured Aerial Leaves',
-    origin: 'Deciduous Central Forests',
-    compound: 'Andrographolides (50%)',
-    target: 'Phase II Enzyme Sulfation',
-    product: 'Liver Protect Drops',
+    category: ['liver'],
+    part: 'Whole Plant Extract',
+    origin: 'Herbal Reserves, India',
+    compound: 'Andrographolide (400 mg)',
+    target: 'Liver Cleansing & Digestive Balance',
+    product: 'LiverDetox™ Polyherbal Concoction',
     productId: 'liver',
-    desc: 'Potent diterpenoid lactones activate hepatic Phase II glucuronidation and sulfation pathways, facilitating rapid binding and safe renal clearance of fat-soluble metabolic toxins.'
+    desc: 'Known as the King of Bitters, Kalmegh promotes natural liver cleansing, protects hepatic tissues, aids healthy digestion, and supports overall vitality.'
   },
   {
     id: 'amla',
-    name: 'Indian Gooseberry (Amla)',
-    latin: 'Phyllanthus emblica',
-    category: 'immunity',
-    part: 'Fresh Whole Forest Fruit',
-    origin: 'Western Ghats Biosphere',
-    compound: 'Emblicanin A/B & Natural Vitamin C',
-    target: 'Intracellular Glutathione Sparing',
-    product: 'Liver Protect & Focus Gummies',
+    name: 'Amla (Amalaki)',
+    latin: 'Emblica officinalis',
+    category: ['immunity', 'liver'],
+    part: 'Fruit Extract & Rasayana Concentrate',
+    origin: 'Organic Ayurvedic Groves, India',
+    compound: 'Natural Vitamin C & Polyphenols (200 mg)',
+    target: 'Immunity Boost, Antioxidant Defense & Liver Support',
+    product: 'LiverDetox™ Concoction & Rasayana Elite™',
     productId: 'liver',
-    desc: 'Tannoid-bound vitamin C in emblicanin polymers resists heat and oxidative degradation 12x longer than synthetic ascorbic acid, neutralizing reactive oxygen species in cellular membranes.'
+    desc: 'Revered Ayurvedic Rasayana exceptionally rich in natural Vitamin C and bio-antioxidants. Combats oxidative stress, strengthens immunity, and supports liver health.'
   }
 ];
 
@@ -238,7 +186,8 @@ function initIngredientsPage() {
     if (!gridContainer) return;
 
     const filtered = BOTANICAL_INGREDIENTS.filter(item => {
-      const matchCat = currentFilter === 'all' || item.category === currentFilter;
+      const matchCat = currentFilter === 'all' || 
+        (Array.isArray(item.category) ? item.category.includes(currentFilter) : item.category === currentFilter);
       const q = searchQuery.toLowerCase().trim();
       const matchSearch = !q ||
         item.name.toLowerCase().includes(q) ||
