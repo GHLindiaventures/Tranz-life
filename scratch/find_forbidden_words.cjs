@@ -16,3 +16,4 @@ forbidden.forEach(word => {
     console.log(`[${word}] at index ${match.index}: ...${content.slice(start, end).replace(/\s+/g, ' ')}...`);
   }
 });
+
