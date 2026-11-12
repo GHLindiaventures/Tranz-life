@@ -19,11 +19,11 @@ import { STORY } from './data/product-story.js';
 import { jarLayer } from '../features/products/jar-layer.js';
 import Lenis from 'lenis';
 import { state } from '../app/state.js';
+import { entranceOrder, highlightIndex } from './grid-math.js';
 import { makeScheduler } from './frame-scheduler.js';
 import {
   calcIntroText, calcHlCallout, calcPinBadge, walkAt, chapterCardAlpha, calcProductFrame, calcFrameDraw, frameHalfPaths, leafOpen, FRAME_LEAVES, journeyProgress, calcHoldTransform, populateShowcaseDOM, updateShowcaseDOM, placeBadges, createShowcaseDecor
 } from './showcase-scene.js';
-import { entranceOrder, highlightIndex } from './grid-math.js';
 import { $, $$ } from '../utils/dom.js';
 import { clamp, ease } from '../utils/math.js';
 import { reduce } from '../utils/media.js';
@@ -283,6 +283,13 @@ function initProductJourney() {
       sc._e = w.e;
       sc._r = box ? r : 0;   // the scroll position, for the ribbons behind (they never stop)
       if (blocks && w.e !== lastE) { lastE = w.e; blocks.style.transform = 'translate3d(0,' + (-w.e).toFixed(1) + 'px,0)'; }
+      if (blocks) {
+        // the falling page appears as the falling starts, and dissolves as the highlights begin: the last frame stays
+        // parked at the top once the falling ends, so it must be gone while the highlights show (and until the curtain)
+        let o = b ? Math.max(0, Math.min(1, (r - b.r0 + 30) / 120)) : 1;
+        if (b) o *= 1 - Math.max(0, Math.min(1, (r - (b.hlFrom - 0.05 * geo.vh)) / (0.2 * geo.vh)));
+        const op = o.toFixed(2); if (blocks._op !== op) { blocks._op = op; blocks.style.opacity = op; }
+      }
       if (!b || !sc._frameCards) return;
       sc._frameCards.forEach((cards, f) => {
         const h = b.holds[f]; if (!h) return;
@@ -525,7 +532,7 @@ function initProductJourney() {
     const sc0 = calcIntroText(sy, F, vh), timed = reduce ? 1 : clamp((now - ov.openedAt - 200) / 1300, 0, 1);
     // here the words come in on time alone, from nothing, in one go as the product flies in (no half-played start);
     // the scroll only moves them up with the details later
-    const tin = timed, it = { tin, lift: sc0.lift, o: (1 - Math.pow(1 - tin, 3)) * (sc0.lift > vh * 1.2 ? 0 : 1) };
+    const fall = ov.sec._e || 0, tin = timed, it = { tin, lift: fall, o: (1 - Math.pow(1 - tin, 3)) * (fall > vh * 1.2 ? 0 : 1) };
     const o = it.o * (ov.state === 'closing' ? a : 1);
     [ov.card, ov.lead].forEach((el, s) => {
       if (!el) return;
@@ -539,7 +546,7 @@ function initProductJourney() {
     }
     const ovBox = calcProductFrame(hold.x, hold.y, hold.h, ratios[i]);
     if (ov.setFrame) ov.setFrame(ovBox, calcFrameDraw(P) * (a > 0.999 ? 1 : 0));
-    const hlc = calcHlCallout(sy, H, vh, (ov.sec._beats ? ov.sec._beats.hlFrom : H - 2.9 * vh) + 0.25 * vh);
+    const hlc = calcHlCallout(sy, H, vh, (ov.sec._beats ? ov.sec._beats.hlFrom : H - 2.9 * vh) + 0.25 * vh);   // the highlights start once the last piece has left
     if (ov.setCallout) ov.setCallout(ovBox, hlc.o * a, hlc.draw, hlc.lines, 0, hlc.ex);
     decor.update(0, i, 0, 0, 1, tTime, true);
     if (ov.setChapters) ov.setChapters(ovBox, sy, H, a);
@@ -596,7 +603,8 @@ function initProductJourney() {
       const sc0 = calcIntroText(sy - geo.secTop, geo.fadeLen, geo.vh);
       const timed = clamp((now - enterT0 - 200) / 1300, 0, 1);
       const tin = Math.max(sc0.tin, timed);
-      const it = { tin, lift: sc0.lift, o: (1 - Math.pow(1 - tin, 3)) * (sc0.lift > vh * 1.2 ? 0 : 1) };
+      const fall = showcaseSec._e || 0;   // the intro falls with the page: same distance as everything else
+      const it = { tin, lift: fall, o: (1 - Math.pow(1 - tin, 3)) * (fall > vh * 1.2 ? 0 : 1) };
       const key = it.o.toFixed(3) + '|' + it.tin.toFixed(3) + '|' + it.lift.toFixed(1);
       if (key !== lastIntro) {
         lastIntro = key;

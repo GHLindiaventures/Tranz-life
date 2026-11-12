@@ -4,7 +4,6 @@ import { cart, thumbs } from './app/state.js';
 import { PRODUCTS } from './data/products.js';
 import { SHOTS, DESIGNS } from './features/products/product-images.js';
 import { initCart, renderCart } from './features/cart/cart.js';
-import { inr } from './utils/format.js';
 import { $, $$ } from './utils/dom.js';
 
 // Deep formulation scientific metadata directly aligned with official TranzLife documentation
@@ -179,9 +178,7 @@ function initProductDetailsPage() {
         <span class="pdp-badge-clinical">Clinical Rigor</span>
       </div>
       <div class="pdp-price-box">
-        <span class="pdp-price">${inr(prod.price)}</span>
-        <span class="pdp-size">/ ${prod.size}</span>
-        <span class="pdp-tax-note">Inclusive of all taxes · Free delivery ₹999+</span>
+        <span class="pdp-size">${prod.size}</span>
       </div>
       <p class="pdp-desc">${prod.desc}</p>
       <div class="pdp-highlights">
@@ -203,7 +200,7 @@ function initProductDetailsPage() {
           <button type="button" id="pdpQtyInc" aria-label="Increase quantity">+</button>
         </div>
         <button class="add pill pdp-btn-add" id="pdpAddBtn" data-id="${prod.id}" type="button">
-          <i aria-hidden="true">+</i><b>Add to bag · ${inr(prod.price)}</b>
+          <i aria-hidden="true">+</i><b>Add to bag</b>
         </button>
       </div>
 
@@ -260,13 +257,11 @@ function initProductDetailsPage() {
       if (qty > 1) {
         qty--;
         valSpan.textContent = qty;
-        addBtn.querySelector('b').textContent = `Add to bag · ${inr(prod.price * qty)}`;
       }
     });
     incBtn.addEventListener('click', () => {
       qty++;
       valSpan.textContent = qty;
-      addBtn.querySelector('b').textContent = `Add to bag · ${inr(prod.price * qty)}`;
     });
     addBtn.addEventListener('click', () => {
       cart.set(prod.id, (cart.get(prod.id) || 0) + qty);
@@ -312,7 +307,6 @@ function initProductDetailsPage() {
         <div class="pdp-mini-body">
           <h4>${p.name}</h4>
           <div class="pdp-mini-foot">
-            <span class="price">${inr(p.price)}</span>
             <a href="product-details.html?id=${p.id}">View Details →</a>
           </div>
         </div>

@@ -86,9 +86,7 @@ import { berryGeometry, gummyMaterial, studioLeaf } from '../features/products/p
 import { DETAILS } from './data/product-details.js';
 import { NEEDS } from './data/needs.js';
 import { HERBS } from './data/herbs.js';
-import { SHOTS, DESIGNS } from '../features/products/product-images.js';
 import { icon } from '../features/product-story/icons.js';
-import { inr } from '../utils/format.js';
 import { clamp, lerp } from '../utils/math.js';
 
 /**
@@ -272,8 +270,6 @@ const flowK = v => clamp((v - FLOW_A) / (FLOW_B - FLOW_A), 0, 1);
 // moment (calcHlCallout) and then the curtain
 const FLOW_END = 2.6;
 const flowTop = v => 'calc(305vh + (100% - ' + (305 + FLOW_END * 100) + 'vh) * ' + flowK(v).toFixed(4) + ')';
-// the design boards' pixel sizes (product shots are all 960 x 960), so their space is kept before they load
-const DESIGN_SIZE = { gummies: [1536, 1024], inhaler: [1254, 1254], rollon: [1155, 1362], reviva: [1536, 1024], liver: [1536, 1024] };
 // The ingredient badges beside the product: badge k of 3 rises in during its own stretch of the details, drifts, and
 // floats away (as the old product display's badges did). u: progress through the details 0..1. Returns
 // { o, y (screens), s }. Pure.
@@ -351,7 +347,6 @@ function populateShowcaseDOM(container, activeIndex) {
   }
 
   placeBadges(container);
-  container.querySelectorAll('.sc-photo img').forEach(img => { if (!img.complete) img.addEventListener('load', () => placeBadges(container), { once: true }); });
 
   const arcs = [...container.querySelectorAll('.sc-arcs path')].map(path => ({ path, len: path.getTotalLength() }));
   container._sc = {
@@ -392,7 +387,8 @@ function buildDetails(container, product, D, story) {
   root.innerHTML = '';
   const ledeHtml = hasD && D.intro[1] ? '<p class="sc-lede">' + esc(D.intro[1]) + '</p>' : '';
   const closingHtml = hasD && D.closing ? '<h4 class="sc-blk__h">' + esc(D.closingTitle) + '</h4><p>' + esc(D.closing) + '</p>' : '';
-  const buyHtml = (hasD ? '<p class="sc-kick">' + esc(product.tag) + '</p>' : '') + '<p class="sc-price" data-v="' + product.price + '">' + inr(product.price) + '</p><p class="sc-size">' + esc(product.size) + '</p><button class="pill mini-add" type="button" data-id="' + product.id + '"><i aria-hidden="true">+</i><b>Add to bag</b></button>';
+  // the small print stands where the price used to be (right side); no price is shown. The bag button stays under it.
+  const buyHtml = (hasD && D.note ? '<p>' + esc(D.note) + '</p>' : '') + '<button class="pill mini-add" type="button" data-id="' + product.id + '"><i aria-hidden="true">+</i><b>Add to bag</b></button>';
 
   // the frames, top to bottom, made only from what was given: the botanicals (a frame each, with the intro's second
   // paragraph and the closing words on the right), or - for a product without a botanicals list - the paragraph and the
@@ -402,19 +398,20 @@ function buildDetails(container, product, D, story) {
   if (Lq.length) { Lq.forEach(item => frames.push({ l: [item], r: Rq.length ? [Rq.shift()] : [] })); while (Rq.length) frames.push({ l: [Rq.shift()], r: [] }); }
   else while (Rq.length) frames.push({ l: [Rq.shift()], r: Rq.length ? [Rq.shift()] : [] });
   const lastF = frames[frames.length - 1];
-  if (lastF && !lastF.r.length) lastF.r = [['sc-c--buy', buyHtml]]; else frames.push({ l: [], r: [['sc-c--buy', buyHtml]] });
+  if (lastF && !lastF.r.length) lastF.r = [['sc-c--buy sc-c--fine', buyHtml]]; else frames.push({ l: [], r: [['sc-c--buy sc-c--fine', buyHtml]] });
+  // a frame (not the last) whose right side has nothing gets the product's own tagline, big, in the handwritten face,
+  // so a long list never leaves the other side of the screen empty (given text, shown once)
+  const taglineHtml = hasD && D.tagline ? '<p class="sc-tagline">' + esc(D.tagline) + '</p>' : '';
+  const gapAt = frames.findIndex((f, k) => k < frames.length - 1 && !f.r.length);
+  if (taglineHtml && gapAt >= 0) frames[gapAt].r = [['sc-c--tag', taglineHtml]];
   const nF = frames.length; container._frames = nF;
 
-  // the pieces that fall between the frames: the product photo and the design board (the client's images), the big
-  // outlined names, and the small print. Each belongs to the stretch before frame st (st = nF: after the last frame).
+  // the pieces that fall between the frames: the big outlined names and the small print (text only: no images).
+  // Each belongs to the stretch before frame st (st = nF: after the last frame).
   const B = [], add = (st, side, cls, html) => { if (html) B.push('<div class="sc-blk sc-blk--' + side + ' ' + cls + '" data-st="' + st + '">' + html + '</div>'); };
   const bigName = (st, text, cls) => B.push('<p class="sc-big ' + cls + '" data-st="' + st + '" aria-hidden="true">' + bigLetters(text) + '</p>');
   bigName(0, hasD && story ? story.t.join(' ') : product.name, '');
-  add(0, 'r', 'sc-blk--photo sc-m-hide', SHOTS[product.id] ? '<figure class="sc-photo"><img src="' + SHOTS[product.id] + '" alt="' + esc(product.name) + '" width="960" height="960" loading="lazy" decoding="async"><figcaption>' + esc(product.short) + ' · ' + esc(product.size) + '</figcaption></figure>' : '');
-  const sz = DESIGN_SIZE[product.id] || [1536, 1024], mid = Math.min(1, nF);
-  add(mid, 'l', 'sc-blk--photo sc-m-hide', DESIGNS[product.id] ? '<figure class="sc-photo sc-photo--wide"><img src="' + DESIGNS[product.id] + '" alt="' + esc(product.name) + ' design" width="' + sz[0] + '" height="' + sz[1] + '" loading="lazy" decoding="async"></figure>' : '');
-  bigName(mid, product.short, 'sc-big--2');
-  if (hasD && D.note) add(nF, 'l', 'sc-blk--fine', '<p>' + esc(D.note) + '</p>');
+  bigName(Math.min(1, nF), product.short, 'sc-big--2');   // between the first frames
   frames.forEach((f, k) => {
     ['l', 'r'].forEach(side => {
       const arr = small ? (side === 'l' ? f.l.concat(f.r) : []) : f[side];
@@ -463,7 +460,7 @@ function layoutBeats(container) {
   if (!flow || !nF) return;
   const V = innerHeight, H = container.offsetHeight; if (!H) return;
   const small = innerWidth < 768, F = (document.getElementById('home') || {}).offsetHeight || V;
-  const gap = Math.max(34, V * 0.045), cy = V * (small ? 0.55 : 0.52);
+  const gap = Math.max(44, V * 0.055), cy = V * (small ? 0.55 : 0.52);   // room between pieces
   const groups = Array.from({ length: nF + 1 }, () => []), slots = Array.from({ length: nF }, () => []);
   flow.querySelectorAll('.sc-blk, .sc-big').forEach(el => { if (getComputedStyle(el).display !== 'none') groups[Math.min(nF, +el.dataset.st || 0)].push(el); });
   flow.querySelectorAll('.sc-slot').forEach(s => slots[+s.dataset.fr].push(s));
@@ -471,7 +468,7 @@ function layoutBeats(container) {
     const bottom = { l: y0 - gap, r: y0 - gap };
     els.forEach(el => {
       if (el.classList.contains('sc-big')) {
-        const top = Math.max(bottom.l, bottom.r) + gap, h = el.offsetHeight * 0.8;   // its ink, not its line box
+        const top = Math.max(bottom.l, bottom.r) + gap, h = el.offsetHeight * 0.92;   // its ink (with room for the outline), not its line box
         el.style.top = top.toFixed(0) + 'px'; bottom.l = bottom.r = top + h; return;
       }
       const side = small ? 'l' : el.classList.contains('sc-blk--r') ? 'r' : 'l', top = bottom[side] + gap;
@@ -479,18 +476,22 @@ function layoutBeats(container) {
     });
     return Math.max(bottom.l, bottom.r);
   };
-  // the first piece starts below where the intro texts are still lifting away (they move with the scroll, the page may
-  // fall faster), so the two never meet; the intro is still on screen until then, so nothing is empty
-  const stops = []; let cursor = V * 1.2;
+  // the intro texts fall together with the page (journey.js lifts them by how far it has fallen), so the first piece can
+  // sit right under them and the two stay the same distance apart: no empty space between them and no overlap
+  const card = container.querySelector('#scCard'), lead = container.querySelector('#scLead');
+  const introBottom = V * 0.54 + Math.max(card ? card.offsetHeight : 0, lead ? lead.offsetHeight : 0) / 2;
+  const stops = []; let cursor = small ? V * 1.02 : introBottom + gap * 1.6;
   for (let g = 0; g <= nF; g++) {
     if (groups[g].length) cursor = stack(groups[g], cursor) + gap;
     if (g < nF) {
       const h = Math.max(0, ...slots[g].map(s => s.offsetHeight)), yc = cursor + h / 2;
       slots[g].forEach(s => { s.style.top = yc.toFixed(0) + 'px'; });
-      stops.push(yc - cy); cursor += h + gap;
+      stops.push(yc - cy); cursor += h + Math.max(64, V * 0.07);   // plenty of room after a frame, so the faint next one never crowds it
     }
   }
-  const Etot = cursor - gap;                                // the last piece has left through the top
+  // the falling ends when the last piece's bottom edge is above the highlights' columns (30% down) and the
+  // highlights start only then: nothing is ever on screen under them
+  const Etot = Math.max((stops.length ? stops[stops.length - 1] : 0) + V * 0.4, cursor - gap - V * 0.33);
   const naturals = []; let prev = 0;
   stops.forEach(e => { naturals.push(e - prev); prev = e; });
   naturals.push(Math.max(V * 0.4, Etot - prev));
@@ -583,6 +584,10 @@ function updateShowcaseDOM(container, p, tTime = 0) {
     const r = bigR[k]; if (r.bottom < -40 || r.top > vh + 40) return;
     putVar(el, '--be', clamp((vh * 1.02 - r.top) / (vh * 0.62), 0, 1).toFixed(2));
     put(el, 'transform', 'translate3d(' + ((sp - 0.5) * 0.12 * innerWidth * (k ? -1 : 1)).toFixed(0) + 'px, 0, 0)');
+    // the big name never runs behind the product: it fades out as it enters the product's part of the screen (20% to
+    // 82% down) and is whole again in the clear areas above and below it
+    const ink = r.height * 0.8, ovl = Math.max(0, Math.min(r.top + ink, vh * 0.82) - Math.max(r.top, vh * 0.2)), mm = 1 - clamp(ovl / (ink * 0.1), 0, 1);
+    put(el, 'opacity', ((el.classList.contains('sc-big--2') ? 0.3 : 0.55) * mm).toFixed(2));
   });
 
   // Progress row & swooshes: appear only when scrolling past arrival into the showcase scene

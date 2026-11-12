@@ -578,3 +578,20 @@ body.sc-ov-open #statement.statement { z-index: 1 !important; }
 /* the long paragraph moves as one piece (not word by word: about 25 animating layers made the stop stutter) */
 .sc-c--lede .sc-lede { opacity: .3; transform: translate3d(0, 22px, 0); transition: opacity 1s ease, transform 1.1s cubic-bezier(.2, .8, .2, 1); }
 .sc-c--lede.in .sc-lede { opacity: 1; transform: none; }
+
+/* the falling page fades out before it reaches the nav (top) and the "01 / 05" counter (bottom), so nothing is ever
+   written over anything else; the stops sit in the clear middle of the screen */
+.sc-flow {
+  -webkit-mask-image: linear-gradient(to bottom, transparent 5.5%, #000 11%, #000 87%, transparent 93%);
+  mask-image: linear-gradient(to bottom, transparent 5.5%, #000 11%, #000 87%, transparent 93%);
+}
+
+/* the tagline as a big handwritten quote on the empty side of a frame */
+.sc-slot .sc-c--tag .sc-tagline { font-size: clamp(38px, 3.6vw, 64px); line-height: 1.02; }
+
+/* room between the cards inside a frame (the list, the small print, ...) */
+.sc-slot { gap: clamp(44px, 7vh, 76px); }
+
+/* the big names are smaller, so the stretch they take (they are hidden over the product) stays short */
+.sc-big { font-size: min(10.5vw, 19vh); }
+@media (max-width: 767px) { .sc-big { font-size: 22vw; } }
