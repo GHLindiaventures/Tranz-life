@@ -1,64 +1,48 @@
-// Entry point: loads styles and boots every feature in order.
+// Entry point for the Home page: loads styles and boots the hero, lineup, tagline, nature video and explore band in order.
+// Sections that used to live here now boot from their own pages (products.js, science.js, about.html).
 import './styles/main.css';
 import { intro } from './app/intro.js';
 import { setLoad } from './app/loader.js';
-import { LAYOUT, initPages, pageProgress } from './app/page-sections.js';
+import { initPages } from './app/page-sections.js';
 import { initScroll } from './app/scroll-animations.js';
 import { initTransitions } from './app/section-transitions.js';
-import { initProductMotion } from './app/product-motion.js';
 import { initSmooth } from './app/smooth-scroll.js';
 import { state, thumbs } from './app/state.js';
 import { initCart, renderCart } from './features/cart/cart.js';
-import { initContactForm } from './features/contact/contact-form.js';
-import { buildNeeds, selectNeed } from './features/finder/product-finder.js';
 import { initHeroJar } from './features/hero/hero-jar.js';
 import { initProductHandOff } from './features/hero/product-hand-off.js';
-import { initStatementPage } from './features/showcase/statement-page.js';
 import { initLayeredDepth } from './features/hero/layered-depth.js';
 import { initMossReveal } from './features/hero/moss-reveal.js';
 import { buildMarquee } from './features/hero/marquee.js';
-import { buildLab } from './features/lab/lab-board.js';
 import { initNav } from './features/navigation/navigation.js';
-import { initReactor } from './features/pipeline/reactor.js';
-import { buildFilters, buildGrid, fillShots } from './features/products/product-grid.js';
 import { SHOTS } from './features/products/product-images.js';
 import { initLightbox } from './components/lightbox.js';
-import { initStory } from './features/product-story/product-story.js';
 import { initAyurveda } from './features/ayurveda/ayurveda-video.js';
-import { buildHerbs } from './features/science/herb-picker.js';
-import { initMolecule } from './features/science/molecule-viewer.js';
+import { initTaglineMotion } from './features/tagline/tagline-motion.js';
 import { initPremiumFx } from './features/ui/premium-fx.js';
-import { initGrain } from './app/grain.js';
 import { $ } from './utils/dom.js';
 
-// Boot order matters: static UI first, then the 3D scenes (studio shots feed the cards), then scroll wiring.
+// Boot order matters: static UI first, then the 3D hero, then scroll wiring.
 async function boot(){
-  initGrain();                                   // matte finish on the page backgrounds (drawn once)
   setLoad(8);
-  initCart(); initContactForm();
-  buildMarquee(); buildLab(); buildNeeds(); renderCart(); initNav();
+  initCart();
+  buildMarquee(); renderCart(); initNav();
   setLoad(20);
   try { if (document.fonts) await Promise.race([Promise.all(['850 40px Archivo','600 20px Archivo','600 24px Caveat'].map(f => document.fonts.load(f))).then(() => document.fonts.ready), new Promise(r => setTimeout(r, 2500))]); } catch(e){}
   setLoad(36);
   try { state.heroApi = initHeroJar(); } catch(err){ console.warn('hero jar unavailable', err); }
   try { state.layeredDepth = initLayeredDepth(); } catch(err){ console.warn('layered depth unavailable', err); }
-  try { state.moss = initMossReveal(); } catch(err){ console.warn('moss reveal unavailable', err); }
+  try { initMossReveal(); } catch(err){ console.warn('moss reveal unavailable', err); }
   Object.assign(thumbs, SHOTS); initLightbox();
-  setLoad(78);
-  fillShots(); buildGrid(); buildFilters(); selectNeed(1, true);
-  try { state.mol = initMolecule(); } catch(err){ console.warn('molecule viewer unavailable', err); }
-  buildHerbs();
   setLoad(88);
   try { state.ayurApi = initAyurveda(); } catch(err){ console.warn('ayurveda video unavailable', err); }
-  try { state.storyApi = initStory(); } catch(err){ console.warn('product story unavailable', err); }
-  try { initPages(); LAYOUT.reactor = initReactor(() => pageProgress('process')); } catch(err){ console.warn('pipeline scene unavailable', err); }
+  try { initPages(); } catch(err){ console.warn('page tracking unavailable', err); }
   setLoad(96);
   initSmooth();
   initScroll();
   initTransitions();
-  try { initProductMotion(); } catch(err){ console.warn('product motion unavailable', err); }
-  try { initStatementPage(); } catch(err){ console.warn('statement page unavailable', err); }
   try { state.handOffApi = initProductHandOff(); } catch(err){ console.warn('product hand-off unavailable', err); }
+  try { state.taglineMotion = initTaglineMotion(); } catch(err){ console.warn('tagline motion unavailable', err); }
   window.state = state;
   intro();
   try { initPremiumFx(); } catch(err){ console.warn('premium fx unavailable', err); }

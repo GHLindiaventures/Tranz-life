@@ -1,4 +1,5 @@
 // Bag drawer: add, change quantity, subtotal, checkout.
+import '../navigation/dropdown.js';
 import { cart, thumbs } from '../../app/state.js';
 import { toast } from '../../components/toast.js';
 import { PRODUCTS } from '../../data/products.js';
@@ -18,7 +19,7 @@ function addToCart(id, btn){
   cart.set(id, (cart.get(id) || 0) + 1); renderCart();
   const bag = $('#bagBtn'); bag.classList.remove('bump'); void bag.offsetWidth; bag.classList.add('bump');
   const p = PRODUCTS.find(x => x.id === id); toast(`${p.name} added to your bag`);
-  if (btn && btn.classList.contains('add')){ const o = btn.innerHTML; btn.classList.add('ok'); btn.textContent = 'Added ✓'; setTimeout(() => { btn.classList.remove('ok'); btn.innerHTML = o; }, 1400); }
+  if (btn && btn.classList.contains('add')){ const o = btn.textContent; btn.classList.add('ok'); btn.textContent = 'Added ✓'; setTimeout(() => { btn.classList.remove('ok'); btn.textContent = o; }, 1400); }
 }
 
 function openBag(open){ $('#drawer').classList.toggle('open', open); $('#scrim').classList.toggle('open', open); $('#drawer').setAttribute('aria-hidden', !open); }

@@ -62,7 +62,8 @@ function initLayeredDepth() {
     idle1.addEventListener('ended', () => { if (birdState === 'idle1') setBirdState('idle2'); });
     idle2.addEventListener('ended', () => { if (birdState === 'idle2') setBirdState('idle1'); });
 
-    // the bird enters at the end of the opening (start(delay), called by the intro)
+    // Start bird sequence
+    setTimeout(() => setBirdState('enter'), 400);
 
     // Scroll trigger for bird taking flight / returning
     const SCROLL_THRESHOLD = 15;
@@ -83,17 +84,24 @@ function initLayeredDepth() {
   }
 
   // 2. Multi-plane scroll parallax
-  const onScroll = () => {
-    const y = window.scrollY || window.pageYOffset;
+  // Batched to one write per frame, elements cached, and frozen once the hero is fully scrolled past
+  // (the offsets are invisible there, so writing them only restyled the hero for nothing).
+  const slabEls = [...stage.querySelectorAll('.hero__slab')];
+  const birdLayer = $('#birds');
+  let stageH = stage.offsetHeight, lastY = NaN, scrollQueued = false;
+  const applyScroll = () => {
+    scrollQueued = false;
+    const y = Math.min(window.scrollY || window.pageYOffset, stageH * 1.1);
+    if (y === lastY) return;
+    lastY = y;
     const slabY = `${(-y * 0.28).toFixed(1)}px`;
     const brandY = `${(y * 0.15).toFixed(1)}px`;
 
     // the stone and its moss-covered twin (stacked on it) move together
-    stage.querySelectorAll('.hero__slab').forEach(el => el.style.setProperty('--slab-y', slabY));
-    const birdsEl = $('#birds');
-    if (birdsEl) {
-      birdsEl.style.setProperty('--slab-y', slabY);
-      birdsEl.style.setProperty('--brand-y', brandY); // the bird perches on the headline, so it shares its scroll offset
+    slabEls.forEach(el => el.style.setProperty('--slab-y', slabY));
+    if (birdLayer) {
+      birdLayer.style.setProperty('--slab-y', slabY);
+      birdLayer.style.setProperty('--brand-y', brandY); // the bird perches on the headline, so it shares its scroll offset
     }
     if (panels && window.innerWidth >= 768) {
       panels.style.setProperty('--panel-offset', `${Math.max(-80, -y * 0.35).toFixed(1)}px`);
@@ -102,7 +110,9 @@ function initLayeredDepth() {
       brand.style.setProperty('--brand-y', brandY);
     }
   };
+  const onScroll = () => { if (!scrollQueued) { scrollQueued = true; requestAnimationFrame(applyScroll); } };
   window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', () => { stageH = stage.offsetHeight; lastY = NaN; onScroll(); });
 
   // videos cost decode time every frame: pause them while the hero is off screen
   if ('IntersectionObserver' in window) {
@@ -114,7 +124,7 @@ function initLayeredDepth() {
       });
     }, { threshold: 0 }).observe(stage);
   }
-  onScroll();
+  applyScroll();
 
   // 3. Pointer-driven depth parallax (lerped, fine pointer only)
   const canHover = matchMedia('(hover: hover) and (pointer: fine)').matches;
@@ -122,8 +132,21 @@ function initLayeredDepth() {
 
   if (canHover && !reduceMotion) {
     let tx = 0, ty = 0, cx = 0, cy = 0, rafId = 0;
+    let stageVisible = true;
+
+    new IntersectionObserver(entries => {
+      stageVisible = entries[0].isIntersecting;
+      if (!stageVisible && rafId) {
+        cancelAnimationFrame(rafId);
+        rafId = 0;
+      }
+    }).observe(stage);
 
     const renderParallax = () => {
+      if (!stageVisible) {
+        rafId = 0;
+        return;
+      }
       cx += (tx - cx) * 0.08;
       cy += (ty - cy) * 0.08;
 
@@ -138,6 +161,7 @@ function initLayeredDepth() {
     };
 
     window.addEventListener('pointermove', (e) => {
+      if (!stageVisible) return;
       tx = (e.clientX / window.innerWidth) - 0.5;
       ty = (e.clientY / window.innerHeight) - 0.5;
       if (!rafId) rafId = requestAnimationFrame(renderParallax);
@@ -160,28 +184,16 @@ function initLayeredDepth() {
   };
   const placeBird = () => {
     if (!birdsEl || !title) return;
-    // the S of "science": its own letter (split by hero-intro.js), or found in the text
-    let s, lx = 0, ly = 0;
-    const perch = title.querySelector('[data-perch]');
-    if (perch && perch.firstChild) {
-      // the glyph's own box (a range on its text, as for plain text), not the letter's span: the span's box follows
-      // the tight line height, the text box follows the font's ascent, which capTop below is measured from
-      const range = document.createRange(); range.setStart(perch.firstChild, 0); range.setEnd(perch.firstChild, 1);
-      s = range.getBoundingClientRect(); [lx, ly] = translation(perch);                 // undo the letter's own rise
-    }
-    else {
-      const walker = document.createTreeWalker(title, NodeFilter.SHOW_TEXT);
-      let node, at = -1;
-      while ((node = walker.nextNode())) { at = node.textContent.toLowerCase().indexOf('science'); if (at >= 0) break; }
-      if (!node || at < 0) return;
-      const range = document.createRange(); range.setStart(node, at); range.setEnd(node, at + 1);
-      s = range.getBoundingClientRect();
-    }
-    const st = stage.getBoundingClientRect();
+    const walker = document.createTreeWalker(title, NodeFilter.SHOW_TEXT);
+    let node, at = -1;
+    while ((node = walker.nextNode())) { at = node.textContent.toLowerCase().indexOf('science'); if (at >= 0) break; }
+    if (!node || at < 0) return;
+    const range = document.createRange(); range.setStart(node, at); range.setEnd(node, at + 1);
+    const s = range.getBoundingClientRect(), st = stage.getBoundingClientRect();
     if (!s.width) return;
     // where the S sits with the headline at rest (undo the parallax / intro offsets on the brand and title)
     const [bx, by] = translation(brand), [tx, ty] = translation(title);
-    const target = { x: s.left - st.left - bx - tx - lx + s.width * .5, y: s.top - st.top - by - ty - ly + capTop(title) };
+    const target = { x: s.left - st.left - bx - tx + s.width * .5, y: s.top - st.top - by - ty + capTop(title) };
     // where the feet are in the bird layer before its own transform
     const W = birdsEl.offsetWidth, H = birdsEl.offsetHeight, sc = Math.max(W / 3840, H / 2160);
     const fx = (W - 3840 * sc) / 2 + FEET.x * 3840 * sc, fy = (H - 2160 * sc) / 2 + FEET.y * 2160 * sc;
@@ -220,11 +232,9 @@ function initLayeredDepth() {
   [600, 2500, 4500].forEach(t => setTimeout(placeBird, t));
 
   return {
-    start(delay = 0) {
-      setTimeout(() => {
-        placeBird();
-        if (enter && birdState === 'hidden' && (window.scrollY || 0) <= 15) setBirdState('enter');
-      }, delay);
+    start() {
+      setTimeout(placeBird, 50);
+      if (enter && birdState === 'hidden') setBirdState('enter');
     }
   };
 }

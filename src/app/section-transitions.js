@@ -3,8 +3,8 @@ import { ScrollTrigger, gsap, hasGsap } from '../lib/gsap.js';
 import { reduce } from '../utils/media.js';
 
 const CONFIG = {
-  // Only key storytelling cover moments: #insider over lineup/hero, #lab over science
-  stackIds: ['insider', 'lab'],
+  // Key storytelling cover moment: the tagline (#insider) slides over the lineup
+  stackIds: ['insider'],
   contactId: 'contact',
   maxRadius: 36
 };

@@ -1,0 +1,282 @@
+/* ==========================================================================
+   TranzLife Biosciences - Official Legal Pages Styles (Privacy & Terms)
+   Strictly aligned with tokens.css, global.css, and existing design language
+   ========================================================================== */
+
+/* Page Wrapper */
+.legal-page {
+  position: relative;
+  isolation: isolate;
+  background: var(--ground);
+  color: var(--ink);
+  overflow-x: clip;
+}
+
+/* --------------------------------------------------------------------------
+   SECTION 1: HERO
+   -------------------------------------------------------------------------- */
+.leg-hero {
+  position: relative;
+  min-height: 65vh;
+  min-height: 65svh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: clamp(120px, 16vh, 180px);
+  padding-bottom: clamp(50px, 6vh, 80px);
+  background: radial-gradient(ellipse 130% 95% at 50% 15%, #faf8ee 0%, #f3ede0 45%, #e9e1d1 80%, var(--ground) 100%);
+  text-align: center;
+  overflow: hidden;
+}
+
+.leg-hero-bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.leg-hero-glow-1 {
+  position: absolute;
+  top: -20%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 900px;
+  height: 600px;
+  background: radial-gradient(ellipse at center, rgba(140, 184, 106, 0.25) 0%, rgba(231, 198, 128, 0.15) 45%, transparent 70%);
+  filter: blur(60px);
+}
+
+.leg-hero-content {
+  position: relative;
+  z-index: 1;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.leg-breadcrumb {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--faint);
+  margin-bottom: 24px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.leg-breadcrumb a {
+  color: var(--muted);
+  transition: color 0.2s ease;
+}
+
+.leg-breadcrumb a:hover {
+  color: var(--forest);
+}
+
+.leg-breadcrumb span {
+  opacity: 0.5;
+}
+
+.leg-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 18px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid var(--line-strong);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--forest);
+  margin-bottom: 22px;
+  box-shadow: 0 4px 14px rgba(20, 52, 26, 0.06);
+}
+
+.leg-badge i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--moss);
+  display: inline-block;
+  box-shadow: 0 0 8px var(--moss);
+}
+
+.leg-hero h1 {
+  font-size: clamp(2.4rem, 5vw, 4.2rem);
+  font-weight: 850;
+  font-stretch: 78%;
+  line-height: 1.06;
+  letter-spacing: -0.025em;
+  color: var(--forest);
+  margin: 0 auto 20px;
+}
+
+.leg-hero h1 em {
+  font-style: normal;
+  color: var(--sage);
+  background: linear-gradient(135deg, #24502a 0%, #6f9e4c 65%, #d6a23a 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.leg-hero-sub {
+  font-size: clamp(1rem, 1.6vw, 1.2rem);
+  line-height: 1.6;
+  color: var(--muted);
+  max-width: 64ch;
+  margin-bottom: 20px;
+}
+
+.leg-meta-row {
+  display: flex;
+  gap: 16px;
+  font-size: 12.5px;
+  color: var(--faint);
+  font-family: var(--f-mono);
+}
+
+/* --------------------------------------------------------------------------
+   SECTION 2: LEGAL BODY WITH STICKY SIDEBAR
+   -------------------------------------------------------------------------- */
+.leg-body-sec {
+  padding: clamp(48px, 8vw, 96px) 0;
+  background: var(--ground-2);
+  border-top: 1px solid var(--line);
+}
+
+.leg-layout {
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr);
+  gap: clamp(32px, 5vw, 64px);
+  align-items: start;
+}
+
+.leg-sidebar {
+  position: sticky;
+  top: 96px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.leg-sidebar h4 {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--faint);
+  padding: 0 8px 12px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 4px;
+}
+
+.leg-nav-link {
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 13.5px;
+  font-weight: 650;
+  color: var(--muted);
+  text-decoration: none;
+  transition: all 0.2s ease;
+  line-height: 1.35;
+}
+
+.leg-nav-link:hover {
+  background: var(--panel-2);
+  color: var(--forest);
+}
+
+.leg-nav-link.active {
+  background: var(--cream);
+  color: var(--on-cream);
+  font-weight: 750;
+}
+
+/* Main Content Article */
+.leg-content {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 28px;
+  padding: clamp(32px, 5vw, 56px);
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  box-shadow: 0 16px 40px rgba(20, 52, 26, 0.06);
+}
+
+.leg-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  scroll-margin-top: 120px;
+}
+
+.leg-section h2 {
+  font-size: clamp(1.4rem, 2.2vw, 1.85rem);
+  font-weight: 850;
+  font-stretch: 80%;
+  color: var(--forest);
+  line-height: 1.2;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line);
+}
+
+.leg-section p {
+  font-size: 14.5px;
+  line-height: 1.7;
+  color: var(--muted);
+}
+
+.leg-section ul {
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.leg-section li {
+  font-size: 14.5px;
+  line-height: 1.65;
+  color: var(--muted);
+}
+
+.leg-section li strong {
+  color: var(--forest);
+}
+
+.leg-callout {
+  background: var(--panel-2);
+  border-left: 4px solid var(--forest);
+  padding: 16px 20px;
+  border-radius: 0 14px 14px 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--ink);
+}
+
+/* --------------------------------------------------------------------------
+   RESPONSIVE DESIGN (TABLET & MOBILE)
+   -------------------------------------------------------------------------- */
+@media (max-width: 1024px) {
+  .leg-layout {
+    grid-template-columns: 1fr;
+  }
+  .leg-sidebar {
+    display: none;
+  }
+}
+

@@ -13,8 +13,7 @@
 @import './components/shine.css';
 @import './sections/hero.css';
 @import './sections/lineup.css';
-@import './sections/showcase.css';
-@import './sections/statement.css';
+@import './sections/explore.css';
 @import './sections/insider.css';
 @import './sections/ayurveda.css';
 @import './sections/product-story.css';
@@ -25,7 +24,14 @@
 @import './sections/finder.css';
 @import './sections/shop.css';
 @import './sections/contact.css';
+@import './sections/about.css';
+@import './sections/product-details.css';
+@import './sections/science-page.css';
+@import './sections/ingredients.css';
+@import './sections/quality-page.css';
+@import './sections/sustainability-page.css';
+@import './sections/contact-page.css';
+@import './sections/certifications-page.css';
+@import './sections/legal-page.css';
 @import './sections/footer.css';
-/* after the sections so the scroll-choreography extras can refine their rules */
-@import './components/motion-extras.css';
 @import './responsive.css';

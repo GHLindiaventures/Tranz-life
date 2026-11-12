@@ -25,7 +25,7 @@ function initMossReveal(){
     mctx.fillStyle = g; mctx.beginPath(); mctx.arc(x, y, BRUSH, 0, Math.PI*2); mctx.fill();
   };
 
-  let running = false, last = 0, idle = 0, lx = null, ly = null, sweep = null;
+  let running = false, last = 0, idle = 0, lx = null, ly = null;
   const frame = now => {
     const dt = Math.min(.05, (now - last)/1000); last = now; idle += dt;
     // fade the revealed area back towards bare stone
@@ -33,18 +33,6 @@ function initMossReveal(){
     mctx.fillStyle = `rgba(0,0,0,${(1 - Math.exp(-dt*FADE)).toFixed(4)})`;
     mctx.fillRect(0, 0, RES.w, RES.h);
     mctx.globalCompositeOperation = 'source-over';
-    // the opening's wave: a soft band of moss runs across the rock left to right, fading behind it as it goes
-    if (sweep) {
-      const k = (now - sweep.t0) / sweep.ms;
-      if (k >= 1) sweep = null;
-      else {
-        const band = RES.w * 0.28, x = -band + k * (RES.w + band * 2);
-        const g = mctx.createLinearGradient(x - band, 0, x, 0);
-        g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(0.7, 'rgba(0,0,0,.5)'); g.addColorStop(1, 'rgba(0,0,0,0)');
-        mctx.fillStyle = g; mctx.fillRect(x - band, 0, band, RES.h);
-        idle = 0;
-      }
-    }
     // moss shows only where the mask is
     ctx.clearRect(0, 0, RES.w, RES.h);
     if (ready){
@@ -58,10 +46,9 @@ function initMossReveal(){
   };
   const kick = () => { idle = 0; if (!running){ running = true; last = performance.now(); requestAnimationFrame(frame); } };
 
-  window.addEventListener('pointermove', e => {
-    const r = view.getBoundingClientRect();
-    if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom){ lx = ly = null; return; }
-    const x = (e.clientX - r.left)/r.width*RES.w, y = (e.clientY - r.top)/r.height*RES.h;
+  view.addEventListener('pointermove', e => {
+    const w = view.clientWidth || RES.w, h = view.clientHeight || RES.h;
+    const x = (e.offsetX / w) * RES.w, y = (e.offsetY / h) * RES.h;
     // paint a smooth stroke from the last point, not just separate dots
     if (lx !== null){
       const d = Math.hypot(x - lx, y - ly), steps = Math.min(40, Math.ceil(d/(BRUSH*.35)));
@@ -70,7 +57,9 @@ function initMossReveal(){
     lx = x; ly = y; kick();
   }, { passive: true });
 
-  return { sweep(ms = 1100) { sweep = { t0: performance.now(), ms }; kick(); } };
+  view.addEventListener('pointerleave', () => { lx = ly = null; }, { passive: true });
+
+  return {};
 }
 
 export { initMossReveal };

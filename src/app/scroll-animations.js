@@ -111,14 +111,14 @@ function initScroll() {
   }
 
   // 4b. Benefits comparison table rows
-  const benTable = $('#benefits table.tbl');
+  const benTable = $('.ben-table');
   if (benTable) {
     ScrollTrigger.create({
       trigger: benTable,
       start: 'top 85%',
       once: true,
       onEnter: () => {
-        gsap.fromTo('#benefits table.tbl tbody tr',
+        gsap.fromTo('.ben-table tbody tr',
           { opacity: 0, y: 18 },
           { opacity: 1, y: 0, stagger: 0.05, duration: MOTION.dur.base, ease: MOTION.ease.entrance }
         );
@@ -126,15 +126,15 @@ function initScroll() {
     });
   }
 
-  // 4c. Product finder need buttons (built into #needs by product-finder.js)
-  const needsGrid = $('#needs');
+  // 4c. Product finder need cards
+  const needsGrid = $('.needs-grid');
   if (needsGrid) {
     ScrollTrigger.create({
       trigger: needsGrid,
       start: 'top 85%',
       once: true,
       onEnter: () => {
-        gsap.fromTo('#needs > button',
+        gsap.fromTo('.need-card',
           { opacity: 0, y: 28 },
           { opacity: 1, y: 0, stagger: MOTION.stagger.fast, duration: MOTION.dur.base, ease: MOTION.ease.entrance }
         );
@@ -179,27 +179,58 @@ function initScroll() {
   }
 
   // 6. Multi-Layer Parallax Depth
-  // 6a. #insider: tilted studio product cards drift and turn, each at its own speed (lighter on small screens);
-  // the hover lift is a separate CSS `translate`, so it composes with this transform
-  const inSmall = window.innerWidth < 768 ? 0.55 : 1;
-  const IN_DRIFT = [{ from: 60, to: -50, rot: -7 }, { from: 130, to: -150, rot: 11 }, { from: 90, to: -95, rot: -9 }];
-  $$('.in-card').forEach((c, k) => {
-    const d = IN_DRIFT[k % IN_DRIFT.length];
-    gsap.fromTo(c,
-      { y: d.from * inSmall },
-      { y: d.to * inSmall, rotation: d.rot, ease: 'none', scrollTrigger: { trigger: '#insider', start: 'top bottom', end: 'bottom top', scrub: 0.5 } }
-    );
-  });
+  // 6a. #insider: Official TranzLife Tagline Monumental Reveals
+  const insiderSec = $('#insider');
+  if (insiderSec) {
+    const badge = $('.in-tagline-badge', insiderSec);
+    const lines = $$('.it-line', insiderSec);
+    const footer = $('.in-creed-footer', insiderSec);
+    const infDraw = $('.it-inf-draw', insiderSec);
 
-  // 6b. #insider: handwritten vector arrows draw themselves
-  $$('.in-why .draw').forEach(p => {
-    const len = p.getTotalLength();
-    p.style.strokeDasharray = len;
-    gsap.fromTo(p,
-      { strokeDashoffset: len },
-      { strokeDashoffset: 0, duration: 1.4, ease: MOTION.ease.smooth, scrollTrigger: { trigger: p, start: 'top 85%', once: true } }
-    );
-  });
+    const tlTagline = gsap.timeline({
+      scrollTrigger: {
+        trigger: insiderSec,
+        start: 'top 75%',
+        once: true
+      }
+    });
+
+    if (badge) {
+      tlTagline.from(badge, {
+        y: -24,
+        opacity: 0,
+        duration: 0.9,
+        ease: 'power3.out'
+      }, 0);
+    }
+
+    if (lines.length) {
+      tlTagline.from(lines, {
+        y: 46,
+        opacity: 0,
+        duration: 1.1,
+        stagger: 0.16,
+        ease: 'power3.out'
+      }, 0.15);
+    }
+
+    if (infDraw) {
+      tlTagline.fromTo(infDraw,
+        { strokeDashoffset: 170 },
+        { strokeDashoffset: 0, duration: 1.6, ease: 'power2.out' },
+        0.4
+      );
+    }
+
+    if (footer) {
+      tlTagline.from(footer, {
+        y: 28,
+        opacity: 0,
+        duration: 1.0,
+        ease: 'power3.out'
+      }, 0.7);
+    }
+  }
 
   // 6c. #science: floating DNA helix with subtle 3D-like parallax rotation
   const sciDna = $('#sciDna');
@@ -228,9 +259,15 @@ function initScroll() {
         skew = clamp(self.getVelocity() / -300, -7, 7);
       }
     });
+    // write only when the lean actually changes: an unconditional write every tick dirtied style forever, even at rest
+    let shown = '';
     gsap.ticker.add(() => {
       skew *= 0.9;
-      mq.style.transform = `skewX(${skew.toFixed(2)}deg)`;
+      if (Math.abs(skew) < 0.01) skew = 0;
+      const v = skew.toFixed(2);
+      if (v === shown) return;
+      shown = v;
+      mq.style.transform = `skewX(${v}deg)`;
     });
   }
 }

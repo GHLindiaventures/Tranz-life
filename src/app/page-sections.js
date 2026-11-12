@@ -5,36 +5,34 @@ import { MOTION } from './motion-tokens.js';
 import { NSTAGE } from '../data/pipeline.js';
 import { $, $$ } from '../utils/dom.js';
 import { clamp } from '../utils/math.js';
-import { cumulativeTops } from './page-geometry.js';
 import { reduce } from '../utils/media.js';
 
 const LAYOUT = { pages:[], tops:[], hs:[], vh:window.innerHeight, cur:-1, theme:'green', reactor:null };
 
 const GROUND = { green:'#112117', cream:'#eee3c6' };
 
-// opts.immediate: jump without the smooth scroll (used behind the menu / back-to-top wipe)
-function scrollToY(y, opts = {}){
+function scrollToY(y){
   if (state.lenis){
-    state.lenis.scrollTo(Math.max(0, y), opts.immediate ? { immediate:true, force:true } : {
+    state.lenis.scrollTo(Math.max(0, y), {
       duration: 1.2,
       easing: MOTION.ease.easedScroll
     });
     return;
   }
-  window.scrollTo({ top:Math.max(0, y), behavior: opts.immediate || reduce ? 'auto' : 'smooth' });
+  window.scrollTo({ top:Math.max(0, y), behavior: reduce ? 'auto' : 'smooth' });
 }
 
-function scrollToPage(id, opts = {}){
+function scrollToPage(id){
   const el = document.getElementById(id);
   if (!el) return;
   const pages = LAYOUT.pages || [];
   const i = pages.findIndex(p => p.id === id);
   if (i >= 0 && LAYOUT.tops && LAYOUT.tops[i] !== undefined) {
-    scrollToY(LAYOUT.tops[i], opts);
+    scrollToY(LAYOUT.tops[i]);
     return;
   }
   const r = el.getBoundingClientRect();
-  scrollToY(r.top + window.scrollY, opts);
+  scrollToY(r.top + window.scrollY);
 }
 
 function pageProgress(id){
@@ -46,14 +44,13 @@ function pageProgress(id){
 function initPages(){
   const pages = $$('main > .page'); LAYOUT.pages = pages;
   const first = p => p.id === 'process' ? 'cream' : p.dataset.theme, last = p => p.id === 'process' ? 'green' : p.dataset.theme;
+  const ring = document.querySelector('.dm-ring');
+  let docH = document.documentElement.scrollHeight, lastSp = '';
   function measure(){
     LAYOUT.vh = window.innerHeight;
+    docH = document.documentElement.scrollHeight;
     LAYOUT.hs = pages.map(p => p.offsetHeight);
-    // not offsetTop: sticky .sheet-stack pages report their stuck position while scrolled
-    const main = pages.length ? pages[0].parentElement : null;
-    LAYOUT.tops = cumulativeTops(main ? main.offsetTop : 0, pages.map(p => { const cs = getComputedStyle(p); return { h:p.offsetHeight, mt:parseFloat(cs.marginTop) || 0, mb:parseFloat(cs.marginBottom) || 0 }; }));
-    // a page pulled up under the page before it (the showcase under the hero) counts as entered when that page is gone
-    LAYOUT.enter = LAYOUT.tops.map((t, i) => i && t <= LAYOUT.tops[i - 1] + 1 ? LAYOUT.tops[i - 1] + LAYOUT.hs[i - 1] : t);
+    LAYOUT.tops = pages.map(p => p.offsetTop);
     // where two themes meet, the upper colour fades into the next page
     pages.forEach((p, i) => { if (i && !p.querySelector(':scope > .show, :scope > .pin')) p.style.setProperty('--prev', GROUND[last(pages[i - 1])] + ' '); });
     update();
@@ -61,18 +58,23 @@ function initPages(){
   }
   function update(){
     const y = window.scrollY;
-    let cur = 0; pages.forEach((p, i) => { if ((LAYOUT.enter || LAYOUT.tops)[i] <= y + 72) cur = i; });
+    let cur = 0; pages.forEach((p, i) => { if (LAYOUT.tops[i] <= y + 72) cur = i; });
     const id = pages[cur].id; let theme = pages[cur].dataset.theme;
     if (id === 'process' && LAYOUT.reactor) theme = LAYOUT.reactor.theme();
-    if (cur !== LAYOUT.cur || theme !== LAYOUT.theme){ LAYOUT.cur = cur; LAYOUT.theme = theme; window.dispatchEvent(new CustomEvent('tl:page', { detail:{ id, dock:pages[cur].dataset.dock || id, theme, index:cur, count:pages.length } })); }
-    document.documentElement.style.setProperty('--sp', clamp(y/Math.max(1, document.documentElement.scrollHeight - LAYOUT.vh), 0, 1).toFixed(4));
+    if (cur !== LAYOUT.cur || theme !== LAYOUT.theme){ LAYOUT.cur = cur; LAYOUT.theme = theme; window.dispatchEvent(new CustomEvent('tl:page', { detail:{ id, theme, index:cur, count:pages.length } })); }
+    // scroll progress for the dock ring. Written on the ring itself (not <html>): an inherited custom property on
+    // the root restyles the whole document every scroll frame. Document height comes from measure(), not a live read.
+    const sp = clamp(y/Math.max(1, docH - LAYOUT.vh), 0, 1).toFixed(3);
+    if (sp !== lastSp && ring){ lastSp = sp; ring.style.setProperty('--sp', sp); }
   }
   let ticking = false;
   window.addEventListener('scroll', () => { if (ticking) return; ticking = true; requestAnimationFrame(() => { ticking = false; update(); }); }, { passive:true });
   window.addEventListener('resize', () => requestAnimationFrame(measure));
   if ('ResizeObserver' in window){ let t; new ResizeObserver(() => { clearTimeout(t); t = setTimeout(measure, 80); }).observe($('main')); }
-  // the nav theme follows the reaction slides, which change after scrolling stops
-  (function tick(){ requestAnimationFrame(tick); if (LAYOUT.reactor && pages[LAYOUT.cur] && pages[LAYOUT.cur].id === 'process') update(); })();
+  // the nav theme follows the reaction slides reactively when theme changes
+  window.addEventListener('tl:reactor-theme', () => {
+    if (pages[LAYOUT.cur] && pages[LAYOUT.cur].id === 'process') update();
+  });
 
   // anchors: smooth scroll to a section
   document.addEventListener('click', e => {
@@ -90,4 +92,4 @@ function initPages(){
   return { measure, update };
 }
 
-export { LAYOUT, pageProgress, initPages, scrollToPage };
+export { LAYOUT, pageProgress, initPages };
