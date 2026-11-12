@@ -28,10 +28,12 @@ import { initAyurveda } from './features/ayurveda/ayurveda-video.js';
 import { buildHerbs } from './features/science/herb-picker.js';
 import { initMolecule } from './features/science/molecule-viewer.js';
 import { initPremiumFx } from './features/ui/premium-fx.js';
+import { initGrain } from './app/grain.js';
 import { $ } from './utils/dom.js';
 
 // Boot order matters: static UI first, then the 3D scenes (studio shots feed the cards), then scroll wiring.
 async function boot(){
+  initGrain();                                   // matte finish on the page backgrounds (drawn once)
   setLoad(8);
   initCart(); initContactForm();
   buildMarquee(); buildLab(); buildNeeds(); renderCart(); initNav();
@@ -40,7 +42,7 @@ async function boot(){
   setLoad(36);
   try { state.heroApi = initHeroJar(); } catch(err){ console.warn('hero jar unavailable', err); }
   try { state.layeredDepth = initLayeredDepth(); } catch(err){ console.warn('layered depth unavailable', err); }
-  try { initMossReveal(); } catch(err){ console.warn('moss reveal unavailable', err); }
+  try { state.moss = initMossReveal(); } catch(err){ console.warn('moss reveal unavailable', err); }
   Object.assign(thumbs, SHOTS); initLightbox();
   setLoad(78);
   fillShots(); buildGrid(); buildFilters(); selectNeed(1, true);

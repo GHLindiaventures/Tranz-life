@@ -52,6 +52,8 @@ function initPages(){
     // not offsetTop: sticky .sheet-stack pages report their stuck position while scrolled
     const main = pages.length ? pages[0].parentElement : null;
     LAYOUT.tops = cumulativeTops(main ? main.offsetTop : 0, pages.map(p => { const cs = getComputedStyle(p); return { h:p.offsetHeight, mt:parseFloat(cs.marginTop) || 0, mb:parseFloat(cs.marginBottom) || 0 }; }));
+    // a page pulled up under the page before it (the showcase under the hero) counts as entered when that page is gone
+    LAYOUT.enter = LAYOUT.tops.map((t, i) => i && t <= LAYOUT.tops[i - 1] + 1 ? LAYOUT.tops[i - 1] + LAYOUT.hs[i - 1] : t);
     // where two themes meet, the upper colour fades into the next page
     pages.forEach((p, i) => { if (i && !p.querySelector(':scope > .show, :scope > .pin')) p.style.setProperty('--prev', GROUND[last(pages[i - 1])] + ' '); });
     update();
@@ -59,7 +61,7 @@ function initPages(){
   }
   function update(){
     const y = window.scrollY;
-    let cur = 0; pages.forEach((p, i) => { if (LAYOUT.tops[i] <= y + 72) cur = i; });
+    let cur = 0; pages.forEach((p, i) => { if ((LAYOUT.enter || LAYOUT.tops)[i] <= y + 72) cur = i; });
     const id = pages[cur].id; let theme = pages[cur].dataset.theme;
     if (id === 'process' && LAYOUT.reactor) theme = LAYOUT.reactor.theme();
     if (cur !== LAYOUT.cur || theme !== LAYOUT.theme){ LAYOUT.cur = cur; LAYOUT.theme = theme; window.dispatchEvent(new CustomEvent('tl:page', { detail:{ id, dock:pages[cur].dataset.dock || id, theme, index:cur, count:pages.length } })); }

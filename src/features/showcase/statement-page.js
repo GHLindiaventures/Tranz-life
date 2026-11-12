@@ -16,7 +16,15 @@ function initStatementPage() {
   const pill = $('.stw-hl', title);
   const headWords = head ? $$('.stw-i', head) : [];
   const small = matchMedia('(max-width:767px)');
-  let lastP = -1, lastH = -1, lastR = -1;
+  let lastP = -1, lastH = -1, lastR = -1, lastHill = -1, grainSet = false;
+  const hillsSvg = sec.querySelector('.stm-hills'), grainImg = sec.querySelector('#stmGrainImg');
+  // the hills' grain uses the page's grain tile (made at start-up by app/grain.js, handed over in the --grain token)
+  function setHillGrain() {
+    if (grainSet || !grainImg) return;
+    const m = /url\(["']?([^"')]+)["']?\)/.exec(getComputedStyle(document.documentElement).getPropertyValue('--grain'));
+    if (!m) return;
+    grainImg.setAttribute('href', m[1]); grainSet = true;
+  }
 
   function applyStatement(p) {
     sec.style.setProperty('--p', p.toFixed(4));
@@ -47,6 +55,17 @@ function initStatementPage() {
     requestAnimationFrame(frame);
     const vh = innerHeight;
     const r = sec.getBoundingClientRect();
+    // the hills: while the curtain rises (its top from the bottom of the screen to the top), the back hills lag a
+    // little behind the page (moved down in the hills' own units, out of 240), which gives the edge depth
+    if (hillsSvg && r.top < vh * 1.3 && r.bottom > 0) {
+      setHillGrain();
+      const t = clamp((vh - r.top) / vh, 0, 1);
+      if (Math.abs(t - lastHill) > 0.001) {
+        lastHill = t;
+        hillsSvg.style.setProperty('--hb', (t * 84).toFixed(1) + 'px');
+        hillsSvg.style.setProperty('--hm', (t * 40).toFixed(1) + 'px');
+      }
+    }
     if (r.bottom > -vh * 0.2 && r.top < vh * 1.2) {
       const p = clamp((vh - r.top) / (vh + r.height), 0, 1);
       if (Math.abs(p - lastP) > 0.0005) { lastP = p; applyStatement(p); }

@@ -23,3 +23,22 @@
 .in-why{display:flex;justify-content:flex-end;margin-top:30px;padding-right:12%}
 .in-why .hand{font-size:28px;transform:rotate(-5deg);text-align:center}
 .in-why svg{display:block;margin:6px auto 0;width:40px;height:70px;fill:none;stroke:var(--forest);stroke-width:2;stroke-linecap:round}
+
+/* top edge: rolling cream hills (the curtain's shape) rising over the dark product grid, instead of scallops. The page
+   moves up by the hills' height and its own background starts below them, so the hills are its top edge; the content
+   moves down by the same amount, so nothing shifts. The grain skips the hills' area (they carry their own). */
+#insider.insider {
+  --hills-h: clamp(90px, 15vw, 220px);
+  margin-top: calc(-1 * var(--hills-h));
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  background: linear-gradient(var(--ground), var(--ground)) no-repeat 0 var(--hills-h) / 100% calc(100% - var(--hills-h)) !important;
+}
+#insider > .band { padding-top: calc(clamp(84px, 11vw, 150px) + var(--hills-h)); }
+#insider::after {
+  -webkit-mask: linear-gradient(#000, #000) no-repeat 0 var(--hills-h) / 100% calc(100% - var(--hills-h));
+  mask: linear-gradient(#000, #000) no-repeat 0 var(--hills-h) / 100% calc(100% - var(--hills-h));
+}
+.edge-hills { position: absolute; left: 0; top: 0; width: 100%; height: calc(var(--hills-h) + 1px); overflow: hidden; pointer-events: none; }
+.edge-hills path { fill: var(--ground); }
+.edge-hills .edge-hills__grain { opacity: var(--grain-o, .2); }

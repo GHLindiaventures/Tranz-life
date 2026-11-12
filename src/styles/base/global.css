@@ -13,6 +13,16 @@ h1,h2,h3,h4{font-family:var(--f-display);margin:0;font-weight:800;font-stretch:7
 p{margin:0}
 .wrap{max-width:1320px;margin-inline:auto;padding-left:max(24px,env(safe-area-inset-left,0px));padding-right:max(24px,env(safe-area-inset-right,0px))}
 .page{position:relative;isolation:isolate;overflow:clip;background:var(--ground);color:var(--ink)}
+/* matte finish: a fine, static grain over every page background (not the hero: it has its own matte filter,
+   #rockMatte). Behind all content (z-index -1 inside the page's own stacking context), never animated. */
+.page:not(#home)::after,footer::after{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:var(--grain) repeat;background-size:496px 496px;opacity:var(--grain-o,.2)}
+.t-green,footer{--grain-o:.14}
+footer{isolation:isolate}
+footer:not(.tl-scallop){position:relative}
+/* on pages with a scalloped top edge the grain follows the scallops, so it never shows as a band above them */
+.tl-scallop::after{
+  -webkit-mask:radial-gradient(circle at 50% 100%,#000 var(--sc-rk),transparent calc(var(--sc-rk) + 1px)) center top / calc(var(--sc-r) * 2) var(--sc-r) repeat-x,linear-gradient(#000,#000) left calc(var(--sc-r) - 1px) / 100% calc(100% - var(--sc-r) + 1px) no-repeat;
+  mask:radial-gradient(circle at 50% 100%,#000 var(--sc-rk),transparent calc(var(--sc-rk) + 1px)) center top / calc(var(--sc-r) * 2) var(--sc-r) repeat-x,linear-gradient(#000,#000) left calc(var(--sc-r) - 1px) / 100% calc(100% - var(--sc-r) + 1px) no-repeat}
 .band{padding-block:clamp(84px,11vw,150px)}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .eyebrow{font-family:var(--f-body);font-stretch:90%;font-size:13px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--sage);display:flex;align-items:center;gap:14px;overflow:hidden}

@@ -62,8 +62,7 @@ function initLayeredDepth() {
     idle1.addEventListener('ended', () => { if (birdState === 'idle1') setBirdState('idle2'); });
     idle2.addEventListener('ended', () => { if (birdState === 'idle2') setBirdState('idle1'); });
 
-    // Start bird sequence
-    setTimeout(() => setBirdState('enter'), 400);
+    // the bird enters at the end of the opening (start(delay), called by the intro)
 
     // Scroll trigger for bird taking flight / returning
     const SCROLL_THRESHOLD = 15;
@@ -161,16 +160,28 @@ function initLayeredDepth() {
   };
   const placeBird = () => {
     if (!birdsEl || !title) return;
-    const walker = document.createTreeWalker(title, NodeFilter.SHOW_TEXT);
-    let node, at = -1;
-    while ((node = walker.nextNode())) { at = node.textContent.toLowerCase().indexOf('science'); if (at >= 0) break; }
-    if (!node || at < 0) return;
-    const range = document.createRange(); range.setStart(node, at); range.setEnd(node, at + 1);
-    const s = range.getBoundingClientRect(), st = stage.getBoundingClientRect();
+    // the S of "science": its own letter (split by hero-intro.js), or found in the text
+    let s, lx = 0, ly = 0;
+    const perch = title.querySelector('[data-perch]');
+    if (perch && perch.firstChild) {
+      // the glyph's own box (a range on its text, as for plain text), not the letter's span: the span's box follows
+      // the tight line height, the text box follows the font's ascent, which capTop below is measured from
+      const range = document.createRange(); range.setStart(perch.firstChild, 0); range.setEnd(perch.firstChild, 1);
+      s = range.getBoundingClientRect(); [lx, ly] = translation(perch);                 // undo the letter's own rise
+    }
+    else {
+      const walker = document.createTreeWalker(title, NodeFilter.SHOW_TEXT);
+      let node, at = -1;
+      while ((node = walker.nextNode())) { at = node.textContent.toLowerCase().indexOf('science'); if (at >= 0) break; }
+      if (!node || at < 0) return;
+      const range = document.createRange(); range.setStart(node, at); range.setEnd(node, at + 1);
+      s = range.getBoundingClientRect();
+    }
+    const st = stage.getBoundingClientRect();
     if (!s.width) return;
     // where the S sits with the headline at rest (undo the parallax / intro offsets on the brand and title)
     const [bx, by] = translation(brand), [tx, ty] = translation(title);
-    const target = { x: s.left - st.left - bx - tx + s.width * .5, y: s.top - st.top - by - ty + capTop(title) };
+    const target = { x: s.left - st.left - bx - tx - lx + s.width * .5, y: s.top - st.top - by - ty - ly + capTop(title) };
     // where the feet are in the bird layer before its own transform
     const W = birdsEl.offsetWidth, H = birdsEl.offsetHeight, sc = Math.max(W / 3840, H / 2160);
     const fx = (W - 3840 * sc) / 2 + FEET.x * 3840 * sc, fy = (H - 2160 * sc) / 2 + FEET.y * 2160 * sc;
@@ -209,9 +220,11 @@ function initLayeredDepth() {
   [600, 2500, 4500].forEach(t => setTimeout(placeBird, t));
 
   return {
-    start() {
-      setTimeout(placeBird, 50);
-      if (enter && birdState === 'hidden') setBirdState('enter');
+    start(delay = 0) {
+      setTimeout(() => {
+        placeBird();
+        if (enter && birdState === 'hidden' && (window.scrollY || 0) <= 15) setBirdState('enter');
+      }, delay);
     }
   };
 }

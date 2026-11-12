@@ -18,7 +18,7 @@ const CONFIG = {
   benefits: { table: '#benefits table.tbl', rowStagger: 0.05, settle: 0.6 },
   pills: { insider: '#insider .in-h .lt', story: '#seqTitle .l2', storyFinal: '#seqFinal', duration: 0.7, delay: 0.45 },
   // B1/B2: scallop edges (row of half-circles) on these sections' tops; the shop turns dark green
-  scallop: { dark: '#shop', edges: ['#shop', '#contact', 'footer', '#insider'], from: 0.35, settle: 0.45, scrub: 0.4 },
+  scallop: { dark: '#shop', edges: ['#shop', '#contact', 'footer'], from: 0.35, settle: 0.45, scrub: 0.4 },
   // Palmo-style extras
   // badges: round stickers with each product's own ingredient chips rise around its jar in the product story
   // (spots are [x vw, y vh] for a product whose jar sits right of centre; odd products mirror)

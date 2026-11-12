@@ -19,8 +19,11 @@
   position: relative;
   background: var(--ground);
   color: var(--ink);
-  padding: 5vw 0 7vw;               /* close under the statement; 7vw below the cards */
-  margin-top: -2vw;
+  /* same total height as before (so the cream hills below stay where they were), but the cards sit higher: less room
+     above the heading and between heading and cards, the same amount added under the cards, so the hills that rise
+     over this page's bottom never touch them */
+  padding: 0.5vw 0 14vw;
+  margin-top: 0;                    /* no longer tucked under the statement page, which cut off the heading */
 }
 /* no pin: the heading and cards scroll past normally (the reference does not pin them either) */
 .lineup-pin { position: relative; }
@@ -31,7 +34,7 @@
   padding-inline: 3vw;
   display: flex;
   flex-direction: column;
-  gap: 4vw;
+  gap: 1.5vw;                       /* heading to cards (was 4vw: the cards moved up, see .lineup padding) */
 }
 
 /* heading in two halves on one line with a rotating sunburst between them */
@@ -50,6 +53,7 @@
 }
 .lu-r { color: var(--sage); }
 .lu-h .stw-i { transform: translate3d(0, 115%, 0); }
+.lu-h .stw { padding-block: .14em; margin-block: -.14em; }   /* room for the tall letters inside their reveal masks */
 .lu-sun { flex: none; width: 8vw; aspect-ratio: 1; color: var(--gold); will-change: transform; }
 .lu-sun svg { width: 100%; height: 100%; display: block; }
 
@@ -168,7 +172,7 @@
 
 /* tablet: 3 per row, no pin (the JS follows the section through the viewport) */
 @media (max-width: 1023px) {
-  .lineup { padding: 14vw 0 12vw; }
+  .lineup { padding: 7vw 0 19vw; }
   .lineup-wrap { padding-inline: 4vw; }
   .lineup-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 2vw; }
   .lineup-card { grid-column: span 2; padding: 1.2vw; }

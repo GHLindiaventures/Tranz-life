@@ -107,6 +107,7 @@
   <!-- Layer 6: 3D Product Canvas & Soft Plinth Contact Shadow -->
   <canvas id="heroCanvas" aria-hidden="true"></canvas>
   <div class="st-shadow" aria-hidden="true"></div>
+  <div class="st-ripple" aria-hidden="true"></div>
 
   <!-- Floating Stats Badges in 3D Depth Space -->
   <div class="facts" aria-label="TranzLife in numbers">
@@ -116,11 +117,43 @@
   </div>
 
   <div class="mq" aria-hidden="true"><div class="mq-track" id="mq"></div></div>
+  <div class="hero__dim" id="heroDim" aria-hidden="true"></div>
 </section>
 
 <section class="page showcase" id="showcase" data-theme="cream" data-dock="lineup">
+  <!-- behind the details, fixed to the screen: white ribbons that draw in and away with the scroll (as in the old
+       product display) -->
+  <div class="sc-bgpin" aria-hidden="true">
+    <svg class="sc-ribbons" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice">
+      <path d="M-80 760C120 560 420 520 560 640s40 320-160 300S120 700 380 520 980 300 1180 420s320 300 380 120"/>
+      <path d="M1520 180C1300 60 980 120 900 300s120 380 300 320 140-300-120-360S520 360 300 300-60 80-100 240"/>
+      <path d="M-60 300C200 120 560 140 700 330s-60 420-300 360-200-320 80-420 640-60 820 160 160 340 260 260"/>
+    </svg>
+  </div>
   <!-- stays on screen: only the progress row. The product (on #flightCanvas) also stays in one place and turns. -->
   <div class="showcase-pin" id="showcasePin">
+    <!-- outline around the product, sized from it; it grows like a plant while the counter runs 005 to 013 -->
+    <svg class="sc-frame" id="scFrame" aria-hidden="true"></svg>
+    <!-- the first two text groups stay fixed beside the product: they fade in after the zoom, hold, fade out -->
+    <article class="sc-card" id="scCard">
+      <span class="sc-no" id="scNo" aria-hidden="true"></span>
+      <span class="sc-ico" id="scIco" aria-hidden="true"></span>
+      <p class="sc-kick" id="scKick"></p>
+      <h2 class="sc-h" id="scHead"><span class="sc-h__line" id="scHeadA"></span><span class="sc-h__line" id="scHeadB"></span></h2>
+      <p class="sc-d" id="scDesc"></p>
+    </article>
+    <article class="sc-blk sc-blk--lead" id="scLead">
+      <p class="sc-kick" id="scLeadKick"></p>
+      <p class="sc-tagline" id="scLeadTag"></p>
+      <h4 class="sc-blk__h" id="scLeadHead"></h4>
+      <p class="sc-lead-desc" id="scLeadDesc"></p>
+    </article>
+    <!-- the highlights moment at the end of the details: points left and right of the product, in brackets -->
+    <div class="sc-hl" id="scHl" role="group"></div>
+    <!-- the ingredient badges: they rise beside the product during the details (as in the old product display) -->
+    <div class="sc-pbadges" id="scPinBadges" aria-hidden="true"></div>
+    <!-- the details, set by set, fading in and out beside the still product (showcase-scene.js builds them) -->
+    <div class="sc-chs" id="scChs"></div>
     <div class="sc-progress" id="scProgress" aria-hidden="true">
       <span class="sc-progress__label" id="scProgLabel">01 / 05</span>
       <i class="sc-progress__bar"><b class="sc-progress__fill" id="scProgFill"></b></i>
@@ -130,17 +163,8 @@
 
   <!-- scrolls past the product like a normal page, so the product seems to fall through it -->
   <div class="sc-flow" id="scFlow">
-    <svg class="sc-arcs" viewBox="0 0 1440 6000" preserveAspectRatio="none" aria-hidden="true">
-      <path d="M-80 700C260 420 640 560 600 900s-420 520-120 880 980 120 1100 560-560 760-360 1160 720 300 900 760"/>
-      <path d="M1520 300C1180 160 820 420 980 760s560 540 220 980-1040 300-980 900 900 520 780 1120-760 640-420 1100"/>
-    </svg>
 
-    <article class="sc-card" id="scCard">
-      <span class="sc-ico" id="scIco" aria-hidden="true"></span>
-      <p class="sc-kick" id="scKick"></p>
-      <h2 class="sc-h" id="scHead"><span class="sc-h__line" id="scHeadA"></span><span class="sc-h__line" id="scHeadB"></span></h2>
-      <p class="sc-d" id="scDesc"></p>
-    </article>
+
 
     <div class="sc-badges" id="scStickers" aria-hidden="true"></div>
     <!-- the rest of the product page, built from the existing write-ups (product-details.js and the catalogue) -->
@@ -148,9 +172,16 @@
   </div>
 </section>
 
-<section class="page statement t-green tl-scallop" id="statement" data-theme="green" data-dock="lineup">
+<section class="page statement t-green" id="statement" data-theme="green" data-dock="lineup">
   <!-- progressive blur along the scalloped edge: four layers, each a little stronger and closer to the edge -->
-  <div class="stm-blur" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+  <!-- the curtain's top edge: three rolling hills in this page's own dark green, moving at slightly different speeds as
+       the curtain rises (so the edge changes shape); the grain is painted on them too, so there is no seam -->
+  <svg class="stm-hills" viewBox="0 0 1440 240" preserveAspectRatio="none" aria-hidden="true">
+    <defs><pattern id="stmGrain" width="496" height="496" patternUnits="userSpaceOnUse"><image id="stmGrainImg" class="grain-img" width="496" height="496"/></pattern></defs>
+    <g class="stm-hill stm-hill--back"><path d="M0 150C180 62 360 40 560 108S900 172 1080 92S1340 28 1440 78V240H0Z"/><path class="stm-hill__grain" d="M0 150C180 62 360 40 560 108S900 172 1080 92S1340 28 1440 78V240H0Z"/></g>
+    <g class="stm-hill stm-hill--mid"><path d="M0 188C160 122 330 108 470 158S760 222 980 150S1300 108 1440 166V240H0Z"/><path class="stm-hill__grain" d="M0 188C160 122 330 108 470 158S760 222 980 150S1300 108 1440 166V240H0Z"/></g>
+    <g class="stm-hill stm-hill--front"><path d="M0 214C220 168 420 172 640 202S1050 232 1240 196S1400 184 1440 200V240H0Z"/><path class="stm-hill__grain" d="M0 214C220 168 420 172 640 202S1050 232 1240 196S1400 184 1440 200V240H0Z"/></g>
+  </svg>
   <div class="stm-pin" id="stmPin">
     <svg class="stm-art stm-art--a" viewBox="0 0 200 200" aria-hidden="true" style="--s:.32;--r:-18deg"><path d="M30 168c10-46 40-82 92-104M30 168c40-6 78-34 92-104-40 4-76 30-92 104z"/><path d="M62 134l22-6M80 108l22-4M54 148l-4-22M74 124l-6-20"/></svg>
     <svg class="stm-art stm-art--b" viewBox="0 0 200 200" aria-hidden="true" style="--s:.55;--r:24deg"><path d="M100 188V70M100 120c-26-6-40-26-40-50 26 4 40 22 40 50zM100 96c24-6 38-24 38-48-24 4-38 22-38 48zM100 150c-22-4-34-20-34-40 22 4 34 18 34 40z"/></svg>
@@ -211,7 +242,15 @@
   </div>
 </section>
 
-<section class="page insider" id="insider" data-theme="cream"><div class="band">
+<section class="page insider" id="insider" data-theme="cream">
+  <!-- top edge: the same rolling hills as the curtain, in this page's cream, rising over the dark product grid -->
+  <svg class="edge-hills" viewBox="0 0 1440 240" preserveAspectRatio="none" aria-hidden="true">
+    <defs><pattern id="insGrain" width="496" height="496" patternUnits="userSpaceOnUse"><image class="grain-img" width="496" height="496"/></pattern></defs>
+    <g><path d="M0 150C180 62 360 40 560 108S900 172 1080 92S1340 28 1440 78V240H0Z"/><path class="edge-hills__grain" fill="url(#insGrain)" d="M0 150C180 62 360 40 560 108S900 172 1080 92S1340 28 1440 78V240H0Z"/></g>
+    <g><path d="M0 188C160 122 330 108 470 158S760 222 980 150S1300 108 1440 166V240H0Z"/><path class="edge-hills__grain" fill="url(#insGrain)" d="M0 188C160 122 330 108 470 158S760 222 980 150S1300 108 1440 166V240H0Z"/></g>
+    <g><path d="M0 214C220 168 420 172 640 202S1050 232 1240 196S1400 184 1440 200V240H0Z"/><path class="edge-hills__grain" fill="url(#insGrain)" d="M0 214C220 168 420 172 640 202S1050 232 1240 196S1400 184 1440 200V240H0Z"/></g>
+  </svg>
+<div class="band">
   <div class="wrap">
     <h2 class="in-h rv-words">You deserve the best. <span class="lt">You deserve TranzLife.</span></h2>
     <div class="in-grid">

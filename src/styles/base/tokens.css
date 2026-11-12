@@ -1,5 +1,8 @@
 /* Design tokens: colours, type, easing. .t-cream / .t-green switch a section or element palette. */
 :root{
+  /* matte finish: the grain tile is drawn at start-up by src/app/grain.js (white one-pixel specks, random transparency)
+     and set here; none until then */
+  --grain:none;
   --ground:#e9efe3;--ground-2:#dfe8d5;--panel:#ffffff;--panel-2:#f4f8ef;
   --line:rgba(31,70,35,.14);--line-strong:rgba(31,70,35,.3);
   --ink:#1f4423;--muted:#4c6648;--faint:#7c9077;

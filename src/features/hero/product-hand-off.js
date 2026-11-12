@@ -5,14 +5,16 @@
 //   0.12 .. 0.70  pinned scene: spin, reveal, detail
 //   0.70 .. 1     the statement's scalloped curtain rises over the pin; the product drifts up and is covered
 // Below the curtain, #lineup shows five cards; each product stands on the panel of its card (measured from the DOM).
+import * as THREE from 'three';
 import { ScrollTrigger } from '../../lib/gsap.js';
 import { PRODUCTS } from '../../data/products.js';
 import { STORY } from '../../data/product-story.js';
 import { jarLayer } from '../products/jar-layer.js';
+import Lenis from 'lenis';
 import { state } from '../../app/state.js';
 import { LAYOUT } from '../../app/page-sections.js';
 import {
-  journeyProgress, calcHoldTransform, populateShowcaseDOM, updateShowcaseDOM, createShowcaseDecor
+  calcHeroFadeStages, calcIntroText, calcHlCallout, calcPinBadge, walkAt, chapterCardAlpha, calcProductFrame, calcFrameDraw, frameHalfPaths, leafOpen, FRAME_LEAVES, journeyProgress, calcHoldTransform, populateShowcaseDOM, updateShowcaseDOM, placeBadges, createShowcaseDecor
 } from '../showcase/showcase-scene.js';
 import { entranceOrder, highlightIndex } from '../showcase/grid-math.js';
 import { $, $$ } from '../../utils/dom.js';
@@ -39,13 +41,268 @@ function initProductHandOff() {
   const flightCanvas = $('#flightCanvas');
   const lineupSec = $('#lineup');
   const heroStage = $('#home');
+  const heroDim = heroStage ? heroStage.querySelector('.hero__dim') : null;
+  const heroTag = heroStage ? heroStage.querySelector('.hero__tag') : null;
+  const heroFacts = heroStage ? heroStage.querySelector('.facts') : null;
+  const heroMq = heroStage ? heroStage.querySelector('.mq') : null;
   const showcaseSec = $('#showcase');
+  const flowEl = showcaseSec ? showcaseSec.querySelector('.sc-flow') : null;
+  const progEl = showcaseSec ? showcaseSec.querySelector('.sc-progress') : null;
+  const introCard = showcaseSec ? showcaseSec.querySelector('#scCard') : null;
+  const introLead = showcaseSec ? showcaseSec.querySelector('#scLead') : null;
   const heroCanvas = $('#heroCanvas');
   const pinEl = $('#lineupPin');
+  const stmEl = $('#statement');
   if (!flightCanvas || !lineupSec || !heroStage || !pinEl || !ScrollTrigger) return null;
 
   const L = jarLayer(flightCanvas);
   const flightJars = PRODUCTS.map((p, i) => L.jar(p, i));
+  // each product's width / height from its 3D model (widest of x and z, so the frame fits it from every angle)
+  const ratios = flightJars.map(j => {
+    j.G.updateMatrixWorld(true);
+    const s = new THREE.Box3().setFromObject(j.b).getSize(new THREE.Vector3());
+    return Math.max(s.x, s.z) / Math.max(1e-6, s.y);
+  });
+  // the outline around the product, grown like a plant: two tendrils climb from the bottom centre up both sides and
+  // meet at the top, leaves sprout along them as they pass, a bud in the product's colour opens at the top with a
+  // ripple, and a fainter second line follows just outside. makeOutline builds it into a showcase layer's #scFrame and
+  // returns its setter (one for the page's showcase, one for the overlay a card click opens).
+  function makeOutline(frameSvg) {
+  const SVGNS = 'http://www.w3.org/2000/svg';
+  const LEAF_D = 'M0 0C5-7 15-8 22 0C15 8 5 7 0 0Z';
+  const svgEl = (tag, cls, parent) => { const e = document.createElementNS(SVGNS, tag); if (cls) e.setAttribute('class', cls); parent.appendChild(e); return e; };
+  let frameParts = null, frameKey = '', frameBoxKey = '';
+  if (frameSvg) {
+    frameSvg.textContent = '';
+    const outer = svgEl('g', 'sc-frame__outer', frameSvg), main = svgEl('g', 'sc-frame__main', frameSvg), leaves = svgEl('g', 'sc-frame__leaves', frameSvg);
+    const mk = (g) => [0, 1].map(() => { const p = svgEl('path', null, g); p.setAttribute('pathLength', '1'); return p; });
+    frameParts = {
+      outer: mk(outer), main: mk(main),
+      leaves: [0, 1].flatMap(side => FRAME_LEAVES.map((at, k) => {
+        const g = svgEl('g', 'sc-frame__leaf', leaves); const p = svgEl('path', null, g); p.setAttribute('d', LEAF_D);
+        const vein = svgEl('path', 'sc-frame__vein', g); vein.setAttribute('d', 'M1 0H19');
+        return { g, side, at, out: (k + side) % 2 === 0 };
+      })),
+      ring: svgEl('circle', 'sc-frame__ring', frameSvg), bud: svgEl('circle', 'sc-frame__bud', frameSvg),
+      top: { x: 0, y: 0 }
+    };
+  }
+  function setFrame(box, u) {
+    if (!frameParts) return;
+    if (!box || u <= 0.001) {
+      if (frameKey !== 'off') { frameKey = 'off'; frameSvg.style.visibility = 'hidden'; }
+      return;
+    }
+    const bk = [box.x, box.y, box.w, box.h].map(v => v.toFixed(1)).join('|');
+    if (bk !== frameBoxKey) {
+      // the shape changed (product, zoom or resize): new paths, and the leaves re-seated along them
+      frameBoxKey = bk;
+      const [l, r] = frameHalfPaths(box), [ol, or] = frameHalfPaths(box, 7);
+      frameParts.main[0].setAttribute('d', l); frameParts.main[1].setAttribute('d', r);
+      frameParts.outer[0].setAttribute('d', ol); frameParts.outer[1].setAttribute('d', or);
+      frameParts.leaves.forEach(lf => {
+        const path = frameParts.main[lf.side], len = path.getTotalLength(), at = len * lf.at;
+        const p = path.getPointAtLength(at), q = path.getPointAtLength(Math.min(len, at + 1));
+        let ang = Math.atan2(q.y - p.y, q.x - p.x) * 180 / Math.PI;
+        // lean the leaf off the line, alternately outwards and inwards, pointing the way the tendril grows
+        const outwards = lf.side === 0 ? -1 : 1;
+        lf.base = `translate(${p.x.toFixed(1)} ${p.y.toFixed(1)}) rotate(${(ang + (lf.out ? -38 : 38) * outwards).toFixed(1)})`;
+      });
+      frameParts.top = { x: box.x + box.w / 2, y: box.y };
+      frameParts.bud.setAttribute('cx', frameParts.top.x.toFixed(1)); frameParts.bud.setAttribute('cy', frameParts.top.y.toFixed(1));
+      frameParts.ring.setAttribute('cx', frameParts.top.x.toFixed(1)); frameParts.ring.setAttribute('cy', frameParts.top.y.toFixed(1));
+    }
+    const key = bk + '|' + u.toFixed(4);
+    if (key === frameKey) return; frameKey = key;
+    frameSvg.style.visibility = 'visible';
+    const u2 = clamp((u - 0.12) / 0.88, 0, 1);                    // the outer line follows a little behind
+    frameParts.main.forEach(p => { p.style.strokeDashoffset = (1 - u).toFixed(4); });
+    frameParts.outer.forEach(p => { p.style.strokeDashoffset = (1 - u2).toFixed(4); });
+    frameParts.leaves.forEach(lf => {
+      const s = leafOpen(u, lf.at);
+      lf.g.setAttribute('transform', `${lf.base} scale(${Math.max(0, s).toFixed(3)})`);
+    });
+    // the bud opens when the tendrils meet, and one ripple spreads from it
+    const b = clamp((u - 0.94) / 0.06, 0, 1), rip = clamp((u - 0.9) / 0.1, 0, 1);
+    frameParts.bud.setAttribute('r', (6 * leafOpen(b, 0)).toFixed(2));
+    frameParts.ring.setAttribute('r', (6 + 26 * rip).toFixed(1));
+    frameParts.ring.style.opacity = (rip > 0 && rip < 1 ? (1 - rip) * 0.7 : 0).toFixed(3);
+  }
+    return setFrame;
+  }
+  const setFrame = makeOutline(showcaseSec ? showcaseSec.querySelector('#scFrame') : null);
+
+  // The highlights moment near the end of the details: the product stands in corner brackets ([ ]) with its highlight
+  // points on the left and on the right, each joined to its bracket by a thin line. The points scroll up right behind
+  // the last block of the details, hold beside the product, and scroll away with the curtain (calcHlCallout).
+  // The two columns are placed from the product's own frame (CSS variables on the pinned layer), so they never cover
+  // it at any screen size; on phones they stack on the left of the product. One setter per showcase layer (the page's
+  // and the copy a card click opens).
+  function makeCallout(pin) {
+    if (!pin) return () => {};
+    const hl = pin.querySelector('.sc-hl');
+    const SVGNS = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(SVGNS, 'svg');
+    svg.setAttribute('class', 'sc-callout'); svg.setAttribute('aria-hidden', 'true');
+    const mk = cls => { const p = document.createElementNS(SVGNS, 'path'); p.setAttribute('class', cls); p.setAttribute('pathLength', '1'); svg.appendChild(p); return p; };
+    const brL = mk('sc-callout__br'), brR = mk('sc-callout__br');
+    let lines = [], items = [];
+    pin.insertBefore(svg, pin.firstChild);
+    let key = '', lastO = -1, lastD = -1, lastL = -1, lastY = NaN, filled = null;
+    let lastEx = -1;
+    return function setCallout(box, o, draw, lineDraw = 0, y = 0, ex = 0) {
+      const on = !!box && o > 0.003 && !!hl && hl.children.length > 0;
+      svg.style.visibility = on ? 'visible' : 'hidden';
+      if (hl) hl.style.visibility = on ? 'visible' : 'hidden';
+      if (!on) { lastO = -1; lastY = NaN; lastEx = -1; return; }
+      // the bracket box: a little outside the product's frame
+      const m = Math.max(10, box.h * 0.04);
+      const l = box.x - m, r = box.x + box.w + m, t = box.y - m, b = box.y + box.h + m, cy = (t + b) / 2;
+      const gap = geo.mobile ? 30 : Math.max(56, Math.min(120, geo.vw * 0.07));   // line + room between text and bracket
+      const sc = pin.closest('.showcase'), ver = sc && sc._sc;            // a new product's points: measure again
+      const k = [l, r, t, b, gap, geo.vw, geo.vh].map(v => Math.round(v)).join(',');
+      if (k !== key || ver !== filled) {
+        key = k; filled = ver;
+        pin.style.setProperty('--co-l', l.toFixed(0) + 'px');
+        pin.style.setProperty('--co-r', r.toFixed(0) + 'px');
+        pin.style.setProperty('--co-cy', cy.toFixed(0) + 'px');
+        pin.style.setProperty('--co-gap', gap.toFixed(0) + 'px');
+        const arm = Math.max(16, Math.min(44, (r - l) * 0.2));
+        brL.setAttribute('d', 'M' + (l + arm) + ' ' + t + 'H' + l + 'V' + b + 'H' + (l + arm));
+        brR.setAttribute('d', 'M' + (r - arm) + ' ' + t + 'H' + r + 'V' + b + 'H' + (r - arm));
+        // one line per point: from the point's edge to the nearest bracket, landing within the bracket's height
+        lines.forEach(p => p.remove()); lines = [];
+        items = [...hl.querySelectorAll('.sc-hl__item')];
+        hl.style.transform = ''; lastY = NaN;                               // measure the points where they hold
+        const pr = pin.getBoundingClientRect(), mid = (l + r) / 2;
+        items.forEach(it => {
+          const q = it.getBoundingClientRect(), left = q.left + q.width / 2 < mid;
+          const y1 = q.top - pr.top + Math.min(q.height / 2, 14), y2 = Math.max(t + arm, Math.min(b - arm, y1));
+          const x1 = left ? q.right - pr.left + 12 : q.left - pr.left - 12, x2 = left ? l - 8 : r + 8;
+          const p = mk('sc-callout__ln'); p.setAttribute('d', 'M' + x2.toFixed(1) + ' ' + y2.toFixed(1) + 'L' + x1.toFixed(1) + ' ' + y1.toFixed(1));
+          lines.push(p);
+        });
+        lastD = -1; lastL = -1; lastEx = -1;
+      }
+      // the group's place: below while it arrives, pinned, then above as it leaves with the curtain. The brackets and
+      // lines stay round the product while the points arrive, and go up with them when they leave.
+      if (y !== lastY) {
+        lastY = y;
+        hl.style.transform = y ? 'translate3d(0,' + y.toFixed(1) + 'px,0)' : '';
+        svg.style.transform = y < 0 ? 'translate3d(0,' + y.toFixed(1) + 'px,0)' : '';
+      }
+      if (Math.abs(o - lastO) > 0.002) { lastO = o; svg.style.opacity = o.toFixed(3); }
+      const d = Math.max(0, Math.min(1, draw)), e = Math.max(0, Math.min(1, ex));
+      if (Math.abs(d - lastD) > 0.002 || Math.abs(e - lastEx) > 0.002) {
+        lastD = d; lastEx = e;
+        // in: the brackets draw, the points' words rise in one after another; out: the words leave upwards one after
+        // another, then the brackets draw back
+        const db = Math.max(1 - Math.min(1, d / 0.7), Math.max(0, Math.min(1, e * 1.4 - 0.4)));
+        brL.style.strokeDashoffset = brR.style.strokeDashoffset = db.toFixed(3);
+        const n = Math.max(1, items.length);
+        items.forEach((it, i) => {
+          const sh = Math.max(0, Math.min(1, (d - 0.15 - i * (0.35 / n)) / 0.5)), xo = Math.max(0, Math.min(1, (e - i * (0.3 / n)) / 0.6));
+          it.style.setProperty('--sh', sh.toFixed(3)); it.style.setProperty('--ex', xo.toFixed(3));
+        });
+        lastL = -1;
+      }
+      // the lines run out from the brackets to the points once they are in, and back when they leave
+      const ld = Math.max(0, Math.min(1, lineDraw));
+      if (Math.abs(ld - lastL) > 0.002) {
+        lastL = ld;
+        lines.forEach((p, i) => { const u = Math.max(0, Math.min(1, (ld - i * 0.06) / 0.7)); p.style.strokeDashoffset = Math.max(1 - u, Math.min(1, e * 2)).toFixed(3); });
+      }
+    };
+  }
+  const setCallout = makeCallout(showcaseSec ? showcaseSec.querySelector('.showcase-pin') : null);
+
+  // the ingredient badges: in the empty spaces right of the product (top, bottom, middle), each rising in during its
+  // own part of the scene, drifting, then floating away (calcPinBadge). Never on the product, and a badge that would
+  // touch any text fades out until the text has passed. Not on phones. The product's left and right edges are also
+  // handed to CSS (--pl / --pr), so the big outlined names can leave a gap where it stands.
+  const BADGE_SPOT = [[0.85, 0.2], [0.86, 0.79], [0.84, 0.47]];   // x, y as fractions of the screen
+  const BADGE_FROM = [0, 0.06, 0.5];   // when each comes in: the first two fill the first screens' empty corners
+  function makeBadges(pin) {
+    const layer = pin && pin.querySelector('.sc-pbadges'), sc = pin && pin.closest('.showcase');
+    return () => {};   // (the ingredient badges are gone: only the given details are shown)
+    if (!layer) return () => {};
+    let shown = false, edges = '';
+    return function setBadges(box, P, k) {
+      if (box && sc) {
+        const e = Math.round(box.x) + ',' + Math.round(box.x + box.w);
+        if (e !== edges) { edges = e; sc.style.setProperty('--pl', Math.round(box.x) + 'px'); sc.style.setProperty('--pr', Math.round(box.x + box.w) + 'px'); }
+      }
+      const els = [...layer.children], on = !!box && !geo.mobile && k > 0;
+      if (!on) { if (shown) { els.forEach(el => { el.style.visibility = 'hidden'; }); shown = false; } return; }
+      shown = true;
+      const u = clamp((P - 0.13) / 0.43, 0, 1);   // from the end of the zoom to the end of the details
+      const texts = [...sc.querySelectorAll('.sc-flow .sc-blk, .sc-card, .sc-blk--lead, .sc-hl__item')]
+        .filter(el => el.style.visibility !== 'hidden' && parseFloat(el.style.opacity || '1') > 0.15)
+        .map(el => el.getBoundingClientRect()).filter(r => r.bottom > 0 && r.top < geo.vh && r.width > 0);
+      els.forEach((el, i) => {
+        const b = calcPinBadge(u, i, BADGE_FROM[i]), at = BADGE_SPOT[i] || BADGE_SPOT[0];
+        const rad = (el.offsetWidth || 120) * b.s / 2;
+        const x = Math.max(geo.vw * at[0], box.x + box.w + 24 + rad), y = geo.vh * (at[1] + b.y);
+        const hit = texts.some(r => r.left < x + rad + 12 && r.right > x - rad - 12 && r.top < y + rad + 12 && r.bottom > y - rad - 12);
+        el._f = (el._f == null ? 1 : el._f) + ((hit ? 0 : 1) - (el._f == null ? 1 : el._f)) * 0.2;
+        const o = b.o * k * el._f;
+        el.style.visibility = o > 0.003 ? 'visible' : 'hidden';
+        if (o <= 0.003) return;
+        el.style.opacity = o.toFixed(3);
+        el.style.transform = 'translate3d(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px,0) translate(-50%,-50%) rotate(' + ((i % 2 ? 7 : -8)) + 'deg) scale(' + b.s.toFixed(3) + ')';
+      });
+    };
+  }
+  const setBadges = makeBadges(showcaseSec ? showcaseSec.querySelector('.showcase-pin') : null);
+
+  // The details as one falling page with stops: showcase-scene.js builds it and plans the scroll (walkAt). Each frame,
+  // the page layer is moved by how far it has fallen (e: it stands still during a stop), and each card of a frame
+  // gets .in (its own entrance, in CSS) once the falling has stopped for it; it keeps it as it falls away afterwards.
+  // The product's frame is handed to CSS (--co-l / --co-r) so the frames' columns sit beside the product.
+  function makeChapters(pin) {
+    const sc = pin && pin.closest('.showcase');
+    if (!sc) return () => {};
+    const blocks = sc.querySelector('.sc-blocks');
+    let key = '', lastE = NaN;
+    return function setChapters(box, r, H, k) {
+      if (box) {
+        const m = Math.max(10, box.h * 0.04), l = box.x - m, rr = box.x + box.w + m, cy = box.y + box.h / 2;
+        const gap = geo.mobile ? 24 : Math.max(48, Math.min(96, geo.vw * 0.055));
+        const kk = [l, rr, cy, gap].map(Math.round).join(',');
+        if (kk !== key) {
+          key = kk;
+          sc.style.setProperty('--pl', Math.round(box.x) + 'px'); sc.style.setProperty('--pr', Math.round(box.x + box.w) + 'px');   // the big names leave a gap where the product stands
+          [pin, sc].forEach(el => {
+            el.style.setProperty('--co-l', l.toFixed(0) + 'px'); el.style.setProperty('--co-r', rr.toFixed(0) + 'px');
+            el.style.setProperty('--co-cy', cy.toFixed(0) + 'px'); el.style.setProperty('--ch-gap', gap.toFixed(0) + 'px');
+          });
+        }
+      }
+      const b = sc._beats, w = walkAt(box ? r : 0, b);
+      sc._e = w.e;
+      sc._r = box ? r : 0;   // the scroll position, for the ribbons behind (they never stop)
+      if (blocks && w.e !== lastE) { lastE = w.e; blocks.style.transform = 'translate3d(0,' + (-w.e).toFixed(1) + 'px,0)'; }
+      if (!b || !sc._frameCards) return;
+      sc._frameCards.forEach((cards, f) => {
+        const h = b.holds[f]; if (!h) return;
+        const len = h.end - h.start;
+        cards.forEach((el, j) => {
+          const on = !!box && k > 0 && r >= h.start + (0.05 + j * 0.28) * len;
+          if (el.classList.contains('in') !== on) el.classList.toggle('in', on);
+        });
+        // while the page stands still the frame drifts slowly (15px down to 15px up), so a stop never looks frozen
+        const drift = 'translate3d(0,' + ((0.5 - (box ? clamp((r - h.start) / len, 0, 1) : 0)) * 30).toFixed(1) + 'px,0)';
+        (sc._frameSlots[f] || []).forEach(sl => { if (sl._dr !== drift) { sl._dr = drift; sl.style.transform = drift; } });
+        const price = cards.map(c => c.querySelector('.sc-price[data-v]')).find(Boolean);   // the price counts up
+        if (price) {
+          const u = box ? clamp((r - h.start) / len, 0, 1) : 0, txt = '₹' + Math.round(+price.dataset.v * clamp((u - 0.1) / 0.3, 0, 1)).toLocaleString('en-IN');
+          if (price.textContent !== txt) price.textContent = txt;
+        }
+      });
+    };
+  }
+  const setChapters = makeChapters(showcaseSec ? showcaseSec.querySelector('.showcase-pin') : null);
+
   flightJars.forEach(j => { j.G.visible = false; });
   const decor = createShowcaseDecor(L);
   const N = PRODUCTS.length;
@@ -74,14 +331,22 @@ function initProductHandOff() {
     const sc = $('#statement');
     const st = pageTop('statement'), sh = pageTop('showcase');
     geo.pinEnd = st != null ? st : (sc ? sc.getBoundingClientRect().top + scrollY : geo.vh * 6);
-    geo.showcaseTop = sh != null ? sh : (showcaseSec ? showcaseSec.getBoundingClientRect().top + scrollY : geo.vh);
+    // the showcase starts under the hero; the first screen of scroll (the hero's height) is the hero fading out while
+    // the product zooms in, and the scene proper starts once the hero has gone
+    geo.fadeLen = Math.max(1, heroStage.offsetHeight);
+    geo.showcaseTop = (sh != null ? sh : 0) + geo.fadeLen;
+    geo.preRoll = geo.fadeLen;
+    geo.secTop = geo.showcaseTop - geo.fadeLen;             // the section's own top (its scroll range starts here)
+    geo.secH = showcaseSec ? showcaseSec.offsetHeight : 0;
     // each panel's offset inside the lineup pin (scroll independent, so it stays right while the pin is stuck)
     geo.slots = slotEls.map(slot => {
       if (!slot) return { ox: 0, oy: 0, w: 160, h: 220 };
       const o = offsetWithin(slot, pinEl);
       return { ox: o.x, oy: o.y, w: slot.offsetWidth, h: slot.offsetHeight };
     });
+    if (showcaseSec) placeBadges(showcaseSec);
   }
+  if (showcaseSec) populateShowcaseDOM(showcaseSec, 0);
   measure();
   window.addEventListener('resize', measure);
   window.addEventListener('load', measure);
@@ -98,7 +363,7 @@ function initProductHandOff() {
     card.addEventListener('focusin', () => { hovered = i; });
     card.addEventListener('focusout', () => { if (hovered === i) hovered = -1; });
   });
-  // HOOK (Phase 2): a click on a card asks for that product's showcase. Nothing listens yet, so it is a no-op.
+  // a click (or Enter / Space) on a card asks for that product's showcase: openOverlay listens for it (below)
   itemEls.forEach((btn, i) => { if (btn) btn.addEventListener('click', () => window.dispatchEvent(new CustomEvent('tl:showcase', { detail: { index: i, id: PRODUCTS[i].id } }))); });
   const canHover = matchMedia('(hover: hover) and (pointer: fine)').matches;
   const mouse = { x: 0, y: 0, tx: 0, ty: 0 };
@@ -106,6 +371,7 @@ function initProductHandOff() {
 
   /* ---------- the product leaving the plinth ---------- */
   let active = -1, base = null, lastIdx = -1;
+  let handStart = null;                                  // set when a product's display hands over to the page
   function capture() {
     const api = state.heroApi; if (!api || !api.current) return false;
     const cur = api.current();
@@ -118,7 +384,7 @@ function initProductHandOff() {
   function release() {
     const api = state.heroApi;
     if (api) { api.setVisible(true); api.hold(false); }
-    active = -1; base = null; lastIdx = -1;
+    active = -1; base = null; lastIdx = -1; handStart = null;
   }
   // plinth position on screen right now (the hero scrolls away under it)
   function plinthNow() {
@@ -134,11 +400,171 @@ function initProductHandOff() {
   function viewFor(i) {
     const fit = flightJars[i].fit || 1, vh = geo.vh, m = geo.mobile;
     // phones: at the right edge, smaller, so the page can run down the left side
-    return { x: geo.vw * (m ? 0.82 : 0.5), y: vh * (m ? 0.55 : 0.52), h: (m ? Math.min(vh * 0.3, geo.vw * 0.62) : vh * 0.56) * fit };
+    // rotY: the angle that shows the front of the product (as it stands in its card)
+    return { x: geo.vw * (m ? 0.82 : 0.5), y: vh * (m ? 0.55 : 0.52), h: (m ? Math.min(vh * 0.3, geo.vw * 0.62) : vh * 0.56) * fit, rotY: restRot(i) };
   }
 
+  /* ---------- a click on a card: that product's display, in an overlay over the grid ---------- */
+  // The overlay holds a copy of the showcase (same layout, same blocks, same outline) filled for the clicked product,
+  // and scrolls on its own; the page behind stays exactly where it was (Lenis is stopped while it is open). The product
+  // flies from its card to the middle on open and back into its card on close (Close, Esc, or reaching the end).
+  const ov = { el: null, sec: null, btn: null, card: null, lead: null, setFrame: null, idx: -1, state: 'closed', t0: 0,
+    from: null, last: null, pending: null, returnFocus: null };
+  const OPEN_MS = reduce ? 1 : 800, CLOSE_MS = reduce ? 1 : 650;
+  const easeIO = k => (k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2);
+
+  function buildOverlay() {
+    if (ov.el || !showcaseSec) return;
+    const el = document.createElement('div');
+    el.className = 'sc-overlay'; el.id = 'showcaseOverlay'; el.tabIndex = -1;
+    el.setAttribute('role', 'dialog'); el.setAttribute('aria-modal', 'true');
+    el.setAttribute('data-lenis-prevent', '');                 // Lenis leaves this scroller alone
+    const sec = showcaseSec.cloneNode(true);
+    sec.id = 'showcaseOv'; sec.removeAttribute('data-dock'); sec.removeAttribute('data-theme');
+    sec.querySelectorAll('[style]').forEach(n => { if (!n.closest('.sc-badge') && !n.classList.contains('sc-blk') && !n.classList.contains('sc-big')) n.removeAttribute('style'); });
+    sec.querySelectorAll('.sc-callout').forEach(n => n.remove());   // the overlay builds its own
+    el.appendChild(sec); document.body.appendChild(el);
+    const btn = document.createElement('button');
+    btn.type = 'button'; btn.className = 'sc-overlay__close'; btn.setAttribute('aria-label', 'Close');
+    btn.innerHTML = '<span aria-hidden="true">×</span>';
+    document.body.appendChild(btn);
+    btn.addEventListener('click', closeOverlay);
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && (ov.state === 'open' || ov.state === 'opening')) closeOverlay(); });
+    // a safety net: reaching the end of the details hands over to the page (normally that happens a screen earlier)
+    el.addEventListener('scroll', () => { if (ov.state === 'open' && el.scrollTop >= el.scrollHeight - el.clientHeight - 2) handOff(el.scrollTop + geo.fadeLen); }, { passive: true });
+    // the same smooth scroll as the page (same settings), so the display moves exactly like the page's showcase; its
+    // frames are driven from our own frame loop. It is stopped while the display is closed.
+    const lenis = reduce ? null : new Lenis({ wrapper: el, content: sec, lerp: 0.09, smoothWheel: true, wheelMultiplier: 1, touchMultiplier: 1.5, autoRaf: false });
+    Object.assign(ov, { lenis, el, sec, btn, card: sec.querySelector('#scCard'), lead: sec.querySelector('#scLead'),
+      setFrame: makeOutline(sec.querySelector('#scFrame')), setCallout: makeCallout(sec.querySelector('.showcase-pin')),
+      setBadges: makeBadges(sec.querySelector('.showcase-pin')), setChapters: makeChapters(sec.querySelector('.showcase-pin')) });
+  }
+
+  // where the product sits in its card right now (screen px), to fly from / back to
+  function cardSpot(i) {
+    const r = slotEls[i].getBoundingClientRect(), jar = flightJars[i];
+    return { x: r.left + r.width / 2, y: r.top + r.height * 0.52, h: r.height * 0.72 * (jar.fit || 1),
+      rx: jar.G.rotation.x, ry: jar.G.rotation.y, rz: jar.G.rotation.z };
+  }
+
+  function openOverlay(i) {
+    if (i == null || i < 0 || i >= N) return;
+    if (ov.state === 'opening' || ov.state === 'closing') { ov.pending = i; return; }   // finish the current one first
+    if (ov.state === 'open') { if (i !== ov.idx) { ov.pending = i; closeOverlay(); } return; }
+    buildOverlay(); if (!ov.el) return;
+    ov.idx = i; ov.returnFocus = itemEls[i];
+    populateShowcaseDOM(ov.sec, i);
+    ov.el.setAttribute('aria-label', PRODUCTS[i].name);
+    ov.from = cardSpot(i);
+    if (state.lenis) state.lenis.stop();
+    document.body.classList.add('sc-ov-open');
+    ov.el.classList.remove('instant');
+    ov.el.classList.add('open'); ov.btn.classList.add('open');
+    // the copy starts where the page's showcase starts once the hero has gone: its first screen (the hero's fade on the
+    // page) is cut off, so the display cannot be scrolled up into that empty space. Its scroll is section px - F.
+    ov.sec.style.setProperty('margin-top', (-geo.fadeLen).toFixed(0) + 'px', 'important');
+    ov.el.scrollTop = 0;
+    if (ov.lenis) { ov.lenis.resize(); ov.lenis.start(); ov.lenis.scrollTo(0, { immediate: true, force: true }); }
+    const flow = ov.sec.querySelector('.sc-flow'); if (flow) { flow.style.visibility = 'visible'; flow.style.opacity = '1'; }
+    placeBadges(ov.sec);
+    [ov.card, ov.lead].forEach(el => { if (el) { el.style.opacity = '0'; el.style.setProperty('--tin', '0'); } });   // words start from nothing
+    ov.state = 'opening'; ov.t0 = ov.openedAt = performance.now();
+    flightCanvas.classList.add('active'); wasOn = true;
+    ov.el.focus({ preventScroll: true });                  // arrow keys, Page keys and Space scroll it
+  }
+
+  function closeOverlay() {
+    if (ov.state !== 'open' && ov.state !== 'opening') return;
+    ov.from = cardSpot(ov.idx);                          // back into its card
+    ov.state = 'closing'; ov.t0 = performance.now();
+    ov.el.classList.remove('open'); ov.btn.classList.remove('open');
+  }
+
+  // The end of the details is the page's own ending: just before the statement page would come into view, the page
+  // takes over. Its showcase is filled for this product and scrolled to exactly the same point (the display is a copy
+  // of it, so nothing on screen changes), the display goes away, and the page's own scroll carries on with the scroll's
+  // momentum: the statement rises over the product and the grid follows, exactly as from the home page.
+  function handOff(sy) {
+    const i = ov.idx;
+    const pageY = showcaseSec.getBoundingClientRect().top + scrollY + sy;
+    const ahead = ov.lenis ? ov.lenis.targetScroll - ov.lenis.animatedScroll : 0;
+    if (active < 0) capture();                           // the hero's own product stays hidden while its showcase runs
+    active = i;
+    handStart = { ...viewFor(i), rotX: 0.04, rotY: restRot(i), rotZ: 0 };   // the same path the display used
+    if (lastIdx !== i) { lastIdx = i; populateShowcaseDOM(showcaseSec, i); placeBadges(showcaseSec); }
+    lastFade = -1; lastIntro = ''; lastP = -1;           // let the page redraw everything for its new position
+    ov.el.classList.add('instant');
+    ov.el.classList.remove('open'); ov.btn.classList.remove('open');
+    ov.returnFocus = null;                                // stay here: focusing the card would scroll away
+    finishClose();
+    if (state.lenis) {
+      state.lenis.scrollTo(pageY, { immediate: true, force: true });
+      if (Math.abs(ahead) > 0.5) state.lenis.scrollTo(pageY + ahead);
+    } else window.scrollTo(0, pageY);
+  }
+
+  function finishClose() {
+    ov.state = 'closed';
+    if (ov.lenis) ov.lenis.stop();
+    document.body.classList.remove('sc-ov-open');
+    if (state.lenis) state.lenis.start();
+    if (ov.returnFocus) ov.returnFocus.focus({ preventScroll: true });
+    ov.idx = -1;
+    const next = ov.pending; ov.pending = null;
+    if (next != null) openOverlay(next);
+  }
+
+  // the overlay's own frame: its scroll drives the same scene the page's scroll does
+  function renderOverlay(now, tTime) {
+    const i = ov.idx, jar = flightJars[i], vh = geo.vh, F = geo.fadeLen;
+    const sy = (ov.lenis ? ov.lenis.animatedScroll : ov.el.scrollTop) + F, H = ov.sec.offsetHeight;   // section px
+    const P = journeyProgress(sy, { showcaseTop: F, pinEnd: H - vh, vh, preRoll: F });
+    updateShowcaseDOM(ov.sec, P, tTime);
+    const view = viewFor(i);
+    const hold = calcHoldTransform(P, { x: view.x, y: view.y, h: view.h, rotX: 0.04, rotY: restRot(i), rotZ: 0 }, view, mouse, tTime, geo.mobile);
+    // a = 0 in the card, 1 in the middle: the fly on open and close
+    let a = 1;
+    if (ov.state === 'opening' || ov.state === 'closing') {
+      const k = clamp((now - ov.t0) / (ov.state === 'opening' ? OPEN_MS : CLOSE_MS), 0, 1), e = easeIO(k);
+      a = ov.state === 'opening' ? e : 1 - e;
+      if (k >= 1) { if (ov.state === 'opening') ov.state = 'open'; else { finishClose(); return; } }
+    }
+    // the statement page would now come into view: from here on it is the page's own ending
+    if (ov.state === 'open' && showcaseSec && (H - vh) - sy <= vh) { handOff(sy); return; }
+    const f = ov.from, lerp = (p, q) => p + (q - p) * a;
+    flightJars.forEach((j, k) => { j.G.visible = k === i; });
+    L.place(jar.G, lerp(f.x, hold.x), lerp(f.y, hold.y));
+    L.size(jar, Math.max(1, lerp(f.h, hold.h)));
+    jar.G.rotation.set(lerp(f.rx, hold.rotX), lerp(f.ry, hold.rotY), lerp(f.rz, hold.rotZ));
+    // the two side texts and the outline, as on the page (they fade with the fly)
+    const sc0 = calcIntroText(sy, F, vh), timed = reduce ? 1 : clamp((now - ov.openedAt - 200) / 1300, 0, 1);
+    // here the words come in on time alone, from nothing, in one go as the product flies in (no half-played start);
+    // the scroll only moves them up with the details later
+    const tin = timed, it = { tin, lift: sc0.lift, o: (1 - Math.pow(1 - tin, 3)) * (sc0.lift > vh * 1.2 ? 0 : 1) };
+    const o = it.o * (ov.state === 'closing' ? a : 1);
+    [ov.card, ov.lead].forEach((el, s) => {
+      if (!el) return;
+      el.style.opacity = o.toFixed(3); el.style.visibility = o > 0.003 ? 'visible' : 'hidden';
+      el.style.transform = 'translate3d(' + ((s ? 24 : -24) * (1 - it.tin)).toFixed(1) + 'px, ' + (-it.lift).toFixed(1) + 'px, 0)';
+    });
+    if (ov.card) {
+      const chars = ov.card.querySelectorAll('.sc-chi'), n = Math.max(1, chars.length);
+      chars.forEach((ch, k) => { const u = clamp((it.tin - (k / n) * 0.6) / 0.4, 0, 1), e = 1 - Math.pow(1 - u, 3); ch.style.opacity = (0.15 + 0.85 * e).toFixed(3); ch.style.transform = 'translate3d(' + ((1 - e) * -0.5).toFixed(3) + 'em,0,0)'; });
+      ov.card.style.setProperty('--tin', it.tin.toFixed(3)); if (ov.lead) ov.lead.style.setProperty('--tin', it.tin.toFixed(3));
+    }
+    const ovBox = calcProductFrame(hold.x, hold.y, hold.h, ratios[i]);
+    if (ov.setFrame) ov.setFrame(ovBox, calcFrameDraw(P) * (a > 0.999 ? 1 : 0));
+    const hlc = calcHlCallout(sy, H, vh, (ov.sec._beats ? ov.sec._beats.hlFrom : H - 2.9 * vh) + 0.25 * vh);
+    if (ov.setCallout) ov.setCallout(ovBox, hlc.o * a, hlc.draw, hlc.lines, 0, hlc.ex);
+    decor.update(0, i, 0, 0, 1, tTime, true);
+    if (ov.setChapters) ov.setChapters(ovBox, sy, H, a);
+    L.renderer.render(L.scene, L.cam);
+  }
+
+  window.addEventListener('tl:showcase', e => openOverlay(e.detail && e.detail.index));
+
   /* ---------- the frame loop ---------- */
-  let wasOn = false, lastP = -1, last = performance.now();
+  let wasOn = false, lastP = -1, lastFade = -1, lastIntro = '', last = performance.now();
   const hlv = new Array(N).fill(0);
   const cache = { y: new Array(N).fill(NaN), o: new Array(N).fill(NaN), h: new Array(N).fill(NaN) };
 
@@ -146,11 +572,67 @@ function initProductHandOff() {
     requestAnimationFrame(frame);
     const dt = Math.min(0.1, (now - last) / 1000); last = now;
     const sy = scrollY, vh = geo.vh, tTime = now * 0.001;
+    if (ov.state !== 'closed') { if (ov.lenis) ov.lenis.raf(now); renderOverlay(now, tTime); return; }   // a product's display is open over the grid
     const lr = lineupSec.getBoundingClientRect();
     const inLineup = lr.bottom > 0 && lr.top < vh;
     const P = reduce ? 1 : journeyProgress(sy, geo);
     const inJourney = !reduce && sy > 0 && P > 0 && P < 1;
     const on = inJourney || inLineup;
+
+    // the hero holds still while texts fade, then sinks into flat mint overlay, and is hidden once f >= 1
+    if (!reduce) {
+      const f = clamp(sy / geo.fadeLen, 0, 1);
+      if (f !== lastFade) {
+        lastFade = f;
+        const { textO, dimO, isFlat, isDone } = calcHeroFadeStages(f);
+
+        // hold hero in place while scrolling the first screen (f 0..1)
+        heroStage.style.transform = f > 0 ? `translate3d(0, ${Math.min(sy, geo.fadeLen).toFixed(1)}px, 0)` : '';
+        heroStage.style.visibility = isFlat ? 'hidden' : '';
+        heroStage.style.pointerEvents = f > 0.3 ? 'none' : '';
+
+        // small texts fade out over f 0..0.30
+        const toStr = textO < 0.999 ? textO.toFixed(3) : '';
+        if (heroTag) heroTag.style.opacity = toStr;
+        if (heroFacts) heroFacts.style.opacity = toStr;
+        if (heroMq) heroMq.style.opacity = toStr;
+
+        // solid mint overlay darkens hero over f 0.30..0.80, fully opaque through 1.0
+        if (heroDim) {
+          heroDim.style.opacity = dimO > 0.005 ? (dimO < 0.999 ? dimO.toFixed(3) : '1') : '0';
+        }
+
+        // showcase flow is visible once hero has turned flat mint (f >= 0.80)
+        if (flowEl) {
+          flowEl.style.visibility = isFlat ? 'visible' : 'hidden';
+          flowEl.style.opacity = isFlat ? '1' : '0';
+        }
+
+      }
+    }
+
+    // the two intro text groups, fixed beside the product: fade in after the zoom, hold, then scroll up with the rest; the title
+    // letters light up left to right as they come in.
+    if (!reduce && introCard && introLead) {
+      const it = calcIntroText(sy, geo.fadeLen, geo.vh);
+      const key = it.o.toFixed(3) + '|' + it.tin.toFixed(3) + '|' + it.lift.toFixed(1);
+      if (key !== lastIntro) {
+        lastIntro = key;
+        const vis = it.o > 0.003 ? 'visible' : 'hidden', side = 1 - it.tin;
+        introCard.style.opacity = it.o.toFixed(3); introCard.style.visibility = vis;
+        introCard.style.transform = 'translate3d(' + (-24 * side).toFixed(1) + 'px, ' + (-it.lift).toFixed(1) + 'px, 0)';
+        introLead.style.opacity = it.o.toFixed(3); introLead.style.visibility = vis;
+        introCard.style.setProperty('--tin', it.tin.toFixed(3)); introLead.style.setProperty('--tin', it.tin.toFixed(3));
+        introLead.style.transform = 'translate3d(' + (24 * side).toFixed(1) + 'px, ' + (-it.lift).toFixed(1) + 'px, 0)';
+        const chars = introCard.querySelectorAll('.sc-chi'), n = Math.max(1, chars.length);
+        chars.forEach((ch, k) => {
+          const u = clamp((it.tin - (k / n) * 0.6) / 0.4, 0, 1);
+          const e = 1 - Math.pow(1 - u, 3);
+          ch.style.opacity = (0.15 + 0.85 * e).toFixed(3);
+          ch.style.transform = 'translate3d(' + ((1 - e) * -0.5).toFixed(3) + 'em,0,0)';   // from the left
+        });
+      }
+    }
 
     if (showcaseSec && !reduce && (inJourney || P !== lastP)) { updateShowcaseDOM(showcaseSec, P, tTime); }
     lastP = P;
@@ -158,6 +640,13 @@ function initProductHandOff() {
     if (!on) {
       if (wasOn) { flightCanvas.classList.remove('active'); wasOn = false; }
       if (P <= 0 && active >= 0) release();
+      if (flowEl) { flowEl.style.visibility = 'hidden'; flowEl.style.opacity = '0'; }
+      if (progEl) { progEl.style.opacity = '0'; progEl.style.visibility = 'hidden'; }
+      if (heroDim) { heroDim.style.opacity = '0'; }
+      if (heroTag) heroTag.style.opacity = '';
+      if (heroFacts) heroFacts.style.opacity = '';
+      if (heroMq) heroMq.style.opacity = '';
+      setFrame(null, 0); setCallout(null, 0, 0); setChapters(null, 0, 0, 0); setChapters(null, 0, 0, 0);
       return;
     }
     if (!wasOn) { flightCanvas.classList.add('active'); wasOn = true; }
@@ -168,25 +657,35 @@ function initProductHandOff() {
     const act = active >= 0 ? active : Math.max(0, lastIdx);
 
     mouse.x += (mouse.tx - mouse.x) * 0.08; mouse.y += (mouse.ty - mouse.y) * 0.08;
-    if (act !== lastIdx) { lastIdx = act; if (showcaseSec) populateShowcaseDOM(showcaseSec, act); }
+    if (act !== lastIdx) { lastIdx = act; if (showcaseSec) populateShowcaseDOM(showcaseSec, act); lastIntro = ""; }   // new letters: light them again
 
     if (inJourney) {
       // showcase: the product holds still and turns while the page scrolls past it; the curtain covers it at the end
-      const start = (active >= 0 && base) ? plinthNow() : { x: geo.vw / 2, y: vh * 0.6, h: vh * 0.25, rotX: 0.04, rotY: -0.35, rotZ: 0 };
+      const start = handStart ? handStart : (active >= 0 && base) ? plinthNow() : { x: geo.vw / 2, y: vh * 0.6, h: vh * 0.25, rotX: 0.04, rotY: -0.35, rotZ: 0 };
       const view = viewFor(act);
       const t = calcHoldTransform(P, start, view, mouse, tTime, geo.mobile);
+      // once the curtain's edge has passed the product's top it should be fully covered: hide it, so it never peeks out
+      // below the (shorter than the screen) statement page
+      const covered = !!stmEl && stmEl.getBoundingClientRect().top < t.y - t.h / 2;
       PRODUCTS.forEach((prod, i) => {
         const jar = flightJars[i];
         if (i !== act) { jar.G.visible = false; return; }
-        jar.G.visible = true;
+        jar.G.visible = !covered;
         L.place(jar.G, t.x, t.y);
         L.size(jar, Math.max(1, t.h));
         jar.G.rotation.set(t.rotX, t.rotY, t.rotZ);
       });
       decor.update(0, act, 0, 0, 1, tTime, true);
+      // the outline around the product: sized from it, grows while the counter runs 005 to 013, stays to 017, gone by 020
+      const box = calcProductFrame(t.x, t.y, t.h, ratios[act]);
+      setFrame(box, calcFrameDraw(P));
+      const hlc = calcHlCallout(sy - geo.secTop, geo.secH, geo.vh, (showcaseSec._beats ? showcaseSec._beats.hlFrom : geo.secH - 2.9 * geo.vh) + 0.25 * geo.vh);
+      setCallout(box, hlc.o, hlc.draw, hlc.lines, 0, hlc.ex);
+      setChapters(box, sy - geo.secTop, geo.secH, 1);
       L.renderer.render(L.scene, L.cam);
       return;
     }
+    setFrame(null, 0); setCallout(null, 0, 0);
 
     /* ---------- grid: each product stands on its card's panel ---------- */
     // Nothing here moves the cards (they scroll past with the page). Each product turns from a tilt to upright as its

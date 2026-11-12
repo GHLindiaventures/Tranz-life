@@ -3,10 +3,15 @@
    and only turns, while the page around it (the old product display's card, badges, note, swooshes) scrolls up past
    it like a normal page. That is what makes the product feel like it is falling. Only the progress row is pinned.
    Positions in .sc-flow are percentages of the section's height, so phones (a shorter section) keep the rhythm. */
+/* the showcase starts under the hero (pulled up one screen); the hero sits on top and fades out as you scroll the
+   first screen, revealing it. The JS holds the hero in place while it fades (product-hand-off.js). */
+#home.stage { z-index: 3 !important; }
 .showcase {
+  margin-top: -100vh;
+  margin-top: -100svh;
   position: relative;
-  height: 450vh;
-  height: 450svh;
+  height: 810vh;                         /* the hero's fade, the intro, the details, the highlights moment */
+  height: 810svh;
   --sc-tint: #b6cba5;
   /* one standard background for every product: the soft mint of the Aroma Inhaler page (its STORY colour #38a58b at
      16% on the ground). The product's own colour still tints the icon, badges and title (--sc-tint). */
@@ -26,18 +31,44 @@
 }
 
 /* the flowing page: absolute over the whole section, so it scrolls 1:1 with the page */
-.sc-flow { position: absolute; inset: 0; z-index: 1; overflow: hidden; pointer-events: none; }
+.sc-flow {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+  visibility: hidden;
+}
 
 /* white swooshes running down the whole section; JS draws them with the scroll */
 .sc-arcs { position: absolute; inset: 0; width: 100%; height: 100%; }
 .sc-arcs path { fill: none; stroke: #fff; stroke-width: 34; stroke-linecap: round; stroke-dasharray: 0 99999; }
 
-/* the card, at the top of the section: icon, kicker, big two-line title, description */
+/* outline around the product, grown like a plant (behind the product, which is on #flightCanvas above). Two tendrils
+   climb from the bottom centre up both sides and meet at the top; leaves sprout along them; a bud in the product's
+   colour opens at the top with one ripple; a fainter line follows just outside. product-hand-off.js builds and drives
+   it from the scroll: grows while the counter runs 005 to 013, stays to 017, gone by 020. */
+.sc-frame { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; visibility: hidden; }
+.sc-frame path { fill: none; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1; stroke-dashoffset: 1; }
+.sc-frame__main path { stroke: var(--forest); stroke-width: 1.6; opacity: .62; }
+.sc-frame__outer path { stroke: var(--forest); stroke-width: 1; opacity: .22; }
+.sc-frame__leaf path:first-child { fill: color-mix(in srgb, var(--sc-tint) 55%, var(--forest)); stroke: none; stroke-dasharray: none; opacity: .75; }
+.sc-frame__leaf .sc-frame__vein { stroke: var(--sc-page, #e9efe3); stroke-width: .8; stroke-dasharray: none; stroke-dashoffset: 0; opacity: .9; }
+.sc-frame__bud { fill: var(--sc-tint); stroke: var(--forest); stroke-width: 1.2; }
+.sc-frame__ring { fill: none; stroke: var(--sc-tint); stroke-width: 1.4; opacity: 0; }
+
+/* the first two text groups live in the pinned layer, so they never scroll: centred on the product's height, the card
+   left of the product and the lead block right of it. product-hand-off.js fades them in after the zoom, holds them,
+   then fades them out before the rest of the page comes up. */
 .sc-card {
   position: absolute;
-  top: 2.2%;
-  left: max(104px, 6vw);
+  top: 54%;
+  translate: 0 -50%;
+  left: max(60px, 6vw);
   width: min(470px, 31vw);
+  opacity: 0;
+  visibility: hidden;
+  will-change: transform, opacity;
 }
 .sc-ico { display: grid; place-items: center; width: 52px; height: 52px; margin-bottom: 14px; border-radius: 50%; background: var(--sc-tint); color: #fff; }
 .sc-ico svg { width: 26px; height: 26px; }
@@ -54,8 +85,8 @@
 }
 .sc-h__line { display: block; white-space: nowrap; }
 .sc-h__line + .sc-h__line { color: color-mix(in srgb, var(--sc-tint) 72%, #1f4423); }
-.sc-ch { display: inline-block; overflow: hidden; vertical-align: top; padding-block: .06em; margin-block: -.06em; }
-.sc-chi { display: inline-block; transform: translate3d(0, 115%, 0); will-change: transform; }
+.sc-ch { display: inline-block; vertical-align: top; padding-block: .06em; margin-block: -.06em; }
+.sc-chi { display: inline-block; opacity: 0.15; will-change: opacity; }
 .sc-d { display: flex; gap: 12px; align-items: flex-start; margin: 16px 0 0; max-width: 34ch; font-size: clamp(15px, 1.25vw, 18px); font-weight: 500; line-height: 1.3; }
 .sc-i { flex: none; width: 26px; height: 26px; margin-top: 2px; color: var(--sc-tint); }
 
@@ -118,6 +149,7 @@
   color: transparent;
   -webkit-text-stroke: 2px color-mix(in srgb, var(--sc-tint) 70%, #1f4423);
   opacity: .55;
+  will-change: transform;
 }
 .sc-big--2 { top: 70%; -webkit-text-stroke-color: var(--forest); opacity: .3; }
 
@@ -135,29 +167,77 @@
 }
 .sc-blk--l { left: max(104px, 6vw); }
 .sc-blk--r { right: max(56px, 5vw); }
-.sc-blk p { margin: 0; }
-.sc-blk .sc-kick { margin-bottom: 12px; }
-.sc-blk__h { margin: 0 0 14px; font-family: var(--f-display); font-stretch: 64%; font-weight: 850; font-size: clamp(2.2rem, 5.4vh, 3.8rem); line-height: .9; text-transform: uppercase; color: var(--forest); }
-.sc-tagline { font-family: var(--f-hand); font-weight: 600; font-size: clamp(28px, 2.6vw, 42px); line-height: 1.05; color: color-mix(in srgb, var(--sc-tint) 60%, #1f4423); }
-.sc-lede { font-size: clamp(18px, 1.5vw, 23px); line-height: 1.35; }
-.sc-quote { font-family: var(--f-hand); font-weight: 600; font-size: clamp(30px, 2.8vw, 44px); line-height: 1.05; margin-bottom: 12px !important; }
+#scLead.sc-blk--lead {
+  top: 54%;
+  translate: 0 -50%;
+  right: max(60px, 6vw);
+  width: min(470px, 31vw);
+  visibility: hidden;
+}
+
+/* the highlights moment near the end of the details: the product in corner brackets, its points on each side, each
+   joined to its bracket by a line. product-hand-off.js measures the product's frame and sets --co-l / --co-r (the
+   brackets' left and right edges), --co-cy (their middle) and --co-gap (the room for the lines) on the pinned layer;
+   the columns are placed from those, so they always sit beside the product, never over it. */
+.sc-callout { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; visibility: hidden; }
+.sc-callout path { fill: none; stroke: var(--forest); stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1; stroke-dashoffset: 1; }
+.sc-callout__br { stroke-width: 2.4; opacity: .78; }
+.sc-callout__ln { stroke-width: 1.4; opacity: .55; }
+/* the highlights moment: two columns of points beside the product (placed from --co-l / --co-r / --co-cy) */
+.sc-hl { position: absolute; inset: 0; visibility: hidden; pointer-events: none; will-change: transform; }
+.sc-hl__col { position: absolute; top: var(--co-cy, 50%); translate: 0 -50%; display: grid; gap: clamp(18px, 3.2vh, 34px); }
+.sc-hl__col--l {
+  right: calc(100% - var(--co-l, 40vw) + var(--co-gap, 80px));
+  width: min(360px, calc(var(--co-l, 40vw) - var(--co-gap, 80px) - 40px));
+  text-align: right;
+}
+.sc-hl__col--r {
+  left: calc(var(--co-r, 60vw) + var(--co-gap, 80px));
+  width: min(360px, calc(100% - var(--co-r, 60vw) - var(--co-gap, 80px) - 40px));
+}
+.sc-hl__item { opacity: 1; }
+.sc-hl__item b { display: block; font-family: var(--f-display); font-stretch: 72%; font-weight: 850; font-size: clamp(20px, 1.9vw, 30px); line-height: 1; text-transform: uppercase; color: var(--forest); }
+.sc-hl__item > span { display: block; margin-top: 6px; font-size: clamp(13px, 1vw, 15px); line-height: 1.4; color: var(--forest); opacity: .78; }
+@media (max-width: 767px) {
+  /* phones: the product is at the right edge, so both columns stack on its left */
+  .sc-hl__col { position: static; translate: none; width: auto; text-align: left; }
+  .sc-hl {
+    inset: auto; left: 16px; top: var(--co-cy, 50%); translate: 0 -50%;
+    width: calc(var(--co-l, 60vw) - 16px - var(--co-gap, 30px));
+    display: grid; gap: 16px;
+  }
+  .sc-hl__item b { font-size: 17px; }
+  .sc-hl__item > span { font-size: 12.5px; }
+}
 
 /* lists: botanicals / highlights, a dashed rule between rows; rows step in when the block arrives */
 .sc-list { list-style: none; margin: 0; padding: 0; }
 .sc-list li {
+  position: relative;
   display: grid;
   grid-template-columns: 1fr;
   gap: 3px;
   padding: 12px 0;
-  border-top: 1px dashed color-mix(in srgb, var(--forest) 30%, transparent);
   opacity: 0;
-  transform: translate3d(0, 14px, 0);
-  transition: opacity .5s ease, transform .6s var(--ease);
-  transition-delay: calc(var(--i) * 60ms);
+  transform: translate3d(-28px, 0, 0);
+  transition: opacity .55s ease, transform .8s cubic-bezier(.2, .8, .2, 1);
+  transition-delay: calc(var(--i) * 70ms);
+}
+/* each row's dashed rule draws across, then its words follow from the left */
+.sc-list li::before {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; top: 0;
+  border-top: 1px dashed color-mix(in srgb, var(--forest) 30%, transparent);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  transition: transform .9s cubic-bezier(.2, .8, .2, 1);
+  transition-delay: inherit;
 }
 .sc-blk.in .sc-list li { opacity: 1; transform: none; }
+.sc-blk.in .sc-list li::before { transform: none; }
 .sc-list b { font-family: var(--f-display); font-stretch: 70%; font-weight: 850; font-size: clamp(17px, 1.45vw, 22px); text-transform: uppercase; letter-spacing: .01em; }
-.sc-list span { font-size: clamp(14px, 1.05vw, 16px); opacity: .85; }
+.sc-list li > span { font-size: clamp(14px, 1.05vw, 16px); opacity: .85; }
 .sc-list--num li { grid-template-columns: auto 1fr; column-gap: 14px; }
 .sc-list--num i { grid-row: span 2; font-style: normal; font-family: var(--f-display); font-stretch: 70%; font-weight: 850; font-size: clamp(22px, 2vw, 32px); line-height: 1; color: var(--sc-tint); }
 
@@ -179,10 +259,10 @@
 .sc-blk.in .sc-herb { opacity: 1; transform: none; }
 .sc-herb b { display: block; font-family: var(--f-display); font-stretch: 70%; font-weight: 850; font-size: clamp(20px, 1.8vw, 28px); text-transform: uppercase; }
 .sc-herb em { display: block; font-size: 14px; opacity: .75; }
-.sc-herb span { display: block; margin-top: 2px; font-weight: 700; font-stretch: 85%; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; }
+.sc-herb > span { display: block; margin-top: 2px; font-weight: 700; font-stretch: 85%; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; }
 
 /* small print */
-.sc-blk--fine p { font-size: 12.5px; line-height: 1.45; opacity: .7; max-width: 52ch; }
+.sc-blk--fine p { font-size: clamp(14px, 1.05vw, 16px); line-height: 1.55; opacity: .78; max-width: 52ch; }
 
 /* progress row: "01 / 05", bar, 000 to 100, pinned bottom left */
 .sc-progress {
@@ -194,6 +274,9 @@
   align-items: center;
   gap: 14px;
   color: var(--forest);
+  opacity: 0;
+  visibility: hidden;
+  will-change: opacity;
 }
 .sc-progress__label, .sc-progress__num { font-family: var(--f-display); font-stretch: 70%; font-weight: 850; font-size: clamp(16px, 1.4vw, 22px); letter-spacing: .04em; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .sc-progress__bar { position: relative; flex: 1; height: 4px; border-radius: 4px; background: color-mix(in srgb, var(--forest) 18%, transparent); overflow: hidden; }
@@ -201,8 +284,10 @@
 
 /* phones: shorter section, card full width, badges smaller, note hidden */
 @media (max-width: 767px) {
-  .showcase { height: 300vh; height: 300svh; }
-  .sc-card { top: 3%; left: 16px; right: 16px; width: auto; }
+  .showcase { height: 680vh; height: 680svh; }
+  .sc-card { top: 12vh; translate: none; left: 16px; right: auto; width: 58vw; }
+  #scLead.sc-blk--lead { top: auto; bottom: 12vh; translate: none; left: 16px; right: auto; width: 58vw; }
+  .sc-blocks { top: 0; }
   .sc-ico { display: none; }
   .sc-h { font-size: clamp(2.8rem, 13vw, 4rem); }
   .sc-badge { width: 96px; font-size: 13px; padding: 10px; }
@@ -216,3 +301,280 @@
 @media (prefers-reduced-motion: reduce) {
   .showcase { display: none; }
 }
+
+/* ---------- a product's display opened from a card: the overlay over the grid ---------- */
+/* A copy of the showcase in a full-screen scroller of its own (product-hand-off.js builds it). It sits under the 3D
+   product layer (#flightCanvas, z 45) and over the page; the page behind does not move while it is open. */
+.sc-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 44;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: color-mix(in srgb, #38a58b 16%, var(--ground));
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .4s ease, visibility 0s linear .4s;
+  outline: none;
+  scrollbar-width: none;
+}
+.sc-overlay::-webkit-scrollbar { display: none; }
+.sc-overlay.open { opacity: 1; visibility: visible; transition: opacity .4s ease; }
+.sc-overlay .showcase { margin-top: 0 !important; }
+.sc-overlay.instant { transition: none; }
+/* while it is open, the dark statement page (normally above the 3D layer) steps behind it */
+body.sc-ov-open #statement.statement { z-index: 1 !important; }
+
+/* close: a round button, top right, above the nav */
+.sc-overlay__close {
+  position: fixed;
+  z-index: 70;
+  top: clamp(72px, 9vh, 92px);
+  right: clamp(16px, 3vw, 40px);
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 30px;
+  line-height: 1;
+  color: #f4f8ef;
+  background: var(--forest);
+  box-shadow: 0 14px 30px -14px rgba(20, 44, 24, .55);
+  opacity: 0;
+  visibility: hidden;
+  transform: scale(.7) rotate(-90deg);
+  transition: opacity .3s ease, transform .45s var(--ease), visibility 0s linear .45s;
+}
+.sc-overlay__close.open { opacity: 1; visibility: visible; transform: none; transition: opacity .3s ease .15s, transform .45s var(--ease) .15s; }
+.sc-overlay__close:hover { transform: rotate(90deg); }
+.sc-overlay__close:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .sc-overlay .showcase { display: block; }
+  .sc-overlay, .sc-overlay__close { transition: none; }
+}
+
+/* ---------- the details, made to move ---------- */
+/* white ribbons behind the details (fixed to the screen, drawn in and away by showcase-scene.js) */
+.sc-bgpin { position: sticky; top: 0; height: 100vh; height: 100svh; margin-bottom: -100vh; margin-bottom: -100svh; z-index: 0; pointer-events: none; overflow: hidden; }
+.sc-ribbons { position: absolute; inset: 0; width: 100%; height: 100%; }
+.sc-ribbons path { fill: none; stroke: #fff; stroke-width: 34; stroke-linecap: round; stroke-dasharray: 0 9999; opacity: .9; }
+
+/* the ingredient badges beside the product (placed and moved by product-hand-off.js) */
+.sc-pbadges { position: absolute; inset: 0; pointer-events: none; }
+.sc-pbadge {
+  position: absolute; left: 0; top: 0;
+  display: grid; place-items: center;
+  width: clamp(100px, 8vw, 128px); aspect-ratio: 1; padding: 12px;
+  border-radius: 50%; border: 3px solid var(--forest); background: #f6efd9; color: var(--forest);
+  text-align: center; font-family: var(--f-display); font-stretch: 66%; font-weight: 850; text-transform: uppercase;
+  font-size: clamp(13px, 1.05vw, 17px); line-height: .95;
+  box-shadow: 0 18px 30px -18px rgba(31, 70, 35, .5);
+  visibility: hidden; will-change: transform, opacity;
+}
+.sc-pbadge--alt { background: var(--sc-tint); border-color: #f6efd9; color: #fff; text-shadow: 0 1px 0 rgba(31, 70, 35, .2); }
+@media (max-width: 767px) { .sc-pbadges { display: none; } }
+
+/* the blocks a little narrower, so the badges beside the product have room */
+@media (min-width: 768px) { .sc-flow .sc-blk { width: min(420px, 28vw); } .sc-flow .sc-blk--l.sc-blk--photo { width: min(440px, 29vw); } }
+
+/* word reveals: each kind of text enters its own way once its block arrives (.in) */
+.sc-flow .dw { display: inline-block; vertical-align: top; }
+.sc-flow [data-split="rise"] .dw, .sc-flow [data-split="pop"] .dw { overflow: hidden; padding-block: .08em; margin-block: -.08em; }
+.sc-flow .dwi { display: inline-block; transition: transform .8s cubic-bezier(.2,.8,.2,1), opacity .6s ease, filter .7s ease, letter-spacing .9s ease; transition-delay: calc(var(--w) * 45ms); }
+.sc-flow .sc-blk:not(.in) [data-split="rise"] .dwi { transform: translate3d(0, 110%, 0); }
+.sc-flow .sc-blk:not(.in) [data-split="up"] .dwi { transform: translate3d(0, .7em, 0); opacity: 0; }
+.sc-flow .sc-blk:not(.in) [data-split="blur"] .dwi { opacity: 0; filter: blur(8px); transform: translate3d(0, .2em, 0); }
+.sc-flow .sc-blk:not(.in) [data-split="spread"] .dwi { opacity: 0; letter-spacing: .6em; }
+.sc-flow .sc-blk:not(.in) [data-split="pop"] .dwi { transform: translate3d(0, 100%, 0) scale(.6); }
+.sc-flow .sc-blk:not(.in) [data-split="slide"] .dwi { opacity: 0; transform: translate3d(-.8em, 0, 0); }
+.sc-flow [data-split="pop"] .dwi { transition-timing-function: cubic-bezier(.34, 1.56, .64, 1); }
+
+/* photos: uncovered by a wipe (--rv 0..1), settling from a slight zoom, drifting inside the frame with the scroll (--py) */
+.sc-flow .sc-blk--photo .sc-photo { clip-path: inset(calc((1 - var(--rv, 1)) * 100%) 0 0 0 round 6px); transform: rotate(calc(-4deg + (1 - var(--rv, 1)) * 4deg)); }
+.sc-flow .sc-blk--photo .sc-photo--wide { transform: rotate(calc(3deg - (1 - var(--rv, 1)) * 3deg)); }
+.sc-flow .sc-photo { overflow: hidden; transition: box-shadow .4s ease; }
+.sc-flow .sc-photo img { transform: translate3d(0, calc(var(--py, 0) * -14px), 0) scale(calc(1.06 + (1 - var(--rv, 1)) * .14)); will-change: transform; }
+
+/* the progress row sits on a soft mint pill, so text passing under it never shows through the numbers */
+.sc-progress { padding: 8px 14px; margin-left: -14px; border-radius: 99px; background: color-mix(in srgb, var(--sc-page, #d4e6d8) 94%, transparent); }
+
+/* ---------- text styles of the details and the lead block (restored) ---------- */
+.sc-blk p { margin: 0; }
+.sc-blk .sc-kick { margin-bottom: 12px; }
+.sc-blk__h { margin: 0 0 14px; font-family: var(--f-display); font-stretch: 64%; font-weight: 850; font-size: clamp(2.2rem, 5.4vh, 3.8rem); line-height: .9; text-transform: uppercase; color: var(--forest); }
+.sc-tagline { font-family: var(--f-hand); font-weight: 600; font-size: clamp(28px, 2.6vw, 42px); line-height: 1.05; color: color-mix(in srgb, var(--sc-tint) 60%, #1f4423); }
+.sc-lede { font-size: clamp(18px, 1.5vw, 23px); line-height: 1.4; }
+.sc-quote { font-family: var(--f-hand); font-weight: 600; font-size: clamp(30px, 2.8vw, 44px); line-height: 1.05; margin-bottom: 12px !important; }
+
+/* ---------- first screen: premium lead block, and both groups entering on --tin (0..1, from product-hand-off.js) ---------- */
+#scLead .sc-kick { display: flex; align-items: center; gap: 12px; font-size: 12px; letter-spacing: .24em; opacity: .8; }
+#scLead .sc-kick::before { content: ""; flex: none; width: 34px; height: 2px; border-radius: 2px; background: var(--gold); }
+#scLead .sc-tagline { margin: 16px 0 12px; font-size: clamp(32px, 2.9vw, 48px); line-height: 1; }
+#scLead .sc-blk__h { margin: 0 0 16px; font-size: clamp(2.6rem, 6.2vh, 4.6rem); line-height: .88; }
+#scLead .sc-lead-desc { max-width: 40ch; font-size: clamp(16px, 1.25vw, 19px); line-height: 1.6; opacity: .86; }
+#scLead > * { --k: clamp(0, calc(var(--tin, 1) * 2.4 - var(--d, 0)), 1); opacity: var(--k); transform: translate3d(calc((1 - var(--k)) * 28px), 0, 0); }
+#scLead > :nth-child(2) { --d: .35; } #scLead > :nth-child(3) { --d: .7; } #scLead > :nth-child(4) { --d: 1.05; }
+.sc-card { isolation: isolate; }
+.sc-card .sc-ico { transform: scale(calc(.3 + .7 * var(--tin, 1))) rotate(calc((1 - var(--tin, 1)) * -120deg)); }
+.sc-card .sc-kick { letter-spacing: calc(.12em + (1 - var(--tin, 1)) * .5em); }
+.sc-card .sc-d { opacity: clamp(0, calc(var(--tin, 1) * 2 - 1), 1); transform: translate3d(0, calc((1 - var(--tin, 1)) * 18px), 0); }
+.sc-card .sc-chi { will-change: opacity, transform; }
+/* the product number, huge and outlined, behind the card: fills the space and slides in with it */
+.sc-no {
+  position: absolute; z-index: -1; left: -1.5vw; top: 50%;
+  font-family: var(--f-display); font-stretch: 62%; font-weight: 850; font-size: min(52vh, 30vw); line-height: .8;
+  color: transparent; -webkit-text-stroke: 2px color-mix(in srgb, var(--sc-tint) 70%, #1f4423);
+  opacity: calc(var(--tin, 1) * .16);
+  transform: translate3d(calc((1 - var(--tin, 1)) * -90px), -50%, 0);
+  pointer-events: none; user-select: none;
+}
+@media (max-width: 767px) { .sc-no { display: none; } }
+
+/* ---------- highlight points: words rise in one after another (--sh), and leave upwards the same way (--ex) ---------- */
+.sc-hl .hw { display: inline-block; vertical-align: top; }
+.sc-hl .hwi { display: inline-block; --k: clamp(0, calc(var(--sh, 0) * 2 - var(--wn, 0)), 1); --x: clamp(0, calc(var(--ex, 0) * 2 - var(--wn, 0)), 1);
+  opacity: calc(var(--k) - var(--x)); transform: translate3d(0, calc((1 - var(--k)) * .8em - var(--x) * 1em), 0); }
+
+/* big outlined names: letters arrive in reading order, each sliding in from the left (--be 0..1 from JS) */
+.sc-big .bl { display: inline-block; --u: clamp(0, calc(var(--be, 1) * 1.7 - var(--li, 0) * .7), 1); opacity: var(--u); transform: translate3d(calc((1 - var(--u)) * -1.2em), 0, 0); }
+
+/* ---------- the details, set by set, in place beside the still product (no scrolling past) ---------- */
+.sc-pbadges { display: none; }            /* the ingredients are a card in the sets now */
+.sc-chs { position: absolute; inset: 0; pointer-events: none; }
+.sc-set { position: absolute; inset: 0; visibility: hidden; }
+.sc-slot { position: absolute; top: var(--co-cy, 52%); translate: 0 -50%; display: grid; gap: clamp(22px, 3.4vh, 40px); }
+.sc-slot--l { right: calc(100% - var(--co-l, 40vw) + var(--ch-gap, 72px)); width: min(470px, calc(var(--co-l, 40vw) - var(--ch-gap, 72px) - 48px)); text-align: right; }
+.sc-slot--r { left: calc(var(--co-r, 60vw) + var(--ch-gap, 72px)); width: min(470px, calc(100% - var(--co-r, 60vw) - var(--ch-gap, 72px) - 48px)); }
+.sc-slot--measure { visibility: hidden; top: 0; translate: none; right: auto; left: 0; width: min(470px, 30vw); }
+.sc-c { opacity: 0; color: var(--forest); font-size: clamp(16px, 1.25vw, 19px); font-weight: 500; line-height: 1.5; will-change: opacity; }
+.sc-c p { margin: 0; }
+.sc-c .sc-kick { margin-bottom: 14px; font-size: 13px; letter-spacing: .2em; }
+.sc-c .sc-buy, .sc-c--buy { pointer-events: auto; }
+/* bigger, clearer type in the sets */
+.sc-slot .sc-list { text-align: left; }
+.sc-slot--l .sc-list { text-align: right; }
+.sc-slot .sc-list li { transform: none; padding: 14px 0; transition: opacity .6s ease; transition-delay: calc(var(--i) * 110ms); }
+.sc-c.in .sc-list li { opacity: 1; }
+.sc-c.in .sc-list li::before { transform: none; }
+.sc-slot--l .sc-list li::before { transform-origin: 100% 50%; }
+.sc-slot .sc-list b { font-size: clamp(20px, 1.7vw, 27px); }
+.sc-slot .sc-list li > span { font-size: clamp(15px, 1.15vw, 18px); line-height: 1.45; }
+.sc-slot .sc-lede { font-size: clamp(20px, 1.75vw, 27px); line-height: 1.45; }
+.sc-slot .sc-quote { font-size: clamp(34px, 3.1vw, 50px); }
+.sc-slot .sc-blk__h { font-size: clamp(2.4rem, 5.8vh, 4.2rem); }
+.sc-slot .sc-price { font-size: clamp(3.6rem, 10vh, 6.6rem); }
+.sc-c--fine p { font-size: clamp(15px, 1.15vw, 18px); line-height: 1.6; opacity: .82; }
+.sc-slot .sc-herb { transform: none; transition: opacity .6s ease; transition-delay: calc(var(--i) * 120ms); }
+.sc-c.in .sc-herb { opacity: 1; }
+.sc-slot .sc-herb b { font-size: clamp(22px, 1.9vw, 30px); }
+.sc-slot .sc-herb em { font-size: 15px; }
+.sc-c--photo .sc-photo { max-width: 400px; }
+.sc-slot--l .sc-c--photo .sc-photo { margin-left: auto; }
+.sc-slot .sc-photo { transform: rotate(-3deg) scale(calc(.94 + .06 * var(--pa, 1))); transition: transform 1.2s cubic-bezier(.2, .8, .2, 1); --pa: 0; }
+.sc-slot .sc-c.in .sc-photo { --pa: 1; }
+.sc-slot .sc-photo--wide { transform: rotate(2deg) scale(calc(.94 + .06 * var(--pa, 1))); }
+/* the ingredients: round badges in a row, each fading in after the one before */
+.sc-ingrow { display: flex; flex-wrap: wrap; gap: 16px; }
+.sc-slot--l .sc-ingrow { justify-content: flex-end; }
+.sc-ing {
+  display: grid; place-items: center; width: clamp(104px, 8.4vw, 132px); aspect-ratio: 1; padding: 12px;
+  border-radius: 50%; border: 3px solid var(--forest); background: #f6efd9; color: var(--forest);
+  text-align: center; font-family: var(--f-display); font-stretch: 66%; font-weight: 850; text-transform: uppercase;
+  font-size: clamp(14px, 1.1vw, 18px); line-height: .95; box-shadow: 0 18px 30px -18px rgba(31, 70, 35, .5);
+  opacity: 0; transition: opacity .6s ease; transition-delay: calc(var(--i) * 160ms);
+}
+.sc-ing--alt { background: var(--sc-tint); border-color: #f6efd9; color: #fff; text-shadow: 0 1px 0 rgba(31, 70, 35, .2); }
+.sc-c.in .sc-ing { opacity: 1; }
+/* word reveals inside the sets: fade only (no movement) */
+.sc-slot .dw { display: inline-block; vertical-align: top; }
+.sc-slot .dwi { display: inline-block; transition: opacity .6s ease, filter .7s ease; transition-delay: calc(var(--w) * 40ms); }
+/* the big outlined name behind a set: letters fade in in reading order, with a gap where the product stands */
+.sc-chbig {
+  position: absolute; left: 0; right: 0; top: clamp(76px, 10vh, 120px); margin: 0;
+  text-align: center; white-space: nowrap; font-family: var(--f-display); font-stretch: 62%; font-weight: 850;
+  font-size: min(13vw, 22vh); line-height: .85; text-transform: uppercase; color: transparent;
+  -webkit-text-stroke: 2px color-mix(in srgb, var(--sc-tint) 70%, #1f4423); opacity: 0;
+  -webkit-mask-image: linear-gradient(90deg, #000 calc(var(--pl, 300vw) - 60px), transparent calc(var(--pl, 300vw) - 4px), transparent calc(var(--pr, 300vw) + 4px), #000 calc(var(--pr, 300vw) + 60px));
+  mask-image: linear-gradient(90deg, #000 calc(var(--pl, 300vw) - 60px), transparent calc(var(--pl, 300vw) - 4px), transparent calc(var(--pr, 300vw) + 4px), #000 calc(var(--pr, 300vw) + 60px));
+}
+.sc-chbig .bl { display: inline-block; opacity: clamp(0, calc(var(--be, 1) * 1.8 - var(--li, 0) * .8), 1); }
+/* highlights: fade only as well */
+.sc-hl .hwi { transform: none; }
+@media (max-width: 767px) {
+  .sc-slot--l { left: 16px; right: auto; width: calc(var(--co-l, 60vw) - 16px - var(--ch-gap, 24px)); text-align: left; }
+  .sc-slot--l .sc-list { text-align: left; }
+  .sc-slot--l .sc-ingrow { justify-content: flex-start; }
+  .sc-chbig { display: none; }
+  .sc-slot .sc-list b { font-size: 18px; } .sc-slot .sc-list li > span { font-size: 14px; }
+}
+
+/* ---------- fall and stop: the falling layer, the stops, and a different entrance for each detail ---------- */
+/* the falling details live in a viewport-sized layer; JS moves .sc-blocks by how far they have fallen */
+.sc-flow { inset: auto; position: sticky; top: 0; height: 100vh; height: 100svh; margin-top: -100vh; margin-top: -100svh; }
+.sc-blocks { inset: auto; left: 0; top: 0; width: 100%; height: 0; will-change: transform; }
+.showcase { height: 1000vh; height: 1000svh; }
+@media (max-width: 767px) { .showcase { height: 760vh; height: 760svh; } }
+
+/* big premium type for the held details: the display face for headings, the handwritten face for quotes, clean body text */
+.sc-slot--l { width: min(520px, calc(var(--co-l, 40vw) - var(--ch-gap, 72px) - 48px)); }
+.sc-slot--r { width: min(520px, calc(100% - var(--co-r, 60vw) - var(--ch-gap, 72px) - 48px)); }
+.sc-c { font-size: clamp(17px, 1.4vw, 21px); line-height: 1.55; }
+.sc-slot .sc-kick { font-size: 13px; letter-spacing: .22em; margin-bottom: 18px; }
+.sc-slot .sc-list b { font-size: clamp(28px, 2.7vw, 44px); line-height: .95; letter-spacing: .005em; }
+.sc-slot .sc-list li > span { font-size: clamp(16px, 1.3vw, 20px); line-height: 1.5; }
+.sc-slot .sc-blk__h { font-size: clamp(2.8rem, 6.6vh, 4.8rem); line-height: .9; margin-bottom: 18px; }
+.sc-slot .sc-lede { font-size: clamp(22px, 1.9vw, 30px); line-height: 1.45; }
+.sc-slot .sc-quote { font-size: clamp(38px, 3.5vw, 58px); line-height: 1; }
+.sc-slot .sc-price { font-size: clamp(4.2rem, 13vh, 8rem); line-height: .85; font-variant-numeric: tabular-nums; }
+.sc-slot .sc-size { font-size: 14px; letter-spacing: .18em; }
+.sc-c--fine p { font-size: clamp(15px, 1.2vw, 18px); }
+
+/* a different entrance for each kind of detail (toggled by .in, set by JS as the card fades in) */
+.sc-slot .dwi { transition: transform .9s cubic-bezier(.2, .8, .2, 1), opacity .7s ease, filter .8s ease, letter-spacing .9s ease; transition-delay: calc(var(--w) * 50ms); }
+.sc-slot [data-split="rise"] .dw { overflow: hidden; padding-block: .08em; margin-block: -.08em; }
+.sc-slot .sc-c:not(.in) [data-split="rise"] .dwi { transform: translate3d(0, 110%, 0); }
+.sc-slot .sc-c:not(.in) [data-split="up"] .dwi { transform: translate3d(0, .7em, 0); opacity: 0; }
+.sc-slot .sc-c:not(.in) [data-split="blur"] .dwi { opacity: 0; filter: blur(10px); }
+.sc-slot .sc-c:not(.in) [data-split="spread"] .dwi { opacity: 0; letter-spacing: .6em; }
+.sc-slot .sc-c:not(.in) [data-split="slide"] .dwi { opacity: 0; transform: translate3d(-1em, 0, 0); }
+/* botanicals: each row's rule draws across, then its words slide in */
+.sc-slot .sc-list li { transform: translate3d(-26px, 0, 0); transition: opacity .6s ease, transform .9s cubic-bezier(.2, .8, .2, 1); transition-delay: calc(var(--i) * 130ms); }
+.sc-c.in .sc-list li { opacity: 1; transform: none; }
+/* ingredients: the badges pop in with a bounce, one after another */
+.sc-ing { transform: scale(.3) rotate(-18deg); transition: opacity .5s ease, transform .8s cubic-bezier(.34, 1.56, .64, 1); transition-delay: calc(var(--i) * 180ms); }
+.sc-c.in .sc-ing { opacity: 1; transform: none; }
+/* closing words: the heading rises from a mask, the paragraph is uncovered by a wipe */
+.sc-c--closing > p { clip-path: inset(0 100% 0 0); transition: clip-path 1.3s cubic-bezier(.6, .1, .2, 1) .35s; }
+.sc-c--closing.in > p { clip-path: inset(0 0 0 0); }
+/* price: counts up (JS), the button settles in last */
+.sc-c--buy .pill { opacity: 0; transform: translate3d(0, 16px, 0); transition: opacity .6s ease .9s, transform .8s cubic-bezier(.2, .8, .2, 1) .9s; }
+.sc-c--buy.in .pill { opacity: 1; transform: none; }
+
+/* keep the left column clear of the round dock button at the screen edge */
+.sc-slot--l { width: min(520px, calc(var(--co-l, 40vw) - var(--ch-gap, 72px) - 104px)); }
+.sc-slot--measure { width: min(360px, 24vw); }
+
+/* ---------- the details as one falling page: frames are part of the page, faint until the falling stops ---------- */
+.sc-blocks .sc-slot { position: absolute; }
+.sc-c { opacity: 1; will-change: auto; }
+/* before a card's stop its words are faint (so the falling page is never empty), and they take their own entrance at the stop */
+.sc-slot .sc-c:not(.in) [data-split="up"] .dwi, .sc-slot .sc-c:not(.in) [data-split="blur"] .dwi, .sc-slot .sc-c:not(.in) [data-split="spread"] .dwi, .sc-slot .sc-c:not(.in) [data-split="slide"] .dwi { opacity: .3; }
+.sc-slot .sc-c:not(.in) [data-split="rise"] .dwi { transform: translate3d(0, 55%, 0); opacity: .3; }
+.sc-slot .sc-list li { opacity: .3; }
+.sc-slot .sc-ing { opacity: .3; transform: scale(.7); }
+.sc-c--closing > p { clip-path: inset(0 70% 0 0); }
+.sc-c--buy .sc-price, .sc-c--buy .sc-size { opacity: .3; transition: opacity .8s ease; }
+.sc-c--buy.in .sc-price, .sc-c--buy.in .sc-size { opacity: 1; }
+.sc-c--buy .pill { opacity: .3; transform: none; }
+.sc-c--buy.in .pill { opacity: 1; }
+
+/* the section is shorter now that the stops are shorter */
+.showcase { height: 900vh; height: 900svh; }
+@media (max-width: 767px) { .showcase { height: 680vh; height: 680svh; } }
+
+/* the long paragraph moves as one piece (not word by word: about 25 animating layers made the stop stutter) */
+.sc-c--lede .sc-lede { opacity: .3; transform: translate3d(0, 22px, 0); transition: opacity 1s ease, transform 1.1s cubic-bezier(.2, .8, .2, 1); }
+.sc-c--lede.in .sc-lede { opacity: 1; transform: none; }

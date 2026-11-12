@@ -1,39 +1,36 @@
-/* ---------- Statement: dark pinned page behind the scalloped curtain ---------- */
-/* The curtain is the page's own top edge (.tl-scallop, motion-extras.css): a row of semicircles one 5.5th of the
-   viewport wide (--sc-r = 9.1vw, the repo default), the same size at every width. The page overlaps the last 100vh of
-   the showcase pin, so as you scroll its scalloped edge rises over the pinned scene and covers it. */
+/* ---------- Statement: the dark page that rises over the showcase as a curtain ---------- */
+/* Its top edge is three soft rolling hills (.stm-hills, above the page's box). The page overlaps the last 100vh of the
+   showcase, so as you scroll the hills and the dark page rise over the still product and cover it. */
 #statement.statement {
   z-index: 46 !important;                /* above #flightCanvas (45) so the curtain covers the product */
   color: var(--ink);
-  overflow: visible;                     /* lets the blur band below sit just above the scallops */
+  overflow: visible;                     /* the hills and the blur band sit above the page's box */
+  margin-top: -100vh;
+  margin-top: -100svh;
+  --sc-r: clamp(28px, 9.1vw, 140px);    /* kept for the spacing below */
+  --hills-h: clamp(90px, 15vw, 220px);
 }
-#statement.tl-scallop { margin-top: -100vh !important; margin-top: -100svh !important; }
 
-/* soft edge: a progressive blur along the scalloped edge. Four stacked layers blur what is behind them (the page,
-   the product going under, the scallops' own edge) more and more strongly towards the edge; each layer fades in and
-   out through its mask, so the blur grows smoothly with no visible line where it starts. */
-.stm-blur {
+/* the hills: all three in this page's own dark green (the same green as the old scallops), so the edge reads as one
+   rolling silhouette. JS moves the back two a little slower than the page while the curtain rises (--hb, --hm), so the
+   edge gently changes shape. Clipped to its own box, so a lowered hill never spills onto the page below. */
+.stm-hills {
   position: absolute;
   z-index: 0;
   left: 0;
-  right: 0;
-  top: calc(-1 * var(--sc-r) * 1.6);
-  height: calc(var(--sc-r) * 2.7);
+  width: 100%;
+  top: calc(-1 * var(--hills-h) + 1px);
+  height: var(--hills-h);
+  overflow: hidden;
   pointer-events: none;
 }
-.stm-blur i {
-  position: absolute;
-  inset: 0;
-  -webkit-backdrop-filter: blur(var(--b));
-  backdrop-filter: blur(var(--b));
-  -webkit-mask: linear-gradient(to bottom, transparent var(--m0), #000 var(--m1), #000 var(--m2), transparent var(--m3));
-  mask: linear-gradient(to bottom, transparent var(--m0), #000 var(--m1), #000 var(--m2), transparent var(--m3));
-}
-.stm-blur i:nth-child(1) { --b: 1.5px; --m0: 0%;  --m1: 22%; --m2: 62%; --m3: 84%; }
-.stm-blur i:nth-child(2) { --b: 3px;   --m0: 18%; --m1: 38%; --m2: 66%; --m3: 86%; }
-.stm-blur i:nth-child(3) { --b: 6px;   --m0: 34%; --m1: 52%; --m2: 70%; --m3: 90%; }
-.stm-blur i:nth-child(4) { --b: 10px;  --m0: 48%; --m1: 62%; --m2: 74%; --m3: 96%; }
-@media (prefers-reduced-motion: reduce) { .stm-blur { display: none; } }
+.stm-hill--back  { fill: var(--ground); transform: translateY(var(--hb, 0px)); }
+.stm-hill--mid   { fill: var(--ground); transform: translateY(var(--hm, 0px)); }
+.stm-hill--front { fill: var(--ground); }
+/* the same matte grain as the page, painted on each hill so the edge has no seam */
+.stm-hill__grain { fill: url(#stmGrain); opacity: var(--grain-o, .14); }
+
+
 
 .stm-pin {
   position: relative;                    /* not pinned: the page scrolls past 1:1, as the reference does */
@@ -146,7 +143,7 @@
 
 /* reduced motion: no pin or curtain rise; the page is shown static (JS shows the words) */
 @media (prefers-reduced-motion: reduce) {
-  #statement.tl-scallop { margin-top: calc(-1 * var(--sc-r)) !important; }
+  #statement.statement { margin-top: 0; }
   .stm-pin { height: auto; min-height: 70vh; }
   .stw-hl::before { transform: scaleX(1); }
   .stw-hl .stw-i { color: var(--on-cream); }
