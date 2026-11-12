@@ -169,221 +169,136 @@
         </svg>
         <em id="bagCount">0</em>
       </button>
-      <a class="pill" href="#catalogGrid"><i aria-hidden="true">↓</i><b>View all</b></a>
+      <a class="pill" href="#lineup"><i aria-hidden="true">↓</i><b>View all</b></a>
     </div>
   </header>
 
-  <main class="catalog-page">
+  <!-- Product journey (from dhina-dev): the 3D product on one fixed canvas, the showcase details falling past it,
+       the statement curtain, then the "Which one is yours?" grid. Built by src/products-page/journey.js. -->
+  <canvas id="flightCanvas" aria-hidden="true"></canvas>
 
-    <!-- Hero Header -->
-    <section class="catalog-hero" id="hero">
-      <div class="catalog-hero-bg" aria-hidden="true">
-        <div class="catalog-glow-1"></div>
-        <div class="catalog-glow-2"></div>
-      </div>
-      <div class="wrap catalog-hero-in">
-        <p class="eyebrow drawn">Botanical Synergy &amp; Science</p>
-        <h1 class="catalog-hero-title">
-          Our <em>Formulations</em>
-        </h1>
-        <p class="catalog-hero-sub">
-          Five plant-based essentials engineered for daily wellness, active cellular vitality, and targeted physiological support. Pure inside, sustainably packed outside.
-        </p>
-      </div>
-    </section>
+  <main class="pp-main">
+<section class="page showcase" id="showcase" data-theme="cream" data-dock="lineup">
+  <!-- behind the details, fixed to the screen: white ribbons that draw in and away with the scroll (as in the old
+       product display) -->
+  <div class="sc-bgpin" aria-hidden="true">
+    <svg class="sc-ribbons" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice">
+      <path d="M-80 760C120 560 420 520 560 640s40 320-160 300S120 700 380 520 980 300 1180 420s320 300 380 120"/>
+      <path d="M1520 180C1300 60 980 120 900 300s120 380 300 320 140-300-120-360S520 360 300 300-60 80-100 240"/>
+      <path d="M-60 300C200 120 560 140 700 330s-60 420-300 360-200-320 80-420 640-60 820 160 160 340 260 260"/>
+    </svg>
+  </div>
+  <!-- stays on screen: only the progress row. The product (on #flightCanvas) also stays in one place and turns. -->
+  <div class="showcase-pin" id="showcasePin">
+    <!-- outline around the product, sized from it; it grows like a plant while the counter runs 005 to 013 -->
+    <svg class="sc-frame" id="scFrame" aria-hidden="true"></svg>
+    <!-- the first two text groups stay fixed beside the product: they fade in after the zoom, hold, fade out -->
+    <article class="sc-card" id="scCard">
+      <span class="sc-no" id="scNo" aria-hidden="true"></span>
+      <span class="sc-ico" id="scIco" aria-hidden="true"></span>
+      <p class="sc-kick" id="scKick"></p>
+      <h2 class="sc-h" id="scHead"><span class="sc-h__line" id="scHeadA"></span><span class="sc-h__line" id="scHeadB"></span></h2>
+      <p class="sc-d" id="scDesc"></p>
+    </article>
+    <article class="sc-blk sc-blk--lead" id="scLead">
+      <p class="sc-kick" id="scLeadKick"></p>
+      <p class="sc-tagline" id="scLeadTag"></p>
+      <h4 class="sc-blk__h" id="scLeadHead"></h4>
+      <p class="sc-lead-desc" id="scLeadDesc"></p>
+    </article>
+    <!-- the highlights moment at the end of the details: points left and right of the product, in brackets -->
+    <div class="sc-hl" id="scHl" role="group"></div>
+    <!-- the ingredient badges: they rise beside the product during the details (as in the old product display) -->
+    <div class="sc-pbadges" id="scPinBadges" aria-hidden="true"></div>
+    <!-- the details, set by set, fading in and out beside the still product (showcase-scene.js builds them) -->
+    <div class="sc-chs" id="scChs"></div>
+    <div class="sc-progress" id="scProgress" aria-hidden="true">
+      <span class="sc-progress__label" id="scProgLabel">01 / 05</span>
+      <i class="sc-progress__bar"><b class="sc-progress__fill" id="scProgFill"></b></i>
+      <span class="sc-progress__num" id="scProgNum">000</span>
+    </div>
+  </div>
 
-    <!-- Sticky Filter Navigation -->
-    <div class="catalog-filter-wrap">
-      <div class="wrap">
-        <nav class="catalog-filters" id="catalogFilters" aria-label="Product categories">
-          <button class="on" data-f="all" type="button">All Products (5)</button>
-          <button data-f="gummies" type="button">Lung Booster &amp; Detox</button>
-          <button data-f="inhaler" type="button">Tobacco Cessation Inhalers</button>
-          <button data-f="rollon" type="button">Menstrual Comfort (CycleRelief)</button>
-          <button data-f="reviva" type="button">Diabetes &amp; Vitality (Reviva)</button>
-          <button data-f="liquid" type="button">Liver Booster (LiverDetox)</button>
-        </nav>
+  <!-- scrolls past the product like a normal page, so the product seems to fall through it -->
+  <div class="sc-flow" id="scFlow">
+
+
+
+    <div class="sc-badges" id="scStickers" aria-hidden="true"></div>
+    <!-- the rest of the product page, built from the existing write-ups (product-details.js and the catalogue) -->
+    <div class="sc-blocks" id="scBlocks"></div>
+  </div>
+</section>
+
+<section class="page statement t-green" id="statement" data-theme="green" data-dock="lineup">
+  <!-- progressive blur along the scalloped edge: four layers, each a little stronger and closer to the edge -->
+  <!-- the curtain's top edge: three rolling hills in this page's own dark green, moving at slightly different speeds as
+       the curtain rises (so the edge changes shape); the grain is painted on them too, so there is no seam -->
+  <svg class="stm-hills" viewBox="0 0 1440 240" preserveAspectRatio="none" aria-hidden="true">
+    <defs><pattern id="stmGrain" width="496" height="496" patternUnits="userSpaceOnUse"><image id="stmGrainImg" class="grain-img" width="496" height="496"/></pattern></defs>
+    <g class="stm-hill stm-hill--back"><path d="M0 150C180 62 360 40 560 108S900 172 1080 92S1340 28 1440 78V240H0Z"/><path class="stm-hill__grain" d="M0 150C180 62 360 40 560 108S900 172 1080 92S1340 28 1440 78V240H0Z"/></g>
+    <g class="stm-hill stm-hill--mid"><path d="M0 188C160 122 330 108 470 158S760 222 980 150S1300 108 1440 166V240H0Z"/><path class="stm-hill__grain" d="M0 188C160 122 330 108 470 158S760 222 980 150S1300 108 1440 166V240H0Z"/></g>
+    <g class="stm-hill stm-hill--front"><path d="M0 214C220 168 420 172 640 202S1050 232 1240 196S1400 184 1440 200V240H0Z"/><path class="stm-hill__grain" d="M0 214C220 168 420 172 640 202S1050 232 1240 196S1400 184 1440 200V240H0Z"/></g>
+  </svg>
+  <div class="stm-pin" id="stmPin">
+    <svg class="stm-art stm-art--a" viewBox="0 0 200 200" aria-hidden="true" style="--s:.32;--r:-18deg"><path d="M30 168c10-46 40-82 92-104M30 168c40-6 78-34 92-104-40 4-76 30-92 104z"/><path d="M62 134l22-6M80 108l22-4M54 148l-4-22M74 124l-6-20"/></svg>
+    <svg class="stm-art stm-art--b" viewBox="0 0 200 200" aria-hidden="true" style="--s:.55;--r:24deg"><path d="M100 188V70M100 120c-26-6-40-26-40-50 26 4 40 22 40 50zM100 96c24-6 38-24 38-48-24 4-38 22-38 48zM100 150c-22-4-34-20-34-40 22 4 34 18 34 40z"/></svg>
+    <svg class="stm-art stm-art--c" viewBox="0 0 200 200" aria-hidden="true" style="--s:.22;--r:8deg"><path d="M40 160C50 100 90 52 170 40c-6 70-48 118-130 120z"/><path d="M40 160c34-36 66-68 108-98"/></svg>
+    <svg class="stm-art stm-art--d" viewBox="0 0 200 200" aria-hidden="true" style="--s:.45;--r:-30deg"><path d="M100 30c26 26 26 66 0 96-26-30-26-70 0-96zM100 126v62M100 150c-16-4-26-14-30-28M100 164c14-4 24-12 28-26"/></svg>
+    <span class="stm-seed" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="M10 38C12 22 22 12 40 10 38 28 28 38 10 38z"/><path d="M10 38L28 20"/></svg></span>
+    <p class="stm-note" aria-hidden="true">Why people<br>love it<svg viewBox="0 0 60 40"><path d="M4 6C26 2 46 14 52 34m0 0l-12-6m12 6l2-13"/></svg></p>
+    <h2 class="stm-title" id="stmTitle" aria-label="Nature, just the way you need it."><span class="stw"><span class="stw-i">Nature,</span></span> <span class="stw"><span class="stw-i">just</span></span> <span class="stw"><span class="stw-i">the</span></span> <span class="stw"><span class="stw-i">way</span></span> <span class="stw"><span class="stw-i">you</span></span> <span class="stw stw-hl"><span class="stw-i">need</span></span> <span class="stw"><span class="stw-i">it.</span></span></h2>
+  </div>
+</section>
+
+<section class="page lineup t-green" id="lineup" data-theme="green">
+  <div class="lineup-pin" id="lineupPin">
+    <div class="lineup-wrap">
+      <h2 class="lu-h" id="luHead" aria-label="Which one is yours?">
+        <span class="lu-half lu-l"><span class="stw"><span class="stw-i">Which one</span></span></span>
+        <span class="lu-sun" aria-hidden="true"><svg viewBox="0 0 120 120"><g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><circle cx="60" cy="60" r="14"/><path transform="rotate(0 60 60)" d="M60 38c-5-8-5-16 0-24 5 8 5 16 0 24z"/><path transform="rotate(30 60 60)" d="M60 38c-5-8-5-16 0-24 5 8 5 16 0 24z"/><path transform="rotate(60 60 60)" d="M60 38c-5-8-5-16 0-24 5 8 5 16 0 24z"/><path transform="rotate(90 60 60)" d="M60 38c-5-8-5-16 0-24 5 8 5 16 0 24z"/><path transform="rotate(120 60 60)" d="M60 38c-5-8-5-16 0-24 5 8 5 16 0 24z"/><path transform="rotate(150 60 60)" d="M60 38c-5-8-5-16 0-24 5 8 5 16 0 24z"/><path transform="rotate(180 60 60)" d="M60 38c-5-8-5-16 0-24 5 8 5 16 0 24z"/><path transform="rotate(210 60 60)" d="M60 38c-5-8-5-16 0-24 5 8 5 16 0 24z"/><path transform="rotate(240 60 60)" d="M60 38c-5-8-5-16 0-24 5 8 5 16 0 24z"/><path transform="rotate(270 60 60)" d="M60 38c-5-8-5-16 0-24 5 8 5 16 0 24z"/><path transform="rotate(300 60 60)" d="M60 38c-5-8-5-16 0-24 5 8 5 16 0 24z"/><path transform="rotate(330 60 60)" d="M60 38c-5-8-5-16 0-24 5 8 5 16 0 24z"/></g></svg></span>
+        <span class="lu-half lu-r"><span class="stw"><span class="stw-i">is yours?</span></span></span>
+      </h2>
+      <div class="lineup-grid" id="lineupGrid">
+      <div class="lineup-card" data-product="gummies">
+        <button class="lineup-item" type="button" data-product="gummies">
+          <span class="lineup-slot" data-slot="gummies"><span class="lineup-shadow" aria-hidden="true"></span></span>
+          <span class="lineup-name">Lung Booster</span>
+        </button>
+        <button class="mini-add lu-add" type="button" data-id="gummies" aria-label="Add to bag"><span aria-hidden="true">+</span></button>
+      </div>
+      <div class="lineup-card" data-product="inhaler">
+        <button class="lineup-item" type="button" data-product="inhaler">
+          <span class="lineup-slot" data-slot="inhaler"><span class="lineup-shadow" aria-hidden="true"></span></span>
+          <span class="lineup-name">Aroma Inhaler</span>
+        </button>
+        <button class="mini-add lu-add" type="button" data-id="inhaler" aria-label="Add to bag"><span aria-hidden="true">+</span></button>
+      </div>
+      <div class="lineup-card" data-product="rollon">
+        <button class="lineup-item" type="button" data-product="rollon">
+          <span class="lineup-slot" data-slot="rollon"><span class="lineup-shadow" aria-hidden="true"></span></span>
+          <span class="lineup-name">CycleRelief</span>
+        </button>
+        <button class="mini-add lu-add" type="button" data-id="rollon" aria-label="Add to bag"><span aria-hidden="true">+</span></button>
+      </div>
+      <div class="lineup-card" data-product="reviva">
+        <button class="lineup-item" type="button" data-product="reviva">
+          <span class="lineup-slot" data-slot="reviva"><span class="lineup-shadow" aria-hidden="true"></span></span>
+          <span class="lineup-name">Reviva</span>
+        </button>
+        <button class="mini-add lu-add" type="button" data-id="reviva" aria-label="Add to bag"><span aria-hidden="true">+</span></button>
+      </div>
+      <div class="lineup-card" data-product="liver">
+        <button class="lineup-item" type="button" data-product="liver">
+          <span class="lineup-slot" data-slot="liver"><span class="lineup-shadow" aria-hidden="true"></span></span>
+          <span class="lineup-name">Liver Booster</span>
+        </button>
+        <button class="mini-add lu-add" type="button" data-id="liver" aria-label="Add to bag"><span aria-hidden="true">+</span></button>
+      </div>
       </div>
     </div>
-
-    <!-- Main Products Grid -->
-    <section class="catalog-sec" id="catalog">
-      <div class="wrap">
-        <div class="catalog-grid" id="catalogGrid">
-          <!-- Dynamically populated from PRODUCTS array in src/products.js -->
-        </div>
-      </div>
-    </section>
-
-    <!-- Product Finder -->
-    <section class="page finder" id="finder" data-theme="cream">
-      <div class="band">
-        <div class="wrap finder-grid">
-          <div>
-            <p class="eyebrow reveal">Product finder</p>
-            <h2 class="h2 rv-words">What does your <span class="lt">day need?</span></h2>
-            <div class="needs" id="needs" role="group" aria-label="Choose a need"></div>
-          </div>
-          <div class="match reveal" id="match" aria-live="polite"></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Product Story: scroll-driven 3D product story -->
-    <section class="page story" id="story" data-theme="cream">
-      <div class="seq" id="seq">
-        <div class="seq-pin" id="seqPin">
-          <h2 class="sr">Five TranzLife products</h2>
-          <svg class="seq-arcs" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-            <path
-              d="M-80 760C120 560 420 520 560 640s40 320-160 300S120 700 380 520 980 300 1180 420s320 300 380 120" />
-            <path d="M1520 180C1300 60 980 120 900 300s120 380 300 320 140-300-120-360S520 360 300 300-60 80-100 240" />
-            <path d="M-60 300C200 120 560 140 700 330s-60 420-300 360-200-320 80-420 640-60 820 160 160 340 260 260" />
-          </svg>
-          <div class="seq-cards" id="seqCards"></div>
-          <canvas id="seqCanvas" aria-hidden="true"></canvas>
-          <div class="seq-notes" id="seqNotes" aria-hidden="true"></div>
-          <div class="seq-final" id="seqFinal">
-            <h2 class="seq-title" id="seqTitle"><span data-split>Nature, just the way you need it.</span> <span
-                class="l2" data-split>Which one is yours?</span></h2>
-            <div class="seq-labels" id="seqLabels" aria-hidden="true"></div>
-            <a class="pill seq-cta" href="#catalog"><i aria-hidden="true">↗</i><b>Shop the products</b></a>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Benefits comparison -->
-    <section class="page benefits" id="benefits" data-theme="cream">
-      <div class="band">
-        <div class="wrap">
-          <div class="ben">
-            <div class="ben-img">
-              <div data-shot="gummies" style="position:absolute;inset:0"></div>
-            </div>
-            <div class="ben-copy">
-              <h2 class="h2 rv-words"><span class="lt">More of what matters.</span> See the difference.</h2>
-              <table class="tbl reveal">
-                <thead>
-                  <tr>
-                    <th>What goes in</th>
-                    <th><span class="brandmark">TranzLife</span></th>
-                    <th>Typical brand</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>Plant-based formulas</td>
-                    <td><span class="ok">✓</span></td>
-                    <td><span class="no">–</span></td>
-                  </tr>
-                  <tr>
-                    <td>Natural flavours and colours in our gummies</td>
-                    <td><span class="ok">✓</span></td>
-                    <td><span class="no">–</span></td>
-                  </tr>
-                  <tr>
-                    <td>Biodegradable PLA and cellulose jar</td>
-                    <td><span class="ok">✓</span></td>
-                    <td><span class="no">–</span></td>
-                  </tr>
-                  <tr>
-                    <td>Plant-fibre eco cap and food-grade inner seal</td>
-                    <td><span class="ok">✓</span></td>
-                    <td><span class="no">–</span></td>
-                  </tr>
-                  <tr>
-                    <td>Recycled kraft paper outer sleeve</td>
-                    <td><span class="ok">✓</span></td>
-                    <td><span class="no">–</span></td>
-                  </tr>
-                  <tr>
-                    <td>100% natural, organic inhaler ingredients</td>
-                    <td><span class="ok">✓</span></td>
-                    <td><span class="no">–</span></td>
-                  </tr>
-                </tbody>
-              </table>
-              <p class="tbl-note">“Typical” varies by brand; a dash means not always stated.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Pipeline Formulations Grid -->
-    <section class="catalog-pipeline-sec band" id="pipeline" style="padding: clamp(48px, 6vw, 80px) 0; border-top: 1px solid var(--line); background: var(--ground-2);">
-      <div class="wrap">
-        <div class="sci-sec-header">
-          <span class="sci-kicker">Clinical &amp; Commercial Pipeline</span>
-          <h2 class="sci-sec-title">Upcoming Bioactive Formulations</h2>
-          <p class="sci-sec-desc">
-            From Rasayana longevity phytosomes to women's hormonal balance and paediatric neuro-nutrition, explore the advanced TranzLife pipeline scheduled for release across 2027–2028.
-          </p>
-        </div>
-        <div id="pipelineGrid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; margin-top: 36px;">
-          <!-- Dynamically populated from PIPELINE_PRODUCTS in src/products.js -->
-        </div>
-      </div>
-    </section>
-
-    <!-- Quality & Trust Standards -->
-    <section class="catalog-trust-band">
-      <div class="wrap">
-        <div class="trust-badges-grid">
-          <div class="trust-badge-card">
-            <div class="trust-badge-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-              </svg>
-            </div>
-            <div class="trust-badge-info">
-              <h4>GMP Standard Rigor</h4>
-              <p>Pharmaceutical-level quality controls across every formulation batch.</p>
-            </div>
-          </div>
-
-          <div class="trust-badge-card">
-            <div class="trust-badge-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>
-                <path d="M11 3c2 2 4.5 4 8 4"/>
-              </svg>
-            </div>
-            <div class="trust-badge-info">
-              <h4>100% Plant-Derived</h4>
-              <p>Active botanical compounds extracted with zero synthetic chemical carriers.</p>
-            </div>
-          </div>
-
-          <div class="trust-badge-card">
-            <div class="trust-badge-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10"/>
-                <polyline points="12 6 12 12 16 14"/>
-              </svg>
-            </div>
-            <div class="trust-badge-info">
-              <h4>Direct Extraction</h4>
-              <p>Optimal bioavailability engineered for palpable daily enhancement.</p>
-            </div>
-          </div>
-
-          <div class="trust-badge-card">
-            <div class="trust-badge-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
-              </svg>
-            </div>
-            <div class="trust-badge-info">
-              <h4>Eco-Conscious Packaging</h4>
-              <p>Biodegradable jars and plant-fiber eco-caps reducing footprint.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
+  </div>
+</section>
   </main>
 
   <!-- Global Footer -->
@@ -402,8 +317,8 @@
         <div class="f-col">
           <h4>Shop</h4>
           <a href="products.html">All products</a>
-          <a href="products.html#finder">Product finder</a>
-          <a href="products.html#story">Product story</a>
+          <a href="products.html#lineup">Product finder</a>
+          <a href="products.html#showcase">Product story</a>
         </div>
         <div class="f-col">
           <h4>Company</h4>

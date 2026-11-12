@@ -16,13 +16,26 @@ Every other section lives on the page that owns it:
 
 | Section | Page | Booted by |
 |---|---|---|
-| Product finder (`#finder`), product story (`#story`), benefits (`#benefits`) | `products.html` | `src/products.js` |
+| Product journey from dhina-dev: showcase (`#showcase`), statement curtain (`#statement`), "Which one is yours?" grid with a display per product (`#lineup`) | `products.html` | `src/products.js` → `src/products-page/` |
 | Seed-to-shelf reactor (`#process`), R&D lab board (`#lab`) | `science.html` | `src/science.js` |
 | Contact form | `contact.html` | `src/contact.js` |
 
 The old Home science, shop and contact blocks were removed rather than moved: the Science page's 3D compound explorer, the Products catalog and the Contact page form already cover them.
 
 JavaScript only fills in and animates that markup.
+
+### Products page isolation
+
+`products.html` is the product journey from the `dhina-dev` branch. Everything it needs that differs from the rest of
+the site is private to it, so no other page loads or is affected by it:
+
+- `src/products-page/`: the journey (`journey.js`, adapted from dhina-dev's `product-hand-off.js` to start without
+  the Home hero), `showcase-scene.js`, `statement-page.js`, `grid-math.js`, `grain.js`, and `data/` (dhina-dev's
+  product copy and write-ups; the rest of the site keeps `src/data/`).
+- `src/styles/products-page.css`: the page's own stylesheet (shared base/components/footer plus
+  `src/styles/products-page/*`). It does not load `main.css`.
+- Shared modules it reuses unchanged: `jar-layer.js`, `product-model.js`, `product-images.js`, `cart.js`,
+  `smooth-scroll.js`.
 
 ## Boot order (`src/main.js`)
 

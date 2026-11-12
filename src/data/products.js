@@ -86,64 +86,6 @@ export const PRODUCTS = [
   }
 ];
 
-// Pipeline Formulations & Formats
-export const PIPELINE_PRODUCTS = [
-  {
-    id: 'rasayana-elite',
-    name: 'TranzLife Rasayana Elite',
-    category: 'Adults Longevity',
-    stage: 'Clinical Pilot',
-    formats: ['Capsule (60s)', 'Gummies (60s)', 'Effervescent (20s)'],
-    actives: 'Amalaki Rasayana, Chyawanprash, Guduchi Satva, Ashwagandha 250mg, Shilajit 100mg, Curcumin C3 100mg, Piperine 2mg',
-    desc: 'Daily Rasayana for immunity, vitality and longevity bridging classical Ayurvedic rejuvenation with high-bioavailability phytosome science.'
-  },
-  {
-    id: 'total-360',
-    name: 'TranzLife Total360™',
-    category: 'Daily Nutrition',
-    stage: 'Formulation Finalized',
-    formats: ['Effervescent Tablet'],
-    actives: 'Amla, Ashwagandha, Ginseng, Spirulina, Wheatgrass, 12 Essential Vitamins & Trace Minerals',
-    desc: 'Complete daily micronutrient defense and mitochondrial cellular energy support in a refreshing effervescent drink.'
-  },
-  {
-    id: 'golden-years-longevity',
-    name: 'Golden Years Longevity & Active',
-    category: 'Healthy Ageing',
-    stage: 'Pilot Batching',
-    formats: ['Longevity Gummies (60s)', 'Active Capsules (60s)', 'Immune Effervescent'],
-    actives: 'Resveratrol, NMN, Pomegranate Extract, CoQ10, Omega-3, UC-II® Collagen 250mg, Vitamin K2',
-    desc: 'Cellular longevity and joint independence for seniors, enhancing vitality, arterial elasticity, and bone density.'
-  },
-  {
-    id: 'femina-series',
-    name: 'Femina™ Women’s Health Suite',
-    category: 'Women’s Wellness',
-    stage: 'Clinical Validation',
-    formats: ['Radiance Effervescent', 'Balance Capsules', 'Energy Gummies'],
-    actives: 'Marine Collagen 200mg, Biotin, Shatavari, Lodhra, Ashoka, Chasteberry, Iron Bisglycinate, Folate',
-    desc: 'Holistic hormonal equilibrium, skin dermal elasticity, cycle ease, and cellular blood building for every stage of womanhood.'
-  },
-  {
-    id: 'viryamax-prime',
-    name: 'Viryamax™ Men’s Performance Range',
-    category: 'Men’s Vitality',
-    stage: 'Bioassay Testing',
-    formats: ['Prime Gummies', 'Performance Capsules', 'Energy Effervescent'],
-    actives: 'Ashwagandha KSM-66 130mg, Purified Shilajit 100mg, Korean Ginseng, Fenugreek, L-Arginine, Safed Musli',
-    desc: 'Peak metabolic endurance, muscular strength, reproductive stamina, and stress adaptation for the modern man.'
-  },
-  {
-    id: 'kidzen-paediatric',
-    name: 'KidZen™ Paediatric Growth & Focus',
-    category: 'Paediatric Growth',
-    stage: 'Stability Testing',
-    formats: ['Smart Effervescent', 'Grow Capsules', 'Daily Gummies'],
-    actives: 'Calcium + D3 + K2, DHA 100mg, L-Theanine, Shankhpushpi, Organic Amla, Zinc Bisglycinate',
-    desc: 'Clean, bioavailable cognitive focus, immune resilience, and bone matrix development for growing children.'
-  }
-];
-
 // R&D Breakthrough Discoveries
 export const RD_PROGRAMS = [
   {

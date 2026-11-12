@@ -1,16 +1,16 @@
-// TranzLife Biosciences - Products Catalog Page Interactive Controller
-import './styles/main.css';
-import { thumbs } from './app/state.js';
-import { PRODUCTS, PIPELINE_PRODUCTS } from './data/products.js';
+// TranzLife Biosciences - Products page controller.
+// The page is the product journey from dhina-dev (showcase, statement curtain, "Which one is yours?" grid with a
+// display per product). Its modules and data live in src/products-page/ and load on this page only; the header,
+// menu, bag and footer are the shared ones every page uses.
+import './styles/products-page.css';
+import { state, thumbs } from './app/state.js';
+import { initSmooth } from './app/smooth-scroll.js';
 import { SHOTS } from './features/products/product-images.js';
 import { initCart, renderCart } from './features/cart/cart.js';
-import { inr } from './utils/format.js';
-import { buildNeeds } from './features/finder/product-finder.js';
-import { fillShots } from './features/products/product-grid.js';
-import { initStory } from './features/product-story/product-story.js';
-import { initScroll } from './app/scroll-animations.js';
-import { initLightbox } from './components/lightbox.js';
-import { $, $$ } from './utils/dom.js';
+import { initGrain } from './products-page/grain.js';
+import { initProductJourney } from './products-page/journey.js';
+import { initStatementPage } from './products-page/statement-page.js';
+import { $ } from './utils/dom.js';
 
 function initProductsPage() {
   // Populate image thumbs for the cart drawer
@@ -24,95 +24,30 @@ function initProductsPage() {
     console.warn('Cart initialization deferred:', e);
   }
 
-  // 2. Render Product Cards dynamically
-  const grid = $('#catalogGrid');
-  if (grid) {
-    grid.innerHTML = PRODUCTS.map((p) => {
-      const imgSrc = SHOTS[p.id] || '';
-      return `
-        <article class="catalog-card" data-cat="${p.cat}" data-id="${p.id}">
-          <div class="catalog-media">
-            <img src="${imgSrc}" alt="${p.name}" loading="lazy" width="600" height="600">
-            <span class="catalog-badge-tag">${p.tag}</span>
-            <span class="catalog-num-tag">#${p.no}</span>
-          </div>
-          <div class="catalog-body">
-            <h3 class="catalog-card-title">${p.name}</h3>
-            <p class="catalog-card-desc">${p.desc}</p>
-            <div class="catalog-card-ings">
-              ${p.ing.map(ing => `<span>${ing}</span>`).join('')}
-            </div>
-            <div class="catalog-foot">
-              <div class="catalog-price">
-                ${inr(p.price)}
-                <small>${p.size}</small>
-              </div>
-              <div class="catalog-card-actions">
-                <a href="product-details.html?id=${p.id}" class="catalog-details-link">
-                  Details <i>→</i>
-                </a>
-                <button class="add pill" data-id="${p.id}" type="button">
-                  <i aria-hidden="true">+</i>Add to bag
-                </button>
-              </div>
-            </div>
-          </div>
-        </article>
-      `;
-    }).join('');
-  }
+  // 2. The product journey (smooth scroll as on dhina-dev: the display a card opens pauses and resumes it)
+  try { initGrain(); } catch (e) { console.warn('Grain unavailable:', e); }
+  try { initSmooth(); } catch (e) { console.warn('Smooth scroll unavailable:', e); }
+  try { initStatementPage(); } catch (e) { console.warn('Statement page unavailable:', e); }
+  try { state.journeyApi = initProductJourney(); } catch (e) { console.warn('Product journey unavailable:', e); }
 
-  // 2b. Render Pipeline Formulations
-  const pipeGrid = $('#pipelineGrid');
-  if (pipeGrid && PIPELINE_PRODUCTS) {
-    pipeGrid.innerHTML = PIPELINE_PRODUCTS.map(p => `
-      <article class="pipeline-card" style="background: var(--panel); border: 1px solid var(--line); border-radius: 20px; padding: 28px 24px; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 4px 16px rgba(20, 52, 26, 0.04);">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-          <span style="font-size: 11px; font-weight: 750; color: var(--forest); background: rgba(36, 80, 42, 0.08); padding: 4px 10px; border-radius: 999px; text-transform: uppercase;">${p.category}</span>
-          <span style="font-size: 11.5px; font-weight: 700; color: var(--moss);">${p.stage}</span>
-        </div>
-        <h4 style="font-size: 18px; font-weight: 850; color: var(--forest); margin: 0;">${p.name}</h4>
-        <p style="font-size: 13.5px; line-height: 1.55; color: var(--muted); margin: 0;">${p.desc}</p>
-        <div style="font-size: 12.5px; color: var(--ink); background: var(--panel-2); padding: 10px 12px; border-radius: 10px;">
-          <strong style="color: var(--forest);">Key Actives:</strong> ${p.actives}
-        </div>
-        <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-top: auto; padding-top: 8px;">
-          ${p.formats.map(fmt => `<span style="font-size: 11px; font-family: var(--f-mono); background: rgba(255,255,255,0.7); border: 1px solid var(--line); padding: 3px 8px; border-radius: 6px; color: var(--faint);">${fmt}</span>`).join('')}
-        </div>
-      </article>
-    `).join('');
-  }
-
-  // 3. Category / Need Filters
-  const filterBtns = $$('#catalogFilters button');
-  filterBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      filterBtns.forEach(b => b.classList.toggle('on', b === btn));
-      const f = btn.dataset.f;
-      $$('.catalog-card').forEach(card => {
-        const matches = (f === 'all') || (card.dataset.cat === f) || (card.dataset.id === f);
-        card.classList.toggle('hide', !matches);
-      });
-    });
-  });
-
-  // 3b. Product finder, product story and benefits
-  try { initLightbox(); } catch (e) { console.warn('Lightbox unavailable:', e); }
-  try { buildNeeds(); } catch (e) { console.warn('Product finder unavailable:', e); }
-  try { fillShots(); } catch (e) { console.warn('Product shots unavailable:', e); }
-  try { initStory(); } catch (e) { console.warn('Product story unavailable:', e); }
-  try { initScroll(); } catch (e) { console.warn('Scroll reveals unavailable:', e); }
-
-  // 4. Navigation scroll header styling
+  // 3. Navigation scroll header styling
+  // Performance: reading window.scrollY in the scroll event (as the other pages do) forces a full style + layout
+  // here, because the journey and Lenis have just written styles. The position comes from Lenis (a plain number)
+  // and the class is only touched when it changes, once per frame.
   const nav = $('#nav');
-  function onScroll() {
+  let navQueued = false, navScrolled = null;
+  function applyNav() {
+    navQueued = false;
     if (!nav) return;
-    nav.classList.toggle('scrolled', window.scrollY > 20);
+    const y = state.lenis ? state.lenis.scroll : window.scrollY;
+    const s = y > 20;
+    if (s !== navScrolled) { navScrolled = s; nav.classList.toggle('scrolled', s); }
   }
+  function onScroll() { if (!navQueued) { navQueued = true; requestAnimationFrame(applyNav); } }
   window.addEventListener('scroll', onScroll, { passive: true });
-  onScroll();
+  applyNav();
 
-  // 5. Mobile / Full-screen Navigation Menu Controller
+  // 4. Mobile / Full-screen Navigation Menu Controller
   const btn = $('#dockMenu');
   const menu = $('#menu');
   const menuX = $('#menuX');
@@ -126,6 +61,7 @@ function initProductsPage() {
       btn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
     }
     document.documentElement.classList.toggle('menu-open', open);
+    if (state.lenis) open ? state.lenis.stop() : state.lenis.start();
   }
 
   if (btn) btn.addEventListener('click', () => setMenuOpen(!menu.classList.contains('open')));
