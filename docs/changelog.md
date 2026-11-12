@@ -1,5 +1,30 @@
 # Changelog
 
+## v12.9 (12 Nov 2026): "You deserve the best" back to the earlier design
+- Undid v12.8: the section has the three tilted product photo cards and the story card over the botanical image again (no big drifting words along the bottom).
+- The scroll zoom from v12.6 is kept: the headline grows in from a blur, the photos push forward and the story card zooms in.
+
+## v12.7 (12 Nov 2026): sketch-drawn loading screen
+- The loading screen now draws the real logo like a pen sketch: the DNA first, then the roots, trunk and leaves, then the name from left to right. The real colour logo then fills in over the sketch, and the tagline fades in (about 4.4 s).
+- The lines are traced from the logo files by `scripts/make-logo-sketch.py`, which writes them into `index.html`; re-run it if the logo changes.
+- The page waits for the sketch to finish before the loader fades (at most 6 s). With reduced motion on, the finished logo shows straight away.
+
+## v12.6 (12 Nov 2026): scroll zoom in "You deserve the best"
+- New `features/insider/insider-zoom.js`: as you scroll into the section, the headline grows in from small and blurred, then the product photos rise, push forward and settle, then the story card zooms in and its text fades up. It follows the scroll, so scrolling back plays it in reverse.
+- Turned off for people who prefer reduced motion; a lighter zoom on phones.
+
+## v12.5 (12 Nov 2026): floating capsule nav
+- The top bar is now a floating glass capsule: one rounded, frosted bar below the top edge, with the four links in their own inner pill and the current section filled in green.
+- It tightens slightly once you scroll, turns to dark glass over the dark sections, and gets a slimmer fit on phones.
+
+## v12.4 (11 Nov 2026): compact glass shop cards
+- Shop cards are smaller: five in a row on wide screens, three on laptops and tablets, two on phones (phones hide the description and chips).
+- Cards use glassmorphism: frosted white glass with a light border over soft colour light in the shop background, glass tag and "View design" pills, a lift on hover, and a full-width "Add to bag" button.
+
+## v12.3 (11 Nov 2026): no unstyled flash on load
+- The stylesheet now loads from `index.html` (`<link rel="stylesheet" href="/src/styles/main.css">`) instead of being imported in `main.js`, so the page never paints before its styles arrive (this showed as plain text and a black shape in `npm run dev`).
+- A small inline style in `<head>` paints the loading screen's colour from the very first frame.
+
 ## v12.2 (6 Nov 2026): benefits change on click
 - The benefits panel no longer pins or changes while you scroll; the page scrolls straight on to the next section.
 - Pick a product with the dots on the photo, or tap the photo for the next one. The photo and the benefits then slide over with the motion blur.

@@ -37,7 +37,7 @@
 .menu-note .hand{font-size:30px}
 .menu-contact{font-weight:800;font-stretch:82%;color:var(--forest);border-bottom:2px solid currentColor;padding-bottom:2px}
 html.menu-open .nav{opacity:0;pointer-events:none}
-.nav{transition:background .4s,padding .4s,opacity .4s}
+.nav{transition:top .4s var(--ease),width .4s var(--ease),background .4s,box-shadow .4s,padding .4s,opacity .4s}
 @media (max-width:980px){
   .dock{left:max(8px,env(safe-area-inset-left,0px));padding:5px}
   .dock-menu{width:44px;height:44px}
