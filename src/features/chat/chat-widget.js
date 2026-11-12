@@ -30,6 +30,13 @@ function format(text){
 // quick replies suggested by the server with a clarifying question
 const suggestRow = list => list && list.length ? `<div class="ch-chips ch-suggest" style="padding:2px 0 0">${list.map(s => `<button type="button" data-say="${esc(s)}">${esc(s)}</button>`).join('')}</div>` : '';
 
+// buttons the server asks for under a reply: open the contact form, or start a new chat
+const ACTIONS = {
+  contact:'<a class="ch-action ch-enquire" href="#contact" data-product="" data-id="">Contact our team</a>',
+  new:'<button type="button" class="ch-action ch-restart">Start a new chat</button>'
+};
+const actionRow = list => list && list.length ? `<div class="ch-actions">${list.map(k => ACTIONS[k] || '').join('')}</div>` : '';
+
 function productCard(id){
   const p = CATALOG.find(x => x.id === id); if (!p) return '';
   const meta = [p.form, p.size, p.price ? inr(p.price) : 'Price on request'].filter(Boolean).join(' · ');
@@ -42,7 +49,7 @@ function bubble(m){
   const row = document.createElement('div');
   row.className = `ch-msg ${m.role === 'user' ? 'me' : 'bot'}`;
   row.innerHTML = m.role === 'user' ? `<div class="ch-b"><p>${esc(m.content)}</p></div>`
-    : `<span class="ch-av">${LEAF}</span><div class="ch-b">${format(m.content)}${(m.products || []).map(productCard).join('')}${suggestRow(m.suggest)}</div>`;
+    : `<span class="ch-av">${LEAF}</span><div class="ch-b">${format(m.content)}${(m.products || []).map(productCard).join('')}${actionRow(m.actions)}${suggestRow(m.suggest)}</div>`;
   return row;
 }
 
@@ -72,7 +79,8 @@ async function send(text){
       body:JSON.stringify({ messages:msgs.map(({ role, content }) => ({ role, content })) }) });
     if (!res.ok || !res.body) throw new Error(res.status);
     reply.products = (res.headers.get('X-Products') || '').split(',').filter(id => CATALOG.some(p => p.id === id));
-    reply.suggest = (res.headers.get('X-Suggest') || '').split('|').map(s => s.trim()).filter(Boolean).slice(0, 5);
+    reply.suggest = (res.headers.get('X-Suggest') || '').split('|').map(s => s.trim()).filter(Boolean).slice(0, 6);
+    reply.actions = (res.headers.get('X-Actions') || '').split(',').filter(k => k in ACTIONS);
     const reader = res.body.getReader(), dec = new TextDecoder();
     for (;;){
       const { done, value } = await reader.read(); if (done) break;
@@ -80,7 +88,7 @@ async function send(text){
       if (reply.content.trim()){ row.classList.remove('typing'); body.innerHTML = format(reply.content); scrollDown(); }
     }
     if (!reply.content.trim()) throw new Error('empty');
-    body.innerHTML = format(reply.content) + reply.products.map(productCard).join('') + suggestRow(reply.suggest);
+    body.innerHTML = format(reply.content) + reply.products.map(productCard).join('') + actionRow(reply.actions) + suggestRow(reply.suggest);
     msgs.push(reply);
   } catch(err){
     row.classList.remove('typing');
@@ -93,7 +101,17 @@ async function send(text){
 
 function autosize(){ els.input.style.height = 'auto'; els.input.style.height = Math.min(els.input.scrollHeight, 120) + 'px'; }
 
+// minimized: the chat stays on screen as a small header bar; the conversation is kept
+function minimize(on){
+  els.root.classList.toggle('min', on);
+  els.min.setAttribute('aria-label', on ? 'Expand chat' : 'Minimize chat');
+  els.min.title = on ? 'Expand' : 'Minimize';
+  els.min.setAttribute('aria-expanded', !on);
+  if (!on){ scrollDown(); setTimeout(() => els.input.focus(), 250); }
+}
+
 function open(on){
+  els.root.classList.remove('min'); els.min.setAttribute('aria-label', 'Minimize chat'); els.min.title = 'Minimize'; els.min.setAttribute('aria-expanded', true);
   els.root.classList.toggle('open', on);
   els.fab.setAttribute('aria-expanded', on);
   els.panel.setAttribute('aria-hidden', !on);
@@ -109,6 +127,7 @@ function initChat(){
         <span class="ch-av big">${LEAF}</span>
         <div><b>Tulsi</b><small><i></i>TranzLife wellness friend</small></div>
         <button class="ch-new" type="button" title="Start a new chat">New chat</button>
+        <button class="ch-min" type="button" aria-label="Minimize chat" title="Minimize" aria-expanded="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path class="ch-min-dash" d="M6 12h12"/><path class="ch-min-up" d="M6 15l6-6 6 6"/></svg></button>
         <button class="ch-x" type="button" aria-label="Close chat">×</button>
       </header>
       <div class="ch-list" data-lenis-prevent aria-live="polite"></div>
@@ -126,16 +145,25 @@ function initChat(){
   els = { root, panel:$('.ch-panel', root), list:$('.ch-list', root), chips:$('.ch-chips', root), input:$('textarea', root), send:$('.ch-send', root), fab:$('.ch-fab', root) };
 
   msgs = load(); render();
-  els.fab.addEventListener('click', () => open(!root.classList.contains('open')));
+  els.min = $('.ch-min', root);
+  // the round button: opens the chat, expands it if minimized, or closes it
+  els.fab.addEventListener('click', () => root.classList.contains('min') ? minimize(false) : open(!root.classList.contains('open')));
   $('.ch-x', root).addEventListener('click', () => open(false));
-  $('.ch-new', root).addEventListener('click', () => { if (busy) return; msgs = []; save(); render(); els.input.focus(); });
-  // "Enquire" on a product card: start a contact message about that product, then close the chat
+  els.min.addEventListener('click', e => { e.stopPropagation(); minimize(!root.classList.contains('min')); });
+  // tapping the minimized bar (anywhere but its buttons) expands it again
+  $('.ch-head', root).addEventListener('click', e => { if (root.classList.contains('min') && !e.target.closest('button')) minimize(false); });
+  const restart = () => { if (busy) return; msgs = []; save(); render(); els.input.focus(); };
+  $('.ch-new', root).addEventListener('click', restart);
   els.list.addEventListener('click', e => { const s = e.target.closest('.ch-suggest button'); if (s) send(s.dataset.say); });
+  els.list.addEventListener('click', e => { if (e.target.closest('.ch-restart')) restart(); });
+  // "Enquire" on a product card (or "Contact our team"): start a contact message, then close the chat
   els.list.addEventListener('click', e => {
     const a = e.target.closest('.ch-enquire'); if (!a) return;
-    const msg = $('#f-msg'); if (msg && !msg.value.trim()) msg.value = `Hi, I'd like to know more about the ${a.dataset.product} (price and how to order).`;
+    const msg = $('#f-msg');
+    if (msg && !msg.value.trim()) msg.value = a.dataset.product ? `Hi, I'd like to know more about the ${a.dataset.product} (price and how to order).`
+      : 'Hi, I\'d like to know more about your products, prices and how to order.';
     // count the enquiry anonymously (only the product id)
-    try { navigator.sendBeacon?.(API.replace(/chat$/, 'insight'), new Blob([JSON.stringify({ enquire:a.dataset.id })], { type:'application/json' })); } catch {}
+    if (a.dataset.id) try { navigator.sendBeacon?.(API.replace(/chat$/, 'insight'), new Blob([JSON.stringify({ enquire:a.dataset.id })], { type:'application/json' })); } catch {}
     open(false);
   });
   els.chips.addEventListener('click', e => { const b = e.target.closest('button'); if (b) send(b.textContent); });

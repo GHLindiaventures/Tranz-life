@@ -23,7 +23,7 @@ function entryFor(a, { via, first, emergency } = {}){
 }
 
 // Messages worth a short label: the visitor described something we could not match (clarify), not small talk or shop.
-const wantsLabel = (a, text) => a && a.mode === 'clarify' && !a.recommendQ && text.trim().split(/\s+/).length >= 2;
+const wantsLabel = (a, text) => a && a.mode === 'clarify' && !a.recommendQ && !['other', 'again', 'stuck'].includes(a.clarifyKind) && text.trim().split(/\s+/).length >= 2;
 
 const NOT_ISSUE = /^(none|n\/a|nothing|unknown|general|health|issue|problem|wellness|product|products)$/;
 const PERSONAL = /\b(my|me|i|he|she|his|her|they|mother|mom|amma|father|dad|appa|wife|husband|son|daughter|friend|brother|sister|years?|old|age|aged|mr|mrs|dr)\b/;

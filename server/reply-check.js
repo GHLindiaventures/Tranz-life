@@ -189,6 +189,13 @@ function fixedReply(a){
     const extra = ps.length ? ` Alongside your doctor's treatment, you could look at our ${ps.map(p => `${p.name}, ${p.pitch}`).join('; or our ')}.${ps.filter(p => p.note).map(p => ` ${p.note}`).join('')} Please check with your doctor before trying it.` : '';
     return `Thanks for telling me. TranzLife products are natural wellness products, not a treatment for ${label}, so please keep following your doctor's advice and don't stop or change any medicine without them.${extra}${careLine(a)}`;
   }
+  if (a.mode === 'recommend' && a.noProduct){
+    // no TranzLife product is made for this topic: say so, never an empty list of suggestions
+    const label = a.concerns.map(id => CONCERNS.find(x => x.id === id).label).join(' and ');
+    const tips = a.recommendTips?.length ? `\n\nA few simple things that may help:\n\n${a.recommendTips.map(t => `- ${t.text}`).join('\n')}` : '';
+    const doctor = a.doctor?.length ? ` ${a.doctor.join(' ')}` : ' If it keeps coming back or gets worse, a doctor or pharmacist can help.';
+    return `We don't have a TranzLife product made for ${label} right now, so I won't suggest one.${tips}\n\n${a.recommendTips?.length ? '' : 'The simple tips I shared are the best place to start.'}${doctor}`.replace(/\n\n /, '\n\n').trim();
+  }
   if (a.mode === 'recommend'){
     const label = a.concerns.map(id => { const c = CONCERNS.find(x => x.id === id); return c.forLabel || c.label; }).join(' and ');
     const who = a.about.other ? 'them' : 'you';
@@ -207,7 +214,7 @@ function fixedReply(a){
   }
   // small talk: instant fixed replies (the model kept answering "bye" and "ok" with "Hi there!")
   if (a.mode === 'smalltalk') return {
-    bye:'Take care! 🌿 I\'m here whenever you need a hand.',
+    bye:closingText(a),
     thanks:'You\'re welcome! 🌿 Is there anything else on your mind?',
     howareyou:'I\'m doing well, thanks for asking! 🌿 How are you feeling today? Tell me if anything is bothering you.',
     ok:a.afterProduct ? 'Great! 🌿 Tap Enquire on the product card and our team will help you with the price and how to order. Is there anything else on your mind?'
@@ -216,12 +223,42 @@ function fixedReply(a){
   }[a.smallTalkKind || 'greeting'];
   // about Tulsi / TranzLife (company line from the client's brochure)
   if (a.mode === 'about') return 'I\'m Tulsi, the wellness assistant from TranzLife Biosciences, a Chennai-based life sciences company that develops natural, plant-based wellness products. I can share simple natural tips for everyday problems like stress, sleep, tiredness, acidity, colds or period cramps, and help you find the right TranzLife product. What\'s on your mind today? You can pick one below or just tell me.';
-  if (a.mode === 'clarify') return a.recommendQ
-    ? 'Happy to help you choose. What would you like support with? Pick one below or tell me in your own words.'
-    : 'I want to make sure I help with the right thing. Could you tell me a little more about how you feel, or pick one of these? If it\'s something I can\'t advise on, a pharmacist or doctor is the best person to ask.';
-  if (a.mode === 'shop') return `Here's our current range: ${productNames()}. Ask me about any of them and I'll share what it's for and how to use it. For prices, orders or delivery, the team is happy to help through the Contact section.`;
+  if (a.mode === 'clarify') return clarifyText(a);
+  // "is this trustable?": who we are and how to check, with no claims about certificates we have not been given
+  if (a.mode === 'trust') return 'That\'s a fair question to ask. 🌿 TranzLife Biosciences (Tranz Life Bio Sciences Pvt. Ltd.) is a Chennai-based life sciences company with an office at Montieth Road, Egmore, Chennai. You can talk to the team directly on **+91 917 611 2188** or at **info@tranzlife.in**.\n\nOur products are natural wellness products, not medicines. I\'ll always tell you honestly what each one is made for, what it is not for, and when a doctor is the right person instead. Before using any product, please read the label and ingredients, and check with your doctor if you are pregnant, take regular medicine or have a health condition. For licence or certification details of a product, tap **Contact our team** below and the team will share them.';
+  if (a.mode === 'sorry') return 'Sorry, my last reply wasn\'t right. 🌿 I\'m a wellness assistant and I can get things wrong. Could you tell me again, in a few words, what you need? Or tap **Contact our team** below to talk to a person from TranzLife.';
+  // a man asking about periods: ask kindly, no period tips and no CycleRelief
+  if (a.mode === 'askwho' && a.askedWhoBefore) return "Men don't have periods, so what you're feeling is likely something else. 🌿 If you have pain, cramps or discomfort in your lower tummy, groin or back, please tell me where it is and how long it has lasted, or see a doctor, especially if it is strong, keeps coming back or comes with fever, blood in your urine or trouble passing urine.";
+  if (a.mode === 'askwho') return 'Thanks for telling me. Periods usually affect women, so I want to make sure I understand you. 🌿 Are you asking for someone else, like your wife, sister or daughter? Or are you having pain or discomfort yourself, for example in your lower tummy or back? Tell me a little more and I\'ll help. If the pain is strong or keeps coming back, please see a doctor.';
+  // company contact details as printed on the TranzLife brochures
+  if (a.mode === 'contact') return 'You can reach the TranzLife team through the contact form on this page: tap **Contact our team** below and I\'ll open it for you with your message started. You can also call **+91 917 611 2188** or email **info@tranzlife.in**. Our office is at 6, Flat 2D, 2nd Floor, Queenscourt, Montieth Road, Egmore, Chennai 600 008. The team will help with prices, orders, delivery and any other questions. 🌿';
+  if (a.mode === 'shop') return `Here's our current range: ${productNames()}. Ask me about any of them and I'll share what it's for and how to use it. For prices, orders or delivery, tap **Contact our team** below and the team will help you.`;
   if (a.mode === 'soon') return `That one is coming soon and isn't on sale yet, so I can't share details about it. Right now our range is: ${productNames()}. For updates, the team is happy to help through the Contact section.`;
   return '';
+}
+
+// The last message of a chat ("no thanks", "that's all", "bye"): thank them, say how to order, say goodbye.
+function closingText(a){
+  const order = a.talkedProducts
+    ? ' To order, tap Enquire on a product card above, or tap Contact our team below for prices and delivery.'
+    : ' If you\'d like to talk to someone, tap Contact our team below.';
+  return `Thank you for chatting with me today! 🌿${order} I hope you feel your best. Take care, and come back anytime you need me.`;
+}
+
+// Clarifying questions. Each kind is worded differently, so the visitor never gets the same question twice in a row,
+// and from the second time on there is always a way out (Contact our team).
+function clarifyText(a){
+  const topic = a.prevTopic && CONCERNS.find(c => c.id === a.prevTopic);
+  return {
+    noproduct:`We don't have a TranzLife product for ${a.askedFor}, so I can't suggest one. Our products are made for lung health, quitting smoking, stress, liver and digestive wellness, period comfort, everyday energy and diabetes wellness. If you have a health problem with your ${a.askedFor}, a doctor is the right person to check it.`,
+    choose:'Happy to help you choose. What would you like support with? Pick one below or tell me in your own words.',
+    unclear:'I want to make sure I help with the right thing. Could you tell me a little more about how you feel, or pick one of these? If it\'s something I can\'t advise on, a pharmacist or doctor is the best person to ask.',
+    unreadable:'Sorry, I didn\'t quite get that. 🌿 Could you tell me in a few words what\'s bothering you? For example, "I can\'t sleep well" or "I want to quit smoking". You can also pick one below.',
+    topic:`Sorry, I didn't quite get that. 🌿 Would you like to keep talking about ${topic?.label || 'the same thing'}? If it's something else, just tell me in your own words.`,
+    other:'No problem. 🌿 Tell me in your own words what\'s bothering you, for example "my knees hurt when I climb stairs" or "I get headaches at work". If it\'s about an order, a price or anything else, tap **Contact our team** below and a person from TranzLife will help you.',
+    stuck:'I\'m sorry, I can\'t help with that here. 🌿 The TranzLife team can: tap **Contact our team** below. Or tap **Start a new chat** to begin again.',
+    again:'Sorry, I still couldn\'t follow that. 🌿 I can help with everyday things like stress, sleep, tiredness, acidity, colds, period cramps, smoking or liver care, so you can type one of those. For anything else, tap **Contact our team** below and a person from TranzLife will help you.'
+  }[a.clarifyKind || (a.recommendQ ? 'choose' : 'unclear')];
 }
 
 // Fixed, safe reply used when the model cannot produce one that passes. English, built only from approved text.
@@ -240,6 +277,30 @@ function fallbackReply(a){
 // sent back as a message, it matches an approved topic.
 const SUGGEST_HEALTH = ['Stress', 'Trouble sleeping', 'Tiredness', 'Acidity', 'Cold or cough'];
 const SUGGEST_PRODUCTS = ['Quit smoking', 'Lung health', 'Liver care', 'Period cramps', 'Low energy'];
-const suggestChips = a => a.mode === 'about' || (a.mode === 'smalltalk' && ['greeting', 'howareyou'].includes(a.smallTalkKind)) ? SUGGEST_HEALTH : a.mode !== 'clarify' ? [] : a.recommendQ ? SUGGEST_PRODUCTS : SUGGEST_HEALTH;
+const NONE = 'None of these';
+function suggestChips(a){
+  if (a.mode === 'about' || (a.mode === 'smalltalk' && ['greeting', 'howareyou'].includes(a.smallTalkKind))) return SUGGEST_HEALTH;
+  if (a.mode === 'askwho') return ['My wife has period cramps', 'My sister has period cramps', NONE];
+  if (a.mode !== 'clarify' || ['other', 'stuck'].includes(a.clarifyKind)) return [];
+  if (a.clarifyKind === 'again') return SUGGEST_HEALTH;
+  if (a.clarifyKind === 'noproduct') return SUGGEST_PRODUCTS;
+  if (a.clarifyKind === 'topic'){
+    const c = CONCERNS.find(x => x.id === a.prevTopic);
+    // the chip is sent back as a message, so it must lead to that same topic again
+    const back = c && [`More about ${c.label}`, c.label].find(t => CONCERNS.find(x => x.match.test(t))?.id === c.id);
+    return back ? [back, NONE] : [...SUGGEST_HEALTH.slice(0, 4), NONE];
+  }
+  return [...(a.recommendQ ? SUGGEST_PRODUCTS : SUGGEST_HEALTH), NONE];
+}
 
-export { problems, fixedReply, fallbackReply, suggestChips, REMEDIES, PRODUCT_NAMES };
+// Buttons under a reply (X-Actions header): "contact" opens the contact form, "new" starts a new chat.
+function replyActions(a){
+  if (a.mode === 'smalltalk' && a.smallTalkKind === 'bye') return ['contact', 'new'];
+  if (a.mode === 'smalltalk' && a.smallTalkKind === 'ok' && a.afterProduct) return ['contact'];
+  if (['contact', 'shop', 'soon', 'sorry', 'trust'].includes(a.mode)) return ['contact'];
+  if (a.mode === 'clarify' && a.clarifyKind === 'stuck') return ['contact', 'new'];
+  if (a.mode === 'clarify' && ['other', 'again'].includes(a.clarifyKind)) return ['contact'];
+  return [];
+}
+
+export { problems, fixedReply, fallbackReply, suggestChips, replyActions, REMEDIES, PRODUCT_NAMES };

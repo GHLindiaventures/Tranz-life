@@ -124,7 +124,7 @@ const PRODUCT_Q = /what('?s|\s*is|\s*are)?\s*(in|inside)\b|ingredients?|contain|
 const SAFETY_Q = /\b(safe|safety|side[- ]?effects?|harmful|allerg\w*|reaction|interact\w*)\b|(with|along\s*with|together\s*with)\s*my\s*(medicine|tablets?|insulin|maathirai)/i;
 const IDENTITY = /\bare\s*(you|u)\s*(a|an)?\s*(real\s*)?(doctor|nurse|human|bot|robot|ai|machine|person|chatbot)\b|who\s*(are|r)\s*(you|u)\b|what\s*are\s*you\b|nee\s*yaaru|neenga\s*yaaru|yaaru\s*neenga/i;
 const CURE_Q = /\b(cure|cures|curing|permanent(ly)?\s*(cure|relief|solution)|get\s*rid\s*of|treat(ment)?\s*for|heal)\b/i;
-const CONDITION = /\b(an(a)?emia|thyroid|diabetes|bp|blood\s*pressure|cholesterol|pcos|pcod|kidney\s*stones?|arthritis|asthma|cancer|tumou?r|infection|ulcer|piles|h(a)?emorrhoids?|fibroids?|migraine|psoriasis|eczema|hepatitis|fatty\s*liver|gastritis|uti|covid|dengue|typhoid|tuberculosis|heart\s*disease|epilepsy|vertigo|sinus(itis)?|gout|kidney\s*disease)\b/i;
+const CONDITION = /\b(an(a)?emia|thyroid|diabetes|bp|blood\s*pressure|cholesterol|pcos|pcod|kidney\s*stones?|arthritis|asthma|cancer|tumou?r|infection|ulcer|piles|h(a)?emorrhoids?|fibroids?|migraine|psoriasis|eczema|hepatitis|fatty\s*liver|gastritis|uti|covid|dengue|typhoid|tuberculosis|heart\s*disease|epilepsy|vertigo|sinus(itis)?|gout|kidney\s*disease|kidneys?\s*(problems?|issues?|failure|pain))\b/i;
 // Diagnosed conditions where a product is made as wellness support (never a treatment). Tulsi mentions it only
 // alongside the doctor's treatment, with "check with your doctor first". Breathing diseases (asthma, COPD) are
 // deliberately not here: no product may be suggested for them.
@@ -135,7 +135,31 @@ const SUPPORT = [
 const DIAGNOSE_Q = /what\s*(disease|illness|condition|problem|sickness)\s*(do\s*|does\s*)?(i|she|he|they|my\s*\w+)\s*(have|has|got)|diagnos|what('?s|\s*is)\s*wrong\s*with\s*(me|her|him)|what\s*is\s*(causing|the\s*cause)|enna\s*(noi|vyadhi|vyaadhi)/i;
 const DOSE_Q = /\b(dose|dosage|how\s*much\s*(should|to|can)\s*(i\s*|we\s*)?(take|eat|drink|give)|how\s*many\s*(times|tablets|spoons|capsules|drops))\b/i;
 
-const SMALL_TALK = /^\s*(hi+|hello+|helo+|hey+|hai|yo|sup|wassup|whats\s*up|hola|vanakkam|good\s*(morning|afternoon|evening|night)|thanks?|thank\s*(you|u)|thx|tq|ty|ok+|okay|k|kk|hmm+|yes+|yeah+|yea|yep|yup|ya|sure|alright|aama|haan|sounds\s*good|will\s*do|sari|seri|nandri|super|nice|great|awesome|bye|take\s*care|see\s*(you|ya)|cool|fine|got\s*it|purinjuthu|purinjudhu|how\s*(are|r)\s*(you|u)(\s*doing)?(\s*today)?|how\s*is\s*it\s*going|epdi\s*(irukeenga|irukinga|iruka|irukka)|nalla\s*(irukeengala|irukingala|irukiya)|nice\s*talking\s*to\s*you)\b[\s!.,?🙏😊❤️💚👍]*((bro|da|ma|tulsi|dude|man|buddy|anna|akka|machi|machan|there|friend|so\s*much|a\s*lot|again|take\s*care|cool|super|nice|great|fine|thanks?|thank\s*(you|u)|got\s*it|sure|ok+|okay|will\s*do|sounds\s*good)[\s!.,?🙏😊❤️💚👍]*){0,3}$/iu;
+const SMALL_TALK = /^\s*(hi+|hello+|helo+|hey+|hai|yo|sup|wassup|whats\s*up|hola|vanakkam|good\s*(morning|afternoon|evening|night)|thanks?|thank\s*(you|u)|thanku|thanx|thnx|tnx|thx|tq|ty|ok+|okay|k|kk|hmm+|yes+|yeah+|yea|yep|yup|ya|sure|alright|aama|haan|sounds\s*good|will\s*do|sari|seri|nandri|super|nice|great|awesome|bye|take\s*care|see\s*(you|ya)|cool|fine|got\s*it|purinjuthu|purinjudhu|how\s*(are|r)\s*(you|u)(\s*doing)?(\s*today)?|how\s*is\s*it\s*going|epdi\s*(irukeenga|irukinga|iruka|irukka)|nalla\s*(irukeengala|irukingala|irukiya)|nice\s*talking\s*to\s*you)\b[\s!.,?🙏😊❤️💚👍]*((bro|da|ma|tulsi|dude|man|buddy|anna|akka|machi|machan|there|friend|so\s*much|a\s*lot|again|take\s*care|cool|super|nice|great|fine|thanks?|thank\s*(you|u)|got\s*it|sure|ok+|okay|will\s*do|sounds\s*good)[\s!.,?🙏😊❤️💚👍]*){0,3}$/iu;
+// the visitor is finishing the chat ("no thanks", "that's all", "nothing else", "I'm good", "illa", "podhum")
+const DONE = /^\s*(no+|nope|nah|nothing|nothing\s*(else|more)|no\s*(thanks?|thank\s*(you|u)|thx|tq|more|need|other\s*questions?)|no\s*that'?s\s*(all|it)|(that'?s|thats|that\s*is)\s*(all|it|enough)|i'?m\s*(good|done|fine|ok(ay)?|all\s*set)|all\s*(good|done|set)|done|not\s*now|maybe\s*later|onnum\s*(illa|vendam)|illa|vendam|podhum|pothum|podum)\b[\s!.,?🙏😊❤️💚👍]*((thanks?|thank\s*(you|u)|thx|tq|bye|take\s*care|tulsi|bro|da|ma|anna|akka|for\s*now|i'?m\s*good|that'?s\s*all|nandri)[\s!.,?🙏😊❤️💚👍]*){0,3}$/iu;
+// "none of the above" / "something else" after the quick-reply options
+const NONE_OF_THESE = /^\s*(none(\s*of\s*(these|them|those|the\s*above|above|this))?|something\s*else|some\s*other\s*(thing|problem)|other|others|neither|not\s*(these|this|listed|in\s*(the|this)\s*list)|vera\s*(ethavathu|edhavathu|onnu))\b[\s!.,?]*$/i;
+// "how do I contact you / phone number / talk to a person / enquiry"
+const CONTACT_Q = /\b(contact|phone\s*(no|num|number)|mobile\s*(no|num|number)|your\s*number|call\s*(you|u|someone|the\s*team|your\s*team|customer\s*care)|whats\s*app|whatsapp|e-?mail\s*(id|address)?|(your|office|shop)\s*address|customer\s*(care|service|support)|(talk|speak|chat)\s*(to|with)\s*(a\s*)?(human|person|someone|somebody|real\s*person|agent|executive|your\s*team|the\s*team|team)|reach\s*(you|u|the\s*team|your\s*team)|enquir\w*|inquir\w*)\b/i;
+// a keyboard mash or only numbers/symbols ("asdfgh", "12345", "???")
+const GIBBERISH = t => !/\p{L}{2}/u.test(t) || /(\p{L})\1{3,}/u.test(t) || /[bcdfghjklmnpqrstvwxz]{5,}/i.test(t.replace(/\s+/g, ''));
+// the bot's own clarifying questions (to notice when it is about to ask the same thing twice)
+const CLARIFY_REPLY = /help with the right thing|tell me in your own words|didn't quite get that|still couldn't follow|Happy to help you choose/i;
+const STUCK_REPLY = /still couldn't follow|can't help with that here/i;
+
+// the visitor says they are a man ("i am an man", "as a guy", "naan aambala"): period topics need a question, not tips
+const MALE_SELF = /\b(i\s*('?m|am)|im|iam)\s*(a|an)?\s*(man|male|guy|boy|gent(leman)?)\b|\bas\s*a\s*(man|guy|male|boy)\b|\bnaan\s*(oru\s*)?(aambala|aan|paiyan)\b/i;
+const PERIOD_WORDS = /\b(periods?|menstru\w*|chums|monthly\s*cycle)\b/i;
+// the visitor is annoyed with the bot ("are u mad?", "useless", "what nonsense"): apologise, never "Sure!"
+const FRUSTRATED = /^\s*(are\s*(you|u)\s*(mad|crazy|stupid|dumb|mental|nuts|serious|kidding|joking|ok)|(you|u)\s*(are|r)\s*(mad|crazy|stupid|dumb|useless|mental|wrong|not\s*(helping|helpful|understanding))|what\s*(rubbish|nonsense|the\s*(hell|heck))|(this\s*is\s*|so\s*|very\s*)?(useless|nonsense|rubbish|stupid|wrong\s*answer|not\s*helpful)|loosu|lusu|paithiyam|paithiyama|that'?s\s*(wrong|not\s*right)|makes?\s*no\s*sense|stupid\s*bot|did\s*(you|u)\s*(even\s*)?read)\b.{0,40}$/i;
+// "any product for kidney?": what they asked for, when it is not a person or "it/this"
+const FOR_WHAT = /\bfor\s+(my\s+|the\s+|your\s+|a\s+)?([a-z][a-z ]{1,24}?)\s*[?.!]*$/i;
+const NOT_A_TOPIC = /^(it|this|that|these|those|me|him|her|them|us|my?self|friend|wife|husband|mother|mom|mum|amma|father|dad|appa|son|daughter|sister|brother|family|kids?|child(ren)?|baby|parents?|grandma|grandpa|men|women|man|woman|ladies|gents|everyone|anyone|sale|you|u|(daily|everyday|regular|general|overall|good|better|my|our|whole\s*family)?\s*(use|usage|health|wellness|purpose|routine|life|living|wellbeing|well\s*being)|daily|everyday|adults?|elders?|old\s*(people|age)|students?|office\s*(people|workers?)|working\s*(people|professionals?))$/i;
+
+// "is this trustable / genuine / a scam?": who TranzLife is and how to check, never the product list
+const TRUST_Q = /\b(trust(able|worthy|ed)?|genuine|legit(imate)?|real\s*(company|site|website|products?)|fake|scam|fraud|reliable|authentic|original\s*products?|certified|certification|licen[cs]ed?|fssai|ayush|gmp|nambala(ma|am)?|nambalaama|nambikkai|nambakoodiya)\b/i;
+
 // questions about Tulsi or TranzLife ("what can you do", "can you help me", "what is tranzlife", "who made you")
 const ABOUT_Q = /what\s*(can|do)\s*(you|u)\s*do|how\s*(can|do)\s*(you|u)\s*help|^\s*(can|could)\s*(you|u)\s*help(\s*me)?\s*[?.!]*\s*$|^\s*(i\s*)?need\s*(some\s*)?help\s*[?.!]*\s*$|^\s*help(\s*me)?\s*[?.!]*\s*$|what\s*(is|'s)\s*tranz\s*life|about\s*(your|the|this)\s*company|tell\s*me\s*about\s*(tranz\s*life|your\s*company|yourself|you)|who\s*(made|built|created|owns|runs)\s*(you|u|tranz\s*life)|what\s*is\s*this\s*(site|website|chat)/i;
 
@@ -195,9 +219,10 @@ function analyse(history, { semantic = null } = {}){
 
   const named = namedIn(last);
   // small talk: the greeting rule, or the understanding layer for short messages with no health topic ("hi dude")
-  const smallTalk = SMALL_TALK.test(last) || (semantic?.intent === 'smalltalk' && !named.length && !concernsIn(last).length && last.trim().split(/\s+/).length <= 8);
+  const done = DONE.test(last), frustrated = FRUSTRATED.test(last);
+  const smallTalk = !frustrated && (SMALL_TALK.test(last) || done) || (!frustrated && semantic?.intent === 'smalltalk' && !named.length && !CONTACT_Q.test(last) && !NONE_OF_THESE.test(last) && !concernsIn(last).length && last.trim().split(/\s+/).length <= 8);
   const found = (last.match(CONDITION) || [])[0] || '';
-  const condition = /^bp$/i.test(found) ? 'blood pressure' : /^uti$/i.test(found) ? 'urine infection' : /^(pcos|pcod)$/i.test(found) ? found.toUpperCase() : found.toLowerCase();
+  const condition = /^kidney/i.test(found) ? 'kidney problems' : /^bp$/i.test(found) ? 'blood pressure' : /^uti$/i.test(found) ? 'urine infection' : /^(pcos|pcod)$/i.test(found) ? found.toUpperCase() : found.toLowerCase();
   const support = SUPPORT.filter(s => s.re.test(last));
   const cureQ = CURE_Q.test(last), diagnoseQ = DIAGNOSE_Q.test(last), doseQ = DOSE_Q.test(last), stopMeds = STOP_MEDS.test(last);
 
@@ -217,7 +242,9 @@ function analyse(history, { semantic = null } = {}){
   const recommendQ = RECOMMEND.test(last) || semantic?.intent === 'recommend';
   // ...but NOT when the message describes a new problem of its own that we did not recognise ("i work in delhi and face
   // respiratory issues, is there any product?" must never get the previous topic's product)
-  if (!concerns.length && !named.length && !describesNew(last) && (isFollowUp(last) || (['recommend', 'shop'].includes(semantic?.intent) && last.trim().split(/\s+/).length <= 14))){
+  // "any product for kidney health?" names its own topic: never carry the previous one
+  const askedFor = (() => { const m = last.match(FOR_WHAT); const w = m && m[2].trim().toLowerCase(); return w && !NOT_A_TOPIC.test(w) && !/\b(product|thing|something|anything)\b/.test(w) ? w : null; })();
+  if (!concerns.length && !named.length && !describesNew(last) && !askedFor && (isFollowUp(last) || (['recommend', 'shop'].includes(semantic?.intent) && last.trim().split(/\s+/).length <= 14))){
     for (let i = users.length - 2; i >= Math.max(0, users.length - 3) && !concerns.length; i--){
       const u = users[i];
       const prevNamed = namedIn(u);
@@ -275,12 +302,16 @@ function analyse(history, { semantic = null } = {}){
   // drinking-habit one (not an urgent symptom), a product question ("any product for my friend?", "can he use the
   // liver booster?", "is this safe?") gets an honest answer that LEADS with that warning (doctor + 14446).
   const habitOnly = flags.length && flags.every(f => f.id === 'alcohol-dependence');
-  const flagOff = smallTalk || IDENTITY.test(last) || ABOUT_Q.test(last) || (SHOP_EXPLICIT.test(last) && !named.length && !explainQ && !suitabilityQ)
+  const flagOff = smallTalk || IDENTITY.test(last) || TRUST_Q.test(last) || ABOUT_Q.test(last) || (CONTACT_Q.test(last) && !named.length) || (SHOP_EXPLICIT.test(last) && !named.length && !explainQ && !suitabilityQ)
     || (habitOnly && !nowFlags.length && ((named.length && (explainQ || suitabilityQ)) || (recommendQ && concerns.length) || safetyTarget.length));
   let mode;
   if (nowFlags.length || flags.some(f => f.id === 'possible-emergency') || (flags.length && !flagOff)) mode = 'flag';
   else if (IDENTITY.test(last)) mode = 'identity';
   else if (ABOUT_Q.test(last) && !fresh && !named.length) mode = 'about';
+  else if (frustrated) mode = 'sorry';
+  else if (TRUST_Q.test(last) && !fresh && !named.length) mode = 'trust';
+  // a man asking about periods for himself: ask what they mean (or who it is for) instead of giving period tips or CycleRelief
+  else if (subject === 'self' && MALE_SELF.test(recent) && (concerns.some(c => c.id === 'period') || PERIOD_WORDS.test(last))) mode = 'askwho';
   else if (smallTalk) mode = 'smalltalk';
   else if (safetyQ && (safetyTarget.length || /\b(your|these|this|tranzlife)\s*(products?|gumm|inhaler|roll|liquid)/i.test(last))) mode = 'safety';
   else if (stopMeds && !fresh && !named.length) mode = 'medical';
@@ -292,6 +323,8 @@ function analyse(history, { semantic = null } = {}){
   else if (explainQ && targetExplain.length) mode = 'explain';
   else if (named.length && (PRODUCT_Q.test(last) || !fresh)) mode = 'product';
   else if (COMING_SOON_MATCH.test(last) && !fresh) mode = 'soon';
+  // "how do I contact you / phone number / talk to a person": the contact form, with a button to open it
+  else if (CONTACT_Q.test(last) && !fresh) mode = 'contact';
   // "do you sell anything for it?" right after a problem is a request for that problem's products, not a shop question
   else if (recommendQ && carried && concerns.length && /\bfor\s+(it|this|that|these|him|her|them|me)\b/i.test(last)) mode = 'recommend';
   // (a health problem in the same message wins: "as a delivery rider I am worn out" is about tiredness, not delivery)
@@ -397,15 +430,32 @@ function analyse(history, { semantic = null } = {}){
   const keepHistory = carried && prevSubject === subject;
   // which kind of small talk, for the fixed small-talk replies
   const smallTalkKind = mode !== 'smalltalk' ? null
-    : /\b(bye|take\s*care|see\s*(you|ya)|good\s*night)\b/i.test(last) ? 'bye'
-    : /\b(thanks?|thank|thx|tq|ty|nandri)\b/i.test(last) ? 'thanks'
+    : done || /\b(bye|take\s*care|see\s*(you|ya)|good\s*night)\b/i.test(last) ? 'bye'
+    : /\b(thanks?|thank\s*(you|u)|thank|thanku|thanx|thnx|tnx|thx|tq|ty|nandri)\b/i.test(last) ? 'thanks'
     : /how\s*(are|r)\s*(you|u)|how\s*is\s*it\s*going|epdi|nalla\s*iruk/i.test(last) ? 'howareyou'
     // a real greeting starts with a greeting word; anything else short ("yeah sure", "ok cool") is agreeing with the last reply
     : /^\s*(hi+|hello+|helo+|hey+|hai|yo|sup|wassup|whats\s*up|hola|vanakkam|good\s*(morning|afternoon|evening))\b/i.test(last) || (!lastBot && !SMALL_TALK.test(last)) ? 'greeting'
     : 'ok';
   // "yeah sure" right after a product was suggested: point to the card, don't start over
   const afterProduct = smallTalkKind === 'ok' && CATALOG.some(p => lastBot.includes(p.name));
-  return { lang:language(last), mode, smallTalkKind, afterProduct, recommendQ, viaSemantic, subject, carried, keepHistory, productNotes, support:support.map(s => s.label), productInfo, smallTalk, named, condition, concerns:concerns.map(c => c.id), fresh, serious, tips:mode === 'tips' ? tips : [], doctor, products, heldBack, mentionable,
+  // products came up anywhere in this chat (the closing message then points to the Enquire cards)
+  const talkedProducts = history.some(m => m.role === 'assistant' && CATALOG.some(p => m.content.includes(p.name)));
+  // which clarifying question: never the same one twice in a row ("None of the above" used to get the same question again)
+  const prevTopic = mode !== 'clarify' ? null : users.slice(-4, -1).reverse().map(u => concernsIn(u)[0]).find(Boolean) || null;
+  const clarifyKind = mode !== 'clarify' ? null
+    : NONE_OF_THESE.test(last) ? 'other'
+    : STUCK_REPLY.test(lastBot) ? 'stuck'
+    : CLARIFY_REPLY.test(lastBot) ? 'again'
+    : recommendQ && askedFor ? 'noproduct'
+    : recommendQ ? 'choose'
+    : prevTopic ? 'topic'
+    : GIBBERISH(last) ? 'unreadable'
+    : 'unclear';
+  // "any product for that?" about a topic we have no product for: say so honestly, with the approved tips if not given yet
+  const noProduct = mode === 'recommend' && !products.length && !heldBack.length;
+  const justDiscussed = users.slice(-3, -1).some(u => concernsIn(u).some(c => concerns.some(x => x.id === c.id)));
+  const recommendTips = noProduct && !carried && !justDiscussed ? tips.slice(0, 3) : [];
+  return { lang:language(last), mode, smallTalkKind, afterProduct, talkedProducts, noProduct, recommendTips, askedFor, askedWhoBefore:mode === 'askwho' && /Periods usually affect women|Men don.t have periods/.test(lastBot), clarifyKind, prevTopic:prevTopic?.id || null, recommendQ, viaSemantic, subject, carried, keepHistory, productNotes, support:support.map(s => s.label), productInfo, smallTalk, named, condition, concerns:concerns.map(c => c.id), fresh, serious, tips:mode === 'tips' ? tips : [], doctor, products, heldBack, mentionable,
     flags, about, stopMeds, childQ, prefix, suffix, explainProducts:targetExplain, suitabilityProducts:targetSuitability, safetyProducts:mode === 'safety' ? safetyTarget : [], warnedJustNow, allowed:new Set([...(mode === 'tips' ? allowed : []), ...named_allowed]), shop:mode === 'shop' };
 }
 

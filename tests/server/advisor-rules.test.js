@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { emergencyReply, isEmergency, systemPrompt } from '../../server/advisor-prompt.js';
 import { analyse, routingNote } from '../../server/advisor-rules.js';
-import { fallbackReply, fixedReply, problems, suggestChips } from '../../server/reply-check.js';
+import { fallbackReply, fixedReply, problems, replyActions, suggestChips } from '../../server/reply-check.js';
 import { CONCERNS } from '../../server/wellness-tips.js';
 import { CATALOG } from '../../src/data/catalog.js';
 
@@ -124,7 +124,7 @@ describe('fix brief: bugs A to M', () => {
   it('I, J: lung questions reach PulmoClear, recommended with its pitch', () => {
     for (const q of ['lung problem iruku enna product', 'my lungs feel heavy', 'lung health improve panna enna pannalam', 'I have a weak lungs'])
       expect(run(q).products, q).toEqual(['pulmoclear']);
-    const j = run('what products do you have for lungs'); expect(j.mode).toBe('recommend'); expect(fixedReply(j)).toMatch(/PulmoClear Lung Booster Gummies\*\*: Ayurvedic herbal gummies/);
+    const j = run('what products do you have for lungs'); expect(j.mode).toBe('recommend'); expect(fixedReply(j)).toMatch(/PulmoClear Lung Booster Gummies\*\*: botanical gummies made for everyday respiratory wellness support/);
   });
   it('K: a friend\'s drinking, then "en frnd ku enna product", recommends Liver Booster for the friend', () => {
     const k = run('en friend drinks daily', 'en frnd ku enna product use pannalam');
@@ -418,7 +418,7 @@ describe('reply checker', () => {
     const a5 = ask('how this inhaler reduce stress', 'Here is how BreatheFree works...', 'what is the health benefits of liver booster', 'Here is how Liver Booster helps...', 'who can use this product?');
     expect(a5.mode).toBe('suitability');
     expect(a5.suitabilityProducts).toEqual(['liver-booster']);
-    expect(fixedReply(a5)).toMatch(/Made for adults who want to support their liver health/);
+    expect(fixedReply(a5)).toMatch(/Made for adults who want to support their general liver and digestive wellness/);
     expect(fixedReply(a5)).not.toMatch(/BreatheFree/);
   });
 
@@ -540,10 +540,10 @@ describe('helping a friend who may depend on alcohol', () => {
     expect(problems(r, a)).toEqual([]);
   });
   it('answers "is this safe?" about the product just suggested, warning first', () => {
-    const a = ask('i want to help my alcoholic friend', FULL, 'is there any product for my friend?', 'Because of the drinking ... 14446 ... Liver Booster (LiverDetox) ...', 'is this safe?');
+    const a = ask('i want to help my alcoholic friend', FULL, 'is there any product for my friend?', 'Because of the drinking ... 14446 ... Liver Booster ...', 'is this safe?');
     expect(a.mode).toBe('safety'); expect(a.safetyProducts).toEqual(['liver-booster']);
     const r = fixedReply(a);
-    expect(r).toMatch(/^Because of the drinking/); expect(r).toMatch(/for the Liver Booster \(LiverDetox\), please read the label/);
+    expect(r).toMatch(/^Because of the drinking/); expect(r).toMatch(/for the Liver Booster, please read the label/);
     expect(r).not.toMatch(/current range/);
   });
   it('urgent warnings still block products on the same questions', () => {
@@ -568,5 +568,168 @@ describe('agreeing after a reply', () => {
   it('agreeing after tips is a short "sure", and a real hi is still a greeting', () => {
     expect(fixedReply(ask('I am stressed', 'Try a short walk.', 'yeah'))).toMatch(/^Sure!/);
     const hi = ask('I am stressed', 'Try a short walk.', 'hi'); expect(hi.smallTalkKind).toBe('greeting'); expect(suggestChips(hi).length).toBeGreaterThan(0);
+  });
+});
+
+// Tester feedback (Nov 2026): closing message, "None of the above" loop, missing Enquire button, random input
+describe('conversation flow', () => {
+  const CLARIFY = 'I want to make sure I help with the right thing. Could you tell me a little more about how you feel, or pick one of these?';
+  it('ends the chat with a closing message when the visitor is done', () => {
+    for (const q of ['no thanks', 'no', 'nothing else', "that's all", 'thats all thanks', "i'm good", 'no thank you bye', 'illa', 'podhum', 'bye']){
+      const a = ask(q); expect(a.mode, q).toBe('smalltalk'); expect(a.smallTalkKind, q).toBe('bye');
+      expect(fixedReply(a), q).toMatch(/Thank you for chatting/); expect(replyActions(a), q).toEqual(['contact', 'new']);
+    }
+    const after = ask('I want to quit smoking', 'You could look at our PulmoClear Craving Control Gummies.', 'no thanks');
+    expect(fixedReply(after)).toMatch(/tap Enquire on a product card/);
+  });
+  it('does not mistake ordinary messages for "done"', () => {
+    expect(ask('no appetite').mode).not.toBe('smalltalk');
+    expect(ask('nothing helps my back pain').mode).toBe('tips');
+  });
+  it('"None of the above" gets a different reply with a way out, never the same question again', () => {
+    const first = ask('asdf 12345'); expect(first.mode).toBe('clarify'); expect(suggestChips(first)).toContain('None of these');
+    for (const q of ['None of these', 'none of the above', 'something else', 'other']){
+      const a = ask('asdf 12345', CLARIFY, q); expect(a.clarifyKind, q).toBe('other');
+      expect(fixedReply(a), q).not.toBe(fixedReply(first)); expect(fixedReply(a), q).toMatch(/own words/); expect(replyActions(a), q).toEqual(['contact']);
+    }
+  });
+  it('random input twice gets a new reply, and a third time hands over to the team', () => {
+    const second = ask('asdf 12345', CLARIFY, 'qwerty'); expect(second.clarifyKind).toBe('again');
+    expect(fixedReply(second)).not.toBe(CLARIFY); expect(replyActions(second)).toContain('contact');
+    const third = ask('asdf', CLARIFY, 'qwerty', fixedReply(second), 'zzzz'); expect(third.clarifyKind).toBe('stuck');
+    expect(fixedReply(third)).not.toBe(fixedReply(second)); expect(replyActions(third)).toEqual(['contact', 'new']);
+    expect(ask('12345').clarifyKind).toBe('unreadable');
+    // after "None of these", another unclear message moves on too (never back to the first question)
+    const other = fixedReply(ask('asdf', CLARIFY, 'None of these'));
+    expect(ask('asdf', CLARIFY, 'None of these', other, 'qwerty').clarifyKind).toBe('again');
+  });
+  it('random input during a topic asks about that topic, with a chip that goes back to it', () => {
+    const a = ask('I want to quit smoking', 'Some tips...', 'jkjkjk'); expect(a.clarifyKind).toBe('topic');
+    expect(fixedReply(a)).toMatch(/quitting smoking/);
+    const chip = suggestChips(a)[0]; expect(ask(chip).concerns).toContain('smoking');
+  });
+  it('order, price and contact questions come with a Contact our team button', () => {
+    for (const q of ['how to order', 'price', 'i want to buy']){ const a = ask(q); expect(a.mode, q).toBe('shop'); expect(replyActions(a), q).toEqual(['contact']); }
+    for (const q of ['what is your phone number', 'can i talk to a person', 'enquiry', 'how can I contact you', 'whatsapp number']){
+      const a = ask(q); expect(a.mode, q).toBe('contact'); expect(fixedReply(a), q).toMatch(/Contact our team/); expect(replyActions(a), q).toEqual(['contact']);
+    }
+    // the understanding layer may call a short message small talk; a contact question still gets the contact reply
+    const sem = analyse([{ role:'user', content:'what is your phone number' }], { semantic:{ intent:'smalltalk' } }); expect(sem.mode).toBe('contact');
+    expect(replyActions(ask('any product for diabetes', 'Alongside your doctor\'s treatment, you could look at our Reviva Massage Roll-On', 'ok'))).toEqual(['contact']);
+  });
+});
+
+// Tranzlife Products - KT.docx (Nov 2026): claims the team must not make, and the brochure contact details
+describe('product knowledge (KT document)', () => {
+  it('never claims detox, strengthening the lungs, immunity or a cure in customer-facing product text', () => {
+    for (const p of CATALOG){
+      const t = [p.name, p.pitch, p.about, p.mechanism, p.suitability, p.use].filter(Boolean).join(' ').toLowerCase();
+      for (const bad of ['detox', 'cleanse', 'strengthen', 'immunity', 'regenerat', 'non-addictive', 'best results'])
+        expect(t.includes(bad), `${p.id}: ${bad}`).toBe(false);
+    }
+  });
+  it('knows the KT facts for each focus product', () => {
+    const by = id => CATALOG.find(p => p.id === id);
+    expect(by('liver-booster').about).toMatch(/13 botanical/); expect(by('liver-booster').use).toMatch(/10 ml twice daily after meals/);
+    expect(by('pulmoclear').use).toMatch(/pack label/); expect(by('pulmoclear').size).toMatch(/60 gummies/);
+    expect(by('energy-booster').use).toMatch(/7.5 ml twice daily/); expect(by('energy-booster').size).toBe('500 ml');
+    expect(by('reviva').size).toBe('50 ml'); expect(by('cyclerelief').size).toBe('8 ml');
+    expect(by('reviva').about).toMatch(/not a diabetes medicine/);
+  });
+  it('shares the brochure phone and email when asked how to contact the team', () => {
+    const r = fixedReply(ask('what is your phone number'));
+    expect(r).toMatch(/917 611 2188/); expect(r).toMatch(/info@tranzlife.in/);
+  });
+});
+
+// Tester chat (Nov 2026): "Acidity" -> tips -> "do you have any products for that" got "our usual suggestions are ."
+describe('asking for a product where none fits', () => {
+  it('says honestly there is no product, never an empty list or Enquire line', () => {
+    const a = ask('hello there', 'Hi!', 'Acidity', 'Try smaller meals.', 'do you have any products for that');
+    expect(a.mode).toBe('recommend'); expect(a.products).toEqual([]);
+    const r = fixedReply(a);
+    expect(r).toMatch(/don't have a TranzLife product made for acidity/); expect(r).not.toMatch(/suggestions are \./); expect(r).not.toMatch(/Tap Enquire/);
+  });
+  it('gives the approved tips when the question comes first', () => {
+    const r = fixedReply(ask('any product for headache'));
+    expect(r).toMatch(/don't have a TranzLife product made for headaches/); expect(r).toMatch(/^- /m);
+  });
+  it('no product-less topic ever produces an empty suggestion list', () => {
+    for (const c of CONCERNS.filter(c => !c.products?.length)){
+      const r = fixedReply(ask(`any product for ${c.label}`));
+      expect(r, c.id).not.toMatch(/suggestions are \./); expect(r, c.id).not.toMatch(/\.\s*\./);
+    }
+  });
+});
+
+// Tester chat (Nov 2026): a man asking about periods, "are u mad ?", "any product for kidney ?"
+describe('tester chat: periods for a man, frustration, unknown product topic', () => {
+  it('a man asking about periods for himself gets a kind question, no period tips and no CycleRelief', () => {
+    for (const t of [['i am an man i facing the periods issue'], ['im a guy and i have period pain'], ['i am an man i facing the periods issue', 'Periods can be tough!', 'i am an man how i have periods issue ?']]){
+      const a = ask(...t); const q = t[t.length - 1];
+      expect(a.mode, q).toBe('askwho'); expect(a.products, q).toEqual([]); expect(a.tips, q).toEqual([]);
+      expect(fixedReply(a), q).toMatch(/Are you asking for someone else/); expect(fixedReply(a), q).not.toMatch(/CycleRelief|hot water/);
+    }
+    // also when the understanding layer found the period topic
+    const sem = analyse([{ role:'user', content:'i am an man i facing the periods issue' }], { semantic:{ concerns:['period'], intent:'tips', subject:'self' } });
+    expect(sem.mode).toBe('askwho'); expect(sem.products).toEqual([]);
+    // the quick reply for his wife works, and women still get period help
+    expect(suggestChips(sem)).toContain('My wife has period cramps');
+    expect(ask('i am a man', 'Thanks for telling me...', 'My wife has period cramps').products).toEqual(['cyclerelief']);
+    expect(ask('i have period cramps').products).toEqual(['cyclerelief']);
+  });
+  it('"are u mad ?" gets an apology and a way to reach the team, never "Sure!"', () => {
+    for (const q of ['are u mad ?', 'are you crazy', 'you are useless', 'what nonsense', 'this is wrong answer', 'loosu ah nee']){
+      const a = ask('i am an man i facing the periods issue', 'Periods can be tough!', q);
+      expect(a.mode, q).toBe('sorry'); expect(fixedReply(a), q).toMatch(/^Sorry/); expect(replyActions(a), q).toEqual(['contact']);
+    }
+    const sem = analyse([{ role:'user', content:'are u mad ?' }], { semantic:{ intent:'smalltalk' } }); expect(sem.mode).toBe('sorry');
+    expect(ask('ok').mode).toBe('smalltalk');
+  });
+  it('"any product for kidney ?" says there is no product and lists what the range is for', () => {
+    const a = ask('does u have any product for kidney ?'); expect(a.clarifyKind).toBe('noproduct');
+    expect(fixedReply(a)).toMatch(/don't have a TranzLife product for kidney/); expect(fixedReply(a)).toMatch(/doctor/);
+    expect(ask('kidney problem').mode).toBe('medical');
+    // people and general words are not topics
+    for (const q of ['any product for my friend', 'which product is good for daily use', 'any product for my wife', 'what product for this'])
+      expect(ask(q).clarifyKind, q).toBe('choose');
+  });
+});
+
+describe('tester chat: asking a man the same question twice', () => {
+  it('the second time gives a direct answer instead of repeating the question', () => {
+    const first = fixedReply(ask('i am an man i facing the periods issue'));
+    const second = fixedReply(ask('i am an man i facing the periods issue', first, 'i am an man how i have periods issue ?'));
+    expect(second).not.toBe(first); expect(second).toMatch(/^Men don't have periods/); expect(second).toMatch(/doctor/);
+  });
+});
+
+// Tester chat (Nov 2026): "is this trustable?", repeated headache tips, "kidney health" answered as headache, "thankyou"
+describe('tester chat: trust, repeated tips, new topic, thankyou', () => {
+  const H = 'Try to relax, as stress can make headaches worse. Drink plenty of water. Hope this helps.';
+  it('"is this trustable?" explains who TranzLife is and how to reach them, never the product list', () => {
+    for (const q of ['is this trustable?', 'is this site genuine', 'is it a scam', 'are your products certified?', 'nambalama?']){
+      const a = ask(q); expect(a.mode, q).toBe('trust');
+      const r = fixedReply(a); expect(r, q).toMatch(/Chennai/); expect(r, q).toMatch(/917 611 2188/); expect(r, q).not.toMatch(/current range/);
+      expect(replyActions(a), q).toEqual(['contact']);
+    }
+    // the understanding layer may call it a shop question; the trust reply still wins
+    expect(analyse([{ role:'user', content:'is this trustable?' }], { semantic:{ intent:'shop' } }).mode).toBe('trust');
+  });
+  it('does not repeat the tips it just gave when asked for a product', () => {
+    const r = fixedReply(ask('i am facing headache', H, 'suggest your product for headache'));
+    expect(r).toMatch(/don't have a TranzLife product made for headaches/); expect(r).not.toMatch(/^- /m);
+  });
+  it('a new topic in a product question is never answered with the previous topic', () => {
+    const a = ask('i am facing headache', H, 'suggest your product for headache', 'We don\'t have a TranzLife product made for headaches right now', 'any product for kidney health?');
+    expect(a.concerns).toEqual([]); const r = fixedReply(a);
+    expect(r).toMatch(/product for kidney health/); expect(r).not.toMatch(/headache/);
+    // a real follow-up still keeps the topic
+    expect(ask('I want to quit smoking', 'Some tips.', 'which product should i use').products.length).toBeGreaterThan(0);
+  });
+  it('"thankyou" as one word is thanks', () => {
+    for (const q of ['thankyou', 'thanku so much', 'tnx', 'thanx']){
+      const a = ask(q); expect(a.smallTalkKind, q).toBe('thanks'); expect(fixedReply(a), q).toMatch(/You're welcome/);
+    }
   });
 });

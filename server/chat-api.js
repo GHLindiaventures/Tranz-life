@@ -6,7 +6,7 @@
 //   - server/index.js serves it next to the built site for `npm start`
 import { emergencyReply, systemPrompt } from './advisor-prompt.js';
 import { analyse, routingNote } from './advisor-rules.js';
-import { fallbackReply, fixedReply, problems, suggestChips } from './reply-check.js';
+import { fallbackReply, fixedReply, problems, replyActions, suggestChips } from './reply-check.js';
 import { createUnderstanding } from './understand.js';
 import { createInsights } from './insights.js';
 
@@ -63,7 +63,7 @@ function createChatApi(env = {}){
     if (fixed){
       // unmatched messages: only the length is logged, never the text
       if (a.mode === 'clarify') console.log(`[tulsi] clarify (message length ${msgs[msgs.length - 1].content.length})`);
-      return { text:fixed, checked:fixed, products:a.products, suggest:suggestChips(a), via:'fixed', problems:[], analysis:a };
+      return { text:fixed, checked:fixed, products:a.products, suggest:suggestChips(a), actions:replyActions(a), via:'fixed', problems:[], analysis:a };
     }
     // earlier turns only for a genuine follow-up about the same person; otherwise a clean context (no earlier replies to copy)
     const earlier = a.keepHistory ? msgs.slice(-5, -1) : [];
@@ -81,7 +81,7 @@ function createChatApi(env = {}){
     // fixed sentences (e.g. "I can't advise on ashwagandha or doses") go first, written by code, not the model
     if (a.prefix.length) text = `${a.prefix.join(' ')}\n\n${text}`;
     if (a.suffix.length) text = `${text}\n\n${a.suffix.join(' ')}`;
-    return { text, checked, products:a.products, suggest:[], via, problems:first, analysis:a };
+    return { text, checked, products:a.products, suggest:[], actions:replyActions(a), via, problems:first, analysis:a };
   }
 
   async function chat(req, res){
@@ -94,7 +94,7 @@ function createChatApi(env = {}){
       const out = await respond(msgs, ctrl.signal);
       if (out.via !== 'model') console.log(`[tulsi] ${out.via}${out.problems.length ? `: ${out.problems.join('; ')}` : ''}`);   // no message text is logged
       res.writeHead(200, { 'Content-Type':'text/plain; charset=utf-8', 'Cache-Control':'no-cache',
-        'X-Products':out.products.join(','), 'X-Suggest':(out.suggest || []).join('|'), 'Access-Control-Expose-Headers':'X-Products, X-Suggest' });
+        'X-Products':out.products.join(','), 'X-Suggest':(out.suggest || []).join('|'), 'X-Actions':(out.actions || []).join(','), 'Access-Control-Expose-Headers':'X-Products, X-Suggest, X-Actions' });
       res.end(out.text);
       // after the reply is sent: save the anonymous counts (never the message itself)
       insights.record(out.analysis, msgs[msgs.length - 1].content, { via:out.via, emergency:out.via === 'emergency',

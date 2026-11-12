@@ -9,6 +9,12 @@
         "dev"
       ],
       "port": 5173
+    },
+    {
+      "name": "dev-alt",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["vite", "--port", "5174"],
+      "port": 5174
     }
   ]
 }

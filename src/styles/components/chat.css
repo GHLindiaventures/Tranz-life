@@ -1,8 +1,9 @@
 /* ---------- Tulsi wellness chat (features/chat/chat-widget.js) ---------- */
-.chat{position:fixed;z-index:66;right:max(20px,env(safe-area-inset-right,0px));bottom:calc(20px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;align-items:flex-end;gap:14px;color:var(--ink);font-size:15px;line-height:1.45;pointer-events:none}
+.chat{--f-chat:"PT Sans","Segoe UI",system-ui,sans-serif;position:fixed;z-index:66;right:max(20px,env(safe-area-inset-right,0px));bottom:calc(20px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;align-items:flex-end;gap:14px;color:var(--ink);font-family:var(--f-chat);font-stretch:normal;font-weight:400;font-size:15.5px;line-height:1.45;letter-spacing:0;pointer-events:none}
+.chat button,.chat textarea,.chat a{font-family:inherit;font-stretch:inherit}
 .chat>*{pointer-events:auto}
 
-.ch-fab{display:inline-flex;align-items:center;gap:10px;padding:7px 18px 7px 7px;border-radius:999px;background:var(--forest);color:#f4f8ef;font-weight:700;font-stretch:85%;font-size:16px;box-shadow:0 10px 30px -8px rgba(20,50,25,.55);transition:transform .35s var(--ease),box-shadow .35s}
+.ch-fab{display:inline-flex;align-items:center;gap:10px;padding:7px 18px 7px 7px;border-radius:999px;background:var(--forest);color:#f4f8ef;font-weight:800;font-size:16px;box-shadow:0 10px 30px -8px rgba(20,50,25,.55);transition:transform .35s var(--ease),box-shadow .35s}
 .ch-fab:hover{transform:translateY(-2px);box-shadow:0 14px 34px -8px rgba(20,50,25,.6)}
 .ch-fab-ic{width:40px;height:40px;border-radius:50%;background:var(--moss);color:var(--forest);display:grid;place-items:center}
 .ch-fab-ic svg{width:22px;height:22px}
@@ -14,13 +15,24 @@
 
 .ch-head{display:flex;align-items:center;gap:12px;padding:14px 14px 14px 16px;background:var(--forest);color:#f4f8ef}
 .ch-head div{flex:1;min-width:0}
-.ch-head b{display:block;font-size:18px;font-weight:800;font-stretch:80%;letter-spacing:.01em}
+.ch-head b{display:block;font-size:18px;font-weight:800;letter-spacing:.01em}
 .ch-head small{display:flex;align-items:center;gap:6px;font-size:12.5px;color:#cfe2c2}
 .ch-head small i{width:7px;height:7px;border-radius:50%;background:#9fd57a;box-shadow:0 0 0 3px rgba(159,213,122,.25)}
-.ch-new{font-size:12px;font-weight:700;padding:6px 11px;border-radius:999px;border:1px solid rgba(244,248,239,.3);color:#e6efe0}
+.ch-new{font-size:12.5px;font-weight:700;padding:6px 11px;border-radius:999px;border:1px solid rgba(244,248,239,.3);color:#e6efe0}
 .ch-new:hover{background:rgba(244,248,239,.12)}
 .ch-x{width:34px;height:34px;border-radius:50%;font-size:20px;line-height:1;color:#f4f8ef}
 .ch-x:hover{background:rgba(244,248,239,.12)}
+.ch-min{width:34px;height:34px;border-radius:50%;color:#f4f8ef;display:grid;place-items:center}
+.ch-min svg{width:18px;height:18px}
+.ch-min:hover{background:rgba(244,248,239,.12)}
+.ch-min-up{display:none}
+
+/* minimized: only the header bar stays, the conversation is kept */
+.chat.open.min .ch-panel{height:auto;border-radius:22px}
+.chat.min .ch-list,.chat.min .ch-chips,.chat.min .ch-form,.chat.min .ch-note,.chat.min .ch-new{display:none}
+.chat.min .ch-head{cursor:pointer}
+.chat.min .ch-min-dash{display:none}
+.chat.min .ch-min-up{display:inline}
 
 .ch-av{flex:none;width:30px;height:30px;border-radius:50%;background:var(--moss);color:var(--forest);display:grid;place-items:center}
 .ch-av svg{width:17px;height:17px}
@@ -33,6 +45,8 @@
 .ch-b{max-width:84%;padding:10px 14px;border-radius:18px;display:grid;gap:8px;overflow-wrap:anywhere}
 .ch-msg.bot .ch-b{background:var(--panel);border:1px solid var(--line);border-bottom-left-radius:6px}
 .ch-msg.me .ch-b{background:var(--forest);color:#f4f8ef;border-bottom-right-radius:6px}
+.ch-b p{margin:0}
+.ch-b b{font-weight:700}
 .ch-b ul{margin:0;padding-left:18px;display:grid;gap:4px}
 
 .ch-dots{display:inline-flex;gap:4px;padding:4px 2px}
@@ -46,11 +60,17 @@
 .ch-prod b{display:block;font-size:14px;font-weight:700;line-height:1.2}
 .ch-prod-pitch{display:block;font-size:12px;color:var(--forest);line-height:1.25;margin:2px 0 3px;font-style:italic}
 .ch-prod small{color:var(--muted);font-size:12px}
-.ch-prod .ch-enquire{justify-self:start;font-size:13px;font-weight:700;padding:5px 12px;border-radius:999px;background:var(--forest);color:#f4f8ef;transition:background .3s}
+.ch-prod .ch-enquire{justify-self:start;font-size:13.5px;font-weight:700;padding:5px 12px;border-radius:999px;background:var(--forest);color:#f4f8ef;transition:background .3s}
 .ch-prod .ch-enquire:hover{background:var(--sage)}
 
+.ch-actions{display:flex;flex-wrap:wrap;gap:8px}
+.ch-action{display:inline-flex;align-items:center;font-size:14px;font-weight:700;padding:7px 14px;border-radius:999px;background:var(--forest);color:#f4f8ef;transition:background .25s}
+.ch-action:hover{background:var(--sage)}
+.ch-restart{background:none;color:var(--forest);border:1px solid var(--line-strong)}
+.ch-restart:hover{background:var(--ground-2);color:var(--forest)}
+
 .ch-chips{display:flex;flex-wrap:wrap;gap:6px;padding:4px 14px 10px}
-.ch-chips button{font-size:13px;font-weight:600;padding:6px 12px;border-radius:999px;border:1px solid var(--line-strong);color:var(--forest);background:var(--panel);transition:background .25s,border-color .25s}
+.ch-chips button{font-size:13px;font-weight:700;padding:6px 12px;border-radius:999px;border:1px solid var(--line-strong);color:var(--forest);background:var(--panel);transition:background .25s,border-color .25s}
 .ch-chips button:hover{background:var(--ground-2);border-color:var(--sage)}
 
 .ch-form{display:flex;align-items:flex-end;gap:8px;margin:0 12px;padding:6px 6px 6px 14px;border-radius:22px;background:var(--panel);border:1px solid var(--line-strong)}
