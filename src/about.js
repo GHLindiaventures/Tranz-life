@@ -1,14 +1,14 @@
-// TranzLife Biosciences - About Page Interactive Controller
+// TranzLife Biosciences - About Page Interactive Controller (Static)
 import './styles/main.css';
 import { state } from './app/state.js';
 import { initCart } from './features/cart/cart.js';
 import { $ } from './utils/dom.js';
 import { milestones } from './data/milestones.js';
-import { initAnimations } from './about/animations.js';
 
 function initAboutPage() {
-  // Mark body so CSS animation states activate
-  document.body.classList.add('js-loaded');
+  // Ensure all eyebrows are drawn immediately without animation
+  document.querySelectorAll('.eyebrow').forEach(el => el.classList.add('drawn'));
+
   // 1. Initialize shopping bag state
   try {
     initCart();
@@ -72,32 +72,7 @@ function initAboutPage() {
   if (closeBag) closeBag.addEventListener('click', () => setDrawerOpen(false));
   if (scrim) scrim.addEventListener('click', () => setDrawerOpen(false));
 
-  // 5. Scroll entrance animation observer for eyebrows and cards
-  const animatedEls = document.querySelectorAll(
-    '.eyebrow, .vis-mis-card, .value-card, .do-card, .future-card, .why-card, .strength-card, .milestone-item'
-  );
-  if ('IntersectionObserver' in window) {
-    const observer = new IntersectionObserver((entries, obs) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          if (entry.target.classList.contains('eyebrow')) {
-            entry.target.classList.add('drawn');
-          } else {
-            entry.target.classList.add('reveal-in');
-          }
-          obs.unobserve(entry.target);
-        }
-      });
-    }, { rootMargin: '0px 0px -40px 0px', threshold: 0.1 });
-
-    animatedEls.forEach(el => observer.observe(el));
-  } else {
-    animatedEls.forEach(el => {
-      if (el.classList.contains('eyebrow')) el.classList.add('drawn');
-    });
-  }
-
-  // 6. Smooth anchor scrolling
+  // 5. Anchor link navigation (instant jump, completely static)
   document.addEventListener('click', e => {
     const a = e.target.closest('a[href^="#"]');
     if (!a) return;
@@ -106,16 +81,14 @@ function initAboutPage() {
     const target = document.querySelector(hash);
     if (target) {
       e.preventDefault();
-      target.scrollIntoView({ behavior: 'smooth' });
+      target.scrollIntoView({ behavior: 'auto' });
     }
   });
 }
 
 // Boot on DOM ready
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', () => { initAboutPage(); initAnimations(); });
+  document.addEventListener('DOMContentLoaded', initAboutPage);
 } else {
   initAboutPage();
-  initAnimations();
 }
-
