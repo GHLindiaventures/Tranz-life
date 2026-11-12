@@ -50,7 +50,7 @@
       <aside class="menu-side">
         <div class="menu-note">
           <p class="hand">Innovating life<br>beyond limits</p>
-          <a href="index.html#contact" class="menu-contact">Say hello →</a>
+          <a href="contact.html" class="menu-contact">Say hello →</a>
         </div>
       </aside>
     </div>
@@ -207,10 +207,106 @@
     </div>
 
     <!-- Main Products Grid -->
-    <section class="catalog-sec">
+    <section class="catalog-sec" id="catalog">
       <div class="wrap">
         <div class="catalog-grid" id="catalogGrid">
           <!-- Dynamically populated from PRODUCTS array in src/products.js -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Product Finder -->
+    <section class="page finder" id="finder" data-theme="cream">
+      <div class="band">
+        <div class="wrap finder-grid">
+          <div>
+            <p class="eyebrow reveal">Product finder</p>
+            <h2 class="h2 rv-words">What does your <span class="lt">day need?</span></h2>
+            <div class="needs" id="needs" role="group" aria-label="Choose a need"></div>
+          </div>
+          <div class="match reveal" id="match" aria-live="polite"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Product Story: scroll-driven 3D product story -->
+    <section class="page story" id="story" data-theme="cream">
+      <div class="seq" id="seq">
+        <div class="seq-pin" id="seqPin">
+          <h2 class="sr">Five TranzLife products</h2>
+          <svg class="seq-arcs" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <path
+              d="M-80 760C120 560 420 520 560 640s40 320-160 300S120 700 380 520 980 300 1180 420s320 300 380 120" />
+            <path d="M1520 180C1300 60 980 120 900 300s120 380 300 320 140-300-120-360S520 360 300 300-60 80-100 240" />
+            <path d="M-60 300C200 120 560 140 700 330s-60 420-300 360-200-320 80-420 640-60 820 160 160 340 260 260" />
+          </svg>
+          <div class="seq-cards" id="seqCards"></div>
+          <canvas id="seqCanvas" aria-hidden="true"></canvas>
+          <div class="seq-notes" id="seqNotes" aria-hidden="true"></div>
+          <div class="seq-final" id="seqFinal">
+            <h2 class="seq-title" id="seqTitle"><span data-split>Nature, just the way you need it.</span> <span
+                class="l2" data-split>Which one is yours?</span></h2>
+            <div class="seq-labels" id="seqLabels" aria-hidden="true"></div>
+            <a class="pill seq-cta" href="#catalog"><i aria-hidden="true">↗</i><b>Shop the products</b></a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Benefits comparison -->
+    <section class="page benefits" id="benefits" data-theme="cream">
+      <div class="band">
+        <div class="wrap">
+          <div class="ben">
+            <div class="ben-img">
+              <div data-shot="gummies" style="position:absolute;inset:0"></div>
+            </div>
+            <div class="ben-copy">
+              <h2 class="h2 rv-words"><span class="lt">More of what matters.</span> See the difference.</h2>
+              <table class="tbl reveal">
+                <thead>
+                  <tr>
+                    <th>What goes in</th>
+                    <th><span class="brandmark">TranzLife</span></th>
+                    <th>Typical brand</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Plant-based formulas</td>
+                    <td><span class="ok">✓</span></td>
+                    <td><span class="no">–</span></td>
+                  </tr>
+                  <tr>
+                    <td>Natural flavours and colours in our gummies</td>
+                    <td><span class="ok">✓</span></td>
+                    <td><span class="no">–</span></td>
+                  </tr>
+                  <tr>
+                    <td>Biodegradable PLA and cellulose jar</td>
+                    <td><span class="ok">✓</span></td>
+                    <td><span class="no">–</span></td>
+                  </tr>
+                  <tr>
+                    <td>Plant-fibre eco cap and food-grade inner seal</td>
+                    <td><span class="ok">✓</span></td>
+                    <td><span class="no">–</span></td>
+                  </tr>
+                  <tr>
+                    <td>Recycled kraft paper outer sleeve</td>
+                    <td><span class="ok">✓</span></td>
+                    <td><span class="no">–</span></td>
+                  </tr>
+                  <tr>
+                    <td>100% natural, organic inhaler ingredients</td>
+                    <td><span class="ok">✓</span></td>
+                    <td><span class="no">–</span></td>
+                  </tr>
+                </tbody>
+              </table>
+              <p class="tbl-note">“Typical” varies by brand; a dash means not always stated.</p>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -306,21 +402,21 @@
         <div class="f-col">
           <h4>Shop</h4>
           <a href="products.html">All products</a>
-          <a href="index.html#finder">Product finder</a>
-          <a href="index.html#products">Product story</a>
+          <a href="products.html#finder">Product finder</a>
+          <a href="products.html#story">Product story</a>
         </div>
         <div class="f-col">
           <h4>Company</h4>
           <a href="about.html">About TranzLife</a>
-          <a href="index.html#insider">Why TranzLife</a>
-          <a href="index.html#process">Pipeline</a>
-          <a href="index.html#science">Science</a>
+          <a href="index.html#insider">Our vision</a>
+          <a href="science.html#process">Pipeline</a>
+          <a href="science.html">Science</a>
         </div>
         <div class="f-col">
           <h4>Help</h4>
-          <a href="index.html#contact">Contact</a>
-          <a href="index.html#contact">Retail partners</a>
-          <a href="index.html#contact">Corporate gifting</a>
+          <a href="contact.html">Contact</a>
+          <a href="contact.html">Retail partners</a>
+          <a href="contact.html">Corporate gifting</a>
         </div>
       </div>
       <div class="f-bot">

@@ -22,6 +22,7 @@ function initProductHandOff() {
   const L = jarLayer(flightCanvas);
   const flightJars = PRODUCTS.map((p, i) => L.jar(p, i));
   flightJars.forEach(j => { j.G.visible = false; });
+  L.warm();
 
   const slotEls = PRODUCTS.map(p => document.querySelector(`.lineup-slot[data-slot="${p.id}"]`));
   const items = $$('.lineup-item');
@@ -209,8 +210,14 @@ function initProductHandOff() {
       }
     });
 
+    // Nothing on screen (top of the page, before the hand-off starts): clear once, then skip the
+    // full-screen WebGL render instead of drawing an empty transparent frame every frame.
+    const anyVisible = flightJars.some(j => j.G.visible);
+    if (!anyVisible && drewEmpty) return;
+    drewEmpty = !anyVisible;
     L.renderer.render(L.scene, L.cam);
   }
+  let drewEmpty = false;
 
   let heroVisible = true;
   let lineupVisible = false;

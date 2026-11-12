@@ -22,8 +22,28 @@ function jarLayer(canvas){
     const G = new THREE.Group(); G.add(b); scene.add(G); return { G, b, h:b.userData.h, fit:p.fit || 1, p };
   };
   L.size = (jar, pxH) => jar.G.scale.setScalar(Math.max(.0001, pxH/L.ppu()/jar.h));
+  // Compile every shader and upload every texture ahead of time, while the browser is idle.
+  // Otherwise the first frame a product becomes visible stalls for 100-250 ms mid-scroll.
+  L.warm = () => warmUp(renderer, scene, cam);
   L.resize();
   return L;
 }
 
-export { jarLayer };
+// three.js only compiles visible objects, so show everything for the duration of the compile, then restore.
+function warmUp(renderer, scene, cam){
+  const run = () => {
+    try {
+      const hidden = [];
+      scene.traverse(o => { if (!o.visible){ hidden.push(o); o.visible = true; } });
+      renderer.compile(scene, cam);
+      if (renderer.initTexture) scene.traverse(o => {
+        const mats = o.material ? (Array.isArray(o.material) ? o.material : [o.material]) : [];
+        mats.forEach(m => ['map', 'normalMap', 'roughnessMap', 'alphaMap', 'bumpMap', 'envMap'].forEach(k => { if (m[k] && m[k].isTexture && !m[k].isCubeTexture) renderer.initTexture(m[k]); }));
+      });
+      hidden.forEach(o => { o.visible = false; });
+    } catch (e) { /* warming is best-effort */ }
+  };
+  if ('requestIdleCallback' in window) requestIdleCallback(run, { timeout: 2500 }); else setTimeout(run, 300);
+}
+
+export { jarLayer, warmUp };

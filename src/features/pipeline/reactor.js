@@ -4,6 +4,7 @@ import { NSTAGE, RX } from '../../data/pipeline.js';
 import { buildChain } from './molecule-chain.js';
 import { radialCanvas } from '../../lib/canvas-art.js';
 import { envCube } from '../../lib/environment.js';
+import { warmUp } from '../products/jar-layer.js';
 import { $, $$ } from '../../utils/dom.js';
 import { clamp, lerp, seeded, smooth } from '../../utils/math.js';
 import { reduce } from '../../utils/media.js';
@@ -212,6 +213,7 @@ function initReactor(getProgress){
     renderer.render(scene, cam);
   }
   window.addEventListener('resize', resize); resize(); apply(0);
+  warmUp(renderer, scene, cam); // compile shaders/upload textures while idle, not on the first scrolled frame
 
   const observer = new IntersectionObserver(entries => {
     isSecVisible = entries[0].isIntersecting;

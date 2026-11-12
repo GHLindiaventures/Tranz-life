@@ -171,6 +171,10 @@ function initTaglineMotion() {
     entries => {
       const entry = entries[0];
       isVisible = entry.isIntersecting;
+      // also pause the section's infinite CSS animations while it is off screen: several animate
+      // stroke-dashoffset / background-position / filter, which restyle and repaint on the main thread
+      // every frame even when nobody can see them
+      section.classList.toggle('is-idle', !isVisible);
       if (isVisible && !rafId) {
         rafId = requestAnimationFrame(draw);
       }

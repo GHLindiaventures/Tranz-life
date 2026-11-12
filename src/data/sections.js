@@ -1,16 +1,10 @@
-// Page sections listed in the dock and the full-screen menu.
+// Home page sections listed in the dock. Every other section lives on its own page.
 const SECTIONS = [
   { id:'home', name:'Home', sub:'Nature meets science', tags:['3D jar','Facts arc','Marquee'] },
   { id:'lineup', name:'Lineup', sub:'All five products', tags:['The lineup','5 products'] },
   { id:'insider', name:'Our Vision', sub:'Company Tagline', tags:['Roots of nature','Infinity of science'] },
-  { id:'products', name:'Products', sub:'The product story', tags:['3D products','5 cards','Finale'] },
-  { id:'benefits', name:'Benefits', sub:'See the difference', tags:['Comparison'] },
-  { id:'process', name:'Pipeline', sub:'Seed to shelf', tags:['6 stages','Molecules','Timeline'] },
-  { id:'science', name:'Science', sub:'Rooted in nature', tags:['DNA helix','8 botanicals'] },
-  { id:'lab', name:'R&D Lab', sub:'What is growing', tags:['Lab board'] },
-  { id:'finder', name:'Product Finder', sub:'Find your match', tags:['5 needs','Match'] },
-  { id:'shop', name:'Shop', sub:'All five products', tags:['Add to bag'] },
-  { id:'contact', name:'Contact', sub:'Say hello', tags:['Form','Footer'] }
+  { id:'nature', name:'Nature', sub:'Ayurvedic wisdom', tags:['Botanical video'] },
+  { id:'explore', name:'Explore', sub:'Find your way around', tags:['About','Products','Science','Contact'] }
 ];
 
 export { SECTIONS };

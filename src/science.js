@@ -2,6 +2,11 @@
 import './styles/main.css';
 import { initCart } from './features/cart/cart.js';
 import { initMolecule } from './features/science/molecule-viewer.js';
+import { initReactor } from './features/pipeline/reactor.js';
+import { buildLab } from './features/lab/lab-board.js';
+import { pageProgress } from './app/page-sections.js';
+import { initScroll } from './app/scroll-animations.js';
+import { NSTAGE } from './data/pipeline.js';
 import { $ } from './utils/dom.js';
 
 // Comprehensive 10-Botanical Scientific Registry
@@ -400,6 +405,27 @@ function initSciencePage() {
 
   // Initialize simulation in Phytosome mode
   updateSimulation('phytosome');
+
+  // 7. Seed-to-shelf pipeline: the scroll-driven molecule reactor
+  try {
+    initReactor(() => pageProgress('process'));
+    // clicking a stage in the pipeline rail scrolls to that stage
+    window.addEventListener('tl:goStage', e => {
+      const sec = document.getElementById('process');
+      if (!sec) return;
+      const top = sec.getBoundingClientRect().top + window.scrollY;
+      const y = top + ((e.detail + .32) / NSTAGE) * (sec.offsetHeight - window.innerHeight);
+      window.scrollTo({ top: Math.max(0, y), behavior: 'smooth' });
+    });
+  } catch (e) {
+    console.warn('Pipeline reactor unavailable:', e);
+  }
+
+  // 8. R&D lab board
+  try { buildLab(); } catch (e) { console.warn('Lab board unavailable:', e); }
+
+  // 9. Scroll reveals for the reactor and lab sections
+  try { initScroll(); } catch (e) { console.warn('Scroll reveals unavailable:', e); }
 }
 
 // Auto-boot when DOM is ready

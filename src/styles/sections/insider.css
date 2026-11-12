@@ -735,3 +735,11 @@
     margin-top: 6px;
   }
 }
+
+/* Off screen (toggled by tagline-motion.js): freeze the ambient loops instead of restyling/repainting them
+   every frame. They resume from the same point when the section scrolls back into view. */
+.insider.is-idle *,
+.insider.is-idle *::before,
+.insider.is-idle *::after {
+  animation-play-state: paused !important;
+}

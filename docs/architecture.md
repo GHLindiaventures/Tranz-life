@@ -2,30 +2,37 @@
 
 ## Page flow
 
-`index.html` holds the markup for every section, in this order:
+`index.html` is the brand introduction only:
 
 1. hero (`#home`)
-2. Why TranzLife (`#insider`)
-3. product story (`#products`)
-4. benefits (`#benefits`)
-5. pipeline (`#process`)
-6. science (`#science`)
-7. R&D lab (`#lab`)
-8. product finder (`#finder`)
-9. shop (`#shop`)
-10. contact (`#contact`)
-11. footer
+2. product lineup (`#lineup`)
+3. company tagline (`#insider`)
+4. nature video: Ayurveda botanical frame (`#nature`)
+5. Explore band (`#explore`): one card per dedicated page
+6. government trust strip (`#gov-trust`)
+7. footer
+
+Every other section lives on the page that owns it:
+
+| Section | Page | Booted by |
+|---|---|---|
+| Product finder (`#finder`), product story (`#story`), benefits (`#benefits`) | `products.html` | `src/products.js` |
+| Seed-to-shelf reactor (`#process`), R&D lab board (`#lab`) | `science.html` | `src/science.js` |
+| Contact form | `contact.html` | `src/contact.js` |
+
+The old Home science, shop and contact blocks were removed rather than moved: the Science page's 3D compound explorer, the Products catalog and the Contact page form already cover them.
 
 JavaScript only fills in and animates that markup.
 
 ## Boot order (`src/main.js`)
 
-1. **Static UI.** Cart and contact handlers, marquee, lab board, product finder buttons, dock and menu.
-2. **Product images.** `features/products/product-images.js` imports the client's five product images into `thumbs`. The shop cards, finder, menu card, bag, Why TranzLife cards and benefits panel all use them. `components/lightbox.js` opens the full design board for any `[data-design]` button.
-3. **Hero jar.** `features/hero/hero-jar.js` (the 3D gummies jar), after the web fonts load.
-4. **Content that needs the images.** Shop grid, finder match, molecule viewer and herb picker.
-5. **Scroll scenes.** The product story (`features/product-story`) and the molecule reactor (`features/pipeline`), plus `app/page-sections.js`, which tracks the current section and dispatches `tl:page` events.
-6. **Smooth scroll and reveals.** Lenis smooth scroll, the ScrollTrigger reveals, then the intro timeline hides the loader.
+1. **Static UI.** Cart, marquee, dock and menu.
+2. **Hero jar.** `features/hero/hero-jar.js` (the 3D product on the plinth), layered depth and moss reveal, after the web fonts load.
+3. **Product images.** `features/products/product-images.js` fills `thumbs` (menu card, bag). `components/lightbox.js` opens the full design board for any `[data-design]` button.
+4. **Page tracking.** `app/page-sections.js` tracks the current Home section and dispatches `tl:page` events for the dock.
+5. **Smooth scroll and reveals.** Lenis smooth scroll, the ScrollTrigger reveals, the tagline sheet transition over the lineup, the hero-to-lineup product hand-off, then the intro timeline hides the loader.
+
+The tagline motion and Ayurveda video boot from `src/main.js`. The product story (`features/product-story`), finder and benefits boot from `src/products.js`. The molecule reactor (`features/pipeline`) and lab board boot from `src/science.js`. Both pages call `initScroll()` for the same reveal animations.
 
 A 25-second fail-safe always hides the loader, even if a 3D scene fails.
 

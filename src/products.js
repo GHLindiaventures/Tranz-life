@@ -5,6 +5,11 @@ import { PRODUCTS, PIPELINE_PRODUCTS } from './data/products.js';
 import { SHOTS } from './features/products/product-images.js';
 import { initCart, renderCart } from './features/cart/cart.js';
 import { inr } from './utils/format.js';
+import { buildNeeds } from './features/finder/product-finder.js';
+import { fillShots } from './features/products/product-grid.js';
+import { initStory } from './features/product-story/product-story.js';
+import { initScroll } from './app/scroll-animations.js';
+import { initLightbox } from './components/lightbox.js';
 import { $, $$ } from './utils/dom.js';
 
 function initProductsPage() {
@@ -90,6 +95,13 @@ function initProductsPage() {
       });
     });
   });
+
+  // 3b. Product finder, product story and benefits
+  try { initLightbox(); } catch (e) { console.warn('Lightbox unavailable:', e); }
+  try { buildNeeds(); } catch (e) { console.warn('Product finder unavailable:', e); }
+  try { fillShots(); } catch (e) { console.warn('Product shots unavailable:', e); }
+  try { initStory(); } catch (e) { console.warn('Product story unavailable:', e); }
+  try { initScroll(); } catch (e) { console.warn('Scroll reveals unavailable:', e); }
 
   // 4. Navigation scroll header styling
   const nav = $('#nav');

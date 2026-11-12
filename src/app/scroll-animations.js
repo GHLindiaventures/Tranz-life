@@ -259,9 +259,15 @@ function initScroll() {
         skew = clamp(self.getVelocity() / -300, -7, 7);
       }
     });
+    // write only when the lean actually changes: an unconditional write every tick dirtied style forever, even at rest
+    let shown = '';
     gsap.ticker.add(() => {
       skew *= 0.9;
-      mq.style.transform = `skewX(${skew.toFixed(2)}deg)`;
+      if (Math.abs(skew) < 0.01) skew = 0;
+      const v = skew.toFixed(2);
+      if (v === shown) return;
+      shown = v;
+      mq.style.transform = `skewX(${v}deg)`;
     });
   }
 }

@@ -30,3 +30,10 @@
 }
 .t-cream{--ground:#e9efe3;--ground-2:#dfe8d5;--panel:#ffffff;--panel-2:#f4f8ef;--line:rgba(31,70,35,.14);--line-strong:rgba(31,70,35,.3);--ink:#1f4423;--muted:#4c6648;--faint:#7c9077;--sage:#6f9e4c;--moss:#8cb86a;--cream:#24502a;--on-cream:#f4f8ef;--gold:#d6a23a;--glass:rgba(255,255,255,.5);--halo:rgba(140,184,106,.32)}
 .t-green{--ground:#1d4424;--ground-2:#23502b;--panel:#265630;--panel-2:#2c5f36;--line:rgba(233,239,227,.15);--line-strong:rgba(233,239,227,.32);--ink:#eef3e8;--muted:#bfd1b6;--faint:#8fa889;--sage:#b3d78f;--moss:#86b562;--cream:#e9efe3;--on-cream:#1f4423;--gold:#e7c680;--glass:rgba(16,40,22,.5);--halo:rgba(150,200,110,.28)}
+
+/* Scroll-driven custom properties that are only read by the element they are set on.
+   Registered as non-inherited so each per-frame write restyles that one element, not its whole subtree
+   (the sheet radius is written on the large tagline section every scroll frame). */
+@property --sheet-radius { syntax: '<length>'; inherits: false; initial-value: 0px; }
+@property --slab-y { syntax: '<length>'; inherits: false; initial-value: 0px; }
+@property --brand-y { syntax: '<length>'; inherits: false; initial-value: 0px; }

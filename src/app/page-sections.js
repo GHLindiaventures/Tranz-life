@@ -44,8 +44,11 @@ function pageProgress(id){
 function initPages(){
   const pages = $$('main > .page'); LAYOUT.pages = pages;
   const first = p => p.id === 'process' ? 'cream' : p.dataset.theme, last = p => p.id === 'process' ? 'green' : p.dataset.theme;
+  const ring = document.querySelector('.dm-ring');
+  let docH = document.documentElement.scrollHeight, lastSp = '';
   function measure(){
     LAYOUT.vh = window.innerHeight;
+    docH = document.documentElement.scrollHeight;
     LAYOUT.hs = pages.map(p => p.offsetHeight);
     LAYOUT.tops = pages.map(p => p.offsetTop);
     // where two themes meet, the upper colour fades into the next page
@@ -59,7 +62,10 @@ function initPages(){
     const id = pages[cur].id; let theme = pages[cur].dataset.theme;
     if (id === 'process' && LAYOUT.reactor) theme = LAYOUT.reactor.theme();
     if (cur !== LAYOUT.cur || theme !== LAYOUT.theme){ LAYOUT.cur = cur; LAYOUT.theme = theme; window.dispatchEvent(new CustomEvent('tl:page', { detail:{ id, theme, index:cur, count:pages.length } })); }
-    document.documentElement.style.setProperty('--sp', clamp(y/Math.max(1, document.documentElement.scrollHeight - LAYOUT.vh), 0, 1).toFixed(4));
+    // scroll progress for the dock ring. Written on the ring itself (not <html>): an inherited custom property on
+    // the root restyles the whole document every scroll frame. Document height comes from measure(), not a live read.
+    const sp = clamp(y/Math.max(1, docH - LAYOUT.vh), 0, 1).toFixed(3);
+    if (sp !== lastSp && ring){ lastSp = sp; ring.style.setProperty('--sp', sp); }
   }
   let ticking = false;
   window.addEventListener('scroll', () => { if (ticking) return; ticking = true; requestAnimationFrame(() => { ticking = false; update(); }); }, { passive:true });

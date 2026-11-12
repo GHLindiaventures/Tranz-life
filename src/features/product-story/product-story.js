@@ -46,6 +46,7 @@ function initStory(){
   let mobile = false;
   const resize = () => { L.resize(); mobile = L.W < 760 || L.W/L.H < .9; };
   window.addEventListener('resize', resize); resize();
+  L.warm(); // finale props included: compile shaders/upload textures while idle, not mid-scroll
 
   const S0 = .03, ST = .148, DUR = .25, FIN = .8;
   const sOf = i => S0 + i*ST, cOf = i => sOf(i) + DUR/2, mOf = i => i < NP - 1 ? (cOf(i) + cOf(i + 1))/2 : 2;

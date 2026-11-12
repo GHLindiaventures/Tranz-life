@@ -84,17 +84,24 @@ function initLayeredDepth() {
   }
 
   // 2. Multi-plane scroll parallax
-  const onScroll = () => {
-    const y = window.scrollY || window.pageYOffset;
+  // Batched to one write per frame, elements cached, and frozen once the hero is fully scrolled past
+  // (the offsets are invisible there, so writing them only restyled the hero for nothing).
+  const slabEls = [...stage.querySelectorAll('.hero__slab')];
+  const birdLayer = $('#birds');
+  let stageH = stage.offsetHeight, lastY = NaN, scrollQueued = false;
+  const applyScroll = () => {
+    scrollQueued = false;
+    const y = Math.min(window.scrollY || window.pageYOffset, stageH * 1.1);
+    if (y === lastY) return;
+    lastY = y;
     const slabY = `${(-y * 0.28).toFixed(1)}px`;
     const brandY = `${(y * 0.15).toFixed(1)}px`;
 
     // the stone and its moss-covered twin (stacked on it) move together
-    stage.querySelectorAll('.hero__slab').forEach(el => el.style.setProperty('--slab-y', slabY));
-    const birdsEl = $('#birds');
-    if (birdsEl) {
-      birdsEl.style.setProperty('--slab-y', slabY);
-      birdsEl.style.setProperty('--brand-y', brandY); // the bird perches on the headline, so it shares its scroll offset
+    slabEls.forEach(el => el.style.setProperty('--slab-y', slabY));
+    if (birdLayer) {
+      birdLayer.style.setProperty('--slab-y', slabY);
+      birdLayer.style.setProperty('--brand-y', brandY); // the bird perches on the headline, so it shares its scroll offset
     }
     if (panels && window.innerWidth >= 768) {
       panels.style.setProperty('--panel-offset', `${Math.max(-80, -y * 0.35).toFixed(1)}px`);
@@ -103,7 +110,9 @@ function initLayeredDepth() {
       brand.style.setProperty('--brand-y', brandY);
     }
   };
+  const onScroll = () => { if (!scrollQueued) { scrollQueued = true; requestAnimationFrame(applyScroll); } };
   window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', () => { stageH = stage.offsetHeight; lastY = NaN; onScroll(); });
 
   // videos cost decode time every frame: pause them while the hero is off screen
   if ('IntersectionObserver' in window) {
@@ -115,7 +124,7 @@ function initLayeredDepth() {
       });
     }, { threshold: 0 }).observe(stage);
   }
-  onScroll();
+  applyScroll();
 
   // 3. Pointer-driven depth parallax (lerped, fine pointer only)
   const canHover = matchMedia('(hover: hover) and (pointer: fine)').matches;
