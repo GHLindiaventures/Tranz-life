@@ -7,6 +7,7 @@ import { reduce } from '../utils/media.js';
 
 function intro(){
   const loader = $('#loader'); setLoad(100);
+  try { sessionStorage.setItem('tl-intro-seen', '1'); } catch (e) {}   // later visits to Home this session skip the loader (see index.html)
   setTimeout(() => {
     loader.classList.add('done');
     state.heroApi && state.heroApi.start && state.heroApi.start();

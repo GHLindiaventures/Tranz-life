@@ -15,3 +15,5 @@
 .loader-pct{position:fixed;right:28px;bottom:24px;font-weight:700;font-stretch:80%;font-size:13px;letter-spacing:.14em;color:var(--forest);display:flex;align-items:center;gap:10px}
 .loader-pct::before{content:"";width:14px;height:14px;border-radius:50%;border:2px solid var(--forest);border-right-color:transparent;animation:spin .8s linear infinite}
 .loader.done{opacity:0;visibility:hidden}
+/* already seen in this tab: no loading screen (the hero still plays its entrance) */
+.intro-seen .loader{display:none}

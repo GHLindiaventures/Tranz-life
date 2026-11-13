@@ -17,6 +17,10 @@
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <meta name="theme-color" content="#b6cba5">
   <script>
+    // Show the loading screen only on the first visit to Home in this browser tab (src/app/intro.js sets the flag).
+    try { if (sessionStorage.getItem('tl-intro-seen')) document.documentElement.classList.add('intro-seen'); } catch (e) {}
+  </script>
+  <script>
     // Unregister any stale Service Worker or PWA cache registered on localhost:5173 from previous projects
     if ('serviceWorker' in navigator && (location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
       navigator.serviceWorker.getRegistrations().then(function(regs) {
