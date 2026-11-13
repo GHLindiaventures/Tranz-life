@@ -1,5 +1,24 @@
 # Changelog
 
+## v12.13 (13 Nov 2026): "Know more" as full-screen motion scenes
+- The "Know more" panel no longer shows cards. Each of the six parts is now a full-screen scene with its own background, and scrolling plays a zoom transition like motion graphics: the camera flies forward, so the current scene's headline, text and decorations zoom past you and blur away while the next scene's layers zoom in from far off and the backgrounds cross-fade. Each line moves at its own depth, so the layers separate as they fly. Scrolling back plays it in reverse.
+- Each scene has a giant outlined scene number and a thin ring behind the words that rush past the camera during the transition.
+- The certificate symbols now sit on round white plates and pop in one after another. The close button, counter, arrows and dots switch colour to stay readable on the dark "How we work" scene.
+
+## v12.12 (13 Nov 2026): "Know more" cards play like a stacked deck
+- Scrolling in the "Know more" panel no longer slides a flat row. The current card shrinks back, darkens, blurs and tilts away a little, while the next card slides over it from the right, gradually grows to full size and its picture and text zoom in as it lands. It follows the scroll, so scrolling back plays it in reverse, and it always settles on one card.
+- Cards are larger (up to 84% of the screen width). The up and down arrow keys now move between cards too, and a short flick or swipe always moves a whole card.
+
+## v12.11 (13 Nov 2026): "Know more" company story
+- In "You deserve the best", the story card's "Shop now" button is now "Know more". It opens the TranzLife story full screen: the card grows out to fill the screen, then six cards scroll sideways (who we are, our vision, what we stand for, how we work, the five registration logos, and a "Shop now" ending).
+- The card in the middle is full size; the cards either side are smaller and faded, so each one grows to full size as it reaches the middle and settles there. Move with the mouse wheel or trackpad, by dragging or swiping, with the arrow keys, or with the arrows and dots at the bottom. Esc or Close shrinks it back into the story card.
+- The certificates card shows the FSSAI, Make in India, DPIIT Startup India, MSME and GeM logos on their own, with no captions.
+- New files: `features/insider/about-scroll.js` and `styles/sections/about.css`. With reduced motion on, the panel opens and moves without the animations.
+
+## v12.10 (12 Nov 2026): registration logos in the footer
+- The footer's bottom row now shows the FSSAI, Make in India, DPIIT Startup India, MSME and GeM logos between the disclaimer and the copyright, each on a small white tile so the colours read on the dark green.
+- Files are in `src/assets/badges/` (trimmed of extra white space). On tablets and phones the logos sit above the disclaimer and wrap onto more lines.
+
 ## v12.9 (12 Nov 2026): "You deserve the best" back to the earlier design
 - Undid v12.8: the section has the three tilted product photo cards and the story card over the botanical image again (no big drifting words along the bottom).
 - The scroll zoom from v12.6 is kept: the headline grows in from a blur, the photos push forward and the story card zooms in.
