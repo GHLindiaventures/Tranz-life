@@ -4,7 +4,6 @@ import * as THREE from 'three';
 import { seeded } from '../../utils/math.js';
 import decalGummies from '../../assets/products/decal-gummies.webp';
 import decalInhaler from '../../assets/products/decal-inhaler.webp';
-import decalInhalerLogo from '../../assets/products/decal-inhaler-logo.webp';
 import decalRollon from '../../assets/products/decal-rollon.webp';
 import decalReviva from '../../assets/products/decal-reviva.webp';
 import decalLiver from '../../assets/products/decal-liver.webp';
@@ -115,29 +114,39 @@ function gummiesJar(p, o){
   return { G, h:4.0 };
 }
 
-function calmInhaler(){
-  const G = new THREE.Group(), w = 1, d = .6, bev = .06;
-  const rr = (W, D, r) => { const s = new THREE.Shape(), x = W/2, y = D/2; s.moveTo(-x + r, -y); s.lineTo(x - r, -y); s.quadraticCurveTo(x, -y, x, -y + r); s.lineTo(x, y - r); s.quadraticCurveTo(x, y, x - r, y); s.lineTo(-x + r, y); s.quadraticCurveTo(-x, y, -x, y - r); s.lineTo(-x, -y + r); s.quadraticCurveTo(-x, -y, -x + r, -y); return s; };
-  const soft = (hex, rough) => new THREE.MeshPhysicalMaterial({ color:lin(hex), roughness:rough, metalness:0, clearcoat:.35, clearcoatRoughness:.5, envMapIntensity:.7 });
-  // body: a soft-touch grey stick
-  const bodyH = 3.06, body = new THREE.ExtrudeGeometry(rr(w - 2*bev, d - 2*bev, .12), { depth:bodyH - 2*bev, bevelEnabled:true, bevelThickness:bev, bevelSize:bev, bevelSegments:4, curveSegments:10 });
-  body.rotateX(-Math.PI/2); body.translate(0, bev, 0);
-  G.add(new THREE.Mesh(body, soft('#5a5d60', .5)));
-  // cap with the twin rounded tips
-  const s = new THREE.Shape(), k = .9;
-  s.moveTo(-.5*k, 0); s.lineTo(-.5*k, .49*k); s.absarc(-.3*k, .49*k, .2*k, Math.PI, 0, true); s.absarc(0, .49*k, .1*k, Math.PI, 2*Math.PI, false); s.absarc(.3*k, .49*k, .2*k, Math.PI, 0, true); s.lineTo(.5*k, 0); s.lineTo(-.5*k, 0);
-  const cap = new THREE.ExtrudeGeometry(s, { depth:d - .2, bevelEnabled:true, bevelThickness:.1, bevelSize:.05, bevelSegments:6, curveSegments:24 });
-  cap.translate(0, 0, -(d - .2)/2); cap.translate(0, bodyH + .02, 0);
-  G.add(new THREE.Mesh(cap, soft('#4a4d50', .42)));
-  const seam = new THREE.Mesh(new THREE.ExtrudeGeometry(rr(w - .1, d - .1, .1), { depth:.03, bevelEnabled:false }), new THREE.MeshStandardMaterial({ color:0x1c1d1e, roughness:.8 }));
-  seam.geometry.rotateX(-Math.PI/2); seam.position.y = bodyH - .01; G.add(seam);
-  // the teal CALM label and the small logo, printed on the flat front
-  const front = d/2 + .003;
-  const lab = new THREE.Mesh(new THREE.PlaneGeometry(.7, 2.27), new THREE.MeshStandardMaterial({ map:image(decalInhaler), transparent:true, roughness:.6, envMapIntensity:.5, polygonOffset:true, polygonOffsetFactor:-2 }));
-  lab.position.set(0, 1.59, front); G.add(lab);
-  const logo = new THREE.Mesh(new THREE.PlaneGeometry(.66, .2), new THREE.MeshStandardMaterial({ map:image(decalInhalerLogo), transparent:true, roughness:.6, polygonOffset:true, polygonOffsetFactor:-2 }));
-  logo.position.set(0, .26, front); G.add(logo);
-  return { G, h:bodyH + .02 + .69*k + .05 };
+// perforations on the inhaler's domed tip: four staggered rows of 16, as on the packshot (map + bump)
+const INHALER_HOLES = [[.207, 204, 0], [.406, 204, .5], [.628, 197, 0], [.805, 161, .5]];  // v, radius (photo px), offset
+function inhalerHoles(bump){
+  return canvasTex(bump ? 'inhalerHolesBump' : 'inhalerHoles', 1024, 512, (g, w, h) => {
+    g.fillStyle = bump ? '#808080' : '#f6f6f3'; g.fillRect(0, 0, w, h);
+    for (const [v, r, off] of INHALER_HOLES){
+      const rx = 12.5/r/(2*Math.PI)*w, ry = 12.5/406*h*Math.sqrt(1 - Math.max(0, (v - .48)/.52)**2*.4), y = (1 - v)*h;
+      for (let c = 0; c < 16; c++){
+        const x = (c + off)/16*w;
+        for (const dx of [0, w]){                                   // draw across the seam too
+          const gr = g.createRadialGradient(x - dx, y, 0, x - dx, y, Math.max(rx, ry));
+          gr.addColorStop(0, bump ? '#202020' : '#7f807b'); gr.addColorStop(.75, bump ? '#3a3a3a' : '#b3b4ae'); gr.addColorStop(1, bump ? '#808080' : '#e2e2dd');
+          g.fillStyle = gr; g.beginPath(); g.ellipse(x - dx, y, rx, ry, 0, 0, Math.PI*2); g.fill();
+        }
+      }
+    }
+  }, !bump);
+}
+
+// BreatheFree: a white tube with a stepped foot and a perforated domed tip. Measured from the straightened packshot
+// (scripts/make-inhaler-assets.py): radius / row in photo px, converted so the body is .38 units in radius.
+function breatheFreeInhaler(){
+  const G = new THREE.Group(), k = .38/250, Y = py => (2915 - py)*k, P = (r, py) => V2(r*k, Y(py));
+  const plastic = extra => new THREE.MeshPhysicalMaterial({ color:lin('#f6f6f3'), roughness:.3, metalness:0, clearcoat:.5, clearcoatRoughness:.25, envMapIntensity:.75, ...extra });
+  const prof = [P(0,2915),P(214,2915),P(222,2903),P(222,2772),P(240,2770),P(248,2761),P(250,2742),P(250,930),P(247,906),P(238,890),P(222,872),P(215,852),P(214,776),P(208,768),P(204,762)];
+  G.add(new THREE.Mesh(new THREE.LatheGeometry(prof, 96), plastic()));
+  // domed tip: straight, then a hemisphere; resampled evenly in height so the hole texture maps straight on
+  const dome = [P(204,762), P(204,560)];
+  for (let a = 1; a <= 24; a++){ const t = a/24*Math.PI/2; dome.push(P(204*Math.cos(t), 560 - 204*Math.sin(t))); }
+  G.add(new THREE.Mesh(new THREE.LatheGeometry(band(dome, Y(762), Y(356), 1, 64), 96), plastic({ map:inhalerHoles(false), bumpMap:inhalerHoles(true), bumpScale:.025 })));
+  // the printed label, lifted from the photo and un-wrapped (2.04 rad of the tube's front)
+  G.add(labelBand(prof, Y(2740), Y(940), 2.04, 1.006, image(decalInhaler)));
+  return { G, h:Y(356) };
 }
 
 function calmRollOn(){
@@ -186,7 +195,7 @@ function liverBottle(){
   return { G, h:4.16 };
 }
 
-const BUILDERS = { jar:gummiesJar, inhaler:calmInhaler, rollon:calmRollOn, reviva:revivaRollOn, liver:liverBottle };
+const BUILDERS = { jar:gummiesJar, inhaler:breatheFreeInhaler, rollon:calmRollOn, reviva:revivaRollOn, liver:liverBottle };
 
 // Builds a product, centred on its own middle. Returns a group with userData.h (its height).
 function makeProduct(p, i, o = {}){
