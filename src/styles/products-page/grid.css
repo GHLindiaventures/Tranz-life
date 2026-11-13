@@ -22,7 +22,7 @@
   /* same total height as before (so the cream hills below stay where they were), but the cards sit higher: less room
      above the heading and between heading and cards, the same amount added under the cards, so the hills that rise
      over this page's bottom never touch them */
-  padding: 0.5vw 0 14vw;
+  padding: clamp(96px, 12vh, 140px) 0 6vw;   /* clear of the nav on top; the showcase follows directly below */
   margin-top: 0;                    /* no longer tucked under the statement page, which cut off the heading */
 }
 /* no pin: the heading and cards scroll past normally (the reference does not pin them either) */
@@ -195,3 +195,11 @@
   .lu-h .stw-i { transform: none; }
   .lu-ch { transition: none; }
 }
+
+/* the details are not on the page itself: they open (in the overlay) when a product is chosen, and the product returns to its card at the end. The sections stay in the DOM because the overlay is built from the showcase. */
+body:not(.scene-on) .pp-main > #showcase, body:not(.scene-on) .pp-main > #statement { display: none; }
+.lineup { min-height: 100vh; min-height: 100svh; }
+
+
+/* the shadow under each product is drawn in 3D now (jar-layer.js), so the flat one in the card is not needed */
+.lineup-shadow { display: none; }

@@ -595,3 +595,14 @@ body.sc-ov-open #statement.statement { z-index: 1 !important; }
 /* the big names are smaller, so the stretch they take (they are hidden over the product) stays short */
 .sc-big { font-size: min(10.5vw, 19vh); }
 @media (max-width: 767px) { .sc-big { font-size: 22vw; } }
+
+/* the product's name, big and centred behind the product while it spins in (display only, in the overlay) */
+.sc-heroname {
+  position: absolute; left: 0; right: 0; top: 11vh;
+  display: flex; flex-direction: column; align-items: center;
+  font-family: var(--f-display); font-stretch: 62%; font-weight: 850; text-transform: uppercase;
+  font-size: min(15vw, 26vh); line-height: .86; letter-spacing: -.005em; text-align: center; white-space: nowrap;
+  color: color-mix(in srgb, var(--sc-tint) 55%, #14301a);
+  opacity: 0; pointer-events: none; will-change: transform, opacity;
+}
+@media (max-width: 767px) { .sc-heroname { font-size: 24vw; top: 14vh; } }

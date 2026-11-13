@@ -59,11 +59,15 @@ function initProductJourney() {
   const L = jarLayer(flightCanvas);
   const flightJars = PRODUCTS.map((p, i) => L.jar(p, i));
   // each product's width / height from its 3D model (widest of x and z, so the frame fits it from every angle)
-  const ratios = flightJars.map(j => {
+  // (measured again when a scanned model finishes loading: until then the drawn stand-in, or nothing, is measured)
+  let ratios = [];
+  const measureRatios = () => { ratios = flightJars.map(j => {
     j.G.updateMatrixWorld(true);
     const s = new THREE.Box3().setFromObject(j.b).getSize(new THREE.Vector3());
-    return Math.max(s.x, s.z) / Math.max(1e-6, s.y);
-  });
+    return s.y < 1e-3 ? 0.55 : Math.max(s.x, s.z) / s.y;
+  }); };
+  measureRatios();
+  window.addEventListener('tl:model-ready', measureRatios);
   // the outline around the product, grown like a plant: two tendrils climb from the bottom centre up both sides and
   // meet at the top, leaves sprout along them as they pass, a bud in the product's colour opens at the top with a
   // ripple, and a fainter second line follows just outside. makeOutline builds it into a showcase layer's #scFrame and
@@ -346,6 +350,7 @@ function initProductJourney() {
     geo.showcaseTop = geo.secTop + geo.fadeLen;
     geo.preRoll = geo.fadeLen;
     geo.secH = showcaseSec ? showcaseSec.offsetHeight : 0;
+    geo.hasScene = geo.secH > 0;                          // false when the page does not show the details inline: they open from a product's card instead
     geo.lineupTop = docTop(lineupSec); geo.lineupH = lineupSec.offsetHeight;
     geo.pinTop = docTop(pinEl); { let x = 0, n = pinEl; while (n) { x += n.offsetLeft; n = n.offsetParent; } geo.pinLeft = x; }
     // each panel's offset inside the lineup pin (scroll independent, so it stays right while the pin is stuck)
@@ -387,7 +392,8 @@ function initProductJourney() {
   let handStart = null;                                  // set when a product's display hands over to the page
 
   const restRot = i => (PRODUCTS[i].model === 'rollon' ? -0.32 : -0.38);
-  const idleRot = (i, t) => Math.sin(t * 0.85 + i * 1.2) * 0.06;
+  // the products in the list sway left and right through about 40 degrees (20 each way), each on its own beat
+  const idleRot = (i, t) => (reduce ? 0 : Math.sin(t * 0.9 + i * 1.3) * 0.35);
 
   // where the product holds still while the page scrolls past it: the middle of the screen
   function viewFor(i) {
@@ -403,7 +409,7 @@ function initProductJourney() {
   // flies from its card to the middle on open and back into its card on close (Close, Esc, or reaching the end).
   const ov = { el: null, sec: null, btn: null, card: null, lead: null, setFrame: null, idx: -1, state: 'closed', t0: 0,
     from: null, last: null, pending: null, returnFocus: null };
-  const OPEN_MS = reduce ? 1 : 800, CLOSE_MS = reduce ? 1 : 650;
+  const OPEN_MS = reduce ? 1 : 1400, CLOSE_MS = reduce ? 1 : 650;
   const easeIO = k => (k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2);
 
   function buildOverlay() {
@@ -417,6 +423,9 @@ function initProductJourney() {
     sec.querySelectorAll('[style]').forEach(n => { if (!n.closest('.sc-badge') && !n.classList.contains('sc-blk') && !n.classList.contains('sc-big')) n.removeAttribute('style'); });
     sec.querySelectorAll('.sc-callout').forEach(n => n.remove());   // the overlay builds its own
     el.appendChild(sec); document.body.appendChild(el);
+    // the product's name, big, behind the product while it spins in and settles; it gives way to the intro words
+    const pinHost = sec.querySelector('.showcase-pin');
+    if (pinHost) { const hn = document.createElement('div'); hn.className = 'sc-heroname'; hn.setAttribute('aria-hidden', 'true'); pinHost.appendChild(hn); ov.heroName = hn; }
     const btn = document.createElement('button');
     btn.type = 'button'; btn.className = 'sc-overlay__close'; btn.setAttribute('aria-label', 'Close');
     btn.innerHTML = '<span aria-hidden="true">×</span>';
@@ -447,6 +456,12 @@ function initProductJourney() {
     buildOverlay(); if (!ov.el) return;
     ov.idx = i; ov.returnFocus = itemEls[i];
     populateShowcaseDOM(ov.sec, i);
+    if (ov.heroName) {
+      const srEl = itemEls[i] && itemEls[i].querySelector('.sr'), nm = (srEl ? srEl.textContent : PRODUCTS[i].short || '').trim();
+      const parts = nm.split(/\s+/), l1 = parts.length > 1 ? parts[0] : nm, l2 = parts.length > 1 ? parts.slice(1).join(' ') : '';
+      ov.heroName.innerHTML = '<span>' + l1 + '</span>' + (l2 ? '<span>' + l2 + '</span>' : '');
+      ov.heroName.style.opacity = '0';
+    }
     ov.el.setAttribute('aria-label', PRODUCTS[i].name);
     ov.from = cardSpot(i);
     if (state.lenis) state.lenis.stop();
@@ -477,13 +492,28 @@ function initProductJourney() {
   // takes over. Its showcase is filled for this product and scrolled to exactly the same point (the display is a copy
   // of it, so nothing on screen changes), the display goes away, and the page's own scroll carries on with the scroll's
   // momentum: the statement rises over the product and the grid follows, exactly as from the home page.
+  // The page shows only the products. The scene (details + statement curtain) is part of the layout only while a
+  // display hands over to it, so the page's own scroll can carry the end of the details exactly as before: the
+  // statement rises over the product, then the products come up. Once the products are on screen it is taken away again.
+  function setScene(on) {
+    document.body.classList.toggle('scene-on', on);
+    measure();
+    if (state.lenis && state.lenis.resize) state.lenis.resize();
+  }
+  function hideScene(sy) {
+    const shift = geo.lineupTop;
+    setScene(false);
+    const y = Math.max(0, sy - shift);
+    if (state.lenis) state.lenis.scrollTo(y, { immediate: true, force: true }); else window.scrollTo(0, y);
+  }
   function handOff(sy) {
     const i = ov.idx;
+    setScene(true);
     const pageY = showcaseSec.getBoundingClientRect().top + scrollY + sy;
     const ahead = ov.lenis ? ov.lenis.targetScroll - ov.lenis.animatedScroll : 0;
     active = i;
     handStart = { ...viewFor(i), rotX: 0.04, rotY: restRot(i), rotZ: 0 };   // the same path the display used
-    if (lastIdx !== i) { lastIdx = i; populateShowcaseDOM(showcaseSec, i); placeBadges(showcaseSec); }
+    lastIdx = i; populateShowcaseDOM(showcaseSec, i); placeBadges(showcaseSec); measure();
     lastIntro = ''; lastP = -1;                          // let the page redraw everything for its new position
     ov.el.classList.add('instant');
     ov.el.classList.remove('open'); ov.btn.classList.remove('open');
@@ -513,7 +543,12 @@ function initProductJourney() {
     const P = journeyProgress(sy, { showcaseTop: F, pinEnd: H - vh, vh, preRoll: F });
     updateShowcaseDOM(ov.sec, P, tTime);
     const view = viewFor(i);
-    const hold = calcHoldTransform(P, { x: view.x, y: view.y, h: view.h, rotX: 0.04, rotY: restRot(i), rotZ: 0 }, view, mouse, tTime, geo.mobile);
+    const base = calcHoldTransform(P, { x: view.x, y: view.y, h: view.h, rotX: 0.04, rotY: restRot(i), rotZ: 0 }, view, mouse, tTime, geo.mobile);
+    // Opening: the product settles low on the screen, big, with its name above it. The first part of the scroll then
+    // lifts it to its hold in the middle (s: 0 at rest, 1 when it has arrived), and only then do the intro words come in.
+    const sc = Math.max(0, sy - F), s = reduce ? 1 : clamp(sc / (0.7 * vh), 0, 1), se = ease.io(s);
+    const hx = geo.vw * 0.5, hh = (geo.mobile ? Math.min(vh * 0.5, geo.vw * 1.0) : vh * 0.6) * (jar.fit || 1), hy = vh * (geo.mobile ? 0.84 : 0.88);
+    const hold = reduce ? base : { ...base, x: hx + (base.x - hx) * se, y: hy + (base.y - hy) * se, h: hh + (base.h - hh) * se };
     // a = 0 in the card, 1 in the middle: the fly on open and close
     let a = 1;
     if (ov.state === 'opening' || ov.state === 'closing') {
@@ -527,9 +562,9 @@ function initProductJourney() {
     flightJars.forEach((j, k) => { j.G.visible = k === i; });
     L.place(jar.G, lerp(f.x, hold.x), lerp(f.y, hold.y));
     L.size(jar, Math.max(1, lerp(f.h, hold.h)));
-    jar.G.rotation.set(lerp(f.rx, hold.rotX), lerp(f.ry, hold.rotY), lerp(f.rz, hold.rotZ));
+    jar.G.rotation.set(lerp(f.rx, hold.rotX), lerp(f.ry, hold.rotY) + (reduce ? 0 : (1 - a) * Math.PI * 2), lerp(f.rz, hold.rotZ));   // one full turn on the way, then it settles
     // the two side texts and the outline, as on the page (they fade with the fly)
-    const sc0 = calcIntroText(sy, F, vh), timed = reduce ? 1 : clamp((now - ov.openedAt - 200) / 1300, 0, 1);
+    const sc0 = calcIntroText(sy, F, vh), timed = reduce ? 1 : clamp((s - 0.4) / 0.6, 0, 1);
     // here the words come in on time alone, from nothing, in one go as the product flies in (no half-played start);
     // the scroll only moves them up with the details later
     const fall = ov.sec._e || 0, tin = timed, it = { tin, lift: fall, o: (1 - Math.pow(1 - tin, 3)) * (fall > vh * 1.2 ? 0 : 1) };
@@ -544,8 +579,14 @@ function initProductJourney() {
       chars.forEach((ch, k) => { const u = clamp((it.tin - (k / n) * 0.6) / 0.4, 0, 1), e = 1 - Math.pow(1 - u, 3); ch.style.opacity = (0.15 + 0.85 * e).toFixed(3); ch.style.transform = 'translate3d(' + ((1 - e) * -0.5).toFixed(3) + 'em,0,0)'; });
       ov.card.style.setProperty('--tin', it.tin.toFixed(3)); if (ov.lead) ov.lead.style.setProperty('--tin', it.tin.toFixed(3));
     }
+    if (ov.heroName) {                                   // the name: in while the product settles, out as the intro words come in
+      const tt = (now - ov.openedAt) / 1000, kin = reduce ? 0 : clamp((tt - 0.5) / 0.9, 0, 1), kout = clamp(s / 0.45, 0, 1);
+      const on = (1 - Math.pow(1 - kin, 3)) * (1 - kout) * (ov.state === 'closing' ? a : 1) * (fall > vh * 1.2 ? 0 : 1);
+      ov.heroName.style.opacity = on.toFixed(3);
+      ov.heroName.style.transform = 'translate3d(0,' + ((1 - Math.pow(1 - kin, 3)) * 0 + (1 - kin) * 46 - s * vh * 0.3 - fall).toFixed(1) + 'px,0)';
+    }
     const ovBox = calcProductFrame(hold.x, hold.y, hold.h, ratios[i]);
-    if (ov.setFrame) ov.setFrame(ovBox, calcFrameDraw(P) * (a > 0.999 ? 1 : 0));
+    if (ov.setFrame) ov.setFrame(ovBox, calcFrameDraw(P) * (a > 0.999 && s > 0.999 ? 1 : 0));
     const hlc = calcHlCallout(sy, H, vh, (ov.sec._beats ? ov.sec._beats.hlFrom : H - 2.9 * vh) + 0.25 * vh);   // the highlights start once the last piece has left
     if (ov.setCallout) ov.setCallout(ovBox, hlc.o * a, hlc.draw, hlc.lines, 0, hlc.ex);
     decor.update(0, i, 0, 0, 1, tTime, true);
@@ -581,17 +622,19 @@ function initProductJourney() {
     // the scroll position from Lenis (a plain number): reading window.scrollY here would force a layout whenever
     // anything has written a style earlier in this frame
     const sy = state.lenis ? state.lenis.scroll : scrollY, vh = geo.vh, tTime = now * 0.001;
+    flightJars.forEach(j => { j.G.userData.shadowA = 0; });   // the ground shadow belongs to the list only: it is switched on there each frame
     if (ov.state !== 'closed') { if (ov.lenis) ov.lenis.raf(now); renderOverlay(now, tTime); rafId = schedule(frame); return; }   // a product's display is open over the grid
     const lrTop = geo.lineupTop - sy, lrBottom = lrTop + geo.lineupH;
     const inLineup = lrBottom > 0 && lrTop < vh;
-    const P = reduce ? 1 : journeyProgress(sy, geo);
-    const inJourney = !reduce && P > 0 && P < 1;
+    if (geo.hasScene && ov.state === 'closed' && lrTop < -24) { hideScene(sy); rafId = schedule(frame); return; }   // the products are on screen: the scene is not needed any more
+    const P = (reduce || !geo.hasScene) ? 1 : journeyProgress(sy, geo);
+    const inJourney = !reduce && geo.hasScene && P > 0 && P < 1;
     const on = inJourney || inLineup;
     if (enterT0 < 0) enterT0 = now;
     const entering = now - enterT0 < ENTER_MS + 1700;     // the product's rise and the title's letters are still playing
 
     // updateShowcaseDOM reads its blocks' positions first, so it runs before anything below writes a style
-    if (showcaseSec && !reduce && (inJourney || P !== lastP)) { updateShowcaseDOM(showcaseSec, P, tTime); }
+    if (showcaseSec && geo.hasScene && !reduce && (inJourney || P !== lastP)) { updateShowcaseDOM(showcaseSec, P, tTime); }
     lastP = P;
 
     // showcase flow: always shown here (on dhina-dev it waited for the hero to turn flat mint)
@@ -687,7 +730,10 @@ function initProductJourney() {
       const jar = flightJars[i], s = geo.slots[i], card = cardEls[i];
       const order = entranceOrder(i, first, N);                              // the showcase product turns first
       const slotTop = pr.top + s.oy;
-      const e = reduce ? 1 : clamp((vh * 0.97 - slotTop - order * vh * 0.035) / (vh * 0.42), 0, 1);
+      // the products assemble one after another when the page opens (each rises, turns upright and settles), and again
+      // as a card scrolls up from below
+      const te = reduce ? 1 : clamp((now - enterT0 - 300 - i * 150) / 1150, 0, 1);
+      const e = reduce ? 1 : Math.min(te, clamp((vh * 0.97 - slotTop - order * vh * 0.035) / (vh * 0.42), 0, 1));
       const eb = ease.back(e);                                              // overshoot, then settle
       const target = hovered >= 0 ? (hovered === i ? 1 : 0) : (inView && cycleIdx === i ? 1 : 0);
       hlv[i] += (target - hlv[i]) * (1 - Math.exp(-dt * 6));
@@ -707,6 +753,7 @@ function initProductJourney() {
       const sx = pr.left + s.ox + s.w / 2;
       const syy = pr.top + s.oy + s.h * 0.5 + s.h * 0.02 - hl * s.h * 0.02;
       jar.G.visible = e > 0.01 && slotTop < vh * 1.05 && slotTop + s.h > -vh * 0.05;
+      jar.G.userData.shadowA = 0.5 * clamp(e * 1.3 - 0.3, 0, 1) * (1 - hl * 0.15);
       L.place(jar.G, sx, syy);
       L.size(jar, Math.max(1, s.h * 0.72 * (jar.fit || 1) * (0.7 + 0.3 * clamp(eb, 0, 1.1)) * (1 - hl * 0.04)));
       const hov = hovered === i;

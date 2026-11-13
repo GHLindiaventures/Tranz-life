@@ -8,6 +8,10 @@ import decalInhalerLogo from '../../assets/products/decal-inhaler-logo.webp';
 import decalRollon from '../../assets/products/decal-rollon.webp';
 import decalReviva from '../../assets/products/decal-reviva.webp';
 import decalLiver from '../../assets/products/decal-liver.webp';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import liverGlbUrl from '../../assets/products/liver-booster.glb?url';
+import cycleReliefGlbUrl from '../../assets/products/cyclerelief.glb?url';
+import lungBoosterGlbUrl from '../../assets/products/lungbooster.glb?url';
 
 const V2 = (x, y) => new THREE.Vector2(x, y);
 const lin = hex => new THREE.Color(hex).convertSRGBToLinear();
@@ -186,7 +190,36 @@ function liverBottle(){
   return { G, h:4.16 };
 }
 
-const BUILDERS = { jar:gummiesJar, inhaler:calmInhaler, rollon:calmRollOn, reviva:revivaRollOn, liver:liverBottle };
+// Some products are scanned models (.glb files). Each loads once for the page; until it arrives the drawn product
+// stands in (and stays if the file cannot be loaded). Every scene gets its own copy.
+const glbLoads = new Map();
+function loadGlb(url){
+  if (!glbLoads.has(url)) glbLoads.set(url, new Promise((res, rej) => new GLTFLoader().load(url, g => res(g.scene), undefined, rej)));
+  return glbLoads.get(url);
+}
+function withGlb(builder, url){
+  return (p, o) => {
+    const base = builder(p, o), holder = new THREE.Group();
+    holder.add(base.G);
+    loadGlb(url).then(src => {
+      const m = src.clone(true);
+      const flags = []; m.traverse(n => { if (/^Flag/i.test(n.name)) flags.push(n); }); flags.forEach(n => n.parent && n.parent.remove(n));   // studio reflector cards that came with the file
+      const box = new THREE.Box3().setFromObject(m), size = box.getSize(new THREE.Vector3()), mid = box.getCenter(new THREE.Vector3());
+      const k = base.h / size.y;                     // same height as the drawn product, standing on y = 0
+      m.scale.setScalar(k); m.position.set(-mid.x * k, -box.min.y * k, -mid.z * k);
+      const wrap = new THREE.Group(); wrap.add(m);
+      // glass (KHR_materials_transmission) is not drawn by this version of three.js and comes out solid white: show it as
+      // clear, lightly tinted glass that lets the product behind it through
+      m.traverse(n => { if (n.isMesh && n.material && n.material.transmission > 0) { const gm = n.material = n.material.clone(); gm.transmission = 0; gm.transparent = true; gm.opacity = .5; gm.depthWrite = false; gm.envMapIntensity = 1.6; gm.roughness = Math.min(gm.roughness, .12); n.renderOrder = 2; } });
+      wrap.traverse(n => { if (n.isMesh) { n.frustumCulled = false; if (n.material && n.material.map) n.material.map.anisotropy = 4; n.userData.product = holder.parent ? holder.parent.userData.index : undefined; } });
+      holder.remove(base.G); holder.add(wrap);
+      window.dispatchEvent(new Event('tl:model-ready'));   // sizes taken from the stand-in are out of date now
+    }).catch(() => { /* keep the drawn product */ });
+    return { G: holder, h: base.h };
+  };
+}
+
+const BUILDERS = { jar:withGlb(() => ({ G: new THREE.Group(), h: 4.0 }), lungBoosterGlbUrl), inhaler:calmInhaler, rollon:withGlb(calmRollOn, cycleReliefGlbUrl), reviva:revivaRollOn, liver:withGlb(liverBottle, liverGlbUrl) };
 
 // Builds a product, centred on its own middle. Returns a group with userData.h (its height).
 function makeProduct(p, i, o = {}){
