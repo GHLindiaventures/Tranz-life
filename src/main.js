@@ -1,6 +1,5 @@
 // Entry point for the Home page: loads styles and boots the hero, lineup, tagline, nature video and explore band in order.
 // Sections that used to live here now boot from their own pages (products.js, science.js, about.html).
-import './styles/main.css';
 import { intro } from './app/intro.js';
 import { setLoad } from './app/loader.js';
 import { initPages } from './app/page-sections.js';

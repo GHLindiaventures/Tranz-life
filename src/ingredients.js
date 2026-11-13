@@ -1,7 +1,6 @@
 // TranzLife Biosciences - Our Ingredients page
 // Showcase: a 3D card carousel over the forest stage; below it the full, searchable list of all ingredients.
 // The benefit filter is shared by both; "View Details" (or any tile) opens a details dialog.
-import './styles/main.css';
 import { initCart } from './features/cart/cart.js';
 import { $ } from './utils/dom.js';
 import { BOTANICAL_INGREDIENTS, INGREDIENT_CATEGORIES } from './data/ingredients.js';

@@ -2,7 +2,6 @@
 // The page is the product journey from dhina-dev (showcase, statement curtain, "Which one is yours?" grid with a
 // display per product). Its modules and data live in src/products-page/ and load on this page only; the header,
 // menu, bag and footer are the shared ones every page uses.
-import './styles/products-page.css';
 import { state, thumbs } from './app/state.js';
 import { initSmooth } from './app/smooth-scroll.js';
 import { SHOTS } from './features/products/product-images.js';

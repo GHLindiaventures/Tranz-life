@@ -1,5 +1,4 @@
 // TranzLife Biosciences - Quality & Manufacturing Interactive Controller
-import './styles/main.css';
 import { initCart } from './features/cart/cart.js';
 import { $ } from './utils/dom.js';
 

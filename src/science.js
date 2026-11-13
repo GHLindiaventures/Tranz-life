@@ -1,5 +1,4 @@
 // TranzLife Biosciences - Science & Innovation Page Interactive Controller
-import './styles/main.css';
 import { initCart } from './features/cart/cart.js';
 import { initMolecule } from './features/science/molecule-viewer.js';
 import { initReactor } from './features/pipeline/reactor.js';

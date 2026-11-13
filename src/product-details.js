@@ -1,5 +1,4 @@
 // TranzLife Biosciences - Product Details Page Interactive Controller
-import './styles/main.css';
 import { cart, thumbs } from './app/state.js';
 import { PRODUCTS, EXTRA_PRODUCTS } from './data/products.js';
 import { SHOTS, DESIGNS } from './features/products/product-images.js';

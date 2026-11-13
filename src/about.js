@@ -1,5 +1,4 @@
 // TranzLife Biosciences - About Page Interactive Controller (Static)
-import './styles/main.css';
 import { state } from './app/state.js';
 import { initCart } from './features/cart/cart.js';
 import { $ } from './utils/dom.js';
