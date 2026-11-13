@@ -84,6 +84,86 @@ function initAboutPage() {
       target.scrollIntoView({ behavior: 'auto' });
     }
   });
+
+  // 6. Live Hero Journey Motion (Subtle ambient pulse, particles & gentle foliage parallax)
+  initAboutHeroLive();
+}
+
+function initAboutHeroLive() {
+  const hero = document.getElementById('hero');
+  const particlesContainer = document.getElementById('aboutParticles');
+  if (!hero) return;
+
+  const prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (prefersReduced) return;
+
+  // A. Generate subtle drifting golden dust particles on the right side
+  if (particlesContainer) {
+    const particleCount = 18;
+    const frag = document.createDocumentFragment();
+    for (let i = 0; i < particleCount; i++) {
+      const dot = document.createElement('span');
+      dot.className = 'about-gold-dot';
+      // Concentrate around the right side: 58% to 94% left, 20% to 75% top
+      const left = 58 + Math.random() * 36;
+      const top = 20 + Math.random() * 55;
+      const size = (2 + Math.random() * 3.5).toFixed(1);
+      const dur = (4.5 + Math.random() * 4).toFixed(1);
+      const del = (Math.random() * 5).toFixed(1);
+      const driftX = (-15 + Math.random() * 30).toFixed(0);
+
+      dot.style.left = `${left}%`;
+      dot.style.top = `${top}%`;
+      dot.style.width = `${size}px`;
+      dot.style.height = `${size}px`;
+      dot.style.setProperty('--dur', `${dur}s`);
+      dot.style.setProperty('--del', `${del}s`);
+      dot.style.setProperty('--drift-x', `${driftX}px`);
+      frag.appendChild(dot);
+    }
+    particlesContainer.appendChild(frag);
+  }
+
+  // B. Gentle foliage micro-parallax on mouse move & scroll
+  let ticking = false;
+  let targetMx = 0;
+  let targetMy = 0;
+  let currentMx = 0;
+  let currentMy = 0;
+  let scrollY = window.scrollY;
+
+  function updateTransform() {
+    currentMx += (targetMx - currentMx) * 0.1;
+    currentMy += (targetMy - currentMy) * 0.1;
+
+    hero.style.setProperty('--about-mx', currentMx.toFixed(4));
+    hero.style.setProperty('--about-my', currentMy.toFixed(4));
+    hero.style.setProperty('--about-sy', scrollY.toFixed(1));
+
+    if (Math.abs(targetMx - currentMx) > 0.001 || Math.abs(targetMy - currentMy) > 0.001) {
+      requestAnimationFrame(updateTransform);
+    } else {
+      ticking = false;
+    }
+  }
+
+  window.addEventListener('mousemove', (e) => {
+    const rect = hero.getBoundingClientRect();
+    if (rect.bottom < 0 || rect.top > window.innerHeight) return;
+    targetMx = (e.clientX / window.innerWidth) * 2 - 1;
+    targetMy = (e.clientY / window.innerHeight) * 2 - 1;
+    if (!ticking) {
+      ticking = true;
+      requestAnimationFrame(updateTransform);
+    }
+  }, { passive: true });
+
+  window.addEventListener('scroll', () => {
+    scrollY = window.scrollY;
+    if (scrollY < window.innerHeight * 1.5) {
+      hero.style.setProperty('--about-sy', scrollY.toFixed(1));
+    }
+  }, { passive: true });
 }
 
 // Boot on DOM ready

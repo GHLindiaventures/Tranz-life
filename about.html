@@ -107,11 +107,15 @@
           </a>
           <a href="product-details.html?id=reviva" class="nav-drop-item">
             <strong>Reviva™ Roll-On</strong>
-            <small>Diabetes &amp; Vitality Support</small>
+            <small>Botanical Massage Roll-On</small>
           </a>
           <a href="product-details.html?id=liver" class="nav-drop-item">
             <strong>LiverDetox™ Concoction</strong>
             <small>100% Ayurvedic Liver Booster</small>
+          </a>
+          <a href="product-details.html?id=energy" class="nav-drop-item">
+            <strong>Energy Booster™</strong>
+            <small>Energy &amp; Vitality Support</small>
           </a>
         </div>
       </div>
@@ -180,6 +184,34 @@
          ====================================================================== -->
     <section class="about-hero" id="hero">
       <div class="about-hero-bg" aria-hidden="true">
+        <picture class="about-hero-picture">
+          <source srcset="/assets/about/about-hero-roots-to-infinity.webp" type="image/webp">
+          <img class="about-hero-img" src="/assets/about/about-hero-roots-to-infinity.jpg" alt="From roots to infinity journey" loading="eager" decoding="async">
+        </picture>
+        <div class="about-hero-overlay"></div>
+        <div class="about-journey-layer">
+          <svg class="about-journey-svg" viewBox="0 0 1376 768" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+            <defs>
+              <filter id="goldGlow" x="-50%" y="-50%" width="200%" height="200%">
+                <feGaussianBlur in="SourceGraphic" stdDeviation="3.5" result="blur1"/>
+                <feGaussianBlur in="SourceGraphic" stdDeviation="7" result="blur2"/>
+                <feMerge>
+                  <feMergeNode in="blur2"/>
+                  <feMergeNode in="blur1"/>
+                  <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+              </filter>
+            </defs>
+            <path id="aboutJourneyPath" class="about-journey-path" d="M 340,750 C 360,650 390,560 425,470 C 455,390 510,340 600,335 C 690,330 780,350 880,380 C 880,380 960,400 1030,440 1120,485 C 1170,420 1220,400 1270,420 C 1325,445 1320,500 1280,530 C 1235,555 1165,530 1120,485 C 1075,440 1020,455 1025,495 C 1030,535 1080,530 1120,485" fill="none" stroke="none"/>
+            <circle class="about-journey-pulse pulse-head" r="5" fill="#fffbe0" filter="url(#goldGlow)">
+              <animateMotion dur="7s" repeatCount="indefinite" path="M 340,750 C 360,650 390,560 425,470 C 455,390 510,340 600,335 C 690,330 780,350 880,380 C 880,380 960,400 1030,440 1120,485 C 1170,420 1220,400 1270,420 C 1325,445 1320,500 1280,530 C 1235,555 1165,530 1120,485 C 1075,440 1020,455 1025,495 C 1030,535 1080,530 1120,485"/>
+            </circle>
+            <circle class="about-journey-pulse pulse-tail" r="3.2" fill="#e3a21a" filter="url(#goldGlow)" opacity="0.8">
+              <animateMotion dur="7s" begin="-0.2s" repeatCount="indefinite" path="M 340,750 C 360,650 390,560 425,470 C 455,390 510,340 600,335 C 690,330 780,350 880,380 C 880,380 960,400 1030,440 1120,485 C 1170,420 1220,400 1270,420 C 1325,445 1320,500 1280,530 C 1235,555 1165,530 1120,485 C 1075,440 1020,455 1025,495 C 1030,535 1080,530 1120,485"/>
+            </circle>
+          </svg>
+          <div class="about-gold-particles" id="aboutParticles"></div>
+        </div>
         <div class="about-hero-glow-1"></div>
         <div class="about-hero-glow-2"></div>
       </div>
