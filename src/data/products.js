@@ -55,17 +55,18 @@ export const PRODUCTS = [
     id: 'reviva',
     no: '04',
     short: 'Reviva™',
-    name: 'Reviva™ Diabetes & Vitality Roll-On',
+    // From the Reviva brochure only (a topical massage / personal-care product; no blood-sugar or diabetes claims).
+    // Price: the MRP shown in the supplied artwork (the brochure says to verify it).
+    name: 'Reviva™ Roll-On',
     cat: 'rollon',
-    tag: 'Blood Sugar & Vitality',
-    price: 449,
+    tag: 'Botanical Massage Roll-On',
+    price: 399,
     size: '50 ml Massage Roll-On',
-    desc: 'Natural support for diabetes, circulation, and vitality. Formulated with Dill and Eucalyptus in the Spirit of Organics to support healthy blood sugar levels, relieve neuropathic discomfort, and improve circulation.',
-    ing: ['Dill E.O', 'Eucalyptus E.O', 'Blood Sugar Support', 'Nerve Vitality'],
+    desc: 'Botanical massage roll-on for an everyday wellness and vitality ritual. A practical massage roll-on designed to complement a daily self-care routine with a refreshing topical application.',
+    ing: ['Dill E.O', 'Eucalyptus E.O', 'Massage Roll-On', 'External Use'],
     model: 'reviva',
     fit: 1.06,
-    barcode: '8906132540147',
-    dosage: 'Roll gently around the belly button every morning on an empty stomach'
+    dosage: 'Apply a small amount to intact skin and massage gently'
   },
   {
     id: 'liver',
@@ -83,6 +84,26 @@ export const PRODUCTS = [
     barcode: '8906132540130',
     mfgLic: 'TN/AYU/24/1234',
     dosage: 'Adults: 10 ml (2 tsp) twice daily after meals'
+  }
+];
+
+// Products with their own page (product-details.html?id=...) but not (yet) in the 3D lineup, showcase or grid:
+// the Home hero, the lineup and the Products page build a 3D model for every entry in PRODUCTS above.
+// Energy Booster: from the draft brochure (TranzLife_Energy_Booster_Brochure.pdf). No price or product photo yet:
+// price null shows "Price to be announced" and an enquiry button instead of Add to bag.
+export const EXTRA_PRODUCTS = [
+  {
+    id: 'energy',
+    no: '06',
+    short: 'Energy Booster™',
+    name: 'TranzLife Energy Booster™',
+    cat: 'liquid',
+    tag: 'Energy & Vitality',
+    price: null,
+    size: '500 ml Oral Liquid',
+    desc: 'Herbal & bioactive wellness formulation. A convenient oral liquid designed to complement an active lifestyle and everyday wellness routine.',
+    ing: ['Ruta graveolens (Q)', 'Hecla lava (3X)', 'Symphytum officinale (Q)', 'Calcarea phosphorica (8X)', 'Echinacea angustifolia (Q)'],
+    dosage: '7.5 ml twice daily, or as advised by a healthcare professional'
   }
 ];
 

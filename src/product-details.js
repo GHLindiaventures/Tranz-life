@@ -1,11 +1,12 @@
 // TranzLife Biosciences - Product Details Page Interactive Controller
 import './styles/main.css';
 import { cart, thumbs } from './app/state.js';
-import { PRODUCTS } from './data/products.js';
+import { PRODUCTS, EXTRA_PRODUCTS } from './data/products.js';
 import { SHOTS, DESIGNS } from './features/products/product-images.js';
 import { initCart, renderCart } from './features/cart/cart.js';
 import { inr } from './utils/format.js';
 import { $, $$ } from './utils/dom.js';
+import { initBeforeAfter } from './features/compare/before-after.js';
 
 // Deep formulation scientific metadata directly aligned with official TranzLife documentation
 const CLINICAL_DETAILS = {
@@ -69,25 +70,26 @@ const CLINICAL_DETAILS = {
       { title: 'Non-Greasy Dry Down', text: 'Rapidly absorbed natural botanical esters leave zero oil residue on skin or clothing.' }
     ]
   },
+  // From the Reviva brochure only. It positions Reviva as a topical massage / personal-care product and rules out
+  // any blood-glucose or diabetes claim, so none is made; no rating, mechanism or science cards (none given).
   reviva: {
-    category: 'Natural Support for Diabetes & Vitality',
-    eyebrow: '100% NATURAL PRODUCT · THE SPIRIT OF ORGANICS',
-    rating: '4.9/5 (195+ reviews)',
+    category: 'Botanical Massage Roll-On',
+    eyebrow: 'BOTANICAL MASSAGE ROLL-ON · EVERYDAY WELLNESS & VITALITY RITUAL',
+    rating: null,
+    pills: false,
+    activesTitle: 'Ingredients',
+    packagingTitle: 'Pack &amp; Precautions',
     highlights: [
-      'Supports healthy blood sugar levels and metabolic balance',
-      'Improves peripheral circulation and strengthens nerve vitality',
-      'Relieves localized pain, numbness, and neuropathic discomfort',
-      'Targeted belly-button application for enhanced Ayurvedic transdermal uptake'
+      'Convenient 50 ml massage roll-on format',
+      'Designed for external application and gentle massage',
+      'Portable format for a simple daily wellness ritual',
+      'Botanical-inspired positioning for everyday personal care'
     ],
-    botanicals: 'Pure Dill E.O (Anethum graveolens) and Eucalyptus E.O (Eucalyptus globulus) formulated in the Spirit of Organics.',
-    usage: 'Roll gently around the belly button every morning on an empty stomach. Use daily for consistent vitality. Avoid contact with eyes.',
-    mechanism: 'Bioactive terpenes stimulate metabolic micro-circulation and dermal sensory nerve pathways, supporting neuro-vascular tone and balanced glycemic responses.',
-    packaging: '50 ml roll-on bottle. ISO 9001:2015 & GMP Certified. Barcode: 8 906132 540147.',
-    scienceCards: [
-      { title: 'Neuro-Vascular Support', text: 'Eucalyptus and Dill terpenes improve local nitric oxide release, enhancing microvascular capillary flow to peripheral nerves.' },
-      { title: 'Ayurvedic Nabhi Therapy', text: 'Umbilical application targets central meridian points recognized in classical Ayurveda to nourish systemic vitality.' },
-      { title: 'Metabolic Balance', text: 'Phytochemical compounds support healthy cellular glucose uptake and reduce oxidative stress in peripheral tissues.' }
-    ]
+    botanicals: 'Dill essential oil and Eucalyptus essential oil. See the product label for the full ingredient declaration.',
+    usage: 'Apply a small amount to intact skin and massage gently, as directed on the label. Do not apply to wounds or irritated skin. Wash hands after use. Patch test before first use and discontinue if irritation occurs.',
+    mechanism: null,
+    packaging: 'Massage roll-on, 50 ml. External use only. Avoid eyes and mucous membranes. Keep out of reach of children. Do not use as a replacement for diabetes medication, glucose monitoring or medical advice.',
+    scienceCards: []
   },
   liver: {
     category: '100% Ayurvedic Liver Booster (500 ml)',
@@ -108,6 +110,27 @@ const CLINICAL_DETAILS = {
       { title: 'Biliary Secretion', text: 'Andrographolide and Daruharidra stimulate natural bile flow, accelerating digestion and toxin elimination.' },
       { title: 'Antioxidant Defense', text: 'Amla and Haritaki deliver rich gallic and ellagic acid antioxidants that quench reactive oxygen species in hepatic tissue.' }
     ]
+  },
+  // From the draft brochure only. No rating, price, mechanism or science claims are given there, so none are shown
+  // (the page leaves those parts out when they are missing), and no "plant-derived / GMP" pills (not stated).
+  energy: {
+    category: 'Energy & Everyday Vitality',
+    eyebrow: 'HERBAL & BIOACTIVE WELLNESS FORMULATION · ORAL LIQUID',
+    rating: null,
+    pills: false,
+    activesTitle: 'Key Ingredients',
+    packagingTitle: 'Pack &amp; Storage',
+    highlights: [
+      'Designed to complement daily energy, activity and general well-being',
+      'Selected botanical and mineral-origin ingredients in a ready-to-use liquid',
+      'A simple, measured routine: 7.5 ml twice daily',
+      '500 ml pack with measuring device'
+    ],
+    botanicals: 'Ruta graveolens (Q), Hecla lava (3X), Symphytum officinale (Q), Calcarea phosphorica (8X), Echinacea angustifolia (Q). Refer to the approved product label for the complete composition and ingredient quantities.',
+    usage: '7.5 ml twice daily, or as recommended by a healthcare professional. Shake well if directed on the final label. Use the measuring device supplied with the pack and follow the approved label. Use only as directed; do not exceed the recommended serving. Consult a qualified healthcare professional before use if pregnant, breastfeeding, taking medication or managing a health condition.',
+    mechanism: null,
+    packaging: 'Oral liquid, net quantity 500 ml. Store as directed on the final pack. Keep out of reach of children.',
+    scienceCards: []
   }
 };
 
@@ -124,7 +147,8 @@ function initProductDetailsPage() {
   // 1. Identify active product from URL query
   const params = new URLSearchParams(window.location.search);
   const activeId = params.get('id') || 'gummies';
-  const prod = PRODUCTS.find(p => p.id === activeId) || PRODUCTS[0];
+  const prod = [...PRODUCTS, ...EXTRA_PRODUCTS].find(p => p.id === activeId) || PRODUCTS[0];
+  const hasPrice = prod.price != null;
   const clinical = CLINICAL_DETAILS[prod.id] || CLINICAL_DETAILS.gummies;
 
   // 2. Update page title & SEO meta
@@ -149,11 +173,23 @@ function initProductDetailsPage() {
   const designImg = DESIGNS[prod.id];
   const imgBox = $('#pdpImgBox');
   if (imgBox) {
-    imgBox.innerHTML = `
+    imgBox.innerHTML = studioImg ? `
       <img id="pdpMainImg" src="${studioImg}" alt="${prod.name}" width="800" height="800">
+      <span class="pdp-badge-tag">${prod.tag}</span>
+    ` : `
+      <div class="pdp-img-soon" role="img" aria-label="${prod.name}: product image coming soon">
+        <span class="pdp-img-soon__mark" aria-hidden="true"></span>
+        <b>${prod.short}</b>
+        <small>${prod.size}</small>
+        <em>Product image coming soon</em>
+      </div>
       <span class="pdp-badge-tag">${prod.tag}</span>
     `;
   }
+  const tabsEl = $('.pdp-gallery-tabs');
+  if (tabsEl && (!studioImg || !designImg)) tabsEl.hidden = true;
+  const pillsEl = $('.pdp-guarantee-pills');
+  if (pillsEl && clinical.pills === false) pillsEl.hidden = true;
 
   const tabBtns = $$('.pdp-tab-btn');
   tabBtns.forEach(btn => {
@@ -173,15 +209,16 @@ function initProductDetailsPage() {
     infoEl.innerHTML = `
       <p class="eyebrow drawn">${clinical.eyebrow}</p>
       <h1 class="pdp-title">${prod.name}</h1>
-      <div class="pdp-rating-row">
+      ${clinical.rating ? `<div class="pdp-rating-row">
         <div class="pdp-stars">★★★★★</div>
         <span class="pdp-rating-text">${clinical.rating}</span>
         <span class="pdp-badge-clinical">Clinical Rigor</span>
-      </div>
+      </div>` : ''}
       <div class="pdp-price-box">
-        <span class="pdp-price">${inr(prod.price)}</span>
+        ${hasPrice ? `<span class="pdp-price">${inr(prod.price)}</span>
         <span class="pdp-size">/ ${prod.size}</span>
-        <span class="pdp-tax-note">Inclusive of all taxes · Free delivery ₹999+</span>
+        <span class="pdp-tax-note">Inclusive of all taxes · Free delivery ₹999+</span>` : `<span class="pdp-price pdp-price--tba">Price to be announced</span>
+        <span class="pdp-size">/ ${prod.size}</span>`}
       </div>
       <p class="pdp-desc">${prod.desc}</p>
       <div class="pdp-highlights">
@@ -195,8 +232,8 @@ function initProductDetailsPage() {
         `).join('')}
       </div>
 
-      <!-- Action Row: Qty + Add to Bag -->
-      <div class="pdp-actions-row">
+      <!-- Action Row: Qty + Add to Bag (an enquiry instead while there is no price) -->
+      ${hasPrice ? `<div class="pdp-actions-row">
         <div class="pdp-qty-control">
           <button type="button" id="pdpQtyDec" aria-label="Decrease quantity">−</button>
           <span class="pdp-qty-val" id="pdpQtyVal">1</span>
@@ -205,13 +242,15 @@ function initProductDetailsPage() {
         <button class="add pill pdp-btn-add" id="pdpAddBtn" data-id="${prod.id}" type="button">
           <i aria-hidden="true">+</i><b>Add to bag · ${inr(prod.price)}</b>
         </button>
-      </div>
+      </div>` : `<div class="pdp-actions-row">
+        <a class="pill pdp-btn-add" href="contact.html"><i aria-hidden="true">↗</i><b>Enquire about availability</b></a>
+      </div>`}
 
       <!-- Accordion Specifications -->
       <div class="pdp-accordions">
         <div class="pdp-acc-item open">
           <button class="pdp-acc-header" type="button">
-            Key Botanical Actives <span class="pdp-acc-icon">+</span>
+            ${clinical.activesTitle || 'Key Botanical Actives'} <span class="pdp-acc-icon">+</span>
           </button>
           <div class="pdp-acc-body">
             <p>${clinical.botanicals}</p>
@@ -227,18 +266,18 @@ function initProductDetailsPage() {
           </div>
         </div>
 
-        <div class="pdp-acc-item">
+        ${clinical.mechanism ? `<div class="pdp-acc-item">
           <button class="pdp-acc-header" type="button">
             Biological Mechanism of Action <span class="pdp-acc-icon">+</span>
           </button>
           <div class="pdp-acc-body">
             <p>${clinical.mechanism}</p>
           </div>
-        </div>
+        </div>` : ''}
 
         <div class="pdp-acc-item">
           <button class="pdp-acc-header" type="button">
-            Eco-Packaging &amp; Storage <span class="pdp-acc-icon">+</span>
+            ${clinical.packagingTitle || 'Eco-Packaging &amp; Storage'} <span class="pdp-acc-icon">+</span>
           </button>
           <div class="pdp-acc-body">
             <p>${clinical.packaging}</p>
@@ -284,8 +323,13 @@ function initProductDetailsPage() {
     });
   });
 
+  // 7b. Before / after comparison (products with one in src/data/compare.js)
+  try { initBeforeAfter($('#pdpCompare'), prod.id); } catch (e) { console.warn('Comparison unavailable:', e); }
+
   // 8. Render Science / Mechanism Cards
   const sciGrid = $('#pdpScienceGrid');
+  const sciBand = $('.pdp-science-band');
+  if (sciBand && !clinical.scienceCards.length) sciBand.hidden = true;
   if (sciGrid) {
     sciGrid.innerHTML = clinical.scienceCards.map(sc => `
       <div class="pdp-science-card">

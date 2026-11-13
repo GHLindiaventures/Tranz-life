@@ -273,7 +273,7 @@ const flowK = v => clamp((v - FLOW_A) / (FLOW_B - FLOW_A), 0, 1);
 const FLOW_END = 2.6;
 const flowTop = v => 'calc(305vh + (100% - ' + (305 + FLOW_END * 100) + 'vh) * ' + flowK(v).toFixed(4) + ')';
 // the design boards' pixel sizes (product shots are all 960 x 960), so their space is kept before they load
-const DESIGN_SIZE = { gummies: [1536, 1024], inhaler: [1254, 1254], rollon: [1155, 1362], reviva: [1536, 1024], liver: [1536, 1024] };
+const DESIGN_SIZE = { gummies: [1536, 1024], inhaler: [1254, 1254], rollon: [1155, 1362], liver: [1536, 1024] };
 // The ingredient badges beside the product: badge k of 3 rises in during its own stretch of the details, drifts, and
 // floats away (as the old product display's badges did). u: progress through the details 0..1. Returns
 // { o, y (screens), s }. Pure.

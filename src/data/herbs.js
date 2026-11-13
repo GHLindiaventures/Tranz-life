@@ -59,7 +59,7 @@ export const HERBS = [
     p: 2,
     color: 0x98a245,
     seed: 19,
-    txt: 'Carminative and antispasmodic seed oil. In CycleRelief and Reviva, gentle belly-button application relaxes smooth muscle spasms and enhances vital flow.'
+    txt: 'Aromatic seed oil, one of the two essential oils in the CycleRelief and Reviva roll-ons.'
   },
   {
     n: 'Eucalyptus',

@@ -17,9 +17,9 @@ export const NEEDS = [
     why: 'CycleRelief™ Menstrual Roll-On eases acute cramps, soothes abdominal discomfort, and relaxes tense pelvic muscles with pure Dill and Eucalyptus.'
   },
   {
-    t: 'Healthy blood sugar & nerve vitality',
+    t: 'A daily wellness & vitality ritual',
     p: 3,
-    why: 'Reviva™ Roll-On supports healthy blood sugar balance, peripheral circulation, and nerve strength when rolled around the belly button on an empty stomach.'
+    why: 'Reviva™ Roll-On is a botanical massage roll-on with Dill and Eucalyptus essential oils, designed to complement a daily self-care routine with a refreshing topical application.'
   },
   {
     t: 'Deep liver cleanse & detoxification',

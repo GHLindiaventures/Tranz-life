@@ -23,10 +23,10 @@ export const STORY = [
     c: '#d6969f'
   },
   {
-    t: ['Balance &', 'Vitality'],
-    d: 'Ayurvedic roll-on with Dill and Eucalyptus to support healthy blood sugar balance, nerve strength, and peripheral circulation.',
-    note: 'Balance · Restore · Revitalize',
-    ic: 'foot',
+    t: ['Wellness &', 'Vitality'],
+    d: 'Botanical massage roll-on with Dill and Eucalyptus essential oils, for an everyday wellness and vitality ritual.',
+    note: 'Massage Roll-On · 50 ml',
+    ic: 'leaf',
     c: '#4d8b47'
   },
   {

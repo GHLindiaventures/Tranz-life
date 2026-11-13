@@ -1,6 +1,6 @@
 // Full product write-ups shown in the product sheet (lightbox) next to each product's design.
 // Wording follows the client's brief: relaxation, comfort and wellness positioning, no treatment claims.
-// Reviva has no write-up yet, so its sheet shows the design only.
+// Reviva has no write-up yet, so its sheet shows its name and photo only.
 const BRAND = {
   name: 'TranzLife Biosciences',
   tagline: 'Innovating Life Beyond Limits.',

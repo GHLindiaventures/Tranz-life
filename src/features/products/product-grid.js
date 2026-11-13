@@ -2,6 +2,7 @@
 import { thumbs } from '../../app/state.js';
 import { PRODUCTS } from '../../data/products.js';
 import { STORY } from '../../data/product-story.js';
+import { DESIGNS } from './product-images.js';
 import { ScrollTrigger, gsap, hasGsap } from '../../lib/gsap.js';
 import { $, $$ } from '../../utils/dom.js';
 import { inr } from '../../utils/format.js';
@@ -11,7 +12,7 @@ function thumbImg(p, cls = ''){ return thumbs[p.id] ? `<img class="${cls}" src="
 function buildGrid(){
   $('#grid').innerHTML = PRODUCTS.map((p, i) => `
     <article class="pc" data-cat="${p.cat}" style="--c:${STORY[i].c}">
-      <div class="pc-media">${thumbImg(p)}<span class="pc-tag">${p.tag}</span><button class="pc-view" type="button" data-design="${p.id}">View design <i aria-hidden="true">↗</i></button></div>
+      <div class="pc-media">${thumbImg(p)}<span class="pc-tag">${p.tag}</span>${DESIGNS[p.id] ? `<button class="pc-view" type="button" data-design="${p.id}">View design <i aria-hidden="true">↗</i></button>` : ''}</div>
       <div class="pc-body">
         <p class="pc-no">${p.no} / 05</p>
         <h3>${p.name}</h3>

@@ -11,9 +11,9 @@ const PRODUCTS = [
   { id:'rollon', no:'03', short:'CycleRelief', name:'TranzLife CycleRelief', cat:'rollon', tag:'Women’s care', price:349, size:'Roll-on with gift box',
     desc:'A women’s menstrual wellness roll-on with rosemary, rose and peppermint, designed around comfort and convenience throughout your cycle.',
     ing:['Rosemary','Rose','Peppermint'], model:'rollon', fit:1.06 },
-  { id:'reviva', no:'04', short:'Reviva', name:'Reviva Roll-On', cat:'rollon', tag:'Foot care', price:449, size:'Roll-on',
-    desc:'Diabetic foot care in a roll-on: soothing, plant-based and skin-friendly care for dry, tired feet, every day.',
-    ing:['Plant-based','Skin friendly','Everyday care'], model:'reviva', fit:1.06 },
+  { id:'reviva', no:'04', short:'Reviva', name:'Reviva Roll-On', cat:'rollon', tag:'Massage roll-on', price:399, size:'50 ml',
+    desc:'A practical botanical massage roll-on, designed to complement a daily self-care routine with a refreshing topical application.',
+    ing:['Dill essential oil','Eucalyptus essential oil','External use'], model:'reviva', fit:1.06 },
   { id:'liver', no:'05', short:'Liver Booster', name:'TranzLife Liver Booster', cat:'liquid', tag:'Liver wellness', price:649, size:'100 ml',
     desc:'A nature-inspired liquid reflecting our botanical, quality-focused approach to liver wellness and a healthier everyday lifestyle.',
     ing:['Botanical-inspired','Quality-focused','Healthy lifestyle'], model:'liver', fit:1.14 }
