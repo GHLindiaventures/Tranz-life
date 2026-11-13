@@ -117,13 +117,14 @@
    -------------------------------------------------------------------------- */
 .about-hero {
   position: relative;
-  min-height: 85vh;
-  min-height: 85svh;
+  /* fills the screen, so the 16:9 background is cropped as little as possible (it never stretches: cover) */
+  min-height: 100vh;
+  min-height: 100svh;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding-top: clamp(120px, 16vh, 180px);
-  padding-bottom: clamp(60px, 8vh, 100px);
+  padding-top: clamp(110px, 14vh, 160px);
+  padding-bottom: clamp(48px, 7vh, 90px);
   background: radial-gradient(ellipse 130% 95% at 50% 15%, #faf8ee 0%, #f4eee2 45%, #ece3d2 80%, var(--ground) 100%);
   text-align: center;
   overflow: hidden;
@@ -149,9 +150,11 @@
   user-select: none;
 }
 
+/* the picture and the gold journey layer move together with the mouse; both are enlarged 4% (same amount, so they
+   stay aligned) so the parallax shift never reveals an edge */
 .about-hero-picture {
   z-index: 1;
-  transform: translate3d(calc(var(--about-mx, 0) * 10px), calc(var(--about-my, 0) * 6px + var(--about-sy, 0) * 0.08px), 0);
+  transform: translate3d(calc(var(--about-mx, 0) * 10px), calc(var(--about-my, 0) * 6px + var(--about-sy, 0) * 0.08px), 0) scale(1.04);
   transition: transform 0.15s ease-out;
   will-change: transform;
 }
@@ -171,7 +174,7 @@
   inset: 0;
   z-index: 3;
   pointer-events: none;
-  transform: translate3d(calc(var(--about-mx, 0) * 10px), calc(var(--about-my, 0) * 6px + var(--about-sy, 0) * 0.08px), 0);
+  transform: translate3d(calc(var(--about-mx, 0) * 10px), calc(var(--about-my, 0) * 6px + var(--about-sy, 0) * 0.08px), 0) scale(1.04);
   transition: transform 0.15s ease-out;
   will-change: transform;
 }
