@@ -17,7 +17,7 @@
  * Returns { o: opacity 0..1, tin: fade-in progress 0..1 (drives the letters and a small sideways settle),
  *           lift: px to move the groups up (0 while they hold) }. Pure.
  */
-const INTRO_START = -0.15, INTRO_IN = 0.30, INTRO_RELEASE = 1.05;
+const INTRO_START = -0.15, INTRO_IN = 0.60, INTRO_RELEASE = 1.05;   // INTRO_IN: the intro words light up over 0.6 screens of scroll (was 0.3)
 function calcIntroText(sy, F, vh) {
   const d = (sy - F) / Math.max(1, vh);
   const tin = clamp((d - INTRO_START) / INTRO_IN, 0, 1);
@@ -458,7 +458,7 @@ function walkAt(r, b) {
 function layoutBeats(container) {
   const flow = container.querySelector('.sc-flow'), nF = container._frames;
   if (!flow || !nF) return;
-  const V = innerHeight, H = container.offsetHeight; if (!H) return;
+  const V = innerHeight, H = container.offsetHeight - (container._extra || 0); if (!(H > 0)) return;   // _extra: scroll length the display adds on purpose (journey.js, Lung Booster)
   const small = innerWidth < 768, F = (document.getElementById('home') || {}).offsetHeight || V;
   const gap = Math.max(44, V * 0.055), cy = V * (small ? 0.55 : 0.52);   // room between pieces
   const groups = Array.from({ length: nF + 1 }, () => []), slots = Array.from({ length: nF }, () => []);
@@ -605,7 +605,7 @@ function updateShowcaseDOM(container, p, tTime = 0) {
   });
 
   if (s.label && !s.labelSet) { s.label.textContent = s.labelText; s.labelSet = true; }
-  const progP = clamp((p - ARRIVE) / (1 - ARRIVE), 0, 1);
+  const progP = clamp(((container._pp != null ? container._pp : p + (container._ppOff || 0)) - ARRIVE) / (1 - ARRIVE), 0, 1);   // (_pp: the display's own steady counter while the gummies move)
   if (s.fill) put(s.fill, 'transform', `scaleX(${progP.toFixed(3)})`);
   if (s.num) { const t = String(Math.min(100, Math.max(0, Math.round(progP * 100)))).padStart(3, '0'); if (s.num._t !== t) { s.num._t = t; s.num.textContent = t; } }
 }
