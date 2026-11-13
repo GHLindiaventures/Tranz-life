@@ -1,0 +1,478 @@
+// Complete ingredient directory for the Our Ingredients page.
+// Source of truth: the official composition sheet for all six products.
+// Images live at public/assets/ingredients/<id>.webp (prompts: docs/ingredient-image-prompts.md).
+
+const P = {
+  lung: { id: 'gummies', label: 'Lung Booster' },
+  liver: { id: 'liver', label: 'Liver Booster' },
+  energy: { id: 'energy', label: 'Energy Booster' },
+  inhaler: { id: 'inhaler', label: 'Inhaler' },
+  cycle: { id: 'rollon', label: 'Cycle Relief Roll-On' },
+  reviva: { id: 'reviva', label: 'Reviva Roll-On' }
+};
+
+export const INGREDIENT_CATEGORIES = [
+  { id: 'immunity', label: 'Immunity & Vitality' },
+  { id: 'liver', label: 'Liver & Detox' },
+  { id: 'respiratory', label: 'Respiratory & Breath' },
+  { id: 'comfort', label: 'Comfort & Muscle Relief' },
+  { id: 'stress', label: 'Stress & Calm' },
+  { id: 'energy', label: 'Energy & Vitality' },
+  { id: 'nutrients', label: 'Minerals & Nutrients' }
+];
+
+export const BOTANICAL_INGREDIENTS = [
+  // ---------------------------------------------------------------- Essential & carrier oils
+  {
+    id: 'wintergreen',
+    name: 'Wintergreen Oil',
+    latin: 'Gaultheria procumbens',
+    category: ['comfort'],
+    tradition: 'Aromatherapy',
+    part: 'Leaf Essential Oil',
+    dose: '',
+    compound: 'Methyl Salicylate',
+    target: 'Warming Muscle & Cramp Comfort',
+    products: [P.cycle],
+    desc: 'A naturally warming oil traditionally massaged over tired muscles. Brings a soothing, comforting sensation to the lower abdomen and back during the cycle.'
+  },
+  {
+    id: 'peppermint',
+    name: 'Peppermint Oil',
+    latin: 'Mentha × piperita',
+    category: ['respiratory', 'comfort'],
+    tradition: 'Aromatherapy',
+    part: 'Steam-Distilled Leaf Oil',
+    dose: '',
+    compound: 'Natural Menthol',
+    target: 'Cooling Freshness & Easy Breathing',
+    products: [P.cycle, P.inhaler],
+    desc: 'A cooling, refreshing oil that gives a clear, open feeling in the airways and a pleasant cooling sensation on the skin.'
+  },
+  {
+    id: 'ginger',
+    name: 'Ginger (Sukku)',
+    latin: 'Zingiber officinale',
+    category: ['comfort', 'respiratory'],
+    tradition: 'Siddha & Aromatherapy',
+    part: 'Rhizome Essential Oil & Dry Rhizome',
+    dose: '',
+    compound: 'Gingerols & Zingiberene',
+    target: 'Warming Comfort & Respiratory Support',
+    products: [P.cycle, P.lung],
+    desc: 'Used as a warming essential oil in the roll-on and as dry ginger (Sukku) in the Lung Booster. A classic kitchen-medicine root valued for its warming nature.'
+  },
+  {
+    id: 'lavender',
+    name: 'Lavender Oil',
+    latin: 'Lavandula angustifolia',
+    category: ['stress', 'comfort'],
+    tradition: 'Aromatherapy',
+    part: 'Flower Essential Oil',
+    dose: '',
+    compound: 'Linalool & Linalyl Acetate',
+    target: 'Calm, Relaxation & Comfort',
+    products: [P.cycle, P.inhaler],
+    desc: 'A gentle floral oil known for its calming aroma. Helps the mind settle and the body relax.'
+  },
+  {
+    id: 'eucalyptus',
+    name: 'Eucalyptus Oil',
+    latin: 'Eucalyptus globulus',
+    category: ['respiratory', 'comfort'],
+    tradition: 'Aromatherapy',
+    part: 'Leaf Essential Oil',
+    dose: '',
+    compound: '1,8-Cineole',
+    target: 'Clear Airways & Muscle Comfort',
+    products: [P.inhaler, P.cycle, P.reviva],
+    desc: 'A fresh, penetrating oil that supports easy breathing. Found in three TranzLife products, including both roll-ons.'
+  },
+  {
+    id: 'sesame',
+    name: 'Sesame Oil',
+    latin: 'Sesamum indicum',
+    category: ['comfort'],
+    tradition: 'Ayurveda',
+    part: 'Cold-Pressed Seed Oil (Carrier)',
+    dose: '',
+    compound: 'Sesamin & Sesamol',
+    target: 'Nourishing Base for Massage',
+    products: [P.cycle],
+    desc: 'The traditional Ayurvedic massage base. Carries the essential oils gently into the skin and leaves it soft and nourished.'
+  },
+  {
+    id: 'dill',
+    name: 'Dill Oil',
+    latin: 'Anethum graveolens',
+    category: ['comfort'],
+    tradition: 'Aromatherapy',
+    part: 'Essential Oil (E.O)',
+    dose: '',
+    compound: 'Carvone',
+    target: 'Soothing, Restorative Comfort',
+    products: [P.reviva],
+    desc: 'A sweet, herbaceous essential oil traditionally used for soothing comfort. One of the two oils in Reviva, alongside eucalyptus.'
+  },
+  {
+    id: 'lemon',
+    name: 'Lemon Oil',
+    latin: 'Citrus limon',
+    category: ['respiratory', 'stress'],
+    tradition: 'Aromatherapy',
+    part: 'Peel Essential Oil',
+    dose: '',
+    compound: 'D-Limonene',
+    target: 'Uplifting Freshness',
+    products: [P.inhaler],
+    desc: 'A bright, zesty citrus oil that refreshes the senses and lifts the mood with every breath.'
+  },
+
+  // ---------------------------------------------------------------- Liver Booster (per 10 ml)
+  {
+    id: 'bhumyamalaki',
+    name: 'Bhumyamalaki',
+    latin: 'Phyllanthus niruri',
+    category: ['liver'],
+    tradition: 'Ayurveda',
+    part: 'Whole Plant Extract',
+    dose: '500 mg / 10 ml',
+    compound: 'Phyllanthin & Hypophyllanthin',
+    target: 'Liver Protection & Cleansing',
+    products: [P.liver],
+    desc: 'The lead herb of the Liver Booster. A classical Ayurvedic herb traditionally used to support healthy liver function.'
+  },
+  {
+    id: 'kalmegh',
+    name: 'Kalmegh',
+    latin: 'Andrographis paniculata',
+    category: ['liver', 'immunity'],
+    tradition: 'Ayurveda',
+    part: 'Aerial Parts Extract',
+    dose: '400 mg / 10 ml',
+    compound: 'Andrographolide',
+    target: 'Liver Cleansing & Digestive Balance',
+    products: [P.liver],
+    desc: 'Known as the "King of Bitters". Traditionally used to support natural liver cleansing, healthy digestion and overall vitality.'
+  },
+  {
+    id: 'kutki',
+    name: 'Kutki',
+    latin: 'Picrorhiza kurroa',
+    category: ['liver'],
+    tradition: 'Ayurveda',
+    part: 'Rhizome Extract',
+    dose: '400 mg / 10 ml',
+    compound: 'Picrosides I & II (Kutkin)',
+    target: 'Liver Detox & Protection',
+    products: [P.liver],
+    desc: 'A classical bitter Himalayan herb traditionally used to support the liver\'s natural detoxification.'
+  },
+  {
+    id: 'punarnava',
+    name: 'Punarnava',
+    latin: 'Boerhavia diffusa',
+    category: ['liver'],
+    tradition: 'Ayurveda',
+    part: 'Root & Whole Plant Extract',
+    dose: '300 mg / 10 ml',
+    compound: 'Punarnavine',
+    target: 'Healthy Fluid Balance & Renewal',
+    products: [P.liver],
+    desc: 'Its name means "that which renews". Traditionally used to support healthy fluid balance and liver wellness.'
+  },
+  {
+    id: 'bhringraj',
+    name: 'Bhringraj',
+    latin: 'Eclipta alba',
+    category: ['liver'],
+    tradition: 'Ayurveda',
+    part: 'Whole Plant Extract',
+    dose: '300 mg / 10 ml',
+    compound: 'Wedelolactone',
+    target: 'Liver Rejuvenation',
+    products: [P.liver],
+    desc: 'A revered Ayurvedic rejuvenating herb, traditionally used to support the liver and overall vitality.'
+  },
+  {
+    id: 'daruharidra',
+    name: 'Daruharidra',
+    latin: 'Berberis aristata',
+    category: ['liver'],
+    tradition: 'Ayurveda',
+    part: 'Stem & Root Extract',
+    dose: '200 mg / 10 ml',
+    compound: 'Berberine',
+    target: 'Liver & Metabolic Support',
+    products: [P.liver],
+    desc: 'Known as Indian Barberry, a natural source of berberine. Traditionally used to support liver and digestive health.'
+  },
+  {
+    id: 'guduchi',
+    name: 'Guduchi (Giloy)',
+    latin: 'Tinospora cordifolia',
+    category: ['liver', 'immunity'],
+    tradition: 'Ayurveda',
+    part: 'Stem Extract',
+    dose: '200 mg / 10 ml',
+    compound: 'Tinosporaside',
+    target: 'Immunity & Liver Wellness',
+    products: [P.liver],
+    desc: 'Called "Amrita", the root of immortality. A celebrated Ayurvedic herb used to support immunity and liver wellness.'
+  },
+  {
+    id: 'amla',
+    name: 'Amla (Amalaki)',
+    latin: 'Emblica officinalis',
+    category: ['immunity', 'liver'],
+    tradition: 'Ayurveda',
+    part: 'Fruit Extract',
+    dose: '200 mg / 10 ml',
+    compound: 'Natural Vitamin C & Emblicanins',
+    target: 'Antioxidant Defense & Immunity',
+    products: [P.liver],
+    desc: 'A revered Rasayana fruit, naturally rich in Vitamin C and antioxidants. Supports immunity and liver health.'
+  },
+  {
+    id: 'haritaki',
+    name: 'Haritaki',
+    latin: 'Terminalia chebula',
+    category: ['liver'],
+    tradition: 'Ayurveda',
+    part: 'Fruit Extract',
+    dose: '200 mg / 10 ml',
+    compound: 'Chebulinic Acid & Tannins',
+    target: 'Digestive Cleansing',
+    products: [P.liver],
+    desc: 'Called the "King of Medicines" in Ayurveda. Traditionally used to support gentle digestive cleansing and regularity.'
+  },
+  {
+    id: 'turmeric',
+    name: 'Turmeric',
+    latin: 'Curcuma longa',
+    category: ['liver', 'immunity'],
+    tradition: 'Ayurveda',
+    part: 'Rhizome Extract',
+    dose: '150 mg / 10 ml',
+    compound: 'Curcuminoids',
+    target: 'Antioxidant Defense & Liver Support',
+    products: [P.liver],
+    desc: 'The golden spice of India, with powerful natural antioxidants that help protect cells from oxidative stress.'
+  },
+
+  // ---------------------------------------------------------------- Shared across products
+  {
+    id: 'black-pepper',
+    name: 'Black Pepper',
+    latin: 'Piper nigrum',
+    category: ['respiratory', 'liver'],
+    tradition: 'Ayurveda & Aromatherapy',
+    part: 'Fruit Extract & Essential Oil',
+    dose: '50 mg / 10 ml (Liver Booster)',
+    compound: 'Piperine',
+    target: 'Bioavailability & Warming Support',
+    products: [P.liver, P.lung, P.inhaler],
+    desc: 'The "King of Spices". Its piperine helps the body absorb other herbs, such as turmeric. Also used as a warming oil in the inhaler.'
+  },
+  {
+    id: 'tulsi',
+    name: 'Tulsi (Holy Basil)',
+    latin: 'Ocimum tenuiflorum',
+    category: ['respiratory', 'immunity', 'stress'],
+    tradition: 'Ayurveda & Aromatherapy',
+    part: 'Leaf Extract & Essential Oil',
+    dose: '',
+    compound: 'Eugenol',
+    target: 'Respiratory Health & Natural Immunity',
+    products: [P.lung, P.inhaler],
+    desc: 'The sacred herb of Indian homes. Supports respiratory health and the body\'s natural defenses, and helps the body adapt to stress.'
+  },
+
+  // ---------------------------------------------------------------- Lung Booster botanicals
+  {
+    id: 'cumin',
+    name: 'Jeera (Cumin)',
+    latin: 'Cuminum cyminum',
+    category: ['respiratory'],
+    tradition: 'Siddha',
+    part: 'Seed',
+    dose: '',
+    compound: 'Cuminaldehyde',
+    target: 'Digestive & Respiratory Comfort',
+    products: [P.lung],
+    desc: 'A warming seed long used in Siddha practice for digestive comfort and general well-being.'
+  },
+  {
+    id: 'black-turmeric',
+    name: 'Karumanjal (Black Turmeric)',
+    latin: 'Curcuma caesia',
+    category: ['respiratory', 'immunity'],
+    tradition: 'Siddha',
+    part: 'Rhizome',
+    dose: '',
+    compound: 'Curcuminoids & Essential Oils',
+    target: 'Respiratory & Antioxidant Support',
+    products: [P.lung],
+    desc: 'A rare blue-black turmeric valued in traditional medicine for its antioxidant richness and support for the airways.'
+  },
+  {
+    id: 'long-pepper',
+    name: 'Thippili (Long Pepper)',
+    latin: 'Piper longum',
+    category: ['respiratory'],
+    tradition: 'Siddha',
+    part: 'Fruit (Catkin)',
+    dose: '',
+    compound: 'Piperine & Piperlongumine',
+    target: 'Clear Breathing & Lung Support',
+    products: [P.lung],
+    desc: 'A key respiratory herb in Siddha and Ayurveda, traditionally used to support clear breathing and healthy lungs.'
+  },
+  {
+    id: 'vasaka',
+    name: 'Vasaka (Adulsa)',
+    latin: 'Adhatoda vasica',
+    category: ['respiratory'],
+    tradition: 'Ayurveda',
+    part: 'Leaf',
+    dose: '',
+    compound: 'Vasicine',
+    target: 'Airway & Bronchial Support',
+    products: [P.lung],
+    desc: 'One of Ayurveda\'s best-known lung herbs, traditionally used to support clear airways and comfortable breathing.'
+  },
+  {
+    id: 'licorice',
+    name: 'Licorice Root',
+    latin: 'Glycyrrhiza glabra',
+    category: ['respiratory'],
+    tradition: 'Ayurveda',
+    part: 'Root',
+    dose: '',
+    compound: 'Glycyrrhizin',
+    target: 'Soothing Throat & Airways',
+    products: [P.lung],
+    desc: 'A naturally sweet root (Yashtimadhu) traditionally used to soothe the throat and support the respiratory tract.'
+  },
+  {
+    id: 'small-onion',
+    name: 'Small Onion Extract',
+    latin: 'Allium cepa var. aggregatum',
+    category: ['respiratory', 'immunity'],
+    tradition: 'Siddha',
+    part: 'Bulb Extract',
+    dose: '',
+    compound: 'Quercetin',
+    target: 'Respiratory & Immune Support',
+    products: [P.lung],
+    desc: 'The shallot-like sambar onion of South India, a natural source of quercetin. A traditional home remedy for the chest.'
+  },
+
+  // ---------------------------------------------------------------- Energy Booster (homeopathic)
+  {
+    id: 'ruta',
+    name: 'Ruta Graveolens',
+    latin: 'Ruta graveolens (Rue)',
+    category: ['energy'],
+    tradition: 'Homeopathy',
+    part: 'Mother Tincture',
+    dose: 'Q',
+    compound: 'Rutin',
+    target: 'Relief from Strain & Fatigue',
+    products: [P.energy],
+    desc: 'A classical homeopathic remedy prepared from the rue plant. Traditionally used for tired, overworked muscles and strain.'
+  },
+  {
+    id: 'symphytum',
+    name: 'Symphytum Officinale',
+    latin: 'Symphytum officinale (Comfrey)',
+    category: ['energy'],
+    tradition: 'Homeopathy',
+    part: 'Mother Tincture',
+    dose: 'Q',
+    compound: 'Allantoin',
+    target: 'Bone & Tissue Support',
+    products: [P.energy],
+    desc: 'A homeopathic preparation of comfrey, traditionally known as "knitbone" and used to support bones and connective tissue.'
+  },
+  {
+    id: 'echinacea',
+    name: 'Echinacea Angustifolia',
+    latin: 'Echinacea angustifolia',
+    category: ['energy', 'immunity'],
+    tradition: 'Homeopathy',
+    part: 'Mother Tincture',
+    dose: 'Q',
+    compound: 'Alkamides',
+    target: 'Vitality & Natural Defenses',
+    products: [P.energy],
+    desc: 'The purple coneflower, a well-known herb in homeopathy and herbalism for supporting vitality and natural resistance.'
+  },
+  {
+    id: 'hecla-lava',
+    name: 'Hecla Lava',
+    latin: 'Volcanic ash of Mount Hekla',
+    category: ['energy', 'nutrients'],
+    tradition: 'Homeopathy',
+    part: 'Mineral Trituration',
+    dose: '3X',
+    compound: 'Silica, Alumina & Lime',
+    target: 'Bone & Joint Support',
+    products: [P.energy],
+    desc: 'A homeopathic mineral prepared from the volcanic ash of Iceland\'s Mount Hekla. Traditionally used to support bones and joints.'
+  },
+  {
+    id: 'calc-phos',
+    name: 'Calcarea Phosphorica',
+    latin: 'Calcium phosphate',
+    category: ['energy', 'nutrients'],
+    tradition: 'Homeopathy',
+    part: 'Mineral Trituration',
+    dose: '8X',
+    compound: 'Calcium Phosphate',
+    target: 'Strength & Recovery',
+    products: [P.energy],
+    desc: 'A classical tissue salt, traditionally used to support strong bones, healthy growth and recovery from tiredness.'
+  },
+
+  // ---------------------------------------------------------------- Added nutrients (Lung Booster)
+  {
+    id: 'vitamin-c',
+    name: 'Vitamin C',
+    latin: 'Ascorbic acid',
+    category: ['nutrients', 'immunity'],
+    tradition: 'Nutrient',
+    part: 'Added Nutrient',
+    dose: '',
+    compound: 'Ascorbic Acid',
+    target: 'Immune Function & Antioxidant Defense',
+    products: [P.lung],
+    desc: 'An essential antioxidant vitamin that contributes to normal immune function and protects cells from oxidative stress.'
+  },
+  {
+    id: 'vitamin-d3',
+    name: 'Vitamin D3',
+    latin: 'Cholecalciferol',
+    category: ['nutrients', 'immunity'],
+    tradition: 'Nutrient',
+    part: 'Added Nutrient',
+    dose: '',
+    compound: 'Cholecalciferol',
+    target: 'Immunity, Bones & Muscles',
+    products: [P.lung],
+    desc: 'The "sunshine vitamin". Contributes to normal immune function and the maintenance of healthy bones and muscles.'
+  },
+  {
+    id: 'zinc',
+    name: 'Zinc',
+    latin: 'Essential trace mineral',
+    category: ['nutrients', 'immunity'],
+    tradition: 'Nutrient',
+    part: 'Added Mineral',
+    dose: '',
+    compound: 'Elemental Zinc',
+    target: 'Immune Function',
+    products: [P.lung],
+    desc: 'An essential trace mineral that contributes to normal immune function and protects cells from oxidative stress.'
+  }
+];

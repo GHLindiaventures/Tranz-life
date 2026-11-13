@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Our Ingredients | TranzLife Biosciences - Ethical Sourcing &amp; Standardized Botany</title>
   <meta name="description"
-    content="Explore the botanical actives powering TranzLife formulations, from Curcumin and Tulsi to Eucalyptus, Kutki and Kalmegh.">
+    content="All 34 ingredients in TranzLife products: essential oils, Ayurvedic and Siddha botanicals, homeopathic preparations and added nutrients, with the part used, dose and products for each.">
   <meta property="og:title" content="Our Ingredients | TranzLife Biosciences">
   <meta property="og:description"
     content="Discover the standardized botanical actives, natural origins, and extraction processes behind TranzLife wellness.">
@@ -17,6 +17,7 @@
     href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,400..900;1,62..125,400..900&family=Caveat:wght@600&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&display=swap"
     rel="stylesheet">
   <link rel="icon" type="image/webp" href="/assets/logo-emblem.webp">
+  <link rel="preload" as="image" href="/assets/ingredients-hero-light.webp" fetchpriority="high">
 </head>
 
 <body>
@@ -57,7 +58,7 @@
   </div>
 
   <!-- Header Sticky Navigation Bar -->
-  <header class="nav t-green" id="nav">
+  <header class="nav" id="nav">
     <a class="brand" href="index.html#home" aria-label="TranzLife Biosciences home">
       <span class="logo-em" aria-hidden="true"></span>
       <span class="logo-word" aria-hidden="true"></span>
@@ -193,170 +194,107 @@
   <main class="ingredients-page">
 
     <!-- ======================================================================
-         SECTION 1: HERO (3D COVERFLOW BOTANICAL SHOWCASE)
-         Meticulously aligned with mockup styling & high-end glassmorphism
+         SECTION 1: SHOWCASE (forest stage, filters, 3D card carousel)
+         Cards are rendered by src/ingredients.js from src/data/ingredients.js
          ====================================================================== -->
-    <section class="ing-hero-showcase" id="hero" aria-label="Ingredients Showcase">
-      <div class="ing-showcase-bg" aria-hidden="true">
-        <div class="ing-bg-image" style="background-image: url('/assets/ingredients-hero-bg.webp');"></div>
-        <div class="ing-bg-gradient"></div>
-        <div class="ing-bg-sunbeam"></div>
-        <div class="ing-bg-water-surface"></div>
+    <section class="ix-hero" id="showcase" aria-labelledby="ixTitle">
+      <div class="ix-bg" aria-hidden="true">
+        <img src="/assets/ingredients-hero-light.webp" alt="" width="2048" height="1144" fetchpriority="high" decoding="async">
+        <span class="ix-bg-shade"></span>
+        <span class="ix-bg-rays"></span>
+      </div>
+      <div class="ix-drift" aria-hidden="true">
+        <svg class="ix-leaf l1" viewBox="0 0 40 24"><path d="M2 12C10 1 28 0 38 12 28 24 10 23 2 12Z"/><path class="v" d="M2 12H36"/></svg>
+        <svg class="ix-leaf l2" viewBox="0 0 40 24"><path d="M2 12C10 1 28 0 38 12 28 24 10 23 2 12Z"/><path class="v" d="M2 12H36"/></svg>
+        <svg class="ix-leaf l3" viewBox="0 0 40 24"><path d="M2 12C10 1 28 0 38 12 28 24 10 23 2 12Z"/><path class="v" d="M2 12H36"/></svg>
+        <svg class="ix-leaf l4" viewBox="0 0 40 24"><path d="M2 12C10 1 28 0 38 12 28 24 10 23 2 12Z"/><path class="v" d="M2 12H36"/></svg>
       </div>
 
-      <div class="ing-showcase-inner">
-        <!-- Editorial Header -->
-        <header class="ing-header">
-          <p class="ing-kicker">— NATURE'S FINEST —</p>
-          <h1 class="ing-title">
-            Ingredients<span class="ing-title-leaf-accent" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none">
-                <path d="M3 21C8 21 21 16 21 3C9 3 3 12 3 21Z" fill="url(#titleLeafGrad)" />
-                <path d="M3 21C8 16 14 10 21 3" stroke="#e8f8ce" stroke-width="1.8" stroke-linecap="round"/>
-                <defs>
-                  <linearGradient id="titleLeafGrad" x1="3" y1="21" x2="21" y2="3" gradientUnits="userSpaceOnUse">
-                    <stop stop-color="#55992e"/>
-                    <stop offset="1" stop-color="#b6eb7a"/>
-                  </linearGradient>
-                </defs>
-              </svg>
-            </span>
-          </h1>
-          <p class="ing-subtitle">Nature's power, crafted for better living</p>
-          <div class="ing-flourish" aria-hidden="true">
-            <span class="ing-flourish-line"></span>
-            <span class="ing-flourish-gem">✦</span>
-            <span class="ing-flourish-line"></span>
-          </div>
+      <div class="ix-inner">
+        <header class="ix-head">
+          <p class="ix-kicker">Nature&rsquo;s finest</p>
+          <h1 class="ix-title" id="ixTitle" aria-label="Ingredients"><span aria-hidden="true">Ingred<em><span class="ix-idot">&#305;<svg viewBox="0 0 40 24"><path d="M2 12C10 1 28 0 38 12 28 24 10 23 2 12Z"/></svg></span>e</em>nts</span></h1>
+          <p class="ix-sub">Nature&rsquo;s power, crafted for better living</p>
+          <span class="ix-flourish" aria-hidden="true"><i></i><svg viewBox="0 0 40 24"><path d="M2 12C10 1 28 0 38 12 28 24 10 23 2 12Z"/></svg><i></i></span>
         </header>
 
-        <!-- Category Filter Pills -->
-        <nav class="ing-filter-bar" aria-label="Ingredient categories" role="tablist">
-          <button class="ing-pill-btn active" data-category="all" role="tab" aria-selected="true" type="button">
-            <span class="pill-leaf-icon" aria-hidden="true">🍃</span> All Ingredients (34)
+        <div class="ix-filters" role="group" aria-label="Filter ingredients by benefit">
+          <button class="ix-pill is-on" type="button" data-cat="all" aria-pressed="true">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19C6 10 12 5 20 4c-.5 9-6 14-15 15z"/><path d="M5 19 14 10"/></svg>
+            All Ingredients <span class="ix-pill-n" data-count></span>
           </button>
-          <button class="ing-pill-btn" data-category="respiratory" role="tab" aria-selected="false" type="button">
-            Respiratory &amp; Breath
-          </button>
-          <button class="ing-pill-btn" data-category="liver" role="tab" aria-selected="false" type="button">
-            Liver &amp; Detox
-          </button>
-          <button class="ing-pill-btn" data-category="immunity" role="tab" aria-selected="false" type="button">
-            Immunity
-          </button>
-          <button class="ing-pill-btn" data-category="comfort" role="tab" aria-selected="false" type="button">
-            Comfort &amp; Muscle Relief
-          </button>
-
-          <div class="ing-pill-dropdown-wrap">
-            <button class="ing-pill-btn ing-pill-more" id="morePillsBtn" type="button" aria-expanded="false" aria-haspopup="true">
-              More ▾
+          <button class="ix-pill" type="button" data-cat="respiratory" aria-pressed="false">Respiratory &amp; Breath</button>
+          <button class="ix-pill" type="button" data-cat="liver" aria-pressed="false">Liver &amp; Detox</button>
+          <button class="ix-pill" type="button" data-cat="immunity" aria-pressed="false">Immunity</button>
+          <button class="ix-pill" type="button" data-cat="comfort" aria-pressed="false">Comfort &amp; Muscle Relief</button>
+          <div class="ix-more">
+            <button class="ix-pill ix-more-btn" type="button" id="ixMoreBtn" aria-expanded="false" aria-controls="ixMoreMenu">
+              <span id="ixMoreLabel">More</span>
+              <svg class="chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
             </button>
-            <div class="ing-pill-dropdown" id="morePillsDropdown" role="menu">
-              <button class="ing-dropdown-item" data-category="stress" role="menuitem" type="button">Stress &amp; Calm</button>
-              <button class="ing-dropdown-item" data-category="energy" role="menuitem" type="button">Energy &amp; Vitality</button>
-              <button class="ing-dropdown-item" data-category="nutrients" role="menuitem" type="button">Minerals &amp; Nutrients</button>
+            <div class="ix-more-menu" id="ixMoreMenu" hidden>
+              <button type="button" data-cat="stress" aria-pressed="false">Stress &amp; Calm</button>
+              <button type="button" data-cat="energy" aria-pressed="false">Energy &amp; Vitality</button>
+              <button type="button" data-cat="nutrients" aria-pressed="false">Minerals &amp; Nutrients</button>
             </div>
           </div>
-        </nav>
-
-        <!-- 3D Cover-flow Carousel Stage -->
-        <div class="ing-carousel-stage" id="carouselStage" role="region" aria-label="Botanical Coverflow Showcase">
-          <!-- Left Navigation Arrow -->
-          <button class="ing-nav-arrow prev" id="stagePrev" aria-label="Previous ingredient" type="button">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="15 18 9 12 15 6"></polyline>
-            </svg>
-          </button>
-
-          <!-- 3D Viewport -->
-          <div class="ing-stage-viewport">
-            <!-- Concentric Golden Water Resonance Ripples directly below active card -->
-            <div class="ing-water-ripple" aria-hidden="true">
-              <div class="ripple-ring r1"></div>
-              <div class="ripple-ring r2"></div>
-              <div class="ripple-ring r3"></div>
-              <div class="ripple-glow"></div>
-            </div>
-
-            <!-- Dynamic 3D Card Slots Container -->
-            <div class="ing-stage-track" id="stageTrack">
-              <!-- Rendered dynamically by src/ingredients.js -->
-            </div>
-          </div>
-
-          <!-- Right Navigation Arrow -->
-          <button class="ing-nav-arrow next" id="stageNext" aria-label="Next ingredient" type="button">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="9 18 15 12 9 6"></polyline>
-            </svg>
-          </button>
         </div>
 
-        <!-- Bottom Feature Bar & Explore CTA -->
-        <footer class="ing-stage-foot">
-          <div class="ing-trust-pill-group">
-            <div class="ing-trust-item">
-              <span class="ing-trust-icon" aria-hidden="true">🍃</span>
-              <div class="ing-trust-text">
-                <strong>100% Natural</strong>
-                <small>Botanical Extracts</small>
-              </div>
-            </div>
-            <span class="ing-trust-divider" aria-hidden="true"></span>
-            <div class="ing-trust-item">
-              <span class="ing-trust-icon" aria-hidden="true">🧪</span>
-              <div class="ing-trust-text">
-                <strong>Science Backed</strong>
-                <small>Wellness</small>
-              </div>
-            </div>
-            <span class="ing-trust-divider" aria-hidden="true"></span>
-            <div class="ing-trust-item">
-              <span class="ing-trust-icon" aria-hidden="true">🤍</span>
-              <div class="ing-trust-text">
-                <strong>Holistic Health</strong>
-                <small>for Life</small>
-              </div>
-            </div>
-          </div>
+        <div class="ix-stage" id="ixStage" role="region" aria-roledescription="carousel" aria-label="Ingredient showcase" tabindex="0">
+          <button class="ix-arrow prev" type="button" id="ixPrev" aria-label="Previous ingredient">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+          </button>
+          <div class="ix-pool" aria-hidden="true"><i></i><i></i><i></i></div>
+          <div class="ix-track" id="ixTrack"></div>
+          <button class="ix-arrow next" type="button" id="ixNext" aria-label="Next ingredient">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+          </button>
+          <p class="ix-sr" id="ixLive" aria-live="polite"></p>
+        </div>
 
-          <a href="#directory" class="ing-explore-btn" id="exploreAllBtn">
-            <span>Explore All Ingredients</span>
-            <span class="btn-arrow" aria-hidden="true">→</span>
-          </a>
-        </footer>
+        <div class="ix-foot">
+          <ul class="ix-trust">
+            <li>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19C6 10 12 5 20 4c-.5 9-6 14-15 15z"/><path d="M5 19 14 10"/></svg>
+              <span><b>Plant-powered</b>29 botanicals, 5 minerals &amp; nutrients</span>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3h6M10 3v6L4.5 18.5A1.7 1.7 0 0 0 6 21h12a1.7 1.7 0 0 0 1.5-2.5L14 9V3"/><path d="M7 15h10"/></svg>
+              <span><b>Rooted in tradition</b>Ayurveda, Siddha &amp; homeopathy</span>
+            </li>
+            <li>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>
+              <span><b>Fully disclosed</b>Every ingredient, every product</span>
+            </li>
+          </ul>
+          <a class="ix-explore" href="#directory">Explore All Ingredients <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        </div>
       </div>
     </section>
 
     <!-- ======================================================================
-         SECTION 2: COMPLETE BOTANICAL DIRECTORY (SEARCH & ALL 34 CARDS)
+         SECTION 2: FULL DIRECTORY (all 34, shares the showcase filter; search)
          ====================================================================== -->
-    <section class="ing-directory-sec band" id="directory">
+    <section class="ix-dir band" id="directory" aria-labelledby="ixDirTitle">
       <div class="wrap">
         <div class="sci-sec-header">
-          <span class="sci-kicker">Botanical Directory</span>
-          <h2 class="sci-sec-title">All 34 Standardized Botanicals</h2>
+          <span class="sci-kicker">Full ingredient list</span>
+          <h2 class="sci-sec-title" id="ixDirTitle">All <span data-count-plain></span> ingredients</h2>
           <p class="sci-sec-desc">
-            Explore every active extract, its micro-climate origin, bioactive compounds, and targeted wellness support across the TranzLife range.
+            Every ingredient across the six TranzLife products: what it is, which part is used, and where you will find it.
           </p>
         </div>
 
-        <div class="ing-search-wrap">
-          <div class="ing-search-box">
-            <svg class="ing-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="11" cy="11" r="8"></circle>
-              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-            </svg>
-            <input type="search" id="ingSearch" placeholder="Search by name, Latin, active compound, target..." aria-label="Search all ingredients">
-            <button class="ing-search-clear" id="searchClearBtn" type="button" aria-label="Clear search" style="display:none;">×</button>
-          </div>
-          <div class="ing-dir-count" id="dirCount">Showing 34 botanicals</div>
+        <div class="ix-dir-bar">
+          <label class="ix-search">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4.2-4.2"/></svg>
+            <span class="ix-sr">Search ingredients</span>
+            <input type="search" id="ixSearch" placeholder="Search by name, Latin name, product, dose&hellip;" autocomplete="off">
+          </label>
+          <p class="ix-dir-count" id="ixCount" aria-live="polite"></p>
         </div>
 
-        <div class="ing-grid" id="ingGrid">
-          <!-- Rendered dynamically by src/ingredients.js -->
-        </div>
+        <ul class="ix-grid" id="ixGrid"></ul>
       </div>
     </section>
 
@@ -459,22 +397,13 @@
       </div>
     </section>
 
-    <!-- ======================================================================
-         SECTION 5: INTERACTIVE BOTANICAL DOSSIER MODAL
-         ====================================================================== -->
-    <div class="ing-modal-overlay" id="ingModalOverlay" aria-hidden="true">
-      <div class="ing-modal-dialog" id="ingModalDialog" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-        <button class="ing-modal-x" id="modalCloseX" type="button" aria-label="Close ingredient dossier">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
-          </svg>
-        </button>
-        <div class="ing-modal-body" id="modalIngBody">
-          <!-- Dynamically populated by src/ingredients.js -->
-        </div>
-      </div>
-    </div>
+    <!-- Ingredient details (filled by src/ingredients.js) -->
+    <dialog class="ix-dialog" id="ixDialog" aria-labelledby="ixDlgName">
+      <button class="ix-dialog-x" type="button" id="ixDialogX" aria-label="Close details">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+      <div class="ix-dialog-body" id="ixDialogBody"></div>
+    </dialog>
 
   </main>
 

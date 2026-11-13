@@ -1,527 +1,252 @@
-// TranzLife Biosciences - Official Ingredients Directory & 3D Coverflow Controller
+// TranzLife Biosciences - Our Ingredients page
+// Showcase: a 3D card carousel over the forest stage; below it the full, searchable list of all ingredients.
+// The benefit filter is shared by both; "View Details" (or any tile) opens a details dialog.
 import './styles/main.css';
 import { initCart } from './features/cart/cart.js';
 import { $ } from './utils/dom.js';
-import { BOTANICAL_INGREDIENTS } from './data/ingredients.js';
+import { BOTANICAL_INGREDIENTS, INGREDIENT_CATEGORIES } from './data/ingredients.js';
 
 export { BOTANICAL_INGREDIENTS };
 
-function initIngredientsPage() {
-  // 1. Initialize shopping bag state
-  try {
-    initCart();
-  } catch (e) {
-    console.warn('Cart initialization deferred:', e);
-  }
+const PHOTOS = new Set(['haritaki']);              // full photographs (no cut-out): shown framed
+const VISIBLE = 2;                                 // cards shown on each side of the centre card
+const CAT_LABEL = Object.fromEntries(INGREDIENT_CATEGORIES.map(c => [c.id, c.label]));
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const imgSrc = item => `assets/ingredients/cutout/${item.id}.webp`;
+const LEAF = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19C6 10 12 5 20 4c-.5 9-6 14-15 15z"/><path d="M5 19 14 10"/></svg>';
+const ARROW = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
 
-  // 2. Navigation scroll header styling
+function initSiteChrome() {
+  try { initCart(); } catch (e) { console.warn('Cart initialization deferred:', e); }
+
   const nav = $('#nav');
-  function onScroll() {
-    if (!nav) return;
-    nav.classList.toggle('scrolled', window.scrollY > 20);
-  }
+  const onScroll = () => nav && nav.classList.toggle('scrolled', window.scrollY > 20);
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
 
-  // 3. Mobile / Full-screen Navigation Menu Controller
-  const btn = $('#dockMenu');
-  const menu = $('#menu');
-  const menuX = $('#menuX');
-
-  function setMenuOpen(open) {
+  const btn = $('#dockMenu'), menu = $('#menu'), menuX = $('#menuX');
+  const setMenuOpen = open => {
     if (!menu) return;
     menu.classList.toggle('open', open);
     menu.setAttribute('aria-hidden', !open);
-    if (btn) {
-      btn.setAttribute('aria-expanded', open);
-      btn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
-    }
+    if (btn) { btn.setAttribute('aria-expanded', open); btn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu'); }
     document.documentElement.classList.toggle('menu-open', open);
-  }
-
+  };
   if (btn) btn.addEventListener('click', () => setMenuOpen(!menu.classList.contains('open')));
   if (menuX) menuX.addEventListener('click', () => setMenuOpen(false));
-  if (menu) {
-    menu.addEventListener('click', e => {
-      if (e.target.closest('a')) setMenuOpen(false);
-    });
-  }
-  window.addEventListener('keydown', e => {
-    if (e.key === 'Escape') {
-      if (menu && menu.classList.contains('open')) setMenuOpen(false);
-      closeModal();
-    }
-  });
+  if (menu) menu.addEventListener('click', e => { if (e.target.closest('a')) setMenuOpen(false); });
+  window.addEventListener('keydown', e => { if (e.key === 'Escape' && menu && menu.classList.contains('open')) setMenuOpen(false); });
 
-  // 4. Cart Bag Drawer Controller
-  const bagBtn = $('#bagBtn');
-  const drawer = $('#drawer');
-  const scrim = $('#scrim');
-  const closeBag = $('#closeBag');
-
-  function setDrawerOpen(open) {
+  const bagBtn = $('#bagBtn'), drawer = $('#drawer'), scrim = $('#scrim'), closeBag = $('#closeBag');
+  const setDrawerOpen = open => {
     if (!drawer || !scrim) return;
     drawer.classList.toggle('open', open);
     drawer.setAttribute('aria-hidden', !open);
     scrim.classList.toggle('open', open);
     document.documentElement.classList.toggle('bag-open', open);
-  }
-
+  };
   if (bagBtn) bagBtn.addEventListener('click', () => setDrawerOpen(true));
   if (closeBag) closeBag.addEventListener('click', () => setDrawerOpen(false));
   if (scrim) scrim.addEventListener('click', () => setDrawerOpen(false));
+}
 
-  // Helper string escaper
-  const esc = s => String(s || '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+function initIngredients() {
+  const track = $('#ixTrack'), stage = $('#ixStage'), live = $('#ixLive');
+  const grid = $('#ixGrid'), search = $('#ixSearch'), count = $('#ixCount');
+  const moreBtn = $('#ixMoreBtn'), moreMenu = $('#ixMoreMenu'), moreLabel = $('#ixMoreLabel');
+  const dialog = $('#ixDialog'), dialogBody = $('#ixDialogBody');
+  if (!track || !grid) return;
 
-  // Nav Search Button: Smooth-scroll to directory and focus search input
-  const navSearchBtn = $('#navSearchBtn');
-  if (navSearchBtn) {
-    navSearchBtn.addEventListener('click', e => {
-      e.preventDefault();
-      const dir = $('#directory');
-      const search = $('#ingSearch');
-      if (dir) {
-        dir.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        setTimeout(() => { if (search) search.focus(); }, 400);
-      }
+  const total = BOTANICAL_INGREDIENTS.length;
+  document.querySelectorAll('[data-count]').forEach(el => { el.textContent = `(${total})`; });
+  document.querySelectorAll('[data-count-plain]').forEach(el => { el.textContent = total; });
+
+  // start on the second ingredient, so the first one shows on its left (Wintergreen | Peppermint | Ginger)
+  let cat = 'all', query = '', deck = [...BOTANICAL_INGREDIENTS], active = Math.min(1, BOTANICAL_INGREDIENTS.length - 1);
+  const inCat = item => cat === 'all' || item.category.includes(cat);
+
+  /* ---------- carousel ---------- */
+  const cardHTML = (item, i) => `
+    <article class="ix-card" data-i="${i}">
+      <div class="ix-card-media${PHOTOS.has(item.id) ? ' is-photo' : ''}">
+        <span class="ix-halo" aria-hidden="true"></span>
+        <img src="${imgSrc(item)}" alt="" loading="${i < 3 || i > deck.length - 3 ? 'eager' : 'lazy'}" decoding="async">
+      </div>
+      <span class="ix-badge">${LEAF}${esc(item.tradition)}</span>
+      <h3 class="ix-name">${esc(item.name)}</h3>
+      <p class="ix-latin">${esc(item.latin)}</p>
+      <p class="ix-desc">${esc(item.desc)}</p>
+      <button class="ix-details" type="button" data-open="${item.id}">View Details ${ARROW}</button>
+    </article>`;
+
+  function renderDeck() {
+    track.innerHTML = deck.map(cardHTML).join('');
+    layout();
+  }
+
+  function layout() {
+    const n = deck.length;
+    track.querySelectorAll('.ix-card').forEach(card => {
+      const i = +card.dataset.i;
+      let d = i - active;
+      if (d > n / 2) d -= n;
+      if (d < -n / 2) d += n;
+      const ad = Math.abs(d);
+      card.style.setProperty('--d', d);
+      card.style.setProperty('--ad', ad);
+      card.classList.toggle('is-center', d === 0);
+      card.classList.toggle('is-off', ad > VISIBLE);
+      card.toggleAttribute('inert', d !== 0);
+      card.setAttribute('aria-hidden', d !== 0);
     });
+    const item = deck[active];
+    stage.classList.toggle('is-single', n < 2);
+    if (live && item) live.textContent = `${item.name}, ${active + 1} of ${n}`;
   }
 
-  // ==========================================================================
-  // 5. 3D COVERFLOW CAROUSEL CONTROLLER
-  // ==========================================================================
-  const stageTrack = $('#stageTrack');
-  const stagePrev = $('#stagePrev');
-  const stageNext = $('#stageNext');
-  const filterPillBtns = document.querySelectorAll('.ing-pill-btn[data-category]');
-  const morePillsBtn = $('#morePillsBtn');
-  const moreDropdown = $('#morePillsDropdown');
-  const dropdownItems = document.querySelectorAll('.ing-dropdown-item');
+  const go = step => {
+    if (deck.length < 2) return;
+    active = (active + step + deck.length) % deck.length;
+    layout();
+  };
 
-  let currentCategory = 'all';
-
-  // Build curated carousel deck matching the mockup's coverflow presentation
-  function buildInitialDeck() {
-    // Lead items strictly matching mockup: Ginger (far left), Wintergreen (left), Peppermint (center), Ginger (right), Tulsi (far right)
-    const gingerItem = BOTANICAL_INGREDIENTS.find(i => i.id === 'ginger') || BOTANICAL_INGREDIENTS[2];
-    const wintergreenItem = BOTANICAL_INGREDIENTS.find(i => i.id === 'wintergreen') || BOTANICAL_INGREDIENTS[0];
-    const peppermintItem = BOTANICAL_INGREDIENTS.find(i => i.id === 'peppermint') || BOTANICAL_INGREDIENTS[1];
-    const tulsiItem = BOTANICAL_INGREDIENTS.find(i => i.id === 'tulsi') || BOTANICAL_INGREDIENTS[19];
-
-    const leadItems = [gingerItem, wintergreenItem, peppermintItem, { ...gingerItem }, tulsiItem];
-    const leadIds = new Set(['ginger', 'wintergreen', 'peppermint', 'tulsi']);
-    const rest = BOTANICAL_INGREDIENTS.filter(i => !leadIds.has(i.id));
-
-    return [...leadItems, ...rest];
-  }
-
-  let carouselDeck = buildInitialDeck();
-  // Center card is Peppermint (index 2 in leadItems)
-  let activeIndex = 2;
-
-  function updateCarouselDeck() {
-    if (currentCategory === 'all') {
-      carouselDeck = buildInitialDeck();
-      activeIndex = 2;
-    } else {
-      carouselDeck = BOTANICAL_INGREDIENTS.filter(item =>
-        Array.isArray(item.category)
-          ? item.category.includes(currentCategory)
-          : item.category === currentCategory
-      );
-      if (carouselDeck.length === 0) {
-        carouselDeck = [...BOTANICAL_INGREDIENTS];
-      }
-      activeIndex = 0;
-    }
-    renderCarousel();
-  }
-
-  function getSlotItem(offset) {
-    const n = carouselDeck.length;
-    if (n === 0) return null;
-    const idx = (activeIndex + offset + n * 100) % n;
-    return { item: carouselDeck[idx], index: idx };
-  }
-
-  function renderCarousel() {
-    if (!stageTrack) return;
-    const n = carouselDeck.length;
-    if (n === 0) return;
-
-    const slots = [-2, -1, 0, 1, 2];
-    stageTrack.innerHTML = slots.map(offset => {
-      const { item, index } = getSlotItem(offset);
-      const slotClass = `slot-${offset}`;
-      const isCenter = offset === 0;
-
-      return `
-        <article class="ing-glass-card ${slotClass}" data-offset="${offset}" data-index="${index}" data-id="${item.id}" role="group" aria-label="${esc(item.name)}">
-          <span class="ing-card-glass-badge">🍃 ${esc(item.tradition || 'Botanical')}</span>
-          <div class="ing-card-visual">
-            <div class="ing-card-aura" aria-hidden="true"></div>
-            <img class="ing-card-img" src="assets/ingredients/${item.id}.webp" alt="${esc(item.name)}" loading="${isCenter ? 'eager' : 'lazy'}" width="200" height="200">
-          </div>
-          <h3 class="ing-glass-name">${esc(item.name)}</h3>
-          <span class="ing-glass-latin">${esc(item.latin)}</span>
-          <p class="ing-glass-desc">${esc(item.desc)}</p>
-          <button class="ing-glass-btn ing-view-detail-btn" data-detail-id="${item.id}" type="button">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="width:13px;height:13px;opacity:0.85;" aria-hidden="true">
-              <circle cx="11" cy="11" r="7"/>
-              <line x1="21" y1="21" x2="16" y2="16"/>
-            </svg>
-            <span>View Details</span> <i aria-hidden="true">→</i>
-          </button>
-        </article>
-      `;
-    }).join('');
-  }
-
-  function goToNext() {
-    if (carouselDeck.length <= 1) return;
-    activeIndex = (activeIndex + 1) % carouselDeck.length;
-    renderCarousel();
-  }
-
-  function goToPrev() {
-    if (carouselDeck.length <= 1) return;
-    activeIndex = (activeIndex - 1 + carouselDeck.length) % carouselDeck.length;
-    renderCarousel();
-  }
-
-  if (stageNext) stageNext.addEventListener('click', goToNext);
-  if (stagePrev) stagePrev.addEventListener('click', goToPrev);
-
-  // Card click navigation (click side cards to rotate to them)
-  if (stageTrack) {
-    stageTrack.addEventListener('click', e => {
-      const detailBtn = e.target.closest('.ing-view-detail-btn');
-      if (detailBtn) {
-        e.stopPropagation();
-        const id = detailBtn.dataset.detailId;
-        openModal(id);
-        return;
-      }
-
-      const card = e.target.closest('.ing-glass-card');
-      if (!card) return;
-      const offset = parseInt(card.dataset.offset, 10);
-      if (offset === -1 || offset === -2) {
-        goToPrev();
-      } else if (offset === 1 || offset === 2) {
-        goToNext();
-      } else if (offset === 0) {
-        openModal(card.dataset.id);
-      }
-    });
-  }
-
-  // Keyboard navigation when carousel is in view
-  window.addEventListener('keydown', e => {
-    if (document.activeElement && ['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
-    const hero = $('#hero');
-    if (!hero) return;
-    const rect = hero.getBoundingClientRect();
-    const inView = rect.bottom > 100 && rect.top < window.innerHeight - 100;
-    if (!inView) return;
-
-    if (e.key === 'ArrowRight') {
-      goToNext();
-    } else if (e.key === 'ArrowLeft') {
-      goToPrev();
-    }
+  $('#ixPrev').addEventListener('click', () => go(-1));
+  $('#ixNext').addEventListener('click', () => go(1));
+  stage.addEventListener('keydown', e => {
+    if (e.key === 'ArrowLeft') { e.preventDefault(); go(-1); }
+    else if (e.key === 'ArrowRight') { e.preventDefault(); go(1); }
   });
+  // side cards are inert, so find them by position: a click on a card that is not the centre brings it forward
+  stage.addEventListener('click', e => {
+    const open = e.target.closest('[data-open]');
+    if (open) { openDialog(open.dataset.open, open); return; }
+    if (e.target.closest('.ix-arrow') || moved) return;
+    const hit = document.elementsFromPoint(e.clientX, e.clientY).find(el => el.classList && el.classList.contains('ix-card'));
+    if (hit && !hit.classList.contains('is-center')) { active = +hit.dataset.i; layout(); }
+  });
+  // swipe
+  let downX = null, moved = false;
+  stage.addEventListener('pointerdown', e => { downX = e.clientX; moved = false; }, { passive: true });
+  stage.addEventListener('pointerup', e => {
+    if (downX === null) return;
+    const dx = e.clientX - downX; downX = null;
+    if (Math.abs(dx) > 45) { moved = true; go(dx < 0 ? 1 : -1); }
+  }, { passive: true });
 
-  // Touch swipe support for mobile
-  let touchStartX = 0;
-  let touchEndX = 0;
-  if (stageTrack) {
-    stageTrack.addEventListener('touchstart', e => {
-      touchStartX = e.changedTouches[0].screenX;
-    }, { passive: true });
-    stageTrack.addEventListener('touchend', e => {
-      touchEndX = e.changedTouches[0].screenX;
-      const diff = touchEndX - touchStartX;
-      if (Math.abs(diff) > 40) {
-        if (diff < 0) goToNext();
-        else goToPrev();
-      }
-    }, { passive: true });
-  }
-
-  // Category Filter Pill Clicks
-  function setCategory(cat, sourceBtn) {
-    currentCategory = cat;
-    filterPillBtns.forEach(b => b.classList.toggle('active', b.dataset.category === cat));
-    dropdownItems.forEach(b => b.classList.toggle('active', b.dataset.category === cat));
-
-    if (morePillsBtn) {
-      const isMore = ['stress', 'energy', 'nutrients'].includes(cat);
-      morePillsBtn.classList.toggle('active', isMore);
-      if (isMore && sourceBtn) {
-        morePillsBtn.innerHTML = `${sourceBtn.textContent} ▾`;
-      } else {
-        morePillsBtn.innerHTML = `More ▾`;
-      }
-    }
-    if (moreDropdown) moreDropdown.classList.remove('open');
-
-    updateCarouselDeck();
+  /* ---------- filters (shared by carousel and list) ---------- */
+  const pills = [...document.querySelectorAll('.ix-filters [data-cat]')];
+  const setMore = open => {
+    moreMenu.hidden = !open;
+    moreBtn.setAttribute('aria-expanded', open);
+  };
+  function setCat(next) {
+    cat = next;
+    pills.forEach(p => {
+      const on = p.dataset.cat === cat;
+      p.classList.toggle('is-on', on);
+      p.setAttribute('aria-pressed', on);
+    });
+    const inMore = !!moreMenu.querySelector(`[data-cat="${cat}"]`);
+    moreBtn.classList.toggle('is-on', inMore);
+    moreLabel.textContent = inMore ? CAT_LABEL[cat] : 'More';
+    const current = deck[active];
+    deck = BOTANICAL_INGREDIENTS.filter(inCat);
+    const keep = current ? deck.findIndex(x => x.id === current.id) : -1;
+    active = keep >= 0 ? keep : 0;
+    renderDeck();
     renderGrid();
   }
-
-  filterPillBtns.forEach(btn => {
-    btn.addEventListener('click', () => setCategory(btn.dataset.category, btn));
+  pills.forEach(p => p.addEventListener('click', () => {
+    const fromMenu = !!p.closest('.ix-more-menu');
+    setCat(p.dataset.cat);
+    setMore(false);
+    if (fromMenu) moreBtn.focus();
+  }));
+  moreBtn.addEventListener('click', e => {
+    e.stopPropagation();
+    setMore(moreMenu.hidden);
+    if (!moreMenu.hidden) moreMenu.querySelector('button').focus();
+  });
+  document.addEventListener('click', e => { if (!e.target.closest('.ix-more')) setMore(false); });
+  moreMenu.addEventListener('keydown', e => {
+    const items = [...moreMenu.querySelectorAll('button')], at = items.indexOf(document.activeElement);
+    if (e.key === 'Escape') { setMore(false); moreBtn.focus(); }
+    else if (e.key === 'ArrowDown') { e.preventDefault(); items[(at + 1) % items.length].focus(); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); items[(at - 1 + items.length) % items.length].focus(); }
   });
 
-  // More Dropdown Controller
-  if (morePillsBtn && moreDropdown) {
-    morePillsBtn.addEventListener('click', e => {
-      e.stopPropagation();
-      const open = moreDropdown.classList.toggle('open');
-      morePillsBtn.setAttribute('aria-expanded', open);
-    });
-
-    document.addEventListener('click', e => {
-      if (!moreDropdown.contains(e.target) && e.target !== morePillsBtn) {
-        moreDropdown.classList.remove('open');
-        morePillsBtn.setAttribute('aria-expanded', 'false');
-      }
-    });
-
-    dropdownItems.forEach(item => {
-      item.addEventListener('click', e => {
-        e.stopPropagation();
-        setCategory(item.dataset.category, item);
-      });
-    });
-  }
-
-  // ==========================================================================
-  // 6. COMPLETE BOTANICAL DIRECTORY GRID CONTROLLER
-  // ==========================================================================
-  const gridContainer = $('#ingGrid');
-  const searchInput = $('#ingSearch');
-  const searchClearBtn = $('#searchClearBtn');
-  const dirCount = $('#dirCount');
-  let searchQuery = '';
+  /* ---------- full list ---------- */
+  const tileHTML = item => `
+    <li class="ix-tile">
+      <button class="ix-tile-btn" type="button" data-open="${item.id}">
+        <span class="ix-tile-media${PHOTOS.has(item.id) ? ' is-photo' : ''}"><img src="${imgSrc(item)}" alt="" loading="lazy" decoding="async"></span>
+        <span class="ix-tile-body">
+          <span class="ix-tile-trad">${esc(item.tradition)}</span>
+          <span class="ix-tile-name">${esc(item.name)}</span>
+          <span class="ix-tile-latin">${esc(item.latin)}</span>
+          <span class="ix-tile-meta">${esc(item.products.map(p => p.label).join(' · '))}${item.dose ? ` <em>${esc(item.dose)}</em>` : ''}</span>
+        </span>
+      </button>
+    </li>`;
 
   function renderGrid() {
-    if (!gridContainer) return;
-    const q = searchQuery.toLowerCase().trim();
-
-    const filtered = BOTANICAL_INGREDIENTS.filter(item => {
-      const matchCat =
-        currentCategory === 'all' ||
-        (Array.isArray(item.category)
-          ? item.category.includes(currentCategory)
-          : item.category === currentCategory);
-
-      const haystack = [
-        item.name, item.latin, item.compound, item.target, item.tradition,
-        item.part, item.dose, ...(item.products ? item.products.map(p => p.label) : [])
-      ].join(' ').toLowerCase();
-
-      return matchCat && (!q || haystack.includes(q));
-    });
-
-    if (dirCount) {
-      dirCount.textContent = `Showing ${filtered.length} of ${BOTANICAL_INGREDIENTS.length} botanicals`;
-    }
-
-    if (searchClearBtn) {
-      searchClearBtn.style.display = q ? 'block' : 'none';
-    }
-
-    if (filtered.length === 0) {
-      gridContainer.innerHTML = `
-        <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px;">
-          <p style="font-size: 1.2rem; color: var(--muted); margin-bottom: 12px;">No ingredients found matching "${esc(searchQuery)}".</p>
-          <button class="pill" id="clearFilterBtn" type="button"><b>Reset Search</b></button>
-        </div>
-      `;
-      const clearBtn = $('#clearFilterBtn');
-      if (clearBtn) {
-        clearBtn.addEventListener('click', () => {
-          searchQuery = '';
-          if (searchInput) searchInput.value = '';
-          setCategory('all');
-        });
-      }
-      return;
-    }
-
-    gridContainer.innerHTML = filtered.map(item => `
-      <article class="ing-card" data-id="${item.id}">
-        <figure class="ing-card-media" data-initial="${esc(item.name.charAt(0))}">
-          <img src="assets/ingredients/${item.id}.webp" alt="${esc(item.name)}" loading="lazy" decoding="async" width="640" height="400">
-        </figure>
-        <div class="ing-card-top">
-          <span class="ing-card-badge">${esc(item.tradition || 'Botanical')}</span>
-          ${item.dose ? `<span class="ing-card-origin">${esc(item.dose)}</span>` : ''}
-        </div>
-        <h3>${esc(item.name)}</h3>
-        <div class="ing-card-latin">${esc(item.latin)}</div>
-        <p class="ing-card-desc">${esc(item.desc)}</p>
-        <div class="ing-card-specs">
-          <div class="ing-spec-item">
-            <small>Part Used</small>
-            <b>${esc(item.part || 'Standardized extract')}</b>
-          </div>
-          <div class="ing-spec-item">
-            <small>Key Compound</small>
-            <b>${esc(item.compound || 'Bioactive phytochemicals')}</b>
-          </div>
-        </div>
-        <div class="ing-card-foot">
-          <span class="ing-card-target">${esc(item.target)}</span>
-          <div class="ing-card-actions">
-            <div class="ing-card-prods">
-              ${(item.products || []).map(p => `<a href="product-details.html?id=${p.id}" class="ing-prod-pill">${esc(p.label)} →</a>`).join('')}
-            </div>
-            <button class="ing-dir-detail-btn ing-view-detail-btn" data-detail-id="${item.id}" type="button">
-              Details ↗
-            </button>
-          </div>
-        </div>
-      </article>
-    `).join('');
+    const q = query.toLowerCase().trim();
+    const list = BOTANICAL_INGREDIENTS.filter(item => inCat(item) && (!q || [
+      item.name, item.latin, item.compound, item.target, item.tradition, item.part, item.dose,
+      ...item.products.map(p => p.label)
+    ].join(' ').toLowerCase().includes(q)));
+    grid.innerHTML = list.length ? list.map(tileHTML).join('')
+      : `<li class="ix-empty">No ingredients match &ldquo;${esc(query)}&rdquo;${cat !== 'all' ? ` in ${esc(CAT_LABEL[cat])}` : ''}.</li>`;
+    count.innerHTML = `Showing ${list.length} of ${total}` +
+      (cat !== 'all' ? ` &middot; ${esc(CAT_LABEL[cat])} <button type="button" class="ix-clear" data-clear>Show all</button>` : '');
   }
+  search.addEventListener('input', () => { query = search.value; renderGrid(); });
+  count.addEventListener('click', e => { if (e.target.closest('[data-clear]')) setCat('all'); });
+  grid.addEventListener('click', e => { const t = e.target.closest('[data-open]'); if (t) openDialog(t.dataset.open, t); });
 
-  // Search input listeners
-  if (searchInput) {
-    searchInput.addEventListener('input', e => {
-      searchQuery = e.target.value;
-      renderGrid();
-    });
+  /* ---------- details dialog ---------- */
+  let returnTo = null;
+  function openDialog(id, from) {
+    const item = BOTANICAL_INGREDIENTS.find(x => x.id === id);
+    if (!item || !dialog) return;
+    returnTo = from || document.activeElement;
+    const spec = (k, v) => v ? `<div><dt>${k}</dt><dd>${esc(v)}</dd></div>` : '';
+    dialogBody.innerHTML = `
+      <div class="ix-dlg-media${PHOTOS.has(item.id) ? ' is-photo' : ''}"><img src="${imgSrc(item)}" alt="${esc(item.name)}"></div>
+      <div class="ix-dlg-text">
+        <span class="ix-badge">${LEAF}${esc(item.tradition)}</span>
+        <h2 id="ixDlgName">${esc(item.name)}</h2>
+        <p class="ix-latin">${esc(item.latin)}</p>
+        <p class="ix-dlg-desc">${esc(item.desc)}</p>
+        <dl class="ix-dlg-specs">
+          ${spec('Part used', item.part)}${spec('Key compound', item.compound)}${spec('Dose', item.dose)}${spec('Supports', item.target)}
+        </dl>
+        <p class="ix-dlg-cats">${item.category.map(c => `<span>${esc(CAT_LABEL[c] || c)}</span>`).join('')}</p>
+        <h3>Found in</h3>
+        <p class="ix-dlg-products">${item.products.map(p => `<a href="product-details.html?id=${p.id}">${esc(p.label)} ${ARROW}</a>`).join('')}</p>
+      </div>`;
+    dialog.showModal();
+    document.documentElement.classList.add('ix-dialog-open');
   }
-  if (searchClearBtn) {
-    searchClearBtn.addEventListener('click', () => {
-      searchQuery = '';
-      if (searchInput) searchInput.value = '';
-      renderGrid();
+  if (dialog) {
+    $('#ixDialogX').addEventListener('click', () => dialog.close());
+    dialog.addEventListener('click', e => { if (e.target === dialog) dialog.close(); });   // backdrop
+    dialog.addEventListener('close', () => {
+      document.documentElement.classList.remove('ix-dialog-open');
+      if (returnTo && document.contains(returnTo)) returnTo.focus();
     });
   }
 
-  // Image load / error handlers
-  if (gridContainer) {
-    gridContainer.addEventListener('load', e => {
-      if (e.target.tagName === 'IMG') e.target.closest('.ing-card-media')?.classList.add('is-loaded');
-    }, true);
-    gridContainer.addEventListener('error', e => {
-      if (e.target.tagName === 'IMG') e.target.closest('.ing-card-media')?.classList.add('is-missing');
-    }, true);
-
-    // Detail button clicks inside grid
-    gridContainer.addEventListener('click', e => {
-      const btn = e.target.closest('.ing-view-detail-btn');
-      if (btn) {
-        openModal(btn.dataset.detailId);
-      }
-    });
-  }
-
-  // Smooth scroll for "Explore All Ingredients" button
-  const exploreBtn = $('#exploreAllBtn');
-  if (exploreBtn) {
-    exploreBtn.addEventListener('click', e => {
-      e.preventDefault();
-      const dirSec = $('#directory');
-      if (dirSec) {
-        dirSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-    });
-  }
-
-  // ==========================================================================
-  // 7. BOTANICAL DOSSIER MODAL CONTROLLER
-  // ==========================================================================
-  const modalOverlay = $('#ingModalOverlay');
-  const modalCloseX = $('#modalCloseX');
-  const modalBody = $('#modalIngBody');
-
-  function openModal(ingredientId) {
-    const item = BOTANICAL_INGREDIENTS.find(i => i.id === ingredientId);
-    if (!item || !modalOverlay || !modalBody) return;
-
-    modalBody.innerHTML = `
-      <div class="ing-modal-grid">
-        <div class="ing-modal-media">
-          <img src="assets/ingredients/${item.id}.webp" alt="${esc(item.name)}" class="ing-modal-img" width="220" height="220">
-          <div class="ing-modal-badges">
-            <span class="ing-card-badge">${esc(item.tradition || 'Botanical')}</span>
-            ${item.dose ? `<span class="ing-card-badge">${esc(item.dose)}</span>` : ''}
-          </div>
-        </div>
-        <div class="ing-modal-content">
-          <span class="ing-modal-kicker">Botanical Monograph</span>
-          <h2 id="modalTitle">${esc(item.name)}</h2>
-          <div class="ing-modal-latin">${esc(item.latin)}</div>
-          <p class="ing-modal-desc">${esc(item.desc)}</p>
-
-          <div class="ing-modal-specs-list">
-            <div class="ing-mspec">
-              <small>Part Used</small>
-              <b>${esc(item.part || 'Standardized extract')}</b>
-            </div>
-            <div class="ing-mspec">
-              <small>Key Bioactive</small>
-              <b>${esc(item.compound || 'Bioactive monoterpenes')}</b>
-            </div>
-            <div class="ing-mspec">
-              <small>Target Action</small>
-              <b>${esc(item.target || 'Cellular wellness')}</b>
-            </div>
-            <div class="ing-mspec">
-              <small>Tradition</small>
-              <b>${esc(item.tradition || 'Ayurveda & Modern Botany')}</b>
-            </div>
-          </div>
-
-          <div class="ing-modal-prods-sec">
-            <h4>Featured In Formulations</h4>
-            <div class="ing-modal-prods-list">
-              ${(item.products || []).map(p => `
-                <a href="product-details.html?id=${p.id}" class="ing-modal-prod-btn">
-                  <span>${esc(p.label)}</span> <i aria-hidden="true">→</i>
-                </a>
-              `).join('')}
-            </div>
-          </div>
-        </div>
-      </div>
-    `;
-
-    modalOverlay.classList.add('open');
-    modalOverlay.setAttribute('aria-hidden', 'false');
-    document.documentElement.classList.add('modal-open');
-  }
-
-  function closeModal() {
-    if (!modalOverlay) return;
-    modalOverlay.classList.remove('open');
-    modalOverlay.setAttribute('aria-hidden', 'true');
-    document.documentElement.classList.remove('modal-open');
-  }
-
-  if (modalCloseX) modalCloseX.addEventListener('click', closeModal);
-  if (modalOverlay) {
-    modalOverlay.addEventListener('click', e => {
-      if (e.target === modalOverlay) closeModal();
-    });
-  }
-
-  // Initial renders
-  renderCarousel();
+  renderDeck();
   renderGrid();
 }
 
-// Auto-boot when DOM is ready
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initIngredientsPage);
-} else {
-  initIngredientsPage();
+function init() {
+  initSiteChrome();
+  initIngredients();
 }
 
-export { initIngredientsPage };
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+else init();
+
+export { init as initIngredientsPage };
