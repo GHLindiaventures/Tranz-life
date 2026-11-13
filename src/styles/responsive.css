@@ -15,7 +15,7 @@
   .st-buy{position:relative;left:auto;top:auto;margin-left:0;order:2;align-self:center;margin-top:18px}
   .st-arc,.st-hill,.facts{left:50%}
   .st-arc{top:auto;bottom:calc(-1*min(59vw,310px));width:min(118vw,620px);height:min(118vw,620px)}
-  .st-hill{width:70vw;height:30vh;bottom:-16vh}
+  .st-hill{width:min(96vw,560px);height:28vh;bottom:-13vh}
   .facts{position:relative;left:auto;top:auto;width:auto;height:auto;order:4;display:flex;justify-content:center;gap:12px;margin:-30px 0 calc(16vw + 40px)}
   .fact{position:relative;width:92px;margin:0;transform:none}
   .fact b{font-size:28px}

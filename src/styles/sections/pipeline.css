@@ -37,3 +37,7 @@
 .process{background:var(--ground)}
 .st-no b{font-family:var(--f-display);font-stretch:64%;font-weight:850}
 .st-title{font-stretch:64%;font-weight:850;text-transform:uppercase}
+@media (max-width:760px){
+  .slide-copy{top:43%;bottom:auto;left:8vw;width:84vw;justify-content:flex-start}
+  .slide-copy .st-no{margin-top:10px}
+}

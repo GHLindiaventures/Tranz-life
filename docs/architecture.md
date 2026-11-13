@@ -22,7 +22,7 @@ JavaScript only fills in and animates that markup.
 
 1. **Static UI.** Cart and contact handlers, marquee, lab board, product finder buttons, dock and menu.
 2. **Product images.** `features/products/product-images.js` imports the client's five product images into `thumbs`. The shop cards, finder, menu card, bag, Why TranzLife cards and benefits panel all use them. `components/lightbox.js` opens the full design board for any `[data-design]` button.
-3. **Hero product.** `features/hero/hero-jar.js` places the real gummies jar (cut out of the design), after the web fonts load.
+3. **Hero lineup.** `features/hero/hero-jar.js` positions all five real product cut-outs in a balanced stage lineup on the hill, after the web fonts load.
 4. **Content that needs the images.** Shop grid, finder match, molecule viewer and herb picker.
 5. **Scroll scenes.** The product story (`features/product-story`) and the molecule reactor (`features/pipeline`), plus `app/page-sections.js`, which tracks the current section and dispatches `tl:page` events.
 6. **Smooth scroll and reveals.** Lenis smooth scroll, the ScrollTrigger reveals, then the intro timeline hides the loader.

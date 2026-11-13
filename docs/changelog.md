@@ -1,5 +1,10 @@
 # Changelog
 
+## v13 (12 Nov 2026): Hero full product lineup
+- Upgraded the hero section to showcase all five TranzLife products together in a balanced lineup on the grassy mound.
+- Products enter with a choreographed staggered rise (TranzLife Gummies leading in the center, flanked by Calm Inhaler and Period Relief Roll-On, with Liver Booster and Reviva Roll-On framing the wings).
+- Broadened the hero stage mound and adjusted arc framing for responsive display across desktop, tablet, and mobile.
+
 ## v12.2 (6 Nov 2026): benefits change on click
 - The benefits panel no longer pins or changes while you scroll; the page scrolls straight on to the next section.
 - Pick a product with the dots on the photo, or tap the photo for the next one. The photo and the benefits then slide over with the motion blur.
