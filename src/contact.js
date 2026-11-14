@@ -1,15 +1,10 @@
 // TranzLife Biosciences - Contact Us Page Interactive Controller
-import { initCart } from './features/cart/cart.js';
+import './features/footer/night-footer.js';
+import './features/navigation/dropdown.js';
 import { $ } from './utils/dom.js';
+import { PRODUCTS, EXTRA_PRODUCTS } from './data/products.js';
 
 function initContactPage() {
-  // 1. Initialize shopping bag state
-  try {
-    initCart();
-  } catch (e) {
-    console.warn('Cart initialization deferred:', e);
-  }
-
   // 2. Navigation scroll header styling
   const nav = $('#nav');
   function onScroll() {
@@ -48,25 +43,18 @@ function initContactPage() {
     }
   });
 
-  // 4. Cart Bag Drawer Controller
-  const bagBtn = $('#bagBtn');
-  const drawer = $('#drawer');
-  const scrim = $('#scrim');
-  const closeBag = $('#closeBag');
-
-  function setDrawerOpen(open) {
-    if (!drawer || !scrim) return;
-    drawer.classList.toggle('open', open);
-    drawer.setAttribute('aria-hidden', !open);
-    scrim.classList.toggle('open', open);
-    document.documentElement.classList.toggle('bag-open', open);
-  }
-
-  if (bagBtn) bagBtn.addEventListener('click', () => setDrawerOpen(true));
-  if (closeBag) closeBag.addEventListener('click', () => setDrawerOpen(false));
-  if (scrim) scrim.addEventListener('click', () => setDrawerOpen(false));
 
   // 5. Interactive Contact Form Submission
+  // links from product pages arrive as ?product=<id> (a product question, filled in) or ?topic=retail
+  const query = new URLSearchParams(window.location.search);
+  const asked = [...PRODUCTS, ...EXTRA_PRODUCTS].find(p => p.id === query.get('product'));
+  const category = $('#cpCategory'), message = $('#cpMessage');
+  if (category && query.get('topic') === 'retail') category.value = 'retail';
+  if (asked){
+    if (category) category.value = 'support';
+    if (message && !message.value) message.value = `I'd like to know more about ${asked.name}.`;
+  }
+
   const contactForm = $('#mainContactForm');
   const toast = $('#toast');
 

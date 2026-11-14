@@ -1,19 +1,13 @@
 // TranzLife Biosciences - About Page Interactive Controller (Static)
+import './features/footer/night-footer.js';
 import { state } from './app/state.js';
-import { initCart } from './features/cart/cart.js';
+import './features/navigation/dropdown.js';
 import { $ } from './utils/dom.js';
 import { milestones } from './data/milestones.js';
 
 function initAboutPage() {
   // Ensure all eyebrows are drawn immediately without animation
   document.querySelectorAll('.eyebrow').forEach(el => el.classList.add('drawn'));
-
-  // 1. Initialize shopping bag state
-  try {
-    initCart();
-  } catch (e) {
-    console.warn('Cart initialization deferred:', e);
-  }
 
   // 2. Navigation scroll header styling
   const nav = $('#nav');
@@ -53,23 +47,6 @@ function initAboutPage() {
     }
   });
 
-  // 4. Cart Bag Drawer Controller
-  const bagBtn = $('#bagBtn');
-  const drawer = $('#drawer');
-  const scrim = $('#scrim');
-  const closeBag = $('#closeBag');
-
-  function setDrawerOpen(open) {
-    if (!drawer || !scrim) return;
-    drawer.classList.toggle('open', open);
-    drawer.setAttribute('aria-hidden', !open);
-    scrim.classList.toggle('open', open);
-    document.documentElement.classList.toggle('bag-open', open);
-  }
-
-  if (bagBtn) bagBtn.addEventListener('click', () => setDrawerOpen(true));
-  if (closeBag) closeBag.addEventListener('click', () => setDrawerOpen(false));
-  if (scrim) scrim.addEventListener('click', () => setDrawerOpen(false));
 
   // 5. Anchor link navigation (instant jump, completely static)
   document.addEventListener('click', e => {

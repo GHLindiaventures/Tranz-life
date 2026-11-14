@@ -1,5 +1,6 @@
 // Hero: 3D products standing on the sculpted stone plinth, with gummies orbiting in 3D depth space.
-// Every few seconds the product spins out and the next one spins in.
+// Every few seconds the product spins out and the next one spins in. As the hero scrolls away the product sinks
+// into the stone (the roots in the next section grow down from that spot).
 import * as THREE from 'three';
 import { PRODUCTS } from '../../data/products.js';
 import { jarLayer } from '../products/jar-layer.js';
@@ -90,7 +91,9 @@ function initHeroJar(){
     }
     prog += (progT - prog)*(1 - Math.exp(-dt*3.2));
     const cur = ((Math.round(prog) % N) + N) % N; if (cur !== shown){ shown = cur; tint(PRODUCTS[cur]); }
-    const pxH = table.ph;
+    // 0 at the top of the page, 1 once the hero is a little over half scrolled away
+    const sink = sm(clamp((window.scrollY || 0)/Math.max(1, stage.offsetHeight*.55), 0, 1));
+    const pxH = table.ph*(1 - sink);
     // the outgoing product shrinks and spins away while the next one grows and spins in, both on the plinth
     let bigH = 0;
     jars.forEach((jar, i) => { const d = wrap(prog - i), w = sm(clamp(1 - Math.abs(d)*1.6, 0, 1)), on = w > 0.001 && !isHidden; jar.G.visible = on; if (!on) return;
@@ -98,11 +101,11 @@ function initHeroJar(){
       L.size(jar, Math.max(1, jh));
       L.place(jar.G, table.x, table.y - jh/2 + (1 - e)*L.H*.5);
       jar.G.rotation.set(.04 + mouse.y*.08, -.35 + (1 - e)*-5 + Math.sin(tNow*.45)*.25 + mouse.x*.35 - d*3.2, -.02 + Math.sin(tNow*.6)*.015); });
-    setShadow(table.x, table.y + 4, isHidden ? 0 : bigH*.58*e);
+    setShadow(table.x, table.y + 4, isHidden || sink > .98 ? 0 : bigH*.58*e);
     const jar = jars[cur], u = pxH/L.ppu(), gw = sm(clamp(1 - Math.abs(wrap(prog - cur))*1.6, 0, 1));
     props.forEach((o, k) => {
-      o.m.visible = !isHidden;
-      if (isHidden) return;
+      o.m.visible = !isHidden && sink < .98;
+      if (!o.m.visible) return;
       const a = o.a + tNow*o.sp, rr = o.r*u*.42*(1 + (1 - e)*.6);
       o.m.position.set(jar.G.position.x + Math.cos(a)*rr, jar.G.position.y + o.y*u*.45 + Math.sin(tNow + k)*u*.03, Math.sin(a)*rr*.6);
       o.m.scale.setScalar(o.s*u*(o.leaf ? .16 : .1)*e*gw); o.m.rotation.set(tNow*.4 + k, tNow*.3 + a, o.leaf ? .6 : k); });

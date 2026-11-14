@@ -387,3 +387,11 @@
     font-size: 9.5px;
   }
 }
+
+/* "Power of Nature in every product": live text (it replaced an image that read "in Every Products") */
+.ayur-section { position: relative; }
+.apo-text { margin: 0; display: grid; justify-items: center; text-align: center; color: #1f4a26; line-height: 1; }
+.apo-script { font-family: var(--f-hand); font-weight: 600; font-size: clamp(32px, 3.2vw, 56px); color: #2e5a2c; transform: translateY(.18em); }
+.apo-big { font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 600; font-size: clamp(46px, 5vw, 88px); letter-spacing: .02em; text-transform: uppercase;
+  background: linear-gradient(90deg, #1f4a26 0%, #1f4a26 30%, #7a6a3a 50%, #1f4a26 70%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.apo-small { font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 500; font-size: clamp(20px, 1.9vw, 32px); color: #2e5a2c; margin-top: .1em; }

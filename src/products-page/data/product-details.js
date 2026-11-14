@@ -9,7 +9,7 @@ const BRAND = {
 
 const DETAILS = {
   gummies: {
-    eyebrow: 'Respiratory Wellness · PulmoClear™ formulation',
+    eyebrow: 'Respiratory Wellness · Lung Booster Gummies',
     title: 'TranzLife Lung Booster Gummies',
     tagline: 'Breathe Well. Live Better. Embrace Every Breath.',
     intro: [
@@ -63,7 +63,7 @@ const DETAILS = {
 
   rollon: {
     eyebrow: 'Women’s Menstrual Wellness & Comfort',
-    title: 'TranzLife CycleRelief',
+    title: 'TranzLife CycleRelief Roll-On',
     tagline: 'Embrace Every Cycle. Celebrate Every You.',
     intro: [
       'Every woman’s journey is unique, and every menstrual cycle deserves care, comfort and understanding. CycleRelief is part of our commitment to convenient wellness solutions designed around the evolving needs of women.',

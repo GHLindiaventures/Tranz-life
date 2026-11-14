@@ -133,7 +133,7 @@
 
 .sus-hero h1 em {
   font-style: normal;
-  color: var(--sage);
+  color: var(--sage-ink);
   background: linear-gradient(135deg, #24502a 0%, #6f9e4c 65%, #d6a23a 100%);
   -webkit-background-clip: text;
   background-clip: text;
@@ -185,7 +185,7 @@
 .sus-stat-num small {
   font-size: 0.55em;
   font-weight: 700;
-  color: var(--sage);
+  color: var(--sage-ink);
   margin-left: 2px;
 }
 
@@ -269,7 +269,7 @@
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.1em;
-  color: var(--sage);
+  color: var(--sage-ink);
   text-transform: uppercase;
   margin-bottom: 6px;
 }
@@ -332,7 +332,7 @@
   font-family: var(--f-mono);
   font-size: 1.4rem;
   font-weight: 850;
-  color: var(--sage);
+  color: var(--sage-ink);
 }
 
 .sus-slider-input {
@@ -422,7 +422,7 @@
   font-family: var(--f-mono);
   font-size: 12px;
   font-weight: 800;
-  color: var(--sage);
+  color: var(--sage-ink);
   margin-bottom: 12px;
 }
 

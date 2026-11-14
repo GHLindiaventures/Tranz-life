@@ -3,8 +3,9 @@ import { ScrollTrigger, gsap, hasGsap } from '../lib/gsap.js';
 import { reduce } from '../utils/media.js';
 
 const CONFIG = {
-  // Key storytelling cover moment: the tagline (#insider) slides over the lineup
-  stackIds: ['insider'],
+  // No sticky sheets on the home page: #ritual's 3D products are placed from document positions, which a sticky
+  // section would break. The night section's rounded top is plain CSS (home-story.css).
+  stackIds: [],
   contactId: 'contact',
   maxRadius: 36
 };

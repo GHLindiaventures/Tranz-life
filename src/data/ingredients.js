@@ -13,7 +13,7 @@ const P = {
 
 export const INGREDIENT_CATEGORIES = [
   { id: 'immunity', label: 'Immunity & Vitality' },
-  { id: 'liver', label: 'Liver & Detox' },
+  { id: 'liver', label: 'Liver Wellness' },
   { id: 'respiratory', label: 'Respiratory & Breath' },
   { id: 'comfort', label: 'Comfort & Muscle Relief' },
   { id: 'stress', label: 'Stress & Calm' },
@@ -138,7 +138,7 @@ export const BOTANICAL_INGREDIENTS = [
     part: 'Whole Plant Extract',
     dose: '500 mg / 10 ml',
     compound: 'Phyllanthin & Hypophyllanthin',
-    target: 'Liver Protection & Cleansing',
+    target: 'Traditional Liver Wellness',
     products: [P.liver],
     desc: 'The lead herb of the Liver Booster. A classical Ayurvedic herb traditionally used to support healthy liver function.'
   },
@@ -164,9 +164,9 @@ export const BOTANICAL_INGREDIENTS = [
     part: 'Rhizome Extract',
     dose: '400 mg / 10 ml',
     compound: 'Picrosides I & II (Kutkin)',
-    target: 'Liver Detox & Protection',
+    target: 'Traditional Liver Wellness',
     products: [P.liver],
-    desc: 'A classical bitter Himalayan herb traditionally used to support the liver\'s natural detoxification.'
+    desc: 'A classical bitter Himalayan herb traditionally used in Ayurvedic liver-wellness preparations.'
   },
   {
     id: 'punarnava',

@@ -4,11 +4,8 @@
 // product shot URLs keyed by product id (filled from features/products/product-images.js)
 const thumbs = {};
 
-// bag contents: product id -> quantity
-const cart = new Map();
-
 
 // live handles created during boot
 const state = { heroApi:null, storyApi:null, lenis:null, mol:null };
 
-export { thumbs, cart, state };
+export { thumbs, state };

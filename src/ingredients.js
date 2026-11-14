@@ -1,9 +1,11 @@
 // TranzLife Biosciences - Our Ingredients page
 // Showcase: a 3D card carousel over the forest stage; below it the full, searchable list of all ingredients.
 // The benefit filter is shared by both; "View Details" (or any tile) opens a details dialog.
-import { initCart } from './features/cart/cart.js';
+import './features/footer/night-footer.js';
+import './features/navigation/dropdown.js';
 import { $ } from './utils/dom.js';
 import { BOTANICAL_INGREDIENTS, INGREDIENT_CATEGORIES } from './data/ingredients.js';
+import { initAyurveda } from './features/ayurveda/ayurveda-video.js';
 
 export { BOTANICAL_INGREDIENTS };
 
@@ -16,7 +18,6 @@ const LEAF = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19C6 10 12
 const ARROW = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
 
 function initSiteChrome() {
-  try { initCart(); } catch (e) { console.warn('Cart initialization deferred:', e); }
 
   const nav = $('#nav');
   const onScroll = () => nav && nav.classList.toggle('scrolled', window.scrollY > 20);
@@ -36,17 +37,6 @@ function initSiteChrome() {
   if (menu) menu.addEventListener('click', e => { if (e.target.closest('a')) setMenuOpen(false); });
   window.addEventListener('keydown', e => { if (e.key === 'Escape' && menu && menu.classList.contains('open')) setMenuOpen(false); });
 
-  const bagBtn = $('#bagBtn'), drawer = $('#drawer'), scrim = $('#scrim'), closeBag = $('#closeBag');
-  const setDrawerOpen = open => {
-    if (!drawer || !scrim) return;
-    drawer.classList.toggle('open', open);
-    drawer.setAttribute('aria-hidden', !open);
-    scrim.classList.toggle('open', open);
-    document.documentElement.classList.toggle('bag-open', open);
-  };
-  if (bagBtn) bagBtn.addEventListener('click', () => setDrawerOpen(true));
-  if (closeBag) closeBag.addEventListener('click', () => setDrawerOpen(false));
-  if (scrim) scrim.addEventListener('click', () => setDrawerOpen(false));
 }
 
 function initIngredients() {
@@ -243,6 +233,8 @@ function initIngredients() {
 function init() {
   initSiteChrome();
   initIngredients();
+  // the scroll-driven Ayurveda sequence (moved here from the home page)
+  try { initAyurveda(); } catch (e) { console.warn('ayurveda sequence unavailable', e); }
 }
 
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);

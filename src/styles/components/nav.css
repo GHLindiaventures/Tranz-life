@@ -185,3 +185,7 @@
 .bag em.has{transform:scale(1)}
 .bag.bump{animation:bump .5s var(--ease)}
 @keyframes bump{40%{transform:scale(1.15)}}
+
+/* wide screens show every page in the nav pills, so the menu button would only repeat them
+   (the pills hide at 1100px and below: responsive.css) */
+@media (min-width:1101px){.nav-act .menu-btn{display:none}}

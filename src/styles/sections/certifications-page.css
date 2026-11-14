@@ -123,7 +123,7 @@
 
 .cert-hero h1 em {
   font-style: normal;
-  color: var(--sage);
+  color: var(--sage-ink);
   background: linear-gradient(135deg, #24502a 0%, #6f9e4c 65%, #d6a23a 100%);
   -webkit-background-clip: text;
   background-clip: text;
@@ -209,7 +209,7 @@
 .cert-card-body-auth {
   font-family: var(--f-mono);
   font-size: 12px;
-  color: var(--sage);
+  color: var(--sage-ink);
   margin-bottom: 14px;
   display: block;
 }

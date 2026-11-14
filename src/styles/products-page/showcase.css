@@ -412,7 +412,8 @@ body.sc-ov-open #statement.statement { z-index: 1 !important; }
 /* ---------- first screen: premium lead block, and both groups entering on --tin (0..1, from product-hand-off.js) ---------- */
 #scLead .sc-kick { display: flex; align-items: center; gap: 12px; font-size: 12px; letter-spacing: .24em; opacity: .8; }
 #scLead .sc-kick::before { content: ""; flex: none; width: 34px; height: 2px; border-radius: 2px; background: var(--gold); }
-#scLead .sc-tagline { margin: 16px 0 12px; font-size: clamp(32px, 2.9vw, 48px); line-height: 1; }
+/* one headline per screen: the big mood line (left) and the product name (right) already lead; no third, script voice */
+#scLead .sc-tagline { display: none; }
 #scLead .sc-blk__h { margin: 0 0 16px; font-size: clamp(2.6rem, 6.2vh, 4.6rem); line-height: .88; }
 #scLead .sc-lead-desc { max-width: 40ch; font-size: clamp(16px, 1.25vw, 19px); line-height: 1.6; opacity: .86; }
 #scLead > * { --k: clamp(0, calc(var(--tin, 1) * 2.4 - var(--d, 0)), 1); opacity: var(--k); transform: translate3d(calc((1 - var(--k)) * 28px), 0, 0); }

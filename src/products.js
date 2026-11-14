@@ -1,27 +1,20 @@
 // TranzLife Biosciences - Products page controller.
 // The page is the product journey from dhina-dev (showcase, statement curtain, "Which one is yours?" grid with a
 // display per product). Its modules and data live in src/products-page/ and load on this page only; the header,
-// menu, bag and footer are the shared ones every page uses.
+// menu and footer are the shared ones every page uses.
+import './features/footer/night-footer.js';
 import { state, thumbs } from './app/state.js';
 import { initSmooth } from './app/smooth-scroll.js';
 import { SHOTS } from './features/products/product-images.js';
-import { initCart, renderCart } from './features/cart/cart.js';
+import './features/navigation/dropdown.js';
 import { initGrain } from './products-page/grain.js';
 import { initProductJourney } from './products-page/journey.js';
 import { initStatementPage } from './products-page/statement-page.js';
 import { $ } from './utils/dom.js';
 
 function initProductsPage() {
-  // Populate image thumbs for the cart drawer
+  // product photos for the menu card and the design lightbox
   Object.assign(thumbs, SHOTS);
-
-  // 1. Initialize shopping bag state & render initial counts
-  try {
-    initCart();
-    renderCart();
-  } catch (e) {
-    console.warn('Cart initialization deferred:', e);
-  }
 
   // 2. The product journey (smooth scroll as on dhina-dev: the display a card opens pauses and resumes it)
   try { initGrain(); } catch (e) { console.warn('Grain unavailable:', e); }

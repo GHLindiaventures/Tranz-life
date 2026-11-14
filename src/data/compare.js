@@ -6,7 +6,7 @@ export const COMPARE = {
   // From the CycleRelief brochure, which says not to describe the product as treating menstrual cramps or
   // gynaecological conditions: so this speaks of a comfort and self-care routine, never of relief or results.
   rollon: {
-    eyebrow: 'CycleRelief™ Roll-On · Plant-based topical care',
+    eyebrow: 'CycleRelief Roll-On · Plant-based topical care',
     title: ['Designed for a soothing', 'self-care ritual'],
     intro: 'Drag the slider to compare. A visual guide to the routine this plant-based roll-on is designed for: a soothing self-care ritual around the menstrual cycle.',
     fill: true,
@@ -34,16 +34,16 @@ export const COMPARE = {
       ['Plant-based', 'Inspired by botanical ingredients and designed for simple, everyday wellness routines.']
     ],
     icons: ['drop', 'shield', 'spark', 'cycle', 'leaf'],
-    // brochure: "Ingredient profile" (complete declaration to be confirmed from the final formulation)
-    botanicalsTitle: 'Ingredients shown in the artwork',
-    botanicals: [['Dill essential oil', ''], ['Eucalyptus essential oil', '']],
+    // composition sheet (src/data/ingredients.js); the brochure artwork showed only dill and eucalyptus
+    botanicalsTitle: 'Ingredients',
+    botanicals: [['Wintergreen oil', ''], ['Peppermint oil', ''], ['Ginger', ''], ['Lavender oil', ''], ['Eucalyptus oil', ''], ['Sesame oil base', '']],
     note: 'Illustrative only: these images show the self-care routine CycleRelief Roll-On is designed for. They are not clinical before-and-after results, and individual experience varies. For external personal-care use only; it is not intended to diagnose, treat, cure or prevent any condition. Perform a patch test before first use. Avoid eyes, mucous membranes, and broken or irritated skin, and discontinue if irritation occurs. Essential oils may not be suitable during pregnancy or for people with sensitivities; seek professional advice where appropriate. Keep out of reach of children.'
   },
   // The Reviva label also makes blood-sugar / diabetes claims; those are deliberately NOT used here (the brochure
   // positions it as a topical massage / personal-care product, and diabetes is a scheduled condition under India's
   // Drugs and Magic Remedies Act). This speaks only of a morning massage ritual, comfort and everyday vitality.
   reviva: {
-    eyebrow: 'Reviva™ Roll-On · Botanical massage roll-on',
+    eyebrow: 'Reviva Roll-On · Botanical massage roll-on',
     title: ['Designed for a refreshing', 'morning self-care ritual'],
     intro: 'Drag the slider to compare. A visual guide to the routine this botanical massage roll-on is designed for: a simple morning ritual to start the day feeling refreshed.',
     fill: true,
@@ -75,34 +75,34 @@ export const COMPARE = {
     botanicals: [['Dill essential oil', ''], ['Eucalyptus essential oil', '']],
     note: 'Illustrative only: these images show the self-care routine Reviva Roll-On is designed for. They are not clinical before-and-after results, and individual experience varies. For external personal-care use only; it is not intended to diagnose, treat, cure or prevent any disease, and it is not a substitute for prescribed medication or medical advice. Perform a patch test before first use. Avoid eyes, mucous membranes, and broken or irritated skin, and discontinue if irritation occurs. Essential oils may not be suitable during pregnancy or for people with sensitivities; seek professional advice where appropriate. Keep out of reach of children.'
   },
-  // From the BreatheFree brochure. Kept to its behavioural wording (resisting the urge, relaxation, focus); no
-  // claims that it repairs the lungs or is a medical smoking-cessation treatment, and no cigarette is shown lit.
+  // Aroma Inhaler (the brochure called it BreatheFree). Wording follows the client brief: relaxation and a mindful
+  // pause, no smoking-cessation or treatment claims. The photos still show a cigarette pack; swap them when new ones arrive.
   inhaler: {
-    eyebrow: 'BreatheFree™ Aromatherapy Inhaler · Pure essential oils',
-    title: ['Designed to help you', 'breathe free'],
-    intro: 'Drag the slider to compare. A visual guide to the moment this pocket aromatherapy inhaler is designed for: reaching for a calming breath instead of a cigarette.',
+    eyebrow: 'Aroma Inhaler · Pure essential oils',
+    title: ['Designed for a', 'moment of calm'],
+    intro: 'Drag the slider to compare. A visual guide to the moment this pocket aromatherapy inhaler is designed for: pausing for a calming, aromatic breath in a stressful day.',
     fill: true,
     before: {
       label: 'Before',
-      sub: 'The urge hits',
+      sub: 'A stressful moment',
       img: '/assets/compare/inhaler-before.webp',
       alt: 'A stressed man on a grey city terrace, hand on his forehead, holding a cigarette pack',
-      tags: ['Stress and restlessness', 'The urge to smoke', 'Hard to stay focused']
+      tags: ['Stress and restlessness', 'A busy, pressured day', 'Hard to stay focused']
     },
     after: {
       label: 'After',
-      sub: 'With BreatheFree',
+      sub: 'With the Aroma Inhaler',
       img: '/assets/compare/inhaler-after.webp',
       alt: 'The same man calm on a green, sunlit terrace, breathing in from a small white inhaler, the cigarette pack crushed and set aside',
-      tags: ['Helps resist the urge', 'Relaxation & focus', 'Natural & non-addictive']
+      tags: ['A mindful pause', 'Relaxation & focus', 'Pure essential oils']
     },
     size: [2100, 1000],
     // brochure: benefits list, "How to use", "Pocket friendly"
     benefits: [
-      ['Helps resist the urge', 'A calming aromatic breath to reach for when the urge to smoke strikes.'],
-      ['Relaxation & focus', 'A pure essential-oil blend that supports emotional balance and a calmer mind.'],
-      ['Easy breathing', 'Fresh peppermint and eucalyptus help you feel refreshed and breathe easy.'],
-      ['Open · Inhale · Relax', 'Remove the cap, inhale deeply through each nostril, and use whenever you need it.'],
+      ['A mindful pause', 'A calming aromatic breath to reach for whenever the day gets busy.'],
+      ['Relaxation & focus', 'A pure essential-oil blend for a calmer, more balanced moment.'],
+      ['A fresh feeling', 'Peppermint and eucalyptus give a cool, refreshing aroma.'],
+      ['Open · Inhale · Relax', 'Remove the cap, inhale gently through each nostril, and use whenever you need a pause.'],
       ['Pocket friendly', 'Compact and discreet, so you can use it at work, while travelling or anytime.']
     ],
     icons: ['shield', 'leaf', 'wind', 'spark', 'drop'],
@@ -111,10 +111,10 @@ export const COMPARE = {
       ['Peppermint oil', ''], ['Lavender oil', ''], ['Eucalyptus oil', ''],
       ['Lemon oil', ''], ['Black pepper oil', ''], ['Tulsi oil', '']
     ],
-    note: 'Illustrative only: these images show the moment BreatheFree Aromatherapy Inhaler is designed for. They are not clinical before-and-after results, and individual experience varies. BreatheFree is an aromatherapy personal-care product, not a medicine or nicotine replacement therapy, and it is not intended to diagnose, treat, cure or prevent any disease. For inhalation only: do not insert deep into the nostril, and keep away from eyes. Essential oils may not be suitable during pregnancy, for children, or for people with asthma or sensitivities; seek professional advice where appropriate. For support with quitting smoking, speak to a healthcare professional. Keep out of reach of children.'
+    note: 'Illustrative only: these images show the moment the Aroma Inhaler is designed for. They are not clinical before-and-after results, and individual experience varies. The Aroma Inhaler is an aromatherapy personal-care product, not a medicine or nicotine replacement therapy, and it is not intended to diagnose, treat, cure or prevent any disease. For inhalation only: do not insert deep into the nostril, and keep away from eyes. Essential oils may not be suitable during pregnancy, for children, or for people with asthma or sensitivities; seek professional advice where appropriate. For support with quitting smoking, speak to a healthcare professional. Keep out of reach of children.'
   },
   energy: {
-    eyebrow: 'Energy Booster™ · Herbal & bioactive wellness formulation',
+    eyebrow: 'Energy Booster · Herbal & bioactive wellness formulation',
     title: ['Designed to complement', 'everyday energy'],
     intro: 'Drag the slider to compare. A visual guide to what this oral liquid is designed to complement: daily energy, activity and general well-being.',
     fill: true,
@@ -151,9 +151,9 @@ export const COMPARE = {
     note: 'Illustrative only: these images show what Energy Booster is designed to complement. They are not clinical before-and-after results, and individual experience varies. No claim is made to diagnose, treat, cure or prevent any disease. Use only as directed and do not exceed the recommended serving. Consult a qualified healthcare professional before use if pregnant, breastfeeding, taking medication or managing a health condition. Keep out of reach of children.'
   },
   gummies: {
-    eyebrow: 'Lung Booster · PulmoClear Gummies',
-    title: ['Designed to support', 'clearer, stronger lungs'],
-    intro: 'Drag the slider to compare. A visual guide to what these 100% Ayurvedic gummies are designed to support: they detoxify, cleanse and strengthen.',
+    eyebrow: 'Lung Booster Gummies · Respiratory wellness',
+    title: ['Designed for everyday', 'respiratory wellness'],
+    intro: 'Drag the slider to compare. A visual guide to what these botanical gummies are designed for: everyday respiratory wellness alongside a healthy lifestyle.',
     before: {
       label: 'Before',
       sub: 'Everyday pollutants',
@@ -166,30 +166,31 @@ export const COMPARE = {
       sub: 'Supported with Lung Booster',
       img: '/assets/compare/lungs-after.webp',
       alt: 'Illustration of healthy, clear lungs',
-      tags: ['Supports lung detoxification', 'Supports easy breathing', 'Antioxidant protection']
+      tags: ['Traditional botanicals', 'Vitamin C, D3 & Zinc', 'Everyday respiratory wellness']
     },
     size: [1200, 820],
-    // label: "Key benefits"
+    // wording: the client brief (wellness positioning, no treatment claims)
     benefits: [
-      ['Lung detoxification', 'Helps cleanse lungs and remove pollutants.'],
-      ['Supports respiratory health', 'Helps soothe and strengthen respiratory function.'],
-      ['Natural immunity support', 'Strengthens the body’s natural defences.'],
-      ['Relieves congestion', 'Helps clear congestion and supports easy breathing.'],
-      ['Antioxidant & anti-inflammatory', 'Protects lung cells from oxidative stress and inflammation.']
+      ['Respiratory wellness', 'Botanicals traditionally used in Ayurvedic respiratory preparations.'],
+      ['Traditional botanicals', 'Tulsi, Vasaka, dry ginger, long pepper and licorice root.'],
+      ['Vitamins & minerals', 'Vitamin C, Vitamin D3 and Zinc, which contribute to normal immune function.'],
+      ['Easy gummy format', 'A convenient, berry-flavoured gummy for modern routines.'],
+      ['Quality-focused', 'Developed with an emphasis on ingredient specifications and consistency.']
     ],
     icons: ['lungs', 'shield', 'leaf', 'wind', 'spark'],
-    // label: "Composition (each gummy contains)"
-    botanicalsTitle: 'Each gummy contains',
+    // composition sheet (src/data/ingredients.js); quantities are on the product label
+    botanicalsTitle: 'Key ingredients',
     botanicals: [
-      ['Vasaka', '100 mg'], ['Tulsi', '100 mg'], ['Mulethi', '100 mg'], ['Turmeric', '80 mg'], ['Giloy', '80 mg'],
-      ['Black Pepper', '50 mg'], ['Vitamin C', '40 mg'], ['Vitamin D3', '10 mcg'], ['Zinc', '5 mg']
+      ['Tulsi', ''], ['Vasaka', ''], ['Dry Ginger (Sukku)', ''], ['Long Pepper (Thippili)', ''], ['Black Pepper', ''],
+      ['Black Turmeric (Karumanjal)', ''], ['Cumin (Jeera)', ''], ['Licorice Root', ''], ['Small Onion Extract', ''],
+      ['Vitamin C', ''], ['Vitamin D3', ''], ['Zinc', '']
     ],
     note: 'Illustrative only: these images show what Lung Booster is designed to support. They are not clinical before-and-after results, and individual experience varies. Lung Booster is a nutraceutical, not for medicinal use, and is not intended to diagnose, treat, cure or prevent any disease. Not recommended for pregnant or lactating women; consult your physician if you are under medication.'
   },
   liver: {
-    eyebrow: 'Liver Booster · LiverDetox',
-    title: ['Designed to support a', 'cleaner, healthier liver'],
-    intro: 'Drag the slider to compare. A visual guide to what this 100% Ayurvedic polyherbal concoction is designed to support: it detoxifies, protects and rejuvenates.',
+    eyebrow: 'Liver Booster · Ayurvedic liver wellness',
+    title: ['Designed for everyday', 'liver wellness'],
+    intro: 'Drag the slider to compare. A visual guide to what this classical Ayurvedic polyherbal liquid is designed for: everyday liver wellness alongside a balanced lifestyle.',
     before: {
       label: 'Before',
       sub: 'Everyday strain',
@@ -202,16 +203,16 @@ export const COMPARE = {
       sub: 'Supported with Liver Booster',
       img: '/assets/compare/liver-after.webp',
       alt: 'Illustration of a smooth, healthy liver',
-      tags: ['Supports natural detoxification', 'Antioxidant protection', 'Supports digestion & vitality']
+      tags: ['11 classical botanicals', 'Natural antioxidants', 'Balanced lifestyle']
     },
     size: [1200, 820],
-    // label: "Product benefits"
+    // wording: the client brief (wellness positioning, no treatment claims)
     benefits: [
-      ['Supports liver detoxification', 'Helps flush out toxins and supports natural cleansing.'],
-      ['Promotes liver health', 'Protects liver cells and supports healthy liver function.'],
-      ['Powerful antioxidant', 'Rich in natural antioxidants that combat oxidative stress.'],
-      ['Improves digestion', 'Supports digestion and nutrient absorption.'],
-      ['Enhances vitality', 'Helps improve energy, immunity and overall well-being.']
+      ['Liver wellness', 'Classical botanicals traditionally used in Ayurvedic liver-wellness preparations.'],
+      ['Eleven botanicals', 'Led by Bhumyamalaki, Kalmegh and Kutki.'],
+      ['Natural antioxidants', 'Amla, Haritaki and Turmeric are natural sources of antioxidants.'],
+      ['Everyday routine', '10 ml twice daily after meals.'],
+      ['Balanced lifestyle', 'Made to complement a balanced diet, regular activity and limited alcohol.']
     ],
     icons: ['drop', 'shield', 'spark', 'cycle', 'bolt'],
     // label: "Composition (each 10 ml contains)"

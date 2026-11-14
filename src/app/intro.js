@@ -16,7 +16,7 @@ function intro(){
       const tl = gsap.timeline({ defaults:{ ease:'power4.out' } });
       tl.fromTo('.hero__brand > *', { opacity:0, y:40 }, { opacity:1, y:0, duration:1.4, stagger:.15, ease:'power3.out' }, 0.2)
         .fromTo('.hero__slab', { opacity:0, y:60, scale:0.96 }, { opacity:1, y:0, scale:1, duration:1.8, ease:'power3.out' }, 0.1)
-        .fromTo('.fact', { scale:0, opacity:0 }, { scale:1, opacity:1, duration:.9, stagger:.12, ease:'back.out(2)', clearProps:'transform' }, .7)
+        .fromTo('.hero__offer > *', { opacity:0, y:26 }, { opacity:1, y:0, duration:1.1, stagger:.12, ease:'power3.out', clearProps:'transform' }, .6)
         .fromTo('.nav > *', { y:-18, opacity:0 }, { y:0, opacity:1, duration:.8, stagger:.06, clearProps:'all' }, .3)
         .fromTo('.dock', { x:-90, opacity:0 }, { x:0, opacity:1, duration:1.1, ease:'expo.out', clearProps:'all' }, .5);
     }

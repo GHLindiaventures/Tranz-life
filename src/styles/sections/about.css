@@ -326,7 +326,7 @@
 .about-tag-badge svg {
   width: 16px;
   height: 16px;
-  color: var(--sage);
+  color: var(--sage-ink);
   flex-shrink: 0;
 }
 
@@ -507,7 +507,7 @@
   font-weight: 800;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--sage);
+  color: var(--sage-ink);
   padding: 6px 14px;
   border-radius: 999px;
   background: var(--ground-2);
@@ -609,7 +609,7 @@
   font-family: var(--f-mono);
   font-size: 13px;
   font-weight: 700;
-  color: var(--sage);
+  color: var(--sage-ink);
   letter-spacing: 0.1em;
 }
 
@@ -1212,4 +1212,59 @@
     padding: 24px 16px;
     border-radius: 20px;
   }
+}
+
+/* ==========================================================================
+   About landing: "Our vision · What drives TranzLife" over the roots-to-infinity background.
+   The statement's own living details (infinity loop, sparks, shimmer) come from insider.css; this adds a one-time
+   entrance and a gentle lift as the page scrolls (--about-sy, set by about.js).
+   ========================================================================== */
+.about-hero--vision .av-in {
+  max-width: 1180px;
+  transform: translate3d(0, calc(var(--about-sy, 0) * -0.22px), 0);
+  opacity: calc(1 - var(--about-sy, 0) / 900);
+}
+.about-hero--vision .in-tagline-badge { margin-bottom: clamp(20px, 3.4vh, 34px); }
+/* a touch smaller than the old standalone section, so the landing fits one screen */
+.about-hero--vision .av-statement { zoom: .82; position: relative; }
+.about-hero--vision .av-sub { max-width: 60ch; margin: clamp(18px, 3vh, 28px) auto 0; font-size: clamp(1rem, 1.5vw, 1.2rem); }
+.about-hero--vision .av-pillars { margin-top: clamp(20px, 3.2vh, 32px); }
+.about-hero--vision .av-cta { margin-top: clamp(22px, 3.6vh, 36px); }
+
+/* entrance: badge drops in, the statement rises word group by word group from a soft blur, a gold light sweeps
+   across it once, the pillar rule draws outward, then the supporting line, pillars and the button */
+@keyframes avDrop { from { opacity: 0; transform: translateY(-18px) scale(.96); } to { opacity: 1; transform: none; } }
+@keyframes avRise { from { opacity: 0; transform: translateY(34px); filter: blur(10px); } to { opacity: 1; transform: none; filter: blur(0); } }
+@keyframes avFade { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+@keyframes avRule { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes avSweep { 0% { transform: translateX(-120%) skewX(-18deg); opacity: 0; } 20% { opacity: 1; } 100% { transform: translateX(480%) skewX(-18deg); opacity: 0; } }
+@keyframes avDraw { from { stroke-dashoffset: 100; } to { stroke-dashoffset: 0; } }
+
+.about-hero--vision .in-tagline-badge { animation: avDrop .9s .15s var(--ease) both; }
+.about-hero--vision .it-line > * { animation: avRise 1.05s var(--ease) both; }
+.about-hero--vision .it-line-1 > :nth-child(1) { animation-delay: .35s; } .about-hero--vision .it-line-1 > :nth-child(2) { animation-delay: .45s; }
+.about-hero--vision .it-line-1 > :nth-child(3) { animation-delay: .55s; } .about-hero--vision .it-line-1 > :nth-child(4) { animation-delay: .68s; }
+.about-hero--vision .it-line-2 > :nth-child(1) { animation-delay: .8s; } .about-hero--vision .it-line-2 > :nth-child(2) { animation-delay: .9s; }
+.about-hero--vision .it-line-2 > :nth-child(3) { animation-delay: 1s; } .about-hero--vision .it-line-2 > :nth-child(4) { animation-delay: 1.12s; }
+.about-hero--vision .it-line-3 > :nth-child(1) { animation-delay: 1.25s; } .about-hero--vision .it-line-3 > :nth-child(2) { animation-delay: 1.36s; }
+.about-hero--vision .it-line-4 > * { animation-delay: 1.5s; animation-duration: 1.3s; }
+.about-hero--vision .it-rootlet-svg path { stroke-dasharray: 100; animation: avDraw 1.4s .7s var(--ease) both, inRootPulse 6s 2.1s ease-in-out infinite alternate; }
+.about-hero--vision .av-statement::after {
+  content: ""; position: absolute; top: -6%; bottom: -6%; left: 0; width: 22%; pointer-events: none; mix-blend-mode: soft-light;
+  background: linear-gradient(90deg, transparent, rgba(255, 236, 170, .9), transparent);
+  animation: avSweep 1.6s 2.2s ease-in-out both;
+}
+.about-hero--vision .av-sub { animation: avFade .9s 1.9s var(--ease) both; }
+.about-hero--vision .icf-line { transform-origin: center; animation: avRule 1s 2s var(--ease) both; }
+.about-hero--vision .icf-gem, .about-hero--vision .icf-pillars { animation: avFade .8s 2.15s var(--ease) both; }
+.about-hero--vision .av-cta { animation: avFade .8s 2.35s var(--ease) both; }
+
+@media (max-width: 900px) {
+  .about-hero--vision .av-statement { zoom: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .about-hero--vision .av-in { transform: none; opacity: 1; }
+  .about-hero--vision .in-tagline-badge, .about-hero--vision .it-line > *, .about-hero--vision .av-sub, .about-hero--vision .icf-line,
+  .about-hero--vision .icf-gem, .about-hero--vision .icf-pillars, .about-hero--vision .av-cta, .about-hero--vision .it-rootlet-svg path { animation: none; }
+  .about-hero--vision .av-statement::after { display: none; }
 }

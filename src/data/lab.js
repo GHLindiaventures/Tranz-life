@@ -1,8 +1,8 @@
 // R&D pipeline board rows: official TranzLife Pipeline & R&D Discoveries.
 export const LAB = [
-  { n: 'PulmoClear™ & Craving Control', d: 'Lung detox gummies & aromatherapy cessation inhalers', p: 100, st: 'Commercial Ready', eta: 'Live', live: true },
-  { n: 'LiverDetox™ Polyherbal Concoction', d: 'Classical 500 ml hepatic cleansing formula', p: 100, st: 'Commercial Ready', eta: 'Live', live: true },
-  { n: 'CycleRelief™ & Reviva™ Roll-Ons', d: 'Menstrual comfort & botanical massage roll-ons', p: 100, st: 'Commercial Ready', eta: 'Live', live: true },
+  { n: 'Lung Booster Gummies & Aroma Inhaler', d: 'Respiratory wellness gummies & aromatherapy inhaler', p: 100, st: 'Commercial Ready', eta: 'Live', live: true },
+  { n: 'Liver Booster', d: 'Classical 500 ml polyherbal liver-wellness liquid', p: 100, st: 'Commercial Ready', eta: 'Live', live: true },
+  { n: 'CycleRelief & Reviva Roll-Ons', d: 'Menstrual comfort & botanical massage roll-ons', p: 100, st: 'Commercial Ready', eta: 'Live', live: true },
   { n: 'TranzLife Rasayana Elite', d: 'Capsule, Gummies & Effervescent (Ashwagandha, Shilajit, Curcumin C3)', p: 85, st: 'Clinical Pilot', eta: 'Q1 2027' },
   { n: 'Femina™ Women’s Health Range', d: 'Marine Collagen, Biotin, Shatavari, Lodhra & Iron', p: 74, st: 'Pilot Batching', eta: 'Q2 2027' },
   { n: 'Viryamax™ Men’s Stamina Suite', d: 'Ashwagandha KSM-66, Shilajit, Ginseng, L-Arginine', p: 62, st: 'Formulation', eta: 'Q3 2027' },

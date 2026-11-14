@@ -1,51 +1,51 @@
 // Product catalogue: TranzLife Biosciences official commercial & pipeline range.
-// Formulations, dosages, sizes, and barcodes directly aligned with official TranzLife documentation.
+// Ingredients follow the official composition sheet (src/data/ingredients.js). Wording follows the client brief:
+// relaxation, comfort and wellness positioning, no treatment claims. Sizes, prices and barcodes from TranzLife documents.
 
 export const PRODUCTS = [
   {
     id: 'gummies',
     no: '01',
-    short: 'PulmoClear™',
-    name: 'PulmoClear™ Lung Booster Gummies',
+    short: 'Lung Booster',
+    name: 'TranzLife Lung Booster Gummies',
     cat: 'gummies',
-    tag: 'Lung Detox',
+    tag: 'Respiratory Wellness',
     price: 549,
     size: '60 Gummies',
-    desc: '100% Ayurvedic Lung Booster & Craving Control Gummies for heavy smokers. Detoxifies, cleanses, and strengthens respiratory health with Vasaka, Tulsi, Mulethi, Vitamin C & Zinc. Natural Berry Flavour.',
-    ing: ['Vasaka 100mg', 'Tulsi 100mg', 'Mulethi 100mg', 'Turmeric 80mg', 'Giloy 80mg', 'Vitamin C 40mg', 'Zinc 5mg'],
+    desc: 'Berry-flavoured botanical gummies with Tulsi, Vasaka, dry ginger, long pepper and licorice root, plus Vitamin C, D3 and Zinc, in a convenient format for everyday respiratory wellness.',
+    ing: ['Tulsi', 'Vasaka', 'Dry Ginger (Sukku)', 'Long Pepper (Thippili)', 'Licorice Root', 'Vitamin C, D3 & Zinc'],
     model: 'jar',
     fit: 1,
     gummy: ['#d2161f', '#ee7a12', '#f2a12c', '#97182c', '#e8551a'],
     barcode: '8906132540147',
-    mfgLic: 'TN/AYU/24/1234',
     dosage: 'Adults: 2 gummies twice daily after meals'
   },
   {
     id: 'inhaler',
     no: '02',
-    short: 'Craving Control™',
-    name: 'Craving Control™ Aromatherapy Inhaler',
+    short: 'Aroma Inhaler',
+    name: 'TranzLife Aromatherapy Inhaler',
     cat: 'inhaler',
-    tag: 'Quit Smoking',
+    tag: 'Relaxation',
     price: 249,
     size: '10 ml Pocket Inhaler',
-    desc: '100% natural, non-addictive aromatherapy inhaler for tobacco and smoking cessation. Pure therapeutic blend of Peppermint, Black Pepper, Tulsi, Lavender and Eucalyptus oils to curb nicotine cravings instantly on the go.',
-    ing: ['Black Pepper Oil', 'Peppermint Oil', 'Tulsi Oil', 'Lavender Oil', 'Eucalyptus Oil'],
+    desc: 'A compact, portable aromatherapy inhaler with Peppermint, Lavender, Eucalyptus, Lemon, Black Pepper and Tulsi oils. Pause, breathe and bring a refreshing aromatic moment into your day.',
+    ing: ['Peppermint Oil', 'Lavender Oil', 'Eucalyptus Oil', 'Lemon Oil', 'Black Pepper Oil', 'Tulsi Oil'],
     model: 'inhaler',
     fit: 1.16,
-    dosage: 'Inhale deeply through each nostril 2–3 times whenever cravings arise'
+    dosage: 'Inhale gently through each nostril 2–3 times whenever you want a moment to pause'
   },
   {
     id: 'rollon',
     no: '03',
-    short: 'CycleRelief™',
-    name: 'CycleRelief™ Menstrual Comfort Roll-On',
+    short: 'CycleRelief',
+    name: 'TranzLife CycleRelief Roll-On',
     cat: 'rollon',
-    tag: 'Period Relief',
+    tag: 'Menstrual Comfort',
     price: 399,
     size: '50 ml Roll-On (8 ml pocket)',
-    desc: '100% natural plant-based formula that eases menstrual cramps, soothes abdominal discomfort, and relaxes tense pelvic muscles with pure Dill and Eucalyptus essential oils. Fast-absorbing and non-greasy.',
-    ing: ['Dill E.O', 'Eucalyptus E.O', '100% Plant-Based', 'Non-Greasy Formula'],
+    desc: 'A women’s menstrual wellness roll-on with Wintergreen, Peppermint, Ginger, Lavender and Eucalyptus in a Sesame oil base, designed around comfort and convenience throughout your cycle. Non-greasy.',
+    ing: ['Wintergreen Oil', 'Peppermint Oil', 'Ginger', 'Lavender Oil', 'Eucalyptus Oil', 'Sesame Oil base'],
     model: 'rollon',
     fit: 1.06,
     barcode: '8906132540154',
@@ -54,10 +54,10 @@ export const PRODUCTS = [
   {
     id: 'reviva',
     no: '04',
-    short: 'Reviva™',
+    short: 'Reviva',
     // From the Reviva brochure only (a topical massage / personal-care product; no blood-sugar or diabetes claims).
     // Price: the MRP shown in the supplied artwork (the brochure says to verify it).
-    name: 'Reviva™ Roll-On',
+    name: 'Reviva Roll-On',
     cat: 'rollon',
     tag: 'Botanical Massage Roll-On',
     price: 399,
@@ -71,38 +71,39 @@ export const PRODUCTS = [
   {
     id: 'liver',
     no: '05',
-    short: 'LiverDetox™',
-    name: 'LiverDetox™ Polyherbal Concoction',
+    short: 'Liver Booster',
+    name: 'TranzLife Liver Booster',
     cat: 'liquid',
-    tag: 'Liver Booster',
+    tag: 'Liver Wellness',
     price: 649,
     size: '500 ml Classical Concoction',
-    desc: '100% Ayurvedic Liver Booster. Detoxifies, protects, and rejuvenates liver parenchyma cells with 11 classical botanicals including Bhumyamalaki, Kalmegh, Kutki, Punarnava, and Daruharidra.',
+    desc: 'A classical Ayurvedic polyherbal liquid with 11 botanicals including Bhumyamalaki, Kalmegh, Kutki, Punarnava and Daruharidra, made to complement a balanced lifestyle and everyday liver wellness.',
     ing: ['Bhumyamalaki 500mg', 'Kalmegh 400mg', 'Kutki 400mg', 'Punarnava 300mg', 'Bhringraj 300mg', 'Daruharidra 200mg'],
     model: 'liver',
     fit: 1.14,
     barcode: '8906132540130',
-    mfgLic: 'TN/AYU/24/1234',
     dosage: 'Adults: 10 ml (2 tsp) twice daily after meals'
   }
 ];
 
-// Products with their own page (product-details.html?id=...) but not (yet) in the 3D lineup, showcase or grid:
+// Products with their own page (product-details.html?id=...) that are not in the Products page 3D showcase or grid:
 // the Home hero, the lineup and the Products page build a 3D model for every entry in PRODUCTS above.
-// Energy Booster: from the draft brochure (TranzLife_Energy_Booster_Brochure.pdf). No price or product photo yet:
+// Energy Booster: from the draft brochure (TranzLife_Energy_Booster_Brochure.pdf). Product photo: assets/products/energy.webp. No price yet:
 // price null shows "Price to be announced" and an enquiry button instead of Add to bag.
 export const EXTRA_PRODUCTS = [
   {
     id: 'energy',
     no: '06',
-    short: 'Energy Booster™',
-    name: 'TranzLife Energy Booster™',
+    short: 'Energy Booster',
+    name: 'TranzLife Energy Booster',
     cat: 'liquid',
     tag: 'Energy & Vitality',
     price: null,
     size: '500 ml Oral Liquid',
     desc: 'Herbal & bioactive wellness formulation. A convenient oral liquid designed to complement an active lifestyle and everyday wellness routine.',
     ing: ['Ruta graveolens (Q)', 'Hecla lava (3X)', 'Symphytum officinale (Q)', 'Calcarea phosphorica (8X)', 'Echinacea angustifolia (Q)'],
+    model: 'energy',
+    fit: 1.18,
     dosage: '7.5 ml twice daily, or as advised by a healthcare professional'
   }
 ];

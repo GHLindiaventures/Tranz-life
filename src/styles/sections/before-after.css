@@ -234,12 +234,12 @@
 .bac-ic svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
 
 .bac-herbs { margin-top: clamp(24px, 3vw, 34px); }
-.bac-herbs__k { margin: 0 0 12px; font-size: 12px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--sage); }
+.bac-herbs__k { margin: 0 0 12px; font-size: 12px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--sage-ink); }
 .bac-herbs ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
 .bac-herbs li { padding: 7px 13px; border-radius: 999px; font-size: 13.5px; font-weight: 650; color: var(--forest); background: rgba(255, 255, 255, .65); border: 1px solid var(--line); }
 .bac-herbs small { font-weight: 600; color: var(--faint); margin-left: 3px; }
 
-.bac-caption { display: none; margin: 12px 0 0; text-align: center; font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--sage); }
+.bac-caption { display: none; margin: 12px 0 0; text-align: center; font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--sage-ink); }
 .bac-note { margin: 22px 0 0; max-width: 92ch; font-size: 12.5px; line-height: 1.55; color: var(--faint); }
 
 @media (max-width: 1100px) {

@@ -8,8 +8,9 @@ import rollonDesign from '../../assets/products/rollon-design.webp';
 import reviva from '../../assets/products/reviva.webp';
 import liver from '../../assets/products/liver.webp';
 import liverDesign from '../../assets/products/liver-design.webp';
+import energy from '../../assets/products/energy.webp';
 
-const SHOTS = { gummies, inhaler, rollon, reviva, liver };
+const SHOTS = { gummies, inhaler, rollon, reviva, liver, energy };
 const DESIGNS = { gummies:gummiesDesign, inhaler:inhalerDesign, rollon:rollonDesign, liver:liverDesign };
 
 export { SHOTS, DESIGNS };

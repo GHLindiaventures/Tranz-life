@@ -1,11 +1,12 @@
 // TranzLife Biosciences - Quality & Manufacturing Interactive Controller
-import { initCart } from './features/cart/cart.js';
+import './features/footer/night-footer.js';
+import './features/navigation/dropdown.js';
 import { $ } from './utils/dom.js';
 
 // Simulated Live Batch Quality Database
 export const BATCH_DATABASE = {
   'BATCH-TL-2026-GUM01': {
-    product: 'TranzLife Focus & Cognitive Gummies',
+    product: 'TranzLife Lung Booster Gummies',
     batchNo: 'BATCH-TL-2026-GUM01',
     mfgDate: '14 Jan 2026',
     expDate: '13 Jan 2028',
@@ -23,7 +24,7 @@ export const BATCH_DATABASE = {
     ]
   },
   'BATCH-TL-2026-ROL02': {
-    product: 'TranzLife Calm Roll-On Aromatherapy',
+    product: 'TranzLife CycleRelief Roll-On',
     batchNo: 'BATCH-TL-2026-ROL02',
     mfgDate: '18 Jan 2026',
     expDate: '17 Jan 2028',
@@ -40,7 +41,7 @@ export const BATCH_DATABASE = {
     ]
   },
   'BATCH-TL-2026-LIV03': {
-    product: 'TranzLife Liver Protect Herbal Drops',
+    product: 'TranzLife Liver Booster',
     batchNo: 'BATCH-TL-2026-LIV03',
     mfgDate: '22 Jan 2026',
     expDate: '21 Jan 2028',
@@ -57,7 +58,7 @@ export const BATCH_DATABASE = {
     ]
   },
   'BATCH-TL-2026-INH04': {
-    product: 'TranzLife Forest Breathe Botanical Inhaler',
+    product: 'TranzLife Aromatherapy Inhaler',
     batchNo: 'BATCH-TL-2026-INH04',
     mfgDate: '28 Jan 2026',
     expDate: '27 Jan 2028',
@@ -73,7 +74,7 @@ export const BATCH_DATABASE = {
     ]
   },
   'BATCH-TL-2026-REV05': {
-    product: 'TranzLife Reviva Cellular Energy Drops',
+    product: 'Reviva Roll-On',
     batchNo: 'BATCH-TL-2026-REV05',
     mfgDate: '03 Feb 2026',
     expDate: '02 Feb 2028',
@@ -91,13 +92,6 @@ export const BATCH_DATABASE = {
 };
 
 function initQualityPage() {
-  // 1. Initialize shopping bag state
-  try {
-    initCart();
-  } catch (e) {
-    console.warn('Cart initialization deferred:', e);
-  }
-
   // 2. Navigation scroll header styling
   const nav = $('#nav');
   function onScroll() {
@@ -136,23 +130,6 @@ function initQualityPage() {
     }
   });
 
-  // 4. Cart Bag Drawer Controller
-  const bagBtn = $('#bagBtn');
-  const drawer = $('#drawer');
-  const scrim = $('#scrim');
-  const closeBag = $('#closeBag');
-
-  function setDrawerOpen(open) {
-    if (!drawer || !scrim) return;
-    drawer.classList.toggle('open', open);
-    drawer.setAttribute('aria-hidden', !open);
-    scrim.classList.toggle('open', open);
-    document.documentElement.classList.toggle('bag-open', open);
-  }
-
-  if (bagBtn) bagBtn.addEventListener('click', () => setDrawerOpen(true));
-  if (closeBag) closeBag.addEventListener('click', () => setDrawerOpen(false));
-  if (scrim) scrim.addEventListener('click', () => setDrawerOpen(false));
 
   // 5. Interactive Batch COA Controller
   const batchButtons = document.querySelectorAll('.q-batch-btn');

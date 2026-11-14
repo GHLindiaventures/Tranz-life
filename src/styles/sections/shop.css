@@ -19,7 +19,7 @@
 .pc:hover .pc-media img{transform:scale(1.04)}
 .pc-tag{position:absolute;left:14px;top:14px;padding:5px 12px;border-radius:999px;background:rgba(255,255,255,.85);font-weight:800;font-stretch:80%;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--forest)}
 .pc-body{padding:20px 22px 22px;display:flex;flex-direction:column;gap:10px;flex:1}
-.pc-no{font-weight:700;font-size:12px;letter-spacing:.12em;color:var(--sage)}
+.pc-no{font-weight:700;font-size:12px;letter-spacing:.12em;color:var(--sage-ink)}
 .pc h3{font-size:30px;font-stretch:66%;text-transform:uppercase}
 .pc-d{color:var(--muted);font-size:15px}
 .pc-ing{list-style:none;display:flex;flex-wrap:wrap;gap:6px;margin:0;padding:0}

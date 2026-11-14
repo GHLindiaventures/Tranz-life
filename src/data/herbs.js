@@ -9,7 +9,7 @@ export const HERBS = [
     p: 0,
     color: 0x5a9a54,
     seed: 12,
-    txt: 'Classical respiratory botanical known as Malabar Nut. Vasicine acts as an active natural bronchodilator and mucolytic agent in PulmoClear™ Gummies.'
+    txt: 'Classical respiratory botanical known as Malabar Nut. Vasicine acts as an active natural bronchodilator and mucolytic agent in Lung Booster Gummies.'
   },
   {
     n: 'Tulsi',
@@ -99,7 +99,7 @@ export const HERBS = [
     p: 4,
     color: 0x587834,
     seed: 14,
-    txt: 'Prized Himalayan rhizome supporting hepatic tissue regeneration, metabolic detoxification, and deep digestive balance in LiverDetox™.'
+    txt: 'Prized Himalayan rhizome supporting hepatic tissue regeneration, metabolic detoxification, and deep digestive balance in Liver Booster.'
   },
   {
     n: 'Brahmi',

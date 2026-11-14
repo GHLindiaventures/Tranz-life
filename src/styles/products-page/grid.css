@@ -51,7 +51,7 @@
   white-space: nowrap;
   color: var(--ink);
 }
-.lu-r { color: var(--sage); }
+.lu-r { color: var(--sage-ink); }
 .lu-h .stw-i { transform: translate3d(0, 115%, 0); }
 .lu-h .stw { padding-block: .14em; margin-block: -.14em; }   /* room for the tall letters inside their reveal masks */
 .lu-sun { flex: none; width: 8vw; aspect-ratio: 1; color: var(--gold); will-change: transform; }
@@ -168,7 +168,7 @@
 }
 .lu-add:hover { transform: rotate(90deg) scale(1.1); }
 .lu-add:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; border-radius: 4px; }
-.lu-add.ok { color: var(--sage); }
+.lu-add.ok { color: var(--sage-ink); }
 
 /* tablet: 3 per row, no pin (the JS follows the section through the viewport) */
 @media (max-width: 1023px) {

@@ -1,14 +1,119 @@
-/* ---------- footer ---------- */
-footer{background:var(--forest);color:#e9efe3;padding:clamp(60px,8vw,100px) 0 36px;overflow:hidden}
-.f-brand{display:flex;align-items:center;flex-wrap:wrap;gap:18px;margin-bottom:46px}
-.f-brand .logo-em{height:96px}.f-brand .logo-word{height:50px}
-.f-brand .hand{color:#e9efe3;font-size:28px;margin-left:auto}
-.f-big{font-family:var(--f-display);font-stretch:62%;font-weight:850;text-transform:uppercase;font-size:clamp(4.4rem,16vw,15rem);line-height:.8;letter-spacing:-.01em;color:#e9efe3}
-.f-big span{color:var(--moss);display:block}
-.f-row{display:grid;grid-template-columns:minmax(0,1.4fr) repeat(3,minmax(0,1fr));gap:30px;margin-top:56px}
-.f-row .pill{color:var(--forest)}.f-row .pill i,.f-row .pill b{background:#e9efe3}
-.f-col h4{margin:0 0 12px;font-family:var(--f-body);font-stretch:85%;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--moss);font-weight:700}
-.f-col a{display:block;padding-block:4px;color:#d3dfcb}
-.f-col a:hover{color:#fff}
-.f-bot{display:flex;flex-wrap:wrap;justify-content:space-between;gap:16px;margin-top:46px;padding-top:22px;border-top:1px solid rgba(233,239,227,.18);font-size:13px;color:#a9bda1}
-.f-bot p{max-width:72ch}
+/* ---------- "After Dark" footer: the last page of the day ----------
+   Night sky (same deep green as the home page's night sections) with a low moon and a few stars; one row of links;
+   the TRANZLIFE wordmark sinking into the bottom edge like a horizon (still, no animation). "Back to dawn" turns the sky to sunrise while the page scrolls to the top. */
+.night-foot {
+  position: relative; isolation: isolate; overflow: hidden;
+  padding: clamp(70px, 9vw, 110px) 0 0; color: #e9efe3;
+  background: #0a1c12;
+}
+.nf-sky { position: absolute; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
+.nf-sky::before, .nf-sky::after { content: ""; position: absolute; inset: 0; transition: opacity 1.4s ease; }
+.nf-sky::before { background: radial-gradient(ellipse 80% 55% at 22% 38%, rgba(23, 58, 36, .9) 0%, rgba(10, 28, 18, 0) 70%), linear-gradient(180deg, #0a1c12 0%, #0c2215 70%, #11301c 100%); }
+/* sunrise, shown by "Back to dawn" */
+.nf-sky::after { opacity: 0; background: radial-gradient(ellipse 80% 60% at 50% 100%, #f6c46a 0%, rgba(246, 196, 106, 0) 60%), linear-gradient(180deg, #2b4a3a 0%, #b97a46 55%, #f2c27a 100%); }
+.night-foot.is-dawn .nf-sky::after { opacity: 1; }
+
+.nf-stars {
+  position: absolute; inset: 0; opacity: .7; transition: opacity 1.2s ease;
+  background-image:
+    radial-gradient(1.5px 1.5px at 8% 22%, #fff, transparent), radial-gradient(1px 1px at 17% 61%, #fff, transparent),
+    radial-gradient(1.5px 1.5px at 29% 14%, #fff, transparent), radial-gradient(1px 1px at 41% 38%, #fff, transparent),
+    radial-gradient(1px 1px at 52% 9%, #fff, transparent), radial-gradient(1.5px 1.5px at 63% 27%, #fff, transparent),
+    radial-gradient(1px 1px at 72% 52%, #fff, transparent), radial-gradient(1.5px 1.5px at 81% 16%, #fff, transparent),
+    radial-gradient(1px 1px at 90% 41%, #fff, transparent), radial-gradient(1px 1px at 96% 8%, #fff, transparent);
+  animation: nfTwinkle 6s ease-in-out infinite alternate;
+}
+@keyframes nfTwinkle { from { opacity: .45; } to { opacity: .8; } }
+.nf-moon {
+  position: absolute; left: clamp(24px, 7vw, 120px); top: clamp(28px, 6vw, 70px); width: clamp(34px, 3.4vw, 52px); aspect-ratio: 1; border-radius: 50%;
+  background: radial-gradient(circle at 36% 34%, #fbfbf2, #d8dccb 70%);
+  box-shadow: 0 0 40px 10px rgba(220, 230, 210, .22), 0 0 0 10px rgba(220, 230, 210, .05);
+  transition: transform 1.6s cubic-bezier(.6, 0, .3, 1), opacity 1.2s ease;
+}
+.nf-sun {
+  position: absolute; left: 50%; bottom: -60px; width: 120px; aspect-ratio: 1; margin-left: -60px; border-radius: 50%; opacity: 0;
+  background: radial-gradient(circle at 50% 45%, #fff6d0, #f2b640 60%, #d9861c);
+  box-shadow: 0 0 80px 30px rgba(242, 182, 64, .45);
+  transition: transform 1.8s cubic-bezier(.2, .7, .1, 1), opacity 1s ease;
+}
+.night-foot.is-dawn .nf-moon { transform: translateY(160px); opacity: 0; }
+.night-foot.is-dawn .nf-stars { opacity: 0; }
+.night-foot.is-dawn .nf-sun { opacity: 1; transform: translateY(-260px); }
+
+.nf-in { position: relative; z-index: 2; }
+.nf-top { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding-left: clamp(52px, 6vw, 90px); }
+.nf-brand { display: inline-flex; align-items: center; gap: 12px; }
+.nf-brand .logo-em { height: 56px; }
+.nf-brand .logo-word { height: 30px; }
+.nf-dawn {
+  display: inline-flex; align-items: center; gap: 10px; min-height: 46px; padding: 0 8px 0 20px; border-radius: 999px;
+  border: 1px solid rgba(233, 239, 227, .25); color: #eef3e8; font-size: 14px; font-weight: 700; background: rgba(255, 255, 255, .03);
+  transition: border-color .3s, background .3s;
+}
+.nf-dawn i { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: var(--amber, #e8a93a); color: #16301a; font-style: normal; transition: transform .35s cubic-bezier(.2, .7, .1, 1); }
+.nf-dawn:hover { border-color: rgba(231, 198, 128, .7); background: rgba(231, 198, 128, .08); }
+.nf-dawn:hover i { transform: translateY(-3px); }
+.nf-dawn:focus-visible { outline: 2px solid var(--amber, #e8a93a); outline-offset: 3px; }
+
+/* one clean row of links: a gold underline grows from the centre and a small star lights up on hover */
+.nf-links { display: flex; flex-wrap: wrap; gap: 6px clamp(16px, 2.4vw, 38px); margin: clamp(44px, 6vw, 72px) 0 0; }
+.nf-links a {
+  position: relative; display: inline-flex; align-items: center; min-height: 44px; color: #eef3e8; text-decoration: none;
+  font-family: var(--f-display); font-weight: 800; font-stretch: 78%; font-size: clamp(22px, 2vw, 32px); letter-spacing: -.005em;
+  transition: color .3s, font-stretch .45s cubic-bezier(.2, .7, .1, 1);
+}
+.nf-links a span { position: relative; }
+.nf-links a span::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: -4px; height: 2px; border-radius: 2px; background: #e7c680;
+  transform: scaleX(0); transition: transform .45s cubic-bezier(.2, .7, .1, 1);
+}
+.nf-links a::before {
+  content: "✦"; position: absolute; right: -14px; top: 4px; font-size: 11px; color: #e7c680; opacity: 0; transform: scale(.4) rotate(-40deg);
+  transition: opacity .3s, transform .45s cubic-bezier(.2, .7, .1, 1);
+}
+.nf-links a:hover, .nf-links a:focus-visible, .nf-links a[aria-current="page"] { color: #e7c680; }
+.nf-links a:hover { font-stretch: 92%; }
+.nf-links a:hover span::after, .nf-links a:focus-visible span::after, .nf-links a[aria-current="page"] span::after { transform: scaleX(1); }
+.nf-links a:hover::before { opacity: 1; transform: none; }
+.nf-links a:focus-visible { outline: 2px solid #e7c680; outline-offset: 4px; border-radius: 4px; }
+
+.nf-meta { display: flex; flex-wrap: wrap; gap: 8px 28px; margin-top: clamp(26px, 3vw, 36px); font-size: 15px; color: #bfd1b6; }
+.nf-meta p { margin: 0; }
+.nf-mail { color: #eef3e8; text-decoration: underline; text-decoration-color: rgba(231, 198, 128, .6); text-underline-offset: 4px; }
+.nf-mail:hover { color: #e7c680; }
+
+.nf-legal {
+  display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 14px 40px;
+  margin-top: clamp(30px, 4vw, 48px); padding-top: 20px; border-top: 1px solid rgba(233, 239, 227, .14);
+  font-size: 13px; line-height: 1.55; color: #a9bda1;
+}
+.nf-disc { margin: 0; max-width: 72ch; }
+.nf-fine { display: flex; gap: 18px; margin: 0; white-space: nowrap; }
+.nf-fine a { color: #d3dfcb; text-decoration: none; }
+.nf-fine a:hover { color: #e7c680; text-decoration: underline; text-underline-offset: 3px; }
+
+/* the horizon: a full-width wordmark half sunk into the bottom edge */
+.nf-word {
+  position: relative; z-index: 1; display: flex; justify-content: center; margin: clamp(10px, 4vw, 50px) 0 -.40em; pointer-events: none;
+  font-family: var(--f-display); font-weight: 850; text-transform: uppercase; line-height: .8; letter-spacing: -.01em;
+  font-size: clamp(64px, 20vw, 400px); white-space: nowrap; user-select: none;
+}
+.nf-word span {
+  display: inline-block; font-stretch: 66%;
+  background: linear-gradient(180deg, #eef3e8 0%, #e7c680 46%, rgba(231, 198, 128, .15) 78%, rgba(231, 198, 128, 0) 92%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+
+@media (max-width: 700px) {
+  .nf-top { padding-left: 0; padding-top: 52px; }
+  .nf-moon { top: 18px; left: 20px; width: 30px; }
+  .nf-brand .logo-em { height: 44px; } .nf-brand .logo-word { height: 24px; }
+  .nf-dawn span { display: none; }
+  .nf-dawn { padding: 0 6px; }
+  .nf-links { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .nf-fine { white-space: normal; flex-wrap: wrap; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .nf-stars { animation: none; }
+  .nf-moon, .nf-sun, .nf-sky::after { transition: none; }
+}

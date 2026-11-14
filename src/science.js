@@ -1,5 +1,6 @@
 // TranzLife Biosciences - Science & Innovation Page Interactive Controller
-import { initCart } from './features/cart/cart.js';
+import './features/footer/night-footer.js';
+import './features/navigation/dropdown.js';
 import { initMolecule } from './features/science/molecule-viewer.js';
 import { initReactor } from './features/pipeline/reactor.js';
 import { buildLab } from './features/lab/lab-board.js';
@@ -8,7 +9,9 @@ import { initScroll } from './app/scroll-animations.js';
 import { NSTAGE } from './data/pipeline.js';
 import { $ } from './utils/dom.js';
 
-// Comprehensive 10-Botanical Scientific Registry
+// The 10 botanicals in the compound explorer: all are real TranzLife ingredients (src/data/ingredients.js, the official
+// composition sheet). `product` lists every product that contains it; the link goes to the first. `seed` and `color`
+// shape the 3D molecule. Wording follows the client brief: traditional use and sensory experience, no treatment claims.
 export const SCIENCE_HERBS = [
   {
     id: 'peppermint',
@@ -18,157 +21,147 @@ export const SCIENCE_HERBS = [
     cmp: 'L-Menthol',
     formula: 'C₁₀H₂₀O',
     mw: '156.27 g/mol',
-    target: 'TRPM8 Cold Receptor Agonist',
+    target: 'Cooling sensation (TRPM8 receptor)',
     color: 0x5ea36a,
     seed: 23,
-    product: 'Calm Roll-On',
+    product: 'CycleRelief Roll-On & Aroma Inhaler',
     productId: 'rollon',
-    txt: 'Natural menthol triggers peripheral TRPM8 thermosensory receptors, generating a sustained physiological cooling sensation that relieves localized tension, eases mental fatigue, and calms sensory nerve hyper-reactivity without tissue temperature drop.',
-    metrics: { bioavailability: '+290%', onset: '3-5 mins', retention: '4.5 hrs' }
+    txt: 'Menthol is the compound behind peppermint’s familiar cooling feel. It activates the TRPM8 cold receptors in the skin and nose, giving a fresh, cooling sensation in both the roll-on and the inhaler.'
   },
   {
-    id: 'rosemary',
-    n: 'Rosemary',
-    latin: 'Salvia rosmarinus',
-    part: 'CO₂ needle extract',
+    id: 'wintergreen',
+    n: 'Wintergreen',
+    latin: 'Gaultheria procumbens',
+    part: 'Steam-distilled leaf oil',
+    cmp: 'Methyl Salicylate',
+    formula: 'C₈H₈O₃',
+    mw: '152.15 g/mol',
+    target: 'Warming sensation on the skin',
+    color: 0x7fa86a,
+    seed: 29,
+    product: 'CycleRelief Roll-On',
+    productId: 'rollon',
+    txt: 'Wintergreen oil is rich in methyl salicylate, a compound long used in massage oils and balms for its warming, comforting feel on the skin.'
+  },
+  {
+    id: 'dill',
+    n: 'Dill',
+    latin: 'Anethum graveolens',
+    part: 'Steam-distilled seed oil',
+    cmp: 'Carvone',
+    formula: 'C₁₀H₁₄O',
+    mw: '150.22 g/mol',
+    target: 'Aromatic massage oil',
+    color: 0x9bb35a,
+    seed: 31,
+    product: 'Reviva Roll-On',
+    productId: 'reviva',
+    txt: 'Dill essential oil, with its sweet, herbaceous aroma from carvone, has a long history in traditional massage and personal-care preparations.'
+  },
+  {
+    id: 'eucalyptus',
+    n: 'Eucalyptus',
+    latin: 'Eucalyptus globulus',
+    part: 'Steam-distilled leaf oil',
     cmp: '1,8-Cineole (Eucalyptol)',
     formula: 'C₁₀H₁₈O',
     mw: '154.25 g/mol',
-    target: 'AChE Neuro-Inhibitor & Vasodilator',
-    color: 0x769652,
-    seed: 29,
-    product: 'Focus Gummies & Calm Roll-On',
-    productId: 'gummies',
-    txt: 'Standardized 1,8-cineole passes the blood-brain barrier with high lipophilic affinity, inhibiting acetylcholinesterase to sustain acetylcholine availability. This promotes uninterrupted executive focus, mental clarity, and cerebral microcirculation.',
-    metrics: { bioavailability: '+310%', onset: '8-12 mins', retention: '6.0 hrs' }
+    target: 'Fresh, clear-breathing aroma',
+    color: 0x56a695,
+    seed: 11,
+    product: 'Aroma Inhaler, CycleRelief Roll-On & Reviva Roll-On',
+    productId: 'inhaler',
+    txt: 'Cineole gives eucalyptus its crisp, camphor-like aroma, a scent widely associated with a feeling of fresh, easy breathing. It appears in three TranzLife products.'
   },
   {
-    id: 'rose',
-    n: 'Damask Rose',
-    latin: 'Rosa damascena',
-    part: 'Hydro-distilled fresh petals',
-    cmp: 'Geraniol & Citronellol',
+    id: 'lavender',
+    n: 'Lavender',
+    latin: 'Lavandula angustifolia',
+    part: 'Steam-distilled flower oil',
+    cmp: 'Linalool',
     formula: 'C₁₀H₁₈O',
     mw: '154.25 g/mol',
-    target: 'GABA-A Allosteric Modulation',
-    color: 0xd6808e,
-    seed: 31,
-    product: 'Calm Roll-On',
-    productId: 'rollon',
-    txt: 'Aromatic monoterpenoids in Rosa damascena gently stimulate autonomic olfactory-limbic pathways, blunting acute cortisol secretion and facilitating parasympathetic rest without motor sedation or day-after drowsiness.',
-    metrics: { bioavailability: '+280%', onset: '5-10 mins', retention: '5.2 hrs' }
+    target: 'Calming aroma',
+    color: 0x9a86c4,
+    seed: 37,
+    product: 'Aroma Inhaler & CycleRelief Roll-On',
+    productId: 'inhaler',
+    txt: 'Linalool is the floral note of lavender, one of the most widely used aromas in relaxation and aromatherapy routines.'
   },
   {
     id: 'tulsi',
     n: 'Holy Basil (Tulsi)',
     latin: 'Ocimum tenuiflorum',
-    part: 'Flowering aerial tops',
-    cmp: 'Eugenol & Ursolic Acid',
+    part: 'Leaf',
+    cmp: 'Eugenol',
     formula: 'C₁₀H₁₂O₂',
     mw: '164.20 g/mol',
-    target: 'COX-2 & 5-LOX Enzyme Suppression',
+    target: 'Traditional respiratory botanical',
     color: 0x6e9f3b,
     seed: 3,
-    product: 'Forest Breathe Inhaler',
-    productId: 'inhaler',
-    txt: 'Eugenol and triterpenic ursolic acid downregulate inflammatory cyclooxygenase pathways, shielding respiratory epithelial membranes from ambient oxidative stress and urban particulate micro-pollutants.',
-    metrics: { bioavailability: '+330%', onset: '10-15 mins', retention: '6.8 hrs' }
+    product: 'Lung Booster Gummies & Aroma Inhaler',
+    productId: 'gummies',
+    txt: 'Tulsi is one of the most valued plants in Indian herbal tradition. Its warm, clove-like aroma comes from eugenol, and it is traditionally used in respiratory wellness preparations.'
   },
   {
-    id: 'eucalyptus',
-    n: 'Tasmanian Blue Gum',
-    latin: 'Eucalyptus globulus',
-    part: 'Supercritical fresh leaf oil',
-    cmp: '1,8-Cineole (99.2% Standardized)',
-    formula: 'C₁₀H₁₈O',
-    mw: '154.25 g/mol',
-    target: 'Bronchial Ciliary Motility Enhancer',
-    color: 0x56a695,
-    seed: 11,
-    product: 'Forest Breathe Inhaler',
-    productId: 'inhaler',
-    txt: 'High-purity cineole vapor decreases mucus viscosity and stimulates mucosal ciliary beat frequency, opening upper airways and relieving sinus constriction with immediate biological onset.',
-    metrics: { bioavailability: '+380%', onset: '60 secs', retention: '3.5 hrs' }
+    id: 'vasaka',
+    n: 'Vasaka',
+    latin: 'Justicia adhatoda',
+    part: 'Leaf',
+    cmp: 'Vasicine',
+    formula: 'C₁₁H₁₂N₂O',
+    mw: '188.23 g/mol',
+    target: 'Traditional Ayurvedic respiratory herb',
+    color: 0x6c8f4a,
+    seed: 41,
+    product: 'Lung Booster Gummies',
+    productId: 'gummies',
+    txt: 'Vasaka (Adulsa) has a long place in Ayurvedic respiratory wellness formulations. Vasicine is its best-studied natural alkaloid.'
   },
   {
-    id: 'ashwagandha',
-    n: 'Ashwagandha',
-    latin: 'Withania somnifera',
-    part: 'Standardized root extract',
-    cmp: 'Withaferin A & Withanolides',
-    formula: 'C₂₈H₃₈O₆',
-    mw: '470.60 g/mol',
-    target: 'HPA Axis & Cortisol Homeostasis',
-    color: 0xc8964d,
-    seed: 5,
-    product: 'Reviva Drops & Focus Gummies',
-    productId: 'reviva',
-    txt: 'Purified withanolide glycosides recalibrate the hypothalamic-pituitary-adrenal (HPA) axis, attenuating systemic adrenaline surges, elevating mitochondrial ATP resilience, and stabilizing REM sleep stages.',
-    metrics: { bioavailability: '+350%', onset: '30-45 mins', retention: '8.5 hrs' }
+    id: 'black-pepper',
+    n: 'Black Pepper',
+    latin: 'Piper nigrum',
+    part: 'Dried fruit',
+    cmp: 'Piperine',
+    formula: 'C₁₇H₁₉NO₃',
+    mw: '285.34 g/mol',
+    target: 'Absorption partner for other botanicals',
+    color: 0x5a5440,
+    seed: 43,
+    product: 'Lung Booster Gummies, Liver Booster & Aroma Inhaler',
+    productId: 'gummies',
+    txt: 'Piperine gives black pepper its bite and is studied for how it interacts with the absorption of other botanicals and nutrients, which is why it is paired with herbs in classical formulations.'
+  },
+  {
+    id: 'kalmegh',
+    n: 'Kalmegh',
+    latin: 'Andrographis paniculata',
+    part: 'Aerial parts',
+    cmp: 'Andrographolide',
+    formula: 'C₂₀H₃₀O₅',
+    mw: '350.45 g/mol',
+    target: 'Traditional liver-wellness herb',
+    color: 0x5b8a3c,
+    seed: 47,
+    product: 'Liver Booster',
+    productId: 'liver',
+    txt: 'Known in Ayurveda as the “king of bitters”, Kalmegh is a classical herb in traditional liver-wellness preparations. Andrographolide is its main bitter compound.'
   },
   {
     id: 'turmeric',
-    n: 'Curcuma Longa',
-    latin: 'Curcuma longa L.',
-    part: 'Supercritical rhizome phytosome',
-    cmp: 'Curcuminoids C3 Complex',
+    n: 'Turmeric',
+    latin: 'Curcuma longa',
+    part: 'Rhizome',
+    cmp: 'Curcumin',
     formula: 'C₂₁H₂₀O₆',
     mw: '368.38 g/mol',
-    target: 'NF-κB Inflammatory Pathway Blockade',
+    target: 'Antioxidant curcuminoids',
     color: 0xd98c28,
     seed: 14,
-    product: 'Reviva Drops & Liver Protect',
-    productId: 'reviva',
-    txt: 'Curcumin C3 Complex inhibits nuclear translocation of NF-κB, stopping cytokine amplification at the genetic level. Co-complexed with non-GMO sunflower phosphatidylcholine to achieve 29x higher plasma bioavailability than standard turmeric powder.',
-    metrics: { bioavailability: '+2900%', onset: '20 mins', retention: '8.0 hrs' }
-  },
-  {
-    id: 'milk-thistle',
-    n: 'Milk Thistle',
-    latin: 'Silybum marianum',
-    part: 'Standardized seed extract',
-    cmp: 'Silymarin (80% Silybin A/B)',
-    formula: 'C₂₅H₂₂O₁₀',
-    mw: '482.44 g/mol',
-    target: 'Hepatocyte Membrane Stabilization',
-    color: 0x985ba6,
-    seed: 39,
-    product: 'Liver Protect Drops',
+    product: 'Liver Booster',
     productId: 'liver',
-    txt: 'Silymarin suppresses lipid peroxidation and reinforces hepatic cellular outer membranes against metabolic xenobiotics, while simultaneously upregulating endogenous glutathione synthesis and Phase II sulfation pathways.',
-    metrics: { bioavailability: '+340%', onset: '25 mins', retention: '7.2 hrs' }
-  },
-  {
-    id: 'amla',
-    n: 'Indian Gooseberry',
-    latin: 'Phyllanthus emblica',
-    part: 'Fresh cold-pressed berries',
-    cmp: 'Emblicanin A/B & Ascorbic Complex',
-    formula: 'C₆H₈O₆',
-    mw: '176.12 g/mol',
-    target: 'Cellular Redox & ROS Neutralization',
-    color: 0x8fb837,
-    seed: 2,
-    product: 'Liver Protect & Focus Gummies',
-    productId: 'liver',
-    txt: 'Tannoid-bound bio-vitamin C resists oxidation significantly longer than laboratory ascorbic acid, preserving cell wall integrity and recycling intracellular vitamins E and glutathione in liver hepatocytes.',
-    metrics: { bioavailability: '+260%', onset: '15 mins', retention: '9.0 hrs' }
-  },
-  {
-    id: 'chamomile',
-    n: 'German Chamomile',
-    latin: 'Matricaria chamomilla',
-    part: 'Sun-dried flower blossoms',
-    cmp: 'Apigenin Flavonoid',
-    formula: 'C₁₅H₁₀O₅',
-    mw: '270.24 g/mol',
-    target: 'Central Benzodiazepine Receptors',
-    color: 0xdfbe4c,
-    seed: 17,
-    product: 'Calm Roll-On',
-    productId: 'rollon',
-    txt: 'Apigenin selectively binds central benzodiazepine receptors without risk of habituation or drowsiness, gently dampening neuronal hyper-excitability, quieting somatic muscle tension, and promoting restorative rest.',
-    metrics: { bioavailability: '+300%', onset: '20 mins', retention: '5.5 hrs' }
+    txt: 'Turmeric’s golden colour comes from curcumin, a natural antioxidant compound. It is one of the eleven classical botanicals in the Liver Booster.'
   }
 ];
 
@@ -216,13 +209,6 @@ const SIMULATION_MODES = {
 };
 
 function initSciencePage() {
-  // 1. Initialize shopping bag state
-  try {
-    initCart();
-  } catch (e) {
-    console.warn('Cart initialization deferred:', e);
-  }
-
   // 2. Navigation scroll header styling
   const nav = $('#nav');
   function onScroll() {
@@ -261,23 +247,6 @@ function initSciencePage() {
     }
   });
 
-  // 4. Cart Bag Drawer Controller
-  const bagBtn = $('#bagBtn');
-  const drawer = $('#drawer');
-  const scrim = $('#scrim');
-  const closeBag = $('#closeBag');
-
-  function setDrawerOpen(open) {
-    if (!drawer || !scrim) return;
-    drawer.classList.toggle('open', open);
-    drawer.setAttribute('aria-hidden', !open);
-    scrim.classList.toggle('open', open);
-    document.documentElement.classList.toggle('bag-open', open);
-  }
-
-  if (bagBtn) bagBtn.addEventListener('click', () => setDrawerOpen(true));
-  if (closeBag) closeBag.addEventListener('click', () => setDrawerOpen(false));
-  if (scrim) scrim.addEventListener('click', () => setDrawerOpen(false));
 
   // 5. Interactive 3D Compound Viewer Setup
   let molViewer = null;

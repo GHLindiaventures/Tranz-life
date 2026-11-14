@@ -1,16 +1,24 @@
 # TranzLife Biosciences website
 
-Marketing and shop site for TranzLife Biosciences ("Innovating Life Beyond Limits"): five plant-based products (gummies, a calming inhaler, a period relief roll-on, the Reviva foot-care roll-on and a liver booster liquid).
+Corporate website for TranzLife Biosciences ("Innovating Life Beyond Limits"): six plant-based products: Lung Booster Gummies, the Aroma Inhaler, the CycleRelief period roll-on, the Reviva massage roll-on, Liver Booster and Energy Booster.
 
-The site is a single page built with Vite and plain JavaScript (ES modules). It includes:
+The site is built with Vite and plain JavaScript (ES modules). The home page tells one story from dawn to night ("Root to Ritual"):
 
-- live 3D models of all five products (Three.js), labelled with artwork from the product designs
+- **Hero:** the 3D products on a mossy stone plinth with a kingfisher, the offer and two calls to action
+- **Roots to Helix:** the product sinks into the stone, its roots grow down and twist into a DNA helix that unwinds into a golden thread
+- **A Day with TranzLife:** one moment per product from morning to night; the sky follows the hour and each product's real botanicals flow into it (hover a botanical for its key compound)
+- **Your Ritual:** all six products as 3D models at night, filtered by what your day needs
+- **Proof:** government recognition and certifications
+
+Across the site it also includes:
+
+- live 3D models of all six products (Three.js), labelled with artwork from the product designs
 - a pinned product story where each product turns while its feature card glides past
 - the client's product images everywhere a product is shown, with a "View design" lightbox
 - a molecule "seed to shelf" pipeline
 - smooth scrolling (Lenis) with GSAP ScrollTrigger animations
 - a left dock menu
-- a front-end bag
+- links to the separate online store (built later): "Online store coming soon" until `VITE_STORE_URL` is set
 
 ## Requirements
 
@@ -46,10 +54,10 @@ Copy `.env.example` to `.env`. Both values are optional:
 
 | Variable | What it does when set |
 |---|---|
-| `VITE_CHECKOUT_URL` | "Checkout" in the bag goes to this hosted checkout with `?items=id:qty,...` |
+| `VITE_STORE_URL` | The separate online store. Every "Buy online" link goes to `<store>/products/<id>`; empty shows "Online store coming soon" |
 | `VITE_CONTACT_ENDPOINT` | The contact form is posted to this URL as JSON |
 
-Without them, checkout and the contact form show friendly placeholder messages. Anything starting with `VITE_` is public, so never put secret keys there.
+Without them, the site says "Online store coming soon" and the contact form shows a friendly placeholder message. Anything starting with `VITE_` is public, so never put secret keys there.
 
 ## Project structure
 
@@ -60,7 +68,7 @@ src/
 ├── assets/        images and logo parts (imported by CSS/HTML, hashed at build)
 ├── components/    small shared UI (toast, design lightbox)
 ├── data/          content: products, product story cards, herbs, needs, lab, sections, pipeline stages
-├── features/      one folder per page feature (hero, product-story, products, pipeline, science, lab, finder, cart, contact, navigation)
+├── features/      one folder per page feature (hero, story = the home page's roots / day / ritual, products, pipeline, science, lab, footer, navigation)
 ├── lib/           GSAP setup, canvas artwork, 3D reflection environments
 ├── styles/        base/, components/, sections/, responsive.css, imported by main.css in cascade order
 └── utils/         dom, math/easing, formatting, media preferences
@@ -76,6 +84,7 @@ See `docs/architecture.md` for how the pieces talk to each other.
 
 - Products, prices and ingredients: `src/data/products.js`
 - Product story cards: `src/data/product-story.js` (same order as products)
+- Home page day story, botanicals and ritual filters: `src/data/day.js`
 - Product finder: `src/data/needs.js`
 - Science herbs: `src/data/herbs.js`
 - R&D board: `src/data/lab.js`
@@ -88,4 +97,4 @@ See `docs/architecture.md` for how the pieces talk to each other.
 - The logo lives in `src/assets/logo/`. To replace it, run `python scripts/cut-logo.py new-logo-on-white.png` (or drop in your own transparent WebP files with the same names) and rebuild.
 - Product images live in `src/assets/products/`. To update them after a design changes, put the five design files (`gummies.png`, `inhaler.png`, `rollon.png`, `reviva.png`, `liver.png`) in a folder and run `python scripts/make-product-assets.py path/to/folder`. Add `--shots-only` to skip the 3D label artwork. The crop boxes at the top of the script match the current designs.
 - Prices in `src/data/products.js` are placeholders until the client confirms them.
-- The contact form and checkout are front-end only until the environment variables above are set.
+- The contact form is front-end only until `VITE_CONTACT_ENDPOINT` is set. There is no shop on this site: buying happens on the separate online store (`VITE_STORE_URL`).

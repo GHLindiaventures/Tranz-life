@@ -42,7 +42,7 @@
       <ol class="menu-list" id="menuList">
         <li style="--i:0"><a href="index.html#home"><span class="mi-no">01</span><span class="mi-name">Home</span><span class="mi-sub">Nature meets science</span></a></li>
         <li style="--i:1"><a href="about.html"><span class="mi-no">02</span><span class="mi-name">About Us</span><span class="mi-sub">Our mission & innovation</span></a></li>
-        <li style="--i:2"><a href="products.html" class="active"><span class="mi-no">03</span><span class="mi-name">Our Products</span><span class="mi-sub">All five formulations</span></a></li>
+        <li style="--i:2"><a href="products.html" class="active"><span class="mi-no">03</span><span class="mi-name">Our Products</span><span class="mi-sub">All six formulations</span></a></li>
         <li style="--i:3"><a href="science.html"><span class="mi-no">04</span><span class="mi-name">Science & Innovation</span><span class="mi-sub">Molecular delivery & 3D lab</span></a></li>
         <li style="--i:4"><a href="ingredients.html"><span class="mi-no">05</span><span class="mi-name">Our Ingredients</span><span class="mi-sub">Botanical pharmacopeia</span></a></li>
         <li style="--i:5"><a href="quality.html"><span class="mi-no">06</span><span class="mi-name">Quality & Manufacturing</span><span class="mi-sub">Cleanrooms & batch audit</span></a></li>
@@ -92,32 +92,32 @@
         </button>
         <div class="nav-drop-menu" role="menu">
           <a href="products.html" class="nav-drop-item featured">
-            <strong>All Formulations (5)</strong>
-            <small>Browse Complete Catalog</small>
+            <strong>All six products</strong>
+            <small>Explore the range</small>
           </a>
           <div class="nav-drop-divider"></div>
           <a href="product-details.html?id=gummies" class="nav-drop-item">
-            <strong>PulmoClear™ Gummies</strong>
-            <small>Lung Booster &amp; Craving Control</small>
+            <strong>Lung Booster Gummies</strong>
+            <small>Respiratory Wellness</small>
           </a>
           <a href="product-details.html?id=inhaler" class="nav-drop-item">
-            <strong>Craving Control™ Inhaler</strong>
-            <small>Tobacco Cessation Aromatherapy</small>
+            <strong>Aroma Inhaler</strong>
+            <small>Aromatherapy &amp; Relaxation</small>
           </a>
           <a href="product-details.html?id=rollon" class="nav-drop-item">
-            <strong>CycleRelief™ Roll-On</strong>
-            <small>Menstrual Comfort &amp; Cramps</small>
+            <strong>CycleRelief Roll-On</strong>
+            <small>Menstrual Comfort</small>
           </a>
           <a href="product-details.html?id=reviva" class="nav-drop-item">
-            <strong>Reviva™ Roll-On</strong>
+            <strong>Reviva Roll-On</strong>
             <small>Botanical Massage Roll-On</small>
           </a>
           <a href="product-details.html?id=liver" class="nav-drop-item">
-            <strong>LiverDetox™ Concoction</strong>
-            <small>100% Ayurvedic Liver Booster</small>
+            <strong>Liver Booster</strong>
+            <small>100% Ayurvedic Liver Wellness</small>
           </a>
           <a href="product-details.html?id=energy" class="nav-drop-item">
-            <strong>Energy Booster™</strong>
+            <strong>Energy Booster</strong>
             <small>Energy &amp; Vitality Support</small>
           </a>
         </div>
@@ -169,13 +169,6 @@
           <line x1="4" y1="17" x2="20" y2="17"/>
         </svg>
       </button>
-      <button class="bag" id="bagBtn" aria-label="Open bag">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <path d="M5 8h14l-1.2 12H6.2z" />
-          <path d="M9 8V6a3 3 0 0 1 6 0v2" />
-        </svg>
-        <em id="bagCount">0</em>
-      </button>
       <a class="pill" href="products.html"><i aria-hidden="true">←</i><b>All products</b></a>
     </div>
   </header>
@@ -196,7 +189,7 @@
           </div>
           <div class="pdp-gallery-tabs">
             <button class="pdp-tab-btn on" data-view="studio" type="button">Studio Shot</button>
-            <button class="pdp-tab-btn" data-view="design" type="button">Design Blueprint</button>
+            <button class="pdp-tab-btn" data-view="design" type="button">Pack Design</button>
           </div>
           <div class="pdp-guarantee-pills">
             <span>
@@ -254,11 +247,11 @@
     <section class="pdp-cross-band">
       <div class="wrap">
         <div class="pdp-cross-head">
-          <p class="eyebrow drawn">Complete Your Routine</p>
+          <p class="eyebrow drawn">More from TranzLife</p>
           <h2 class="h2">Explore Other <em>Formulations</em></h2>
         </div>
         <div class="pdp-cross-grid" id="pdpCrossGrid">
-          <!-- Dynamically populated with the other 4 products -->
+          <!-- filled by product-details.js with the other products -->
         </div>
       </div>
     </section>
@@ -266,61 +259,28 @@
   </main>
 
   <!-- Global Footer -->
-  <footer>
-    <div class="wrap">
-      <div class="f-brand">
-        <span class="logo-em" aria-hidden="true"></span>
-        <span class="logo-word light" role="img" aria-label="TranzLife Biosciences"></span>
-        <p class="hand">Innovating life beyond limits</p>
+  <footer class="night-foot" id="siteFooter">
+    <!-- "After Dark": the last page of the day (features/footer/night-footer.js, sections/footer.css) -->
+    <div class="nf-sky" aria-hidden="true"><span class="nf-stars"></span><span class="nf-moon"></span><span class="nf-sun"></span></div>
+    <div class="wrap nf-in">
+      <div class="nf-top">
+        <a class="nf-brand" href="index.html" aria-label="TranzLife Biosciences home"><span class="logo-em" aria-hidden="true"></span><span class="logo-word light" aria-hidden="true"></span></a>
+        <button class="nf-dawn" type="button" id="nfDawn"><span>Back to dawn</span><i aria-hidden="true">↑</i></button>
       </div>
-      <p class="f-big">Live naturally.<span>Live healthier.</span></p>
-      <div class="f-row">
-        <div>
-          <a class="pill" href="products.html"><i aria-hidden="true">↗</i><b>Shop all products</b></a>
-        </div>
-        <div class="f-col">
-          <h4>Shop</h4>
-          <a href="products.html">All products</a>
-          <a href="products.html#finder">Product finder</a>
-          <a href="products.html#story">Product story</a>
-        </div>
-        <div class="f-col">
-          <h4>Company</h4>
-          <a href="about.html">About TranzLife</a>
-          <a href="index.html#insider">Our vision</a>
-          <a href="science.html#process">Pipeline</a>
-          <a href="science.html">Science</a>
-        </div>
-        <div class="f-col">
-          <h4>Help</h4>
-          <a href="contact.html">Contact</a>
-          <a href="contact.html">Retail partners</a>
-          <a href="contact.html">Corporate gifting</a>
-        </div>
+      <nav class="nf-links" aria-label="Footer"><a href="products.html"><span>Products</span></a><a href="science.html"><span>Science</span></a><a href="ingredients.html"><span>Ingredients</span></a><a href="about.html"><span>About</span></a><a href="quality.html"><span>Quality</span></a><a href="certifications.html"><span>Certifications</span></a><a href="sustainability.html"><span>Sustainability</span></a><a href="contact.html"><span>Contact</span></a></nav>
+      <div class="nf-meta">
+        <p class="nf-where">Egmore, Chennai, Tamil Nadu, India</p>
+        <a class="nf-mail" href="mailto:care@tranzlife.in">care@tranzlife.in</a>
+        <span class="nf-store" id="nfStore">Online store · coming soon</span>
       </div>
-      <div class="f-bot">
-        <p>
-          TranzLife products are plant-based wellness products and are not intended to diagnose, treat, cure or prevent any disease. *Supports healthy liver function as part of a balanced lifestyle. Consult your doctor before use if you are pregnant, nursing, managing diabetes or taking medication.
-        </p>
-        <span>© 2026 TranzLife Biosciences</span>
+      <div class="nf-legal">
+        <p class="nf-disc">TranzLife products are plant-based wellness products and are not intended to diagnose, treat, cure or prevent any disease. Consult your doctor before use if you are pregnant, nursing, managing a health condition or taking medication.</p>
+        <p class="nf-fine"><span>© 2026 TranzLife Biosciences</span><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a></p>
       </div>
     </div>
+    <p class="nf-word" aria-hidden="true"><span>T</span><span>R</span><span>A</span><span>N</span><span>Z</span><span>L</span><span>I</span><span>F</span><span>E</span></p>
   </footer>
 
-  <!-- Shopping Bag Drawer -->
-  <div class="scrim" id="scrim"></div>
-  <aside class="drawer" id="drawer" aria-label="Your bag" aria-hidden="true">
-    <div class="d-head">
-      <h3>Your bag</h3>
-      <button class="x" id="closeBag" aria-label="Close bag">×</button>
-    </div>
-    <div class="d-list" id="dList"></div>
-    <div class="d-foot">
-      <div class="d-total"><span>Subtotal</span><b id="dTotal">₹0</b></div>
-      <button class="btn-cream" id="checkout">Checkout <i aria-hidden="true">→</i></button>
-      <p class="d-note">Free delivery on orders over ₹999. Taxes calculated at checkout.</p>
-    </div>
-  </aside>
   <div class="toast" id="toast" role="status"></div>
 
   <script type="module" src="/src/product-details.js"></script>

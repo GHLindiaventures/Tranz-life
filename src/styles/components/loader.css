@@ -10,10 +10,6 @@
 .loader-tag{font-family:var(--f-hand);font-size:24px;color:var(--forest);animation:lfade 1s .6s var(--ease) both}
 @keyframes lgrow{from{transform:scale(.6) translateY(20px);opacity:0}to{transform:none;opacity:1}}
 @keyframes lfade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
-.loader-bar{width:150px;height:3px;border-radius:3px;background:rgba(31,70,35,.15);position:relative;overflow:hidden}
-.loader-bar i{position:absolute;inset:0;background:var(--forest);transform-origin:left;transform:scaleX(0);transition:transform .3s}
-.loader-pct{position:fixed;right:28px;bottom:24px;font-weight:700;font-stretch:80%;font-size:13px;letter-spacing:.14em;color:var(--forest);display:flex;align-items:center;gap:10px}
-.loader-pct::before{content:"";width:14px;height:14px;border-radius:50%;border:2px solid var(--forest);border-right-color:transparent;animation:spin .8s linear infinite}
 .loader.done{opacity:0;visibility:hidden}
 /* already seen in this tab: no loading screen (the hero still plays its entrance) */
 .intro-seen .loader{display:none}

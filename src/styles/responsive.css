@@ -8,7 +8,6 @@
   .nav{padding:10px max(18px,env(safe-area-inset-right,0px)) 10px max(18px,env(safe-area-inset-left,0px))}
   .brand{padding:4px 12px 4px 9px}
   .brand .logo-em{height:34px}.brand .logo-word{height:20px}
-  .mq-track span{font-size:clamp(70px,18vw,120px)}
   .sci,.finder-grid,.contact-card,.lab-head{grid-template-columns:minmax(0,1fr)}
   .seq{height:760vh}
   .sc{left:16px;right:16px;width:auto;padding:46px 22px 24px}
@@ -26,8 +25,6 @@
   .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
   .pc,.pc:nth-child(4),.pc:nth-child(5){grid-column:span 1}
   .pc:nth-child(1){grid-column:1/-1}
-  .f-row{grid-template-columns:repeat(3,minmax(0,1fr))}
-  .f-row>div:first-child{grid-column:1/-1}
   .process{height:720vh}
   .slide-copy{left:max(56px,env(safe-area-inset-left,0px));right:max(20px,env(safe-area-inset-right,0px));width:auto;top:auto;bottom:38px;justify-content:flex-end}
   .st-no{margin-top:0;font-size:12px}.st-no b{font-size:2.4rem}
@@ -53,7 +50,6 @@
   .match{grid-template-columns:minmax(0,1fr)}
   form{grid-template-columns:minmax(0,1fr)}
   .herb-facts{grid-template-columns:minmax(0,1fr)}
-  .f-row{grid-template-columns:repeat(2,minmax(0,1fr))}
   .nav-act .pill{display:none}
 }
 @media (prefers-reduced-motion:reduce){

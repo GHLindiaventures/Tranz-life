@@ -5,7 +5,7 @@
 .ben-copy{padding:clamp(20px,3vw,44px) clamp(10px,2vw,30px) clamp(20px,3vw,40px) 0}
 .ben-copy .h2{font-size:clamp(2.6rem,5vw,4.4rem)}
 .tbl{margin-top:30px;width:100%;border-collapse:separate;border-spacing:0 6px;font-size:15px}
-.tbl th{font-weight:700;font-stretch:85%;font-size:13px;text-align:left;color:var(--sage);padding:0 10px 10px;border-bottom:2px solid var(--line)}
+.tbl th{font-weight:700;font-stretch:85%;font-size:13px;text-align:left;color:var(--sage-ink);padding:0 10px 10px;border-bottom:2px solid var(--line)}
 .tbl th:nth-child(n+2),.tbl td:nth-child(n+2){text-align:center;width:120px}
 .tbl td{padding:12px 10px;border-bottom:1px solid var(--line);font-weight:600}
 .tbl .ok{display:inline-grid;place-items:center;width:64px;height:32px;border-radius:9px;background:var(--ground);color:var(--forest);font-weight:800}

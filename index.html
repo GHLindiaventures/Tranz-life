@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>TranzLife Biosciences</title>
   <meta name="description"
-    content="TranzLife Biosciences: nature meets science. Plant-based gummies, a calming inhaler, soothing roll-ons and a liver tonic.">
+    content="TranzLife Biosciences: nature meets science. Six plant-based products: Lung Booster Gummies, the Aroma Inhaler, CycleRelief and Reviva roll-ons, Liver Booster and Energy Booster.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -44,9 +44,15 @@
       <span class="logo-em" role="img" aria-label="TranzLife Biosciences"></span>
       <span class="logo-word" aria-hidden="true"></span>
       <p class="loader-tag">Innovating life beyond limits</p>
-      <div class="loader-bar"><i id="loadBar"></i></div>
+      <!-- the banyan's roots draw in as the page loads (loader.js sets --lp) -->
+      <svg class="loader-roots" viewBox="0 0 240 70" aria-hidden="true">
+        <path pathLength="1" d="M120 2C120 20 118 34 104 46S70 60 46 66"/>
+        <path pathLength="1" d="M120 2C121 22 124 36 138 47S172 60 196 66"/>
+        <path pathLength="1" d="M120 2C119 26 112 44 92 56S60 66 34 69"/>
+        <path pathLength="1" d="M120 2C121 26 128 44 148 56S182 66 208 69"/>
+        <path pathLength="1" d="M120 2V68"/>
+      </svg>
     </div>
-    <div class="loader-pct" id="loadPct">GROWING 0%</div>
   </div>
 
   <nav class="dock" id="dock" aria-label="Sections">
@@ -79,7 +85,7 @@
       <ol class="menu-list" id="menuList">
         <li style="--i:0"><a href="index.html#home"><span class="mi-no">01</span><span class="mi-name">Home</span><span class="mi-sub">Nature meets science</span></a></li>
         <li style="--i:1"><a href="about.html"><span class="mi-no">02</span><span class="mi-name">About Us</span><span class="mi-sub">Our mission & innovation</span></a></li>
-        <li style="--i:2"><a href="products.html"><span class="mi-no">03</span><span class="mi-name">Our Products</span><span class="mi-sub">All five formulations</span></a></li>
+        <li style="--i:2"><a href="products.html"><span class="mi-no">03</span><span class="mi-name">Our Products</span><span class="mi-sub">All six formulations</span></a></li>
         <li style="--i:3"><a href="science.html"><span class="mi-no">04</span><span class="mi-name">Science & Innovation</span><span class="mi-sub">Molecular delivery & 3D lab</span></a></li>
         <li style="--i:4"><a href="ingredients.html"><span class="mi-no">05</span><span class="mi-name">Our Ingredients</span><span class="mi-sub">Botanical pharmacopeia</span></a></li>
         <li style="--i:5"><a href="quality.html"><span class="mi-no">06</span><span class="mi-name">Quality & Manufacturing</span><span class="mi-sub">Cleanrooms & batch audit</span></a></li>
@@ -93,8 +99,8 @@
           <div class="mf-row">
             <div>
               <p class="k" id="mfNo">Featured product</p>
-              <h3 id="mfName">Calm Inhaler</h3>
-            </div><button class="add pill" id="mfAdd" data-id="inhaler"><i aria-hidden="true">+</i>Add to bag</button>
+              <h3 id="mfName">TranzLife Aromatherapy Inhaler</h3>
+            </div><a class="pill" id="mfAdd" href="product-details.html?id=inhaler"><i aria-hidden="true">↗</i>View product</a>
           </div>
         </div>
         <div class="menu-note">
@@ -134,32 +140,32 @@
         </button>
         <div class="nav-drop-menu" role="menu">
           <a href="products.html" class="nav-drop-item featured">
-            <strong>All Formulations (5)</strong>
-            <small>Browse Complete Catalog</small>
+            <strong>All six products</strong>
+            <small>Explore the range</small>
           </a>
           <div class="nav-drop-divider"></div>
           <a href="product-details.html?id=gummies" class="nav-drop-item">
-            <strong>PulmoClear™ Gummies</strong>
-            <small>Lung Booster &amp; Craving Control</small>
+            <strong>Lung Booster Gummies</strong>
+            <small>Respiratory Wellness</small>
           </a>
           <a href="product-details.html?id=inhaler" class="nav-drop-item">
-            <strong>Craving Control™ Inhaler</strong>
-            <small>Tobacco Cessation Aromatherapy</small>
+            <strong>Aroma Inhaler</strong>
+            <small>Aromatherapy &amp; Relaxation</small>
           </a>
           <a href="product-details.html?id=rollon" class="nav-drop-item">
-            <strong>CycleRelief™ Roll-On</strong>
-            <small>Menstrual Comfort &amp; Cramps</small>
+            <strong>CycleRelief Roll-On</strong>
+            <small>Menstrual Comfort</small>
           </a>
           <a href="product-details.html?id=reviva" class="nav-drop-item">
-            <strong>Reviva™ Roll-On</strong>
+            <strong>Reviva Roll-On</strong>
             <small>Botanical Massage Roll-On</small>
           </a>
           <a href="product-details.html?id=liver" class="nav-drop-item">
-            <strong>LiverDetox™ Concoction</strong>
-            <small>100% Ayurvedic Liver Booster</small>
+            <strong>Liver Booster</strong>
+            <small>100% Ayurvedic Liver Wellness</small>
           </a>
           <a href="product-details.html?id=energy" class="nav-drop-item">
-            <strong>Energy Booster™</strong>
+            <strong>Energy Booster</strong>
             <small>Energy &amp; Vitality Support</small>
           </a>
         </div>
@@ -204,12 +210,7 @@
       </div>
     </nav>
     <div class="nav-act">
-      <button class="bag" id="bagBtn" aria-label="Open bag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
-          stroke-width="1.8">
-          <path d="M5 8h14l-1.2 12H6.2z" />
-          <path d="M9 8V6a3 3 0 0 1 6 0v2" />
-        </svg><em id="bagCount">0</em></button>
-      <a class="pill" href="products.html"><i aria-hidden="true">↗</i><b>Shop all</b></a>
+      <a class="pill" href="products.html"><i aria-hidden="true">↗</i><b>Our products</b></a>
     </div>
   </header>
 
@@ -248,381 +249,117 @@
       <canvas id="heroCanvas" aria-hidden="true"></canvas>
       <div class="st-shadow" aria-hidden="true"></div>
 
-      <!-- Floating Stats Badges in 3D Depth Space -->
-      <div class="facts" aria-label="TranzLife in numbers">
-        <div class="fact" style="--a:28deg;--am:62deg"><b>5</b><span>plant-based products</span></div>
-        <div class="fact" style="--a:46deg;--am:90deg"><b>4</b><span>everyday formats</span></div>
-        <div class="fact" style="--a:64deg;--am:118deg"><b>6</b><span>stage testing</span></div>
+      <!-- what TranzLife makes, and where to go next -->
+      <div class="hero__offer">
+        <p class="hero__lede">Plant-based wellness for breath, calm, comfort and everyday vitality. Six products rooted in Ayurveda, made with modern science.</p>
+        <div class="hero__ctas">
+          <a class="btn-amber" href="products.html">Explore our products <i aria-hidden="true">→</i></a>
+          <a class="btn-ghost" href="#ritual">Find your ritual <i aria-hidden="true">↓</i></a>
+        </div>
       </div>
-
-      <div class="mq" aria-hidden="true">
-        <div class="mq-track" id="mq"></div>
-      </div>
+      <p class="hero__facts"><b>6</b> plant-based products <i aria-hidden="true"></i> <b>4</b> everyday formats <i aria-hidden="true"></i> Made in India</p>
+      <a class="hero__cue" href="#roots" aria-label="Scroll to our story"><span aria-hidden="true"></span></a>
     </section>
 
-    <section class="page lineup" id="lineup" data-theme="cream">
-      <div class="lineup-wrap">
-        <div class="lineup-grid" id="lineupGrid">
-          <div class="lineup-item" data-product="gummies">
-            <div class="lineup-slot" data-slot="gummies">
-              <div class="lineup-shadow" aria-hidden="true"></div>
-            </div>
-            <span class="lineup-name">Gummies</span>
-          </div>
-          <div class="lineup-item" data-product="inhaler">
-            <div class="lineup-slot" data-slot="inhaler">
-              <div class="lineup-shadow" aria-hidden="true"></div>
-            </div>
-            <span class="lineup-name">Calm Inhaler</span>
-          </div>
-          <div class="lineup-item" data-product="rollon">
-            <div class="lineup-slot" data-slot="rollon">
-              <div class="lineup-shadow" aria-hidden="true"></div>
-            </div>
-            <span class="lineup-name">Calm Roll-On</span>
-          </div>
-          <div class="lineup-item" data-product="reviva">
-            <div class="lineup-slot" data-slot="reviva">
-              <div class="lineup-shadow" aria-hidden="true"></div>
-            </div>
-            <span class="lineup-name">Reviva</span>
-          </div>
-          <div class="lineup-item" data-product="liver">
-            <div class="lineup-slot" data-slot="liver">
-              <div class="lineup-shadow" aria-hidden="true"></div>
-            </div>
-            <span class="lineup-name">Liver Booster</span>
-          </div>
+    <!-- ROOTS TO HELIX: the hero product sinks into the stone; its roots grow down and twist into a DNA helix,
+         which unwinds into the golden thread of the day below (features/story/roots-helix.js) -->
+    <section class="page roots" id="roots" data-theme="green">
+      <div class="roots-pin" id="rootsPin">
+        <canvas class="roots-canvas" id="rootsCanvas" aria-hidden="true"></canvas>
+        <span class="roots-logo logo-em" id="rootsLogo" aria-hidden="true"></span>
+        <div class="roots-copy">
+          <p class="roots-kicker" id="rootsKicker">Our roots</p>
+          <h2 class="roots-line" id="rootsLine" aria-label="From the roots of nature to the infinity of science.">
+            <span class="rl-row"><span class="rl-w">From</span> <span class="rl-w">the</span> <span class="rl-w rl-em">roots</span> <span class="rl-w">of</span> <span class="rl-w rl-em">nature</span></span>
+            <span class="rl-row"><span class="rl-w">to</span> <span class="rl-w">the</span> <span class="rl-w rl-em">infinity</span> <span class="rl-w">of</span> <span class="rl-w rl-em">science.</span></span>
+          </h2>
+          <p class="roots-sub" id="rootsSub">Classical Ayurvedic botanicals, studied with modern science and made for the way you live today.</p>
         </div>
       </div>
     </section>
 
-    <section class="page insider" id="insider" data-theme="cream">
-      <!-- Subtle Nature & Science Animated Canvas (Flowing root tendrils, energy waves & floating bio-motes) -->
-      <canvas class="in-motion-canvas" id="inMotionCanvas" aria-hidden="true"></canvas>
-
-      <!-- Ambient Bioluminescent & Botanical Halo Orbs -->
-      <div class="in-glow in-glow-roots" aria-hidden="true"></div>
-      <div class="in-glow in-glow-science" aria-hidden="true"></div>
-      <div class="in-glow in-glow-future" aria-hidden="true"></div>
-
-      <!-- Organic Botanical & Scientific Constellation SVG Accents -->
-      <div class="in-decor-layer" aria-hidden="true">
-        <svg class="in-decor-svg" viewBox="0 0 1440 800" preserveAspectRatio="none">
-          <path class="in-wave-line in-wave-1" d="M-60 620 C 220 540, 480 660, 720 580 S 1180 520, 1500 600" />
-          <path class="in-wave-line in-wave-2" d="M-40 680 C 260 600, 520 720, 760 640 S 1220 580, 1480 670" />
-          <path class="in-wave-line in-wave-3" d="M-80 320 C 300 240, 560 380, 800 290 S 1260 220, 1520 310" />
-          <circle class="in-orbit-circle in-oc-1" cx="240" cy="400" r="180" />
-          <circle class="in-orbit-circle in-oc-2" cx="1200" cy="380" r="220" />
-        </svg>
-      </div>
-
-      <div class="in-hero-wrap">
-        <!-- Brand Creed Eyebrow Badge -->
-        <div class="in-tagline-badge" aria-label="Official TranzLife Vision">
-          <span class="itb-icon" aria-hidden="true">
-            <svg viewBox="0 0 20 20" class="itb-leaf">
-              <path d="M10 2C6 6 4 11 6 15c2 4 7 4 9 2 2-2 1-7-3-9-2-1-2-6-2-6z" fill="currentColor" />
+    <!-- A DAY WITH TRANZLIFE: one moment per product, morning to night; each product's botanicals flow into it
+         (features/story/day-story.js, content: data/day.js). Phones and reduced motion get the stacked cards. -->
+    <section class="page day" id="day" data-theme="cream">
+      <div class="day-pin" id="dayPin">
+        <div class="day-sky" id="daySky" aria-hidden="true"></div>
+        <div class="day-head">
+          <p class="day-kicker">A day with TranzLife</p>
+          <div class="day-clock" aria-hidden="true">
+            <svg class="day-arc" viewBox="0 0 1000 60">
+              <path class="day-arc-track" d="M10 56C260 -4 740 -4 990 56"/>
+              <path class="day-arc-fill" id="dayArcFill" d="M10 56C260 -4 740 -4 990 56"/>
             </svg>
-          </span>
-          <span class="itb-text">Official TranzLife Creed</span>
-          <span class="itb-sep" aria-hidden="true">·</span>
-          <span class="itb-sub">Our Identity &amp; Vision</span>
-          <span class="itb-spark" aria-hidden="true">✦</span>
-        </div>
-
-        <!-- The Monumental Official Tagline -->
-        <h2 class="in-tagline-hero"
-          aria-label="From the roots of nature to the infinity of science, TranzLife is shaping the future of Life.">
-          <!-- Line 1: From the roots of nature -->
-          <span class="it-line it-line-1">
-            <span class="it-plain">From the </span>
-            <span class="it-word it-roots">
-              <span class="it-roots-text">roots</span>
-              <svg class="it-rootlet-svg" viewBox="0 0 70 20" aria-hidden="true">
-                <path d="M2 4 C 18 16, 38 4, 54 13 S 68 8, 68 8" fill="none" stroke="currentColor" stroke-width="2"
-                  stroke-linecap="round" />
-                <path d="M26 12 C 32 18, 42 16, 46 19" fill="none" stroke="currentColor" stroke-width="1.4"
-                  stroke-linecap="round" />
-              </svg>
-            </span>
-            <span class="it-plain"> of </span>
-            <span class="it-highlight it-nature">
-              <span class="it-nature-icon" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                  stroke-linejoin="round">
-                  <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z" />
-                  <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12" />
-                </svg>
-              </span>
-              <em class="it-nature-text">NATURE</em>
-            </span>
-          </span>
-
-          <!-- Line 2: to the infinity of science, -->
-          <span class="it-line it-line-2">
-            <span class="it-plain">to the </span>
-            <span class="it-word it-infinity">
-              <span class="it-inf-glyph" aria-hidden="true">
-                <svg viewBox="0 0 38 18" class="it-inf-svg">
-                  <path class="it-inf-track"
-                    d="M10 2 A 7 7 0 0 0 3 9 A 7 7 0 0 0 10 16 C 14.5 16 16.8 11.5 19 9 C 21.2 6.5 23.5 2 28 2 A 7 7 0 0 1 35 9 A 7 7 0 0 1 28 16 C 23.5 16 21.2 11.5 19 9 C 16.8 6.5 14.5 2 10 2 Z" />
-                  <path class="it-inf-draw"
-                    d="M10 2 A 7 7 0 0 0 3 9 A 7 7 0 0 0 10 16 C 14.5 16 16.8 11.5 19 9 C 21.2 6.5 23.5 2 28 2 A 7 7 0 0 1 35 9 A 7 7 0 0 1 28 16 C 23.5 16 21.2 11.5 19 9 C 16.8 6.5 14.5 2 10 2 Z" />
-                </svg>
-              </span>
-              <span class="it-inf-text">infinity</span>
-            </span>
-            <span class="it-plain"> of </span>
-            <span class="it-highlight it-science">
-              <span class="it-sci-spark" aria-hidden="true">✦</span>
-              <span class="it-science-text">science<span class="it-comma">,</span></span>
-              <span class="it-sci-ring" aria-hidden="true"></span>
-            </span>
-          </span>
-
-          <!-- Line 3: TranzLife is shaping the -->
-          <span class="it-line it-line-3">
-            <span class="it-brand">
-              <span class="it-brand-logo" aria-hidden="true"></span>
-              <strong class="it-brand-name">TranzLife</strong>
-            </span>
-            <span class="it-plain">&nbsp;is shaping the</span>
-          </span>
-
-          <!-- Line 4: future of Life. -->
-          <span class="it-line it-line-4">
-            <span class="it-highlight it-future-life">
-              <span class="it-fl-text">future of Life<span class="it-fl-period">.</span></span>
-              <span class="it-fl-halo" aria-hidden="true"></span>
-            </span>
-          </span>
-        </h2>
-
-        <!-- Philosophical Creed Seal & Values Anchor -->
-        <div class="in-creed-footer">
-          <div class="icf-line-wrap" aria-hidden="true">
-            <span class="icf-line"></span>
-            <span class="icf-gem">◆</span>
-            <span class="icf-line"></span>
+            <span class="day-sun" id="daySun"></span>
           </div>
-          <div class="icf-pillars">
-            <div class="icf-pillar">
-              <span class="icfp-dot"></span>
-              <span class="icfp-t">100% Ayurvedic Roots</span>
-            </div>
-            <span class="icf-divider" aria-hidden="true">·</span>
-            <div class="icf-pillar">
-              <span class="icfp-dot"></span>
-              <span class="icfp-t">Bio-Active Molecular Science</span>
-            </div>
-            <span class="icf-divider" aria-hidden="true">·</span>
-            <div class="icf-pillar">
-              <span class="icfp-dot"></span>
-              <span class="icfp-t">Clinical Innovation</span>
-            </div>
-          </div>
-          <p class="icf-motto">Rooted in Nature · Perfected by Science · Shaping Everyday Longevity</p>
+          <ol class="day-dots" id="dayDots" aria-label="Moments of the day"></ol>
         </div>
-      </div>
-    </section>
-
-    <section class="page story" id="nature" data-theme="cream">
-      <!-- Scroll-Driven Botanical Video Animation & Living Ayurveda Frame -->
-      <div class="ayur-seq" id="ayurSeq">
-        <div class="ayur-pin" id="ayurPin">
-          <div class="ayur-viewport">
-            <div class="ayur-frame-box">
-              <canvas id="ayurCanvas" width="1280" height="720" class="ayur-canvas"
-                aria-label="Meditating botanical woman transforms into an intertwined living botanical border"></canvas>
-
-              <!-- Left-Side Overlay: Power of NATURE In Every Products (100% visible initially, fades out on scroll) -->
-              <div class="ayur-power-overlay" id="ayurPower" aria-label="Power of NATURE in Every Products">
-                <img src="./images/power-of-nature.webp" alt="Power of Nature In Every Products" class="apo-art"
-                  width="1020" height="720">
-              </div>
-
-              <div class="ayur-content" id="ayurContent" aria-live="polite">
-                <div class="ayur-pill">
-                  <svg viewBox="0 0 20 20" class="ayur-leaf-ic" aria-hidden="true">
-                    <path d="M10 2C6 6 4 11 6 15c2 4 7 4 9 2 2-2 1-7-3-9-2-1-2-6-2-6z" fill="currentColor" />
-                  </svg>
-                  <span>Ayurvedic Wisdom</span>
-                </div>
-
-                <h3 class="ayur-quote">
-                  <span class="aq-quote-mark" aria-hidden="true">“</span>Health in Ayurveda means the body is <strong
-                    class="aq-accent">free of toxins</strong>; the mind is <strong class="aq-accent">at peace</strong>,
-                  the emotions are <strong class="aq-accent">calm &amp; happy</strong>, wastes are <strong
-                    class="aq-accent">efficiently eliminated</strong>, the organs <strong class="aq-accent">function
-                    normally</strong> and the immune system is <strong class="aq-accent">strong</strong>.<span
-                    class="aq-quote-mark" aria-hidden="true">”</span>
-                </h3>
-
-                <div class="ayur-sign">
-                  <div class="ayur-sign-line" aria-hidden="true"></div>
-                  <div class="ayur-sign-meta">
-                    <span class="ayur-brand">TranzLife Biosciences</span>
-                    <span class="ayur-tag">Rooted in Nature · Perfected by Science</span>
-                  </div>
-                  <div class="ayur-sign-line" aria-hidden="true"></div>
-                </div>
-              </div>
-            </div>
-
-            <div class="ayur-hint" id="ayurHint" aria-hidden="true">
-              <div class="ah-mouse">
-                <span class="ah-wheel"></span>
-              </div>
-              <span class="ah-text">Scroll to transform</span>
-            </div>
+        <div class="day-grid">
+          <div class="day-copy" id="dayCopy" aria-live="polite"></div>
+          <div class="day-stage" id="dayStage">
+            <canvas class="day-flow" id="dayFlow" aria-hidden="true"></canvas>
+            <canvas class="day-product" id="dayProduct" aria-hidden="true"></canvas>
+            <div class="day-chips" id="dayChips"></div>
+            <div class="day-lens" id="dayLens" role="status" aria-live="polite"></div>
           </div>
         </div>
       </div>
+      <ol class="day-cards" id="dayCards"></ol>
     </section>
 
-    <section class="page explore" id="explore" data-theme="cream">
-      <div class="band">
-        <div class="wrap">
-          <div class="ex-head">
-            <div>
-              <p class="eyebrow reveal">Explore TranzLife</p>
-              <h2 class="h2 rv-words">Rooted in nature. <span class="lt">Built on science.</span></h2>
-            </div>
-            <p class="sub reveal">Five plant-based formulations, a research pipeline grown in Chennai and manufacturing held to
-              pharmaceutical standards. Start wherever you're curious.</p>
-          </div>
-          <div class="ex-grid">
-            <a class="ex-card reveal" href="about.html">
-              <span class="ex-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg></span>
-              <span class="ex-k">01 · Company</span>
-              <h3>About Us</h3>
-              <p>Our vision, our Ayurvedic roots and the team shaping the future of life.</p>
-              <span class="ex-go">Our story <i aria-hidden="true">→</i></span>
-            </a>
-            <a class="ex-card reveal" href="products.html">
-              <span class="ex-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="9" width="10" height="12" rx="2.5"/><path d="M8 4.5h8V9H8z"/><path d="M10 14h4"/></svg></span>
-              <span class="ex-k">02 · Products</span>
-              <h3>Our Products</h3>
-              <p>All five formulations, the product finder and what sets them apart.</p>
-              <span class="ex-go">Shop &amp; compare <i aria-hidden="true">→</i></span>
-            </a>
-            <a class="ex-card reveal" href="science.html">
-              <span class="ex-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3c0 5 8 5 8 9s-8 4-8 9"/><path d="M16 3c0 5-8 5-8 9s8 4 8 9"/><path d="M9.5 6.5h5M9.5 17.5h5"/></svg></span>
-              <span class="ex-k">03 · Science</span>
-              <h3>Science &amp; R&amp;D</h3>
-              <p>The seed-to-shelf pipeline, our 3D compound lab and what's growing in R&amp;D.</p>
-              <span class="ex-go">Inside the lab <i aria-hidden="true">→</i></span>
-            </a>
-            <a class="ex-card reveal" href="ingredients.html">
-              <span class="ex-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg></span>
-              <span class="ex-k">04 · Ingredients</span>
-              <h3>Our Ingredients</h3>
-              <p>The verified botanical actives behind every formulation.</p>
-              <span class="ex-go">Botanical library <i aria-hidden="true">→</i></span>
-            </a>
-            <a class="ex-card reveal" href="quality.html">
-              <span class="ex-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M8.5 12.3l2.4 2.4 4.6-5"/></svg></span>
-              <span class="ex-k">05 · Standards</span>
-              <h3>Quality &amp; Compliance</h3>
-              <p>Cleanroom manufacturing, batch certificates and our accreditations.</p>
-              <span class="ex-go">Our standards <i aria-hidden="true">→</i></span>
-            </a>
-            <a class="ex-card reveal" href="contact.html">
-              <span class="ex-ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/><path d="M8 10h8"/></svg></span>
-              <span class="ex-k">06 · Contact</span>
-              <h3>Contact Us</h3>
-              <p>Product questions, retail partnerships and corporate wellness.</p>
-              <span class="ex-go">Say hello <i aria-hidden="true">→</i></span>
-            </a>
+    <!-- YOUR RITUAL: all six products at night, filtered by what your day needs (features/story/ritual-lineup.js) -->
+    <section class="page ritual t-green" id="ritual" data-theme="green">
+      <div class="wrap ritual-wrap">
+        <div class="ritual-head">
+          <p class="eyebrow">Your ritual</p>
+          <h2 class="ritual-title">Six products. <span>One daily ritual.</span></h2>
+          <div class="ritual-needs" id="ritualNeeds" role="group" aria-label="What does your day need?">
+            <span class="rn-q">What does your day need?</span>
           </div>
         </div>
+        <ul class="ritual-grid" id="ritualGrid"></ul>
       </div>
     </section>
-      <!-- ======================================================================
-         GOVERNMENT & REGULATORY ACCREDITATIONS TRUST STRIP
-         ====================================================================== -->
-    <section class="band" id="gov-trust" style="padding: 40px 0 60px; background: rgba(22, 48, 26, 0.03);">
-      <div class="wrap">
-        <div style="text-align: center; margin-bottom: 24px;">
-          <p class="eyebrow drawn" style="color: var(--forest); margin-bottom: 6px;">Government Recognized &amp; Certified</p>
-          <h3 style="font-size: clamp(1.4rem, 2.8vw, 1.9rem); color: var(--forest); font-weight: 750;">
-            Institutional Accreditations &amp; Manufacturing Rigor
-          </h3>
-        </div>
-        <div style="padding: 28px 32px; background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(20px); border: 1px solid rgba(231, 198, 128, 0.4); border-radius: 24px; box-shadow: 0 12px 32px rgba(20, 52, 26, 0.06); display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 24px; align-items: center; justify-items: center; text-align: center;">
-          <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
-            <img src="/assets/badges/fssai.png" alt="FSSAI" style="height: 44px; max-width: 120px; object-fit: contain;">
-            <span style="font-size: 11.5px; color: var(--muted); font-weight: 600;">Nutraceutical Safety</span>
-          </div>
-          <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
-            <img src="/assets/badges/make-in-india.png" alt="Make in India" style="height: 44px; max-width: 120px; object-fit: contain;">
-            <span style="font-size: 11.5px; color: var(--muted); font-weight: 600;">100% Indigenous</span>
-          </div>
-          <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
-            <img src="/assets/badges/dpiit-startup-india.png" alt="DPIIT #startupindia" style="height: 44px; max-width: 120px; object-fit: contain;">
-            <span style="font-size: 11.5px; color: var(--muted); font-weight: 600;">DPIIT Recognized</span>
-          </div>
-          <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
-            <img src="/assets/badges/msme.png" alt="MSME Government of India" style="height: 44px; max-width: 120px; object-fit: contain;">
-            <span style="font-size: 11.5px; color: var(--muted); font-weight: 600;">Registered Biotech</span>
-          </div>
-          <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
-            <img src="/assets/badges/gem-gov.png" alt="GeM Government e Marketplace" style="height: 44px; max-width: 120px; object-fit: contain;">
-            <span style="font-size: 11.5px; color: var(--muted); font-weight: 600;">GeM Govt. Verified</span>
-          </div>
-          <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
-            <img src="/assets/badges/ayush.png" alt="Ministry of AYUSH - Government of India" style="height: 44px; max-width: 140px; object-fit: contain;">
-            <span style="font-size: 11.5px; color: var(--muted); font-weight: 600;">AYUSH: TN/AYU/24/1234</span>
-          </div>
-        </div>
+
+    <!-- PROOF: government recognition and certifications (the links to the rest of the site are in the footer) -->
+    <section class="page proof t-green" id="proof" data-theme="green">
+      <div class="wrap proof-wrap">
+        <p class="eyebrow">Recognised &amp; certified</p>
+        <h2 class="proof-title">Made in India. <span>Recognised and certified.</span></h2>
+        <ul class="proof-badges">
+          <li><img src="/assets/badges/fssai.png" alt="FSSAI" loading="lazy"><span>Nutraceutical safety</span></li>
+          <li><img src="/assets/badges/ayush.png" alt="Ministry of AYUSH, Government of India" loading="lazy"><span>AYUSH licensed</span></li>
+          <li><img src="/assets/badges/make-in-india.png" alt="Make in India" loading="lazy"><span>100% indigenous</span></li>
+          <li><img src="/assets/badges/dpiit-startup-india.png" alt="DPIIT Startup India" loading="lazy"><span>DPIIT recognised</span></li>
+          <li><img src="/assets/badges/msme.png" alt="MSME, Government of India" loading="lazy"><span>MSME registered</span></li>
+          <li><img src="/assets/badges/gem-gov.png" alt="GeM Government e-Marketplace" loading="lazy"><span>GeM registered</span></li>
+        </ul>
       </div>
     </section>
   </main>
 
-  <footer>
-    <div class="wrap">
-      <div class="f-brand"><span class="logo-em" aria-hidden="true"></span><span class="logo-word light" role="img"
-          aria-label="TranzLife Biosciences"></span>
-        <p class="hand">Innovating life beyond limits</p>
+  <footer class="night-foot" id="siteFooter">
+    <!-- "After Dark": the last page of the day (features/footer/night-footer.js, sections/footer.css) -->
+    <div class="nf-sky" aria-hidden="true"><span class="nf-stars"></span><span class="nf-moon"></span><span class="nf-sun"></span></div>
+    <div class="wrap nf-in">
+      <div class="nf-top">
+        <a class="nf-brand" href="index.html" aria-label="TranzLife Biosciences home"><span class="logo-em" aria-hidden="true"></span><span class="logo-word light" aria-hidden="true"></span></a>
+        <button class="nf-dawn" type="button" id="nfDawn"><span>Back to dawn</span><i aria-hidden="true">↑</i></button>
       </div>
-      <p class="f-big">Live naturally.<span>Live healthier.</span></p>
-      <div class="f-row">
-        <div><a class="pill" href="products.html#catalog"><i aria-hidden="true">↗</i><b>Shop all products</b></a></div>
-        <div class="f-col">
-          <h4>Shop</h4><a href="products.html#catalog">All products</a><a href="products.html#finder">Product finder</a><a
-            href="products.html#story">Product story</a>
-        </div>
-        <div class="f-col">
-          <h4>Company</h4><a href="about.html">About TranzLife</a><a href="#insider">Our vision</a><a href="science.html#process">Pipeline</a><a
-            href="science.html#lab">R&amp;D</a><a href="science.html">Science</a>
-        </div>
-        <div class="f-col">
-          <h4>Help</h4><a href="contact.html">Contact</a><a href="contact.html">Retail partners</a><a href="contact.html">Corporate
-            gifting</a>
-        </div>
+      <nav class="nf-links" aria-label="Footer"><a href="products.html"><span>Products</span></a><a href="science.html"><span>Science</span></a><a href="ingredients.html"><span>Ingredients</span></a><a href="about.html"><span>About</span></a><a href="quality.html"><span>Quality</span></a><a href="certifications.html"><span>Certifications</span></a><a href="sustainability.html"><span>Sustainability</span></a><a href="contact.html"><span>Contact</span></a></nav>
+      <div class="nf-meta">
+        <p class="nf-where">Egmore, Chennai, Tamil Nadu, India</p>
+        <a class="nf-mail" href="mailto:care@tranzlife.in">care@tranzlife.in</a>
+        <span class="nf-store" id="nfStore">Online store · coming soon</span>
       </div>
-      <div class="f-bot">
-        <p>TranzLife products are plant-based wellness products and are not intended to diagnose, treat, cure or prevent
-          any disease. *Supports healthy liver function as part of a balanced lifestyle. Consult your doctor before use
-          if you are pregnant, nursing, managing diabetes or taking medication.</p>
-        <span>© 2026 TranzLife Biosciences</span>
+      <div class="nf-legal">
+        <p class="nf-disc">TranzLife products are plant-based wellness products and are not intended to diagnose, treat, cure or prevent any disease. Consult your doctor before use if you are pregnant, nursing, managing a health condition or taking medication.</p>
+        <p class="nf-fine"><span>© 2026 TranzLife Biosciences</span><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a></p>
       </div>
     </div>
+    <p class="nf-word" aria-hidden="true"><span>T</span><span>R</span><span>A</span><span>N</span><span>Z</span><span>L</span><span>I</span><span>F</span><span>E</span></p>
   </footer>
 
-  <div class="scrim" id="scrim"></div>
-  <aside class="drawer" id="drawer" aria-label="Your bag" aria-hidden="true">
-    <div class="d-head">
-      <h3>Your bag</h3><button class="x" id="closeBag" aria-label="Close bag">×</button>
-    </div>
-    <div class="d-list" id="dList"></div>
-    <div class="d-foot">
-      <div class="d-total"><span>Subtotal</span><b id="dTotal">₹0</b></div>
-      <button class="btn-cream" id="checkout">Checkout <i aria-hidden="true">→</i></button>
-      <p class="d-note">Free delivery on orders over ₹999. Taxes calculated at checkout.</p>
-    </div>
-  </aside>
   <div class="toast" id="toast" role="status"></div>
 
   <script type="module" src="/src/main.js"></script>

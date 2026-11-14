@@ -1,15 +1,9 @@
 // TranzLife Biosciences - Terms & Conditions Interactive Controller
-import { initCart } from './features/cart/cart.js';
+import './features/footer/night-footer.js';
+import './features/navigation/dropdown.js';
 import { $ } from './utils/dom.js';
 
 export function initTermsPage() {
-  // 1. Initialize shopping bag state
-  try {
-    initCart();
-  } catch (e) {
-    console.warn('Cart initialization deferred:', e);
-  }
-
   // 2. Navigation scroll header styling
   const nav = $('#nav');
   function onScroll() {
@@ -48,28 +42,6 @@ export function initTermsPage() {
     }
   });
 
-  // 4. Cart Bag Drawer Controller
-  const bagBtn = $('#bagBtn');
-  const drawer = $('#drawer');
-  const scrim = $('#scrim');
-  const closeBag = $('#closeBag');
-
-  function setDrawerOpen(open) {
-    if (!drawer || !scrim) return;
-    drawer.classList.toggle('open', open);
-    drawer.setAttribute('aria-hidden', !open);
-    scrim.classList.toggle('open', open);
-    document.documentElement.classList.toggle('drawer-open', open);
-  }
-
-  if (bagBtn) bagBtn.addEventListener('click', () => setDrawerOpen(true));
-  if (closeBag) closeBag.addEventListener('click', () => setDrawerOpen(false));
-  if (scrim) scrim.addEventListener('click', () => setDrawerOpen(false));
-  window.addEventListener('keydown', e => {
-    if (e.key === 'Escape' && drawer && drawer.classList.contains('open')) {
-      setDrawerOpen(false);
-    }
-  });
 
   // 5. Sticky Table-of-Contents Active Highlighting
   const navLinks = document.querySelectorAll('.leg-nav-link');

@@ -1,10 +1,10 @@
-// Loading screen progress bar.
+// Loading screen progress: the banyan's roots under the logo draw in as boot advances (CSS reads --lp, 0..1).
 import { $ } from '../utils/dom.js';
 
-const loadBar = $('#loadBar'), loadPct = $('#loadPct');
+const loader = $('#loader');
 
 let loadP = 0;
 
-function setLoad(p){ loadP = Math.max(loadP, p); loadBar.style.transform = `scaleX(${loadP/100})`; loadPct.textContent = `GROWING ${Math.round(loadP)}%`; }
+function setLoad(p){ loadP = Math.max(loadP, p); if (loader) loader.style.setProperty('--lp', (loadP/100).toFixed(3)); }
 
 export { setLoad };

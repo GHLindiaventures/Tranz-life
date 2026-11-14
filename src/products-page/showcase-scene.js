@@ -88,7 +88,7 @@ import { NEEDS } from './data/needs.js';
 import { HERBS } from './data/herbs.js';
 import { SHOTS, DESIGNS } from '../features/products/product-images.js';
 import { icon } from '../features/product-story/icons.js';
-import { inr } from '../utils/format.js';
+import { storeCta } from '../app/store.js';
 import { clamp, lerp } from '../utils/math.js';
 
 /**
@@ -392,7 +392,8 @@ function buildDetails(container, product, D, story) {
   root.innerHTML = '';
   const ledeHtml = hasD && D.intro[1] ? '<p class="sc-lede">' + esc(D.intro[1]) + '</p>' : '';
   const closingHtml = hasD && D.closing ? '<h4 class="sc-blk__h">' + esc(D.closingTitle) + '</h4><p>' + esc(D.closing) + '</p>' : '';
-  const buyHtml = (hasD ? '<p class="sc-kick">' + esc(product.tag) + '</p>' : '') + '<p class="sc-price" data-v="' + product.price + '">' + inr(product.price) + '</p><p class="sc-size">' + esc(product.size) + '</p><button class="pill mini-add" type="button" data-id="' + product.id + '"><i aria-hidden="true">+</i><b>Add to bag</b></button>';
+  // the closing frame: the pack (no price: this is the corporate site; buying happens on the online store, src/app/store.js)
+  const buyHtml = (hasD ? '<p class="sc-kick">' + esc(product.tag) + '</p>' : '') + '<p class="sc-price sc-price--pack">' + esc(product.size) + '</p><p class="sc-size">Plant-based · Made in India</p><a class="pill" href="product-details.html?id=' + product.id + '"><i aria-hidden="true">↗</i><b>View full details</b></a>' + storeCta(product.id, { quiet: true, cls: 'sc-store' });
 
   // the frames, top to bottom, made only from what was given: the botanicals (a frame each, with the intro's second
   // paragraph and the closing words on the right), or - for a product without a botanicals list - the paragraph and the

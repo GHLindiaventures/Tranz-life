@@ -1,4 +1,4 @@
-// Procedural 3D models of the five TranzLife products. Shapes follow the client's design boards and the
+// Procedural 3D models of the six TranzLife products. Shapes follow the client's design boards and the
 // printed labels are the real artwork lifted from those boards (see scripts/make-product-assets.py).
 import * as THREE from 'three';
 import { seeded } from '../../utils/math.js';
@@ -7,6 +7,7 @@ import decalInhaler from '../../assets/products/decal-inhaler.webp';
 import decalRollon from '../../assets/products/decal-rollon.webp';
 import decalReviva from '../../assets/products/decal-reviva.webp';
 import decalLiver from '../../assets/products/decal-liver.webp';
+import decalEnergy from '../../assets/products/decal-energy.webp';
 
 const V2 = (x, y) => new THREE.Vector2(x, y);
 const lin = hex => new THREE.Color(hex).convertSRGBToLinear();
@@ -195,7 +196,26 @@ function liverBottle(){
   return { G, h:4.16 };
 }
 
-const BUILDERS = { jar:gummiesJar, inhaler:breatheFreeInhaler, rollon:calmRollOn, reviva:revivaRollOn, liver:liverBottle };
+// fine vertical ribs on the white screw cap (bump map)
+const capRibs = () => canvasTex('capRibs', 512, 64, (g, w, h) => {
+  g.fillStyle = '#808080'; g.fillRect(0, 0, w, h);
+  for (let x = 0; x < w; x += 8){ g.fillStyle = '#5a5a5a'; g.fillRect(x, 0, 3, h); }
+}, false);
+
+// Energy Booster: a 500 ml amber pharmacy bottle with a white ribbed screw cap. Measured from the client's packshot
+// (body radius 337 px = .5 units, base at 1950 px); the label is lifted from that photo and un-wrapped over 2.6 rad.
+function energyBottle(){
+  const G = new THREE.Group(), k = .5/337, Y = py => (1950 - py)*k, P = (r, py) => V2(r*k, Y(py));
+  const prof = [P(0,1950),P(300,1950),P(325,1940),P(337,1915),P(337,600),P(333,590),P(320,560),P(288,520),P(248,480),P(211,440),P(167,400),P(146,380),P(131,360),P(129,318)];
+  G.add(new THREE.Mesh(new THREE.LatheGeometry(prof, 96), new THREE.MeshPhysicalMaterial({ color:lin('#6a2a0c'), roughness:.06, clearcoat:1, clearcoatRoughness:.03, envMapIntensity:1.5 })));
+  G.add(labelBand(prof, Y(1850), Y(630), 2.6, 1.008, image(decalEnergy), { roughness:.45 }));
+  const ribs = capRibs(); ribs.repeat.set(1, 1);
+  const capProf = [P(0,318),P(140,318),P(146,312),P(146,150),P(140,136),P(126,128),P(0,127)];
+  G.add(new THREE.Mesh(new THREE.LatheGeometry(capProf, 96), new THREE.MeshPhysicalMaterial({ color:lin('#f7f7f4'), roughness:.38, clearcoat:.35, envMapIntensity:.7, bumpMap:ribs, bumpScale:.012 })));
+  return { G, h:Y(127) };
+}
+
+const BUILDERS = { jar:gummiesJar, inhaler:breatheFreeInhaler, rollon:calmRollOn, reviva:revivaRollOn, liver:liverBottle, energy:energyBottle };
 
 // Builds a product, centred on its own middle. Returns a group with userData.h (its height).
 function makeProduct(p, i, o = {}){

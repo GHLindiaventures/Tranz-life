@@ -159,7 +159,7 @@
 
 .science-hero h1 em {
   font-style: normal;
-  color: var(--sage);
+  color: var(--sage-ink);
   background: linear-gradient(135deg, #24502a 0%, #6f9e4c 65%, #d6a23a 100%);
   -webkit-background-clip: text;
   background-clip: text;
@@ -213,7 +213,7 @@
 .science-stat-num small {
   font-size: 0.55em;
   font-weight: 700;
-  color: var(--sage);
+  color: var(--sage-ink);
   margin-left: 2px;
 }
 
@@ -252,7 +252,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.14em;
-  color: var(--sage);
+  color: var(--sage-ink);
   margin-bottom: 12px;
   display: block;
 }
@@ -335,7 +335,7 @@
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.1em;
-  color: var(--sage);
+  color: var(--sage-ink);
   text-transform: uppercase;
   margin-bottom: 6px;
 }
@@ -720,7 +720,7 @@
 .sci-dossier-latin {
   font-family: var(--f-hand);
   font-size: 20px;
-  color: var(--sage);
+  color: var(--sage-ink);
   margin-top: 4px;
 }
 
@@ -791,7 +791,7 @@
   font-size: 10.5px;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: var(--sage);
+  color: var(--sage-ink);
   font-weight: 700;
 }
 
@@ -863,7 +863,7 @@
   font-family: var(--f-mono);
   font-size: 13px;
   font-weight: 800;
-  color: var(--sage);
+  color: var(--sage-ink);
   background: var(--panel-2);
   border: 1px solid var(--line);
   padding: 4px 10px;

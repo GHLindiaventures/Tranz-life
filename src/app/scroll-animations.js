@@ -179,7 +179,7 @@ function initScroll() {
   }
 
   // 6. Multi-Layer Parallax Depth
-  // 6a. #insider: Official TranzLife Tagline Monumental Reveals
+  // 6a. #insider: the vision tagline reveal (only where a page still has an #insider section)
   const insiderSec = $('#insider');
   if (insiderSec) {
     const badge = $('.in-tagline-badge', insiderSec);

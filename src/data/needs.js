@@ -1,29 +1,29 @@
 // Product finder needs and the product each one maps to.
-// Aligned with official TranzLife therapeutic applications.
+// Wording follows the client brief: wellness positioning, no treatment claims. Ingredients: src/data/ingredients.js.
 export const NEEDS = [
   {
-    t: 'Quit smoking & cleanse lungs',
+    t: 'Everyday respiratory wellness',
     p: 0,
-    why: 'PulmoClear™ Gummies curb nicotine urges, manage withdrawal stress, and detoxify respiratory airways with Vasaka, Tulsi, Mulethi, Vitamin C & Zinc.'
+    why: 'Lung Booster Gummies bring together Tulsi, Vasaka, dry ginger and licorice root with Vitamin C, D3 & Zinc in an easy berry-flavoured gummy.'
   },
   {
-    t: 'Instant craving relief on the go',
+    t: 'A calm moment on the go',
     p: 1,
-    why: 'Craving Control™ Aromatherapy Inhaler uses therapeutic Peppermint, Black Pepper, and Lavender essential oils to satisfy oral and sensory cravings without tobacco or chemicals.'
+    why: 'The Aroma Inhaler blends Peppermint, Lavender, Eucalyptus, Lemon, Black Pepper and Tulsi oils in a pocket format. Two slow breaths whenever you need a pause.'
   },
   {
-    t: 'Ease menstrual cramps naturally',
+    t: 'Comfort during my period',
     p: 2,
-    why: 'CycleRelief™ Menstrual Roll-On eases acute cramps, soothes abdominal discomfort, and relaxes tense pelvic muscles with pure Dill and Eucalyptus.'
+    why: 'CycleRelief Roll-On combines Wintergreen, Peppermint, Ginger, Lavender and Eucalyptus in a Sesame oil base, designed around comfort through your cycle.'
   },
   {
     t: 'A daily wellness & vitality ritual',
     p: 3,
-    why: 'Reviva™ Roll-On is a botanical massage roll-on with Dill and Eucalyptus essential oils, designed to complement a daily self-care routine with a refreshing topical application.'
+    why: 'Reviva Roll-On is a botanical massage roll-on with Dill and Eucalyptus essential oils, designed to complement a daily self-care routine with a refreshing topical application.'
   },
   {
-    t: 'Deep liver cleanse & detoxification',
+    t: 'Support my liver wellness',
     p: 4,
-    why: 'LiverDetox™ Polyherbal Concoction flushes toxins, protects hepatocytes, and supports digestion with 11 classical Ayurvedic herbs including Bhumyamalaki, Kalmegh, and Kutki.'
+    why: 'Liver Booster brings together 11 classical Ayurvedic botanicals, including Bhumyamalaki, Kalmegh and Kutki, to complement a balanced lifestyle.'
   }
 ];

@@ -1,23 +1,23 @@
 // Product story cards (one per product, same order as PRODUCTS).
-// Aligned with official TranzLife marketing copy and packaging tags.
+// Wording follows the client brief: wellness positioning, no treatment claims. Ingredients: src/data/ingredients.js.
 export const STORY = [
   {
-    t: ['Lung', 'Detox'],
-    d: 'Standardized Vasaka, Tulsi, Mulethi & Vitamin C in berry gummies to help heavy smokers control cravings and cleanse airways.',
+    t: ['Breathe', 'well'],
+    d: 'Tulsi, Vasaka, dry ginger and long pepper with Vitamin C, D3 & Zinc in an easy berry-flavoured gummy.',
     note: 'Breathe Freely · Live Fully',
     ic: 'leaf',
     c: '#e49a52'
   },
   {
-    t: ['Craving', 'Control'],
-    d: 'Pure essential oils of Peppermint, Black Pepper, Tulsi & Lavender to curb nicotine cravings instantly on the go.',
+    t: ['Pause', '& breathe'],
+    d: 'Peppermint, Lavender, Eucalyptus and Tulsi oils in a pocket aromatherapy inhaler, for a moment of calm wherever you are.',
     note: 'Pocket Friendly · 100% Natural',
     ic: 'lotus',
     c: '#38a58b'
   },
   {
     t: ['Cycle', 'Relief'],
-    d: 'Fast-absorbing Dill and Eucalyptus essential oils to ease menstrual cramps and soothe abdominal discomfort naturally.',
+    d: 'Wintergreen, Peppermint, Ginger and Lavender in a fast-absorbing roll-on designed around comfort through your cycle.',
     note: 'Nature’s Care Every Cycle',
     ic: 'flower',
     c: '#d6969f'
@@ -31,7 +31,7 @@ export const STORY = [
   },
   {
     t: ['Liver', 'Booster'],
-    d: '500 ml classical polyherbal concoction of Bhumyamalaki, Kalmegh, Kutki & Punarnava to detoxify, protect and rejuvenate.',
+    d: '500 ml classical polyherbal liquid of Bhumyamalaki, Kalmegh, Kutki & Punarnava for everyday liver wellness.',
     note: 'Classical Ayurvedic Wisdom',
     ic: 'drop',
     c: '#a4b955'

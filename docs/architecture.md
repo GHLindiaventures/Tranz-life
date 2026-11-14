@@ -2,15 +2,19 @@
 
 ## Page flow
 
-`index.html` is the brand introduction only:
+`index.html` tells one story from dawn to night ("Root to Ritual"):
 
-1. hero (`#home`)
-2. product lineup (`#lineup`)
-3. company tagline (`#insider`)
-4. nature video: Ayurveda botanical frame (`#nature`)
-5. Explore band (`#explore`): one card per dedicated page
-6. government trust strip (`#gov-trust`)
-7. footer
+1. hero (`#home`): 3D products on the stone plinth, the offer and two calls to action. As it scrolls away the product
+   sinks into the stone (`features/hero/hero-jar.js`) and the headline stretches (`features/hero/hero-scroll.js`)
+2. Roots to Helix (`#roots`, pinned): roots grow into a DNA helix that unwinds into a golden thread (`features/story/roots-helix.js`, one 2D canvas)
+3. A Day with TranzLife (`#day`, pinned on wide screens): one moment per product, the sky and sun follow the hour, the
+   product spins in on its own 3D layer and its botanicals flow into it (`features/story/day-story.js`, content in
+   `data/day.js`). Phones and reduced motion get stacked cards
+4. Your Ritual (`#ritual`): all six products as 3D models on the fixed `#flightCanvas`, filtered by need (`features/story/ritual-lineup.js`)
+5. Proof (`#proof`): government recognition, certifications and links to the other pages
+6. footer
+
+The vision tagline section now lives on `about.html` (`#vision`), the Ayurveda frame sequence on `ingredients.html` (`#ayurveda`).
 
 Every other section lives on the page that owns it:
 
@@ -39,15 +43,16 @@ the site is private to it, so no other page loads or is affected by it:
 
 ## Boot order (`src/main.js`)
 
-1. **Static UI.** Cart, marquee, dock and menu.
+1. **Static UI.** Cart, dock and menu.
 2. **Hero jar.** `features/hero/hero-jar.js` (the 3D product on the plinth), layered depth and moss reveal, after the web fonts load.
 3. **Product images.** `features/products/product-images.js` fills `thumbs` (menu card, bag). `components/lightbox.js` opens the full design board for any `[data-design]` button.
 4. **Page tracking.** `app/page-sections.js` tracks the current Home section and dispatches `tl:page` events for the dock.
-5. **Smooth scroll and reveals.** Lenis smooth scroll, the ScrollTrigger reveals, the tagline sheet transition over the lineup, the hero-to-lineup product hand-off, then the intro timeline hides the loader.
+5. **The story.** Roots to Helix, A Day with TranzLife and Your Ritual, each drawing only while on screen.
+6. **Smooth scroll and reveals.** Lenis smooth scroll, the ScrollTrigger reveals and the hero exit, then the intro timeline hides the loader.
 
-The tagline motion and Ayurveda video boot from `src/main.js`. The product story (`features/product-story`), finder and benefits boot from `src/products.js`. The molecule reactor (`features/pipeline`) and lab board boot from `src/science.js`. Both pages call `initScroll()` for the same reveal animations.
+The tagline motion boots from `src/about.js`, the Ayurveda video from `src/ingredients.js`. The product story (`features/product-story`), finder and benefits boot from `src/products.js`. The molecule reactor (`features/pipeline`) and lab board boot from `src/science.js`. Both pages call `initScroll()` for the same reveal animations.
 
-A 25-second fail-safe always hides the loader, even if a 3D scene fails.
+A 5-second fail-safe always hides the loader, even if a 3D scene is slow or fails.
 
 ## How modules share things
 

@@ -13,7 +13,7 @@ function initNav(){
   const SITE_PAGES = [
     { no: '01', name: 'Home', sub: 'Nature meets science', href: 'index.html#home' },
     { no: '02', name: 'About Us', sub: 'Our mission & innovation', href: 'about.html' },
-    { no: '03', name: 'Our Products', sub: 'All five formulations', href: 'products.html' },
+    { no: '03', name: 'Our Products', sub: 'All six formulations', href: 'products.html' },
     { no: '04', name: 'Science & Innovation', sub: 'Molecular delivery & 3D lab', href: 'science.html' },
     { no: '05', name: 'Our Ingredients', sub: 'Botanical pharmacopeia', href: 'ingredients.html' },
     { no: '06', name: 'Quality & Manufacturing', sub: 'Cleanrooms & batch audit', href: 'quality.html' },
@@ -28,7 +28,7 @@ function initNav(){
 
   // featured product card inside the menu
   const fImg = $('#mfImg'); let fi = 1, ft = null;
-  const showFeat = i => { fi = i; const p = PRODUCTS[i]; $$('img', fImg).forEach((im, k) => im.classList.toggle('on', k === i)); $('#mfName').textContent = p.name; $('#mfNo').textContent = `Product ${p.no} · ${p.tag}`; $('#mfAdd').dataset.id = p.id; };
+  const showFeat = i => { fi = i; const p = PRODUCTS[i]; $$('img', fImg).forEach((im, k) => im.classList.toggle('on', k === i)); $('#mfName').textContent = p.name; $('#mfNo').textContent = `Product ${p.no} · ${p.tag}`; $('#mfAdd').href = `product-details.html?id=${p.id}`; };
   const startFeat = () => { if (!fImg.children.length && thumbs.gummies) fImg.innerHTML = PRODUCTS.map(p => `<img src="${thumbs[p.id]}" alt="${p.name}">`).join(''); showFeat(fi); clearInterval(ft); if (!reduce) ft = setInterval(() => showFeat((fi + 1) % PRODUCTS.length), 2800); };
 
   const setOpen = open => {
