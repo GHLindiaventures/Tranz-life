@@ -424,7 +424,7 @@ function initProductJourney() {
      all in reverse. */
   const FLIP_LEN = 0.9;                              // screens the Lung Booster takes to finish its flip: only then does the outline start to draw
   const BORDER = { grow: 1.0, hold: 0.5, away: 1.4 };   // screens the Lung Booster's outline takes to draw, to stay, and to withdraw (after the flip)
-  const ING_LEN = 6.4, ING_CL = 1.6;   // ING_LEN: the callouts get their own long, slow stretch
+  const ING_LEN = 7.0, ING_CL = 1.8;   // ING_LEN: the callouts get their own long, slow stretch
   // the run-up (flip, outline in, outline out) in screens. On a short section (small screens) the highlights moment comes sooner (it starts
   // at H - 3 screens), so the run-up is squeezed to end before it: the gummy moment never starts under the highlights or the curtain
   function ingT(vh, F, H) {
@@ -642,9 +642,9 @@ function initProductJourney() {
     let letters = 0;                                  // 0..1: the side letters go up and away first, then the bottle opens
     if (ingOn()) {
       letters = clamp(ing.u / 0.045, 0, 1);
-      open = ing.v > 0 ? 1 - clamp(ing.v / 0.9, 0, 1) : clamp((ing.u - 0.02) / 0.3, 0, 1);   // the cap starts to unscrew when the letters are half-way up
-      calloutC = clamp((ing.u - 0.4) / 0.56, 0, 1);
-      calloutA = ing.v > 0 ? 0 : clamp((ing.u - 0.38) / 0.03, 0, 1) * (1 - clamp((ing.u - 0.975) / 0.025, 0, 1));
+      open = ing.v > 0 ? 1 - clamp(ing.v / 0.88, 0, 1) : clamp((ing.u - 0.02) / 0.18, 0, 1);   // the cap starts to unscrew when the letters are half-way up
+      calloutC = clamp((ing.u - 0.48) / 0.38, 0, 1);
+      calloutA = ing.v > 0 ? 0 : clamp((ing.u - 0.46) / 0.03, 0, 1) * (1 - clamp((ing.u - 0.88) / 0.03, 0, 1));
       if (ov.state === 'closing') { open *= a; calloutA *= a; }
       if (ingDir && open > 0) ingDir.pose(hold, open, { vh, mobile: geo.mobile, front: restRot(i) });
     }
@@ -661,7 +661,17 @@ function initProductJourney() {
       FLIP_AXIS.set(Math.cos(tilt), Math.sin(tilt), 0);
       jar.G.quaternion.premultiply(FLIP_Q.setFromAxisAngle(FLIP_AXIS, fl * Math.PI * 2));
     }
-    if (ingDir) { if (ingOn()) ingDir.update(jar, { open, c: calloutC, calloutA, vw: geo.vw, vh, mobile: geo.mobile, time: tTime, pointer: { x: mouse.x, y: mouse.y, on: canHover } }); else if (i !== 0) ingDir.hide(); }
+    if (ingDir) {
+      if (ingOn()) {
+        try {
+          ingDir.update(jar, { u: ing.u, v: ing.v, open, c: calloutC, calloutA, vw: geo.vw, vh, mobile: geo.mobile, time: tTime, pointer: { x: mouse.x, y: mouse.y, on: canHover } });
+        } catch (e) {
+          console.error('ingDir.update error:', e);
+        }
+      } else if (i !== 0) {
+        ingDir.hide();
+      }
+    }
     // the two side texts and the outline, as on the page (they fade with the fly)
     const sc0 = calcIntroText(sy, F, vh), timed = reduce ? 1 : clamp((s - 0.4) / 0.6, 0, 1);
     // here the words come in on time alone, from nothing, in one go as the product flies in (no half-played start);
@@ -730,7 +740,18 @@ function initProductJourney() {
     const sy = state.lenis ? state.lenis.scroll : scrollY, vh = geo.vh, tTime = now * 0.001;
     flightJars.forEach(j => { j.G.userData.shadowA = 0; });   // the ground shadow belongs to the list only: it is switched on there each frame
     if (ov.state === 'closed' && ov.handed === 0 && !reduce && document.body.classList.contains('scene-on') && reenter(sy)) { rafId = schedule(frame); return; }
-    if (ov.state !== 'closed') { if (ov.lenis) ov.lenis.raf(now); renderOverlay(now, tTime); rafId = schedule(frame); return; }   // a product's display is open over the grid
+    if (ov.state !== 'closed') {
+      if (ov.lenis) {
+        try { ov.lenis.raf(now); } catch (e) {}
+      }
+      try {
+        renderOverlay(now, tTime);
+      } catch (e) {
+        console.error('renderOverlay error:', e);
+      }
+      rafId = schedule(frame);
+      return;
+    }
     const lrTop = geo.lineupTop - sy, lrBottom = lrTop + geo.lineupH;
     const inLineup = lrBottom > 0 && lrTop < vh;
     if (geo.hasScene && ov.state === 'closed' && lrTop < -24) { hideScene(sy); rafId = schedule(frame); return; }   // the products are on screen: the scene is not needed any more

@@ -17,7 +17,7 @@
  * Returns { o: opacity 0..1, tin: fade-in progress 0..1 (drives the letters and a small sideways settle),
  *           lift: px to move the groups up (0 while they hold) }. Pure.
  */
-const INTRO_START = -0.15, INTRO_IN = 0.60, INTRO_RELEASE = 1.05;   // INTRO_IN: the intro words light up over 0.6 screens of scroll (was 0.3)
+const INTRO_START = -0.15, INTRO_IN = 0.30, INTRO_RELEASE = 1.05;
 function calcIntroText(sy, F, vh) {
   const d = (sy - F) / Math.max(1, vh);
   const tin = clamp((d - INTRO_START) / INTRO_IN, 0, 1);

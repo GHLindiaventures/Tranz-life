@@ -12,13 +12,14 @@
 // poseFor() / director.update().
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import gummyUrl from '../../assets/products/gummy.glb?url';
+import packetUrl from '../../assets/products/packet.glb?url';
+import { createPacketModel } from './gummy-packet.js';
 import { DETAILS } from '../../products-page/data/product-details.js';
 
-const GUMMY_COUNT = 200;                           // gummies in the jar
-const POUR_COUNT = 84;                             // how many of them float out (the rest stay in the jar, so it still looks full)
-const GS = 0.165;                                  // gummy width in model units (the jar is ~1 unit wide)
-const PALETTE = ['#9a0010', '#b82400', '#c05c00', '#05620f', '#7a0a2c', '#6e000d', '#a81c00', '#a85000', '#4a0a52', '#0a6a05', '#044f1c', '#82001a'];
+const GUMMY_COUNT = 62;                            // gummy packets in the jar
+const POUR_COUNT = 26;                             // how many of them float out (the rest stay in the jar, so it still looks full)
+const GS = 0.3;                                    // a packet's width in model units (the jar is ~1 unit wide); it is 0.57 as tall and 0.12 as thick
+const PALETTE = ['#2f6b3a'];
 const AXIS = { x: -0.0025, z: -0.0148 };          // the neck/cap axis of lungbooster.glb
 const MOUTH_Y = 0.86, INSIDE_Y = 0.42;            // the open mouth, and a point inside the body the gummies funnel through
 const CAP_Y = 0.8;                                // middle of the cap
@@ -28,6 +29,7 @@ const T0 = 0.3, SPAN = 0.25, DUR = 0.45, S1 = 0.38;   // pour schedule (in `open
 const CALLOUTS = [0, 1, 2, 3, 4, 5, 7, 9];
 
 const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+const lerp = (a, b, t) => a + (b - a) * t;
 const sm = t => t * t * (3 - 2 * t);
 const easeOut = t => 1 - Math.pow(1 - t, 3);
 const easeIO = t => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
@@ -51,78 +53,63 @@ const CLOUD = (() => {
   return pts;
 })();
 
+// the packet (packet.glb: a wrapped gummy packet, flat, 1.9 x 1.08 x 0.23). Normalised to width 1 and turned to lie flat (its thickness
+// along y), so an instance scale of GS gives the packet's width. Its own textured material is used as it is.
 let geoPromise = null;
 function loadGeo() {
-  if (!geoPromise) geoPromise = new Promise((res, rej) => new GLTFLoader().load(gummyUrl, g => {
-    let geo = null; g.scene.traverse(n => { if (n.isMesh && !geo) geo = n.geometry; });
-    geo ? res(geo) : rej(new Error('gummy.glb has no mesh'));
+  if (!geoPromise) geoPromise = new Promise((res, rej) => new GLTFLoader().load(packetUrl, g => {
+    let mesh = null; g.scene.traverse(n => { if (n.isMesh && !mesh) mesh = n; });
+    if (!mesh) return rej(new Error('packet.glb has no mesh'));
+    const geo = mesh.geometry.clone(); geo.computeBoundingBox();
+    const bb = geo.boundingBox, k = 1 / (bb.max.x - bb.min.x);
+    geo.translate(-(bb.max.x + bb.min.x) / 2, -(bb.max.y + bb.min.y) / 2, -(bb.max.z + bb.min.z) / 2); geo.scale(k, k, k); geo.rotateX(Math.PI / 2);
+    geo.computeBoundingBox();
+    const mat = mesh.material; mat.envMapIntensity = 0.55; mat.roughness = Math.max(0.35, mat.roughness != null ? mat.roughness : 0.5);
+    res({ geo, mat, half: geo.boundingBox.max.clone() });
   }, undefined, rej));
   return geoPromise;
 }
-let sharedMat = null;
-const gummyMaterial = () => {
-  if (sharedMat) return sharedMat;
-  const m = new THREE.MeshPhysicalMaterial({ color: 0xffffff, roughness: 0.3, metalness: 0, clearcoat: 0.5, clearcoatRoughness: 0.14, reflectivity: 0.3, envMapIntensity: 0.3 });
-  // sugar-coated jelly: the instance colour is the jelly, scattered white sugar crystals (cellular noise in the gummy's own space, so each
-  // crystal stays put on its gummy) sit on top of it; the jelly glows a little from inside, the sugar does not
-  m.onBeforeCompile = sh => {
-    sh.vertexShader = sh.vertexShader.replace('void main() {', `varying vec3 vGObj;
-void main() {`).replace('#include <begin_vertex>', `#include <begin_vertex>
-  vGObj = position;`);
-    sh.fragmentShader = sh.fragmentShader.replace('void main() {', `varying vec3 vGObj;
-      float gHash(vec3 p) { p = fract(p * 0.3183099 + 0.1); p *= 17.0; return fract(p.x * p.y * p.z * (p.x + p.y + p.z)); }
-      float sugar(vec3 p) {
-        vec3 i = floor(p), f = fract(p); float m = 0.0;
-        for (int x = -1; x <= 1; x++) for (int y = -1; y <= 1; y++) for (int z = -1; z <= 1; z++) {
-          vec3 c = vec3(float(x), float(y), float(z));
-          vec3 o = vec3(gHash(i + c), gHash(i + c + 7.1), gHash(i + c + 13.7));
-          float keep = step(0.7, gHash(i + c + 31.3)), r = 0.17 + 0.2 * gHash(i + c + 3.7);
-          m = max(m, keep * (1.0 - smoothstep(r * 0.65, r, length(f - c - o))));
-        }
-        return m;
-      }
-      void main() {`).replace('#include <color_fragment>', `#include <color_fragment>
-      { float jl = dot(diffuseColor.rgb, vec3(0.299, 0.587, 0.114)); diffuseColor.rgb = clamp(mix(vec3(jl), diffuseColor.rgb, 1.35), 0.0, 1.0) * 0.68; }
-      float sg = sugar(vGObj * 19.0);
-      diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.99, 0.97, 0.93), sg * 0.28);`).replace('#include <emissivemap_fragment>',
-      `#include <emissivemap_fragment>
-      float jFres = 1.0 - clamp(dot(normalize(vNormal), normalize(vViewPosition)), 0.0, 1.0);
-      totalEmissiveRadiance += diffuseColor.rgb * (0.02 + 0.12 * pow(jFres, 2.2)) * (1.0 - sg) + vec3(0.07) * sg;`);
-  };
-  m.customProgramCacheKey = () => 'gummy-sugar';
-  return (sharedMat = m);
-};
-
-// the pile: gummies dropped into the jar and let settle (a small sphere simulation run once, deterministic), so it is a real,
-// uneven heap with every gummy lying at its own angle, not a tidy grid
-function settlePile(n) {
-  const R = rng(11), r = 0.076, floor = -0.84 + r * 0.8;
-  const wallAt = y => 0.335 - 0.06 * clamp((-0.62 - y) / 0.2);          // the glass is ~0.5 wide; a gummy reaches 0.14 from its centre, and the base curves in
+// how far a packet reaches sideways from its centre when turned by q (its half-sizes are 0.5, 0.285 and 0.06 of its width)
+const HALF = new THREE.Vector3(0.5, 0.06, 0.285);
+function reachOf(q, size) {
+  const m = new THREE.Matrix4().makeRotationFromQuaternion(q).elements;      // column-major
+  const ex = (Math.abs(m[0]) * HALF.x + Math.abs(m[4]) * HALF.y + Math.abs(m[8]) * HALF.z) * size;
+  const ez = (Math.abs(m[2]) * HALF.x + Math.abs(m[6]) * HALF.y + Math.abs(m[10]) * HALF.z) * size;
+  return Math.hypot(ex, ez);
+}
+// the pile: packets dropped into the jar and let settle (a small simulation run once, deterministic), so it is a real, uneven heap.
+// Collision is a sphere that is wide and squashed (packets are flat: they stack close vertically and need room sideways), and
+// each packet's sideways reach, from its own turn, keeps it inside the glass.
+const INNER = 0.475;                                                        // the jar's inside radius (the glass is ~0.5 wide)
+function settlePile(n, quats, sizes) {
+  const R = rng(11), VF = 2.3, floor = -0.835;
+  const reach = quats.map((q, i) => reachOf(q, sizes[i]));
+  const wallAt = (y, i) => INNER - reach[i] - 0.012 - 0.07 * clamp((-0.62 - y) / 0.2);   // the base curves in
   const pos = [], prev = [];
   for (let i = 0; i < n; i++) {
-    const a = R() * Math.PI * 2, d = Math.sqrt(R()) * 0.32;
-    const p = new THREE.Vector3(AXIS.x + Math.cos(a) * d, -0.8 + (i / n) * 1.8 + R() * 0.1, AXIS.z + Math.sin(a) * d);
+    const a = R() * Math.PI * 2, d = Math.sqrt(R()) * 0.25;
+    const p = new THREE.Vector3(AXIS.x + Math.cos(a) * d, -0.78 + (i / n) * 1.5 + R() * 0.08, AXIS.z + Math.sin(a) * d);
     pos.push(p); prev.push(p.clone());
   }
-  const g = -0.0016, tmp = new THREE.Vector3(), diam = r * 2;
-  for (let it = 0; it < 520; it++) {
+  const g = -0.0016, tmp = new THREE.Vector3(), diam = GS * 0.92;
+  for (let it = 0; it < 560; it++) {
     for (let i = 0; i < n; i++) {                                    // verlet step with gravity and damping
       const p = pos[i], q = prev[i];
       tmp.copy(p).sub(q).multiplyScalar(0.985); q.copy(p); p.add(tmp); p.y += g;
     }
     for (let k = 0; k < 3; k++) {
-      for (let i = 0; i < n; i++) for (let j = i + 1; j < n; j++) {  // no two gummies share space
-        const a = pos[i], b = pos[j], dx = b.x - a.x, dy = (b.y - a.y) * 1.15, dz = b.z - a.z, d2 = dx * dx + dy * dy + dz * dz;
+      for (let i = 0; i < n; i++) for (let j = i + 1; j < n; j++) {  // no two packets share space
+        const a = pos[i], b = pos[j], dx = b.x - a.x, dy = (b.y - a.y) * VF, dz = b.z - a.z, d2 = dx * dx + dy * dy + dz * dz;
         if (d2 < diam * diam && d2 > 1e-9) {
           const d = Math.sqrt(d2), push = (diam - d) / d * 0.5;
-          a.x -= dx * push; a.z -= dz * push; a.y -= dy * push / 1.15; b.x += dx * push; b.z += dz * push; b.y += dy * push / 1.15;
+          a.x -= dx * push; a.z -= dz * push; a.y -= dy * push / VF; b.x += dx * push; b.z += dz * push; b.y += dy * push / VF;
         }
       }
       for (let i = 0; i < n; i++) {                                  // the jar's wall and floor
         const p = pos[i], dx = p.x - AXIS.x, dz = p.z - AXIS.z, d = Math.hypot(dx, dz);
-        const wall = wallAt(p.y);
+        const wall = Math.max(0.02, wallAt(p.y, i));
         if (d > wall) { p.x = AXIS.x + dx / d * wall; p.z = AXIS.z + dz / d * wall; }
-        if (p.y < floor) p.y = floor;
+        if (p.y < floor + sizes[i] * 0.06) p.y = floor + sizes[i] * 0.06;
       }
     }
   }
@@ -132,14 +119,16 @@ function settlePile(n) {
 function attachGummies(root) {
   const ctl = { ready: false, mesh: null, n: GUMMY_COUNT, world: new Float32Array(GUMMY_COUNT * 3), colors: [], arrived: new Float32Array(GUMMY_COUNT), atRest: true };
   const push = new Float32Array(GUMMY_COUNT * 3);   // how far the pointer has pushed each floating gummy (eased)
-  const rest = settlePile(GUMMY_COUNT), R = rng(5);
-  const restQ = [], ph = [], wy = [], order = [], size = [], axes = [], arcK = [];
+  const R = rng(5);
+  const restQ = [], ph = [], wy = [], order = [], size = [], axes = [], arcK = [], eu = new THREE.Euler();
   for (let i = 0; i < GUMMY_COUNT; i++) {
-    restQ.push(new THREE.Quaternion(R() - 0.5, R() - 0.5, R() - 0.5, R() - 0.5).normalize());   // every gummy lies at its own angle
+    // every packet lies at its own turn, leaning a good deal (as if poured in), up to ~57 degrees, so faces and edges both show
+    restQ.push(new THREE.Quaternion().setFromEuler(eu.set((R() - 0.5) * 2.0, R() * Math.PI * 2, (R() - 0.5) * 2.0, 'YXZ')));
     ph.push(R() * Math.PI * 2); wy.push(0.5 + R());
-    size.push(GS * (0.88 + R() * 0.26)); arcK.push(0.6 + R() * 0.9);
+    size.push(GS * (0.94 + R() * 0.12)); arcK.push(0.6 + R() * 0.9);
     axes.push(new THREE.Vector3(R() - 0.5, R() - 0.5, R() - 0.5).normalize());
   }
+  const rest = settlePile(GUMMY_COUNT, restQ, size);
   // gummies near the top of the pile leave first
   const byTop = rest.map((p, i) => [p.y + R() * 0.35, i]).sort((a, b) => b[0] - a[0]);   // top of the heap first, but not in strict order
   const pourOf = new Int16Array(POUR_COUNT), rank = new Int16Array(GUMMY_COUNT).fill(-1);
@@ -156,7 +145,7 @@ function attachGummies(root) {
     ctl.mesh.instanceMatrix.needsUpdate = true; ctl.atRest = true;
   };
   // open: 0..1; time: seconds; targets: Float32Array(n*3) world positions the gummies float to. Call after the jar's matrices are current.
-  ctl.update = (open, time, targets, ptr) => {   // ptr: { x, y, r } the pointer in world units and its reach, or null
+  ctl.update = (open, time, targets, ptr, heroHideK = 0) => {   // ptr: { x, y, r } the pointer in world units and its reach, or null
     if (!ctl.mesh) return;
     if (open <= 0.0005) { if (!ctl.atRest) ctl.setIdle(); return; }
     ctl.atRest = false;
@@ -167,7 +156,14 @@ function attachGummies(root) {
     upW.set(0, 1, 0);
     for (let i = 0; i < GUMMY_COUNT; i++) {
       const tau = rank[i] < 0 ? 0 : clamp((open - T0 - order[i] * SPAN) / DUR);   // (order has its own jitter)
-      if (tau <= 0) { m4.compose(rest[i], restQ[i], sc.set(size[i], size[i], size[i])); ctl.mesh.setMatrixAt(i, m4); ctl.arrived[i] = 0; continue; }
+      if (tau <= 0) {
+        let sc0 = size[i];
+        if (rank[i] === 0 && heroHideK > 0) sc0 *= Math.max(0, 1 - heroHideK);
+        m4.compose(rest[i], restQ[i], sc.set(sc0, sc0, sc0));
+        ctl.mesh.setMatrixAt(i, m4);
+        ctl.arrived[i] = 0;
+        continue;
+      }
       let u2 = 0, scale = size[i], arrived = 0;
       A.copy(rest[i]).applyMatrix4(rm);
       if (tau < S1) {
@@ -199,6 +195,9 @@ function attachGummies(root) {
       pl.copy(P).applyMatrix4(rinv);
       const tumble = (1 - easeOut(u2)) * (4 + 5 * wy[i]) + (arrived ? time * 0.25 * wy[i] : 0) + kick * 2.2;   // each one tumbles about its own axis
       q.setFromAxisAngle(axes[i], tumble).multiply(restQ[i]);
+      if (rank[i] === 0 && heroHideK > 0) {
+        scale *= Math.max(0, 1 - heroHideK);
+      }
       m4.compose(pl, q, sc.set(scale, scale, scale));
       ctl.mesh.setMatrixAt(i, m4);
     }
@@ -206,14 +205,12 @@ function attachGummies(root) {
   };
   ctl.restWorld = (i, out) => out.copy(rest[i]).applyMatrix4(root.matrixWorld);
 
-  loadGeo().then(geo => {
-    const mesh = new THREE.InstancedMesh(geo, gummyMaterial(), GUMMY_COUNT);
+  loadGeo().then(({ geo, mat }) => {
+    const mesh = new THREE.InstancedMesh(geo, mat, GUMMY_COUNT);
     mesh.frustumCulled = false; mesh.name = 'Gummies'; mesh.renderOrder = 0;
-    const c = new THREE.Color(), Rc = rng(3);
-    for (let i = 0; i < GUMMY_COUNT; i++) { const hex = PALETTE[Math.floor(Rc() * PALETTE.length)]; ctl.colors.push(hex); mesh.setColorAt(i, c.set(hex)); }
-    mesh.instanceColor.needsUpdate = true;
+    for (let i = 0; i < GUMMY_COUNT; i++) ctl.colors.push(PALETTE[0]);
     ctl.mesh = mesh; root.add(mesh); ctl.ready = true; ctl.setIdle();
-  }).catch(() => { /* no gummies if the file cannot load: the jar stays as it was */ });
+  }).catch(() => { /* no packets if the file cannot load: the jar stays as it was */ });
   return ctl;
 }
 
@@ -223,15 +220,15 @@ function addStyle() {
   if (styled) return; styled = true;
   const s = document.createElement('style');
   s.textContent = `
-  #ingLayer{position:fixed;inset:0;z-index:47;pointer-events:none;visibility:hidden}
-  #ingLayer svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
-  #ingLayer line{stroke:#2f6b3a;stroke-width:1.5;stroke-linecap:round}
-  #ingLayer circle{fill:#fff;stroke:#2f6b3a;stroke-width:2}
+  #ingLayer{position:fixed;inset:0;z-index:47;pointer-events:none !important;visibility:hidden}
+  #ingLayer svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none !important}
+  #ingLayer line{stroke:#2f6b3a;stroke-width:1.5;stroke-linecap:round;pointer-events:none !important}
+  #ingLayer circle{fill:#fff;stroke:#2f6b3a;stroke-width:2;pointer-events:none !important}
   .ing-label{position:absolute;box-sizing:border-box;padding:10px 14px 11px;border-radius:14px;background:rgba(244,249,240,.86);
-    -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);color:#1d4a2b;box-shadow:0 6px 22px rgba(30,70,40,.12);will-change:opacity,transform}
-  .ing-label b{display:block;font-size:15px;line-height:1.2;font-weight:700;letter-spacing:.01em}
-  .ing-label span{display:block;margin-top:4px;font-size:12.5px;line-height:1.35;opacity:.82}
-  .ing-label i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:7px;vertical-align:baseline}
+    -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);color:#1d4a2b;box-shadow:0 6px 22px rgba(30,70,40,.12);will-change:opacity,transform;pointer-events:none !important}
+  .ing-label b{display:block;font-size:15px;line-height:1.2;font-weight:700;letter-spacing:.01em;pointer-events:none !important}
+  .ing-label span{display:block;margin-top:4px;font-size:12.5px;line-height:1.35;opacity:.82;pointer-events:none !important}
+  .ing-label i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:7px;vertical-align:baseline;pointer-events:none !important}
   @media (max-width:720px){.ing-label{padding:9px 12px 10px}.ing-label b{font-size:14px}.ing-label span{font-size:12px}}`;
   document.head.appendChild(s);
 }
@@ -252,10 +249,40 @@ function createIngredientsDirector(L) {
 
   const targets = new Float32Array(POUR_COUNT * 3);
   const v = new THREE.Vector3(), rest = new THREE.Vector3(), capRest = new THREE.Vector3(), capT = new THREE.Vector3(), l0 = new THREE.Vector3(), l1 = new THREE.Vector3(), rinv = new THREE.Matrix4();
+  const cloudW = new THREE.Vector3(), cloudScreen = { x: 0, y: 0 };
   const D = { shown: false, capDirty: false, sel: null, selKey: '' };
   const toWorld = (px, py, z, out) => out.set((px / L.W - 0.5) * 2 * L.halfW, -(py / L.H - 0.5) * 2 * L.halfH, z);
   const toScreen = (w, out) => { v.copy(w).project(L.cam); out.x = (v.x * 0.5 + 0.5) * L.W; out.y = (-v.y * 0.5 + 0.5) * L.H; };
   const sp = { x: 0, y: 0 };
+
+  // Camera tracking vectors for 3D camera zoom/dolly
+  const camPos0 = new THREE.Vector3(0, 0, 24);
+  const camLook0 = new THREE.Vector3(0, 0, 0);
+  const curCamPos = new THREE.Vector3();
+  const curCamLook = new THREE.Vector3();
+  const heroPos = new THREE.Vector3();
+  const lookZoom = new THREE.Vector3();
+  const posZoom = new THREE.Vector3();
+
+  const resetCamera = () => {
+    L.cam.position.set(0, 0, 24);
+    L.cam.up.set(0, 1, 0);
+    L.cam.lookAt(0, 0, 0);
+    if (Math.abs(L.cam.fov - 30) > 0.001) {
+      L.cam.fov = 30;
+      L.cam.updateProjectionMatrix();
+    }
+    L.cam.updateMatrixWorld(true);
+  };
+
+  // Hero Packet model with progressive tear animation and emerged ruby gummy
+  const heroPacket = createPacketModel({
+    gummyScale: 0.50,
+    gummyColor: '#9e1022'
+  });
+  heroPacket.root.visible = false;
+  heroPacket.root.renderOrder = 20;
+  L.scene.add(heroPacket.root);
 
   // where the gummies float to (screen px): a spiral cloud between the cap (top) and the bottle (bottom)
   function layout(vw, vh, mobile, mouthY) {
@@ -289,12 +316,18 @@ function createIngredientsDirector(L) {
       hold.rotZ = hold.rotZ + (-0.3 - hold.rotZ) * k;
       return hold;
     },
-    // after the jar's own transform is set: cap, gummies and callouts. o: { open, c (callout progress 0..1), calloutA (0..1), vw, vh, mobile, time }
+    // after the jar's own transform is set: cap, gummies and callouts. o: { u, v, open, c (callout progress 0..1), calloutA (0..1), vw, vh, mobile, time }
     update(jar, o) {
       const ud = jar.b.userData, ctl = ud.gummies, pivot = ud.capPivot, root = ud.modelRoot;
       if (!ctl || !pivot || !root) return;
       jar.G.updateMatrixWorld(true); L.cam.updateMatrixWorld();   // (the camera's view matrix is only refreshed at render time: bring it up to date before projecting)
       const open = o.open;
+      const u = o.u != null ? o.u : 0;
+      const vVal = o.v != null ? o.v : 0;
+      if (open <= 0.0005) {
+        resetCamera();
+      }
+
       // the cap: unscrews (turning and rising), then lifts to rest at the top of the frame
       const turnK = sm(clamp(open / 0.2)), liftK = sm(clamp(open / 0.26));
       pivot.rotation.y = turnK * TURNS * Math.PI * 2;
@@ -307,6 +340,7 @@ function createIngredientsDirector(L) {
         pivot.position.x += (l1.x - l0.x) * liftK; pivot.position.y += (l1.y - l0.y) * liftK; pivot.position.z += (l1.z - l0.z) * liftK;
       }
       D.capDirty = open > 0;
+
       // the gummies
       v.set(AXIS.x, MOUTH_Y, AXIS.z).applyMatrix4(root.matrixWorld); toScreen(v, sp);
       const cloud = layout(o.vw, o.vh, o.mobile, sp.y);
@@ -317,37 +351,175 @@ function createIngredientsDirector(L) {
         toWorld((o.pointer.x + 0.5) * o.vw, (o.pointer.y + 0.5) * o.vh, jar.G.position.z, v);
         ptr = { x: v.x, y: v.y, r: o.vh * 0.17 * (2 * L.halfH / L.H) };
       }
-      ctl.update(open, o.time, targets, ptr);
-      // the callouts
+
+      // 1. Camera Zoom schedule:
+      // Emerges from packet #0 in cloud, camera dollies in to hero product focus
+      let zoomK = 0;
+      if (vVal <= 0) {
+        const zIn = sm(clamp((u - 0.20) / 0.14, 0, 1));
+        const zOut = sm(clamp((u - 0.94) / 0.04, 0, 1));
+        zoomK = zIn * (1 - zOut);
+      }
+
+      // 2. Tear schedule: flap peels, pouch mouth opens, and gummy emerges
+      let tearK = 0;
+      if (vVal <= 0) {
+        const tIn = sm(clamp((u - 0.34) / 0.14, 0, 1));
+        const tOut = sm(clamp((u - 0.88) / 0.06, 0, 1));
+        tearK = tIn * (1 - tOut);
+      }
+
+      // Update instanced cloud (hide packet #0 when zoomK is active)
+      ctl.update(open, o.time, targets, ptr, zoomK);
+
+      // Update hero packet 3D position, scale, and tear progress, and DOLLY / ZOOM CAMERA
+      if (zoomK > 0.002 && ctl.ready) {
+        const hIdx = ctl.pourOf[0];
+        cloudW.set(ctl.world[hIdx * 3], ctl.world[hIdx * 3 + 1], ctl.world[hIdx * 3 + 2]);
+
+        const targetHeroX = o.mobile ? -0.10 : -0.45;
+        const targetHeroY = o.mobile ? 1.25 : 1.05;
+        const targetHeroZ = 0.35;
+
+        const kEase = sm(zoomK);
+        heroPos.set(
+          lerp(cloudW.x, targetHeroX, kEase),
+          lerp(cloudW.y, targetHeroY, kEase),
+          lerp(cloudW.z, targetHeroZ, kEase)
+        );
+
+        const idleY = zoomK > 0.85 ? Math.sin(o.time * 1.5) * 0.03 : 0;
+        heroPacket.root.position.set(heroPos.x, heroPos.y + idleY, heroPos.z);
+
+        const rotYIdle = zoomK > 0.85 ? Math.sin(o.time * 0.8) * 0.03 : 0;
+        heroPacket.root.rotation.set(
+          lerp(0, 0.08, kEase),
+          lerp(0, -0.18 + rotYIdle, kEase),
+          lerp(0, 0.04, kEase)
+        );
+
+        const baseWorldScale = 0.28;
+        const targetWorldScale = o.mobile ? 0.35 : 0.38;
+        const curScale = lerp(baseWorldScale, targetWorldScale, kEase);
+        heroPacket.root.scale.setScalar(curScale);
+
+        heroPacket.updateOpen(tearK);
+        heroPacket.root.visible = true;
+        heroPacket.root.updateMatrixWorld(true);
+
+        // --- TRUE 3D CAMERA ZOOM (DOLLY + FOV) ---
+        // Look target: frames packet & emerged gummy
+        if (o.mobile) {
+          lookZoom.set(heroPos.x + 0.15, heroPos.y - 0.28, heroPos.z);
+          posZoom.set(lookZoom.x, lookZoom.y, heroPos.z + 5.8);
+        } else {
+          lookZoom.set(heroPos.x + 0.52, heroPos.y, heroPos.z);
+          posZoom.set(lookZoom.x, lookZoom.y, heroPos.z + 5.0);
+        }
+
+        const fov0 = 30;
+        const fovZoom = o.mobile ? 25 : 23;
+        const curFov = lerp(fov0, fovZoom, kEase);
+
+        curCamLook.lerpVectors(camLook0, lookZoom, kEase);
+        curCamPos.lerpVectors(camPos0, posZoom, kEase);
+
+        L.cam.position.copy(curCamPos);
+        L.cam.up.set(0, 1, 0);
+        L.cam.lookAt(curCamLook);
+        L.cam.fov = curFov;
+        L.cam.updateProjectionMatrix();
+        L.cam.updateMatrixWorld(true);
+      } else {
+        heroPacket.root.visible = false;
+        heroPacket.updateOpen(0);
+        resetCamera();
+      }
+
+      // the callouts: anchored directly to the emerged gummy
       const A = o.calloutA;
-      if (A <= 0.001 || !ctl.ready) { this.hide(); return; }
-      const key = o.vw + 'x' + o.vh + (o.mobile ? 'm' : '');
-      if (D.selKey !== key) { D.sel = pick(cloud, o.vw); D.selKey = key; }
+      if (A <= 0.001 || !ctl.ready || !heroPacket.root.visible) { this.hide(); return; }
+
       layer.style.visibility = 'visible'; D.shown = true;
       const K = items.length, cur = o.c * K;
-      const left = [], right = [];
-      items.forEach((it, k) => { (cloud[D.sel[k]].x < o.vw * 0.5 ? left : right).push(k); });
+
+      // Exact screen position of the emerged gummy
+      const gWorld = new THREE.Vector3();
+      try {
+        if (typeof heroPacket.getGummyWorldPos === 'function') {
+          heroPacket.getGummyWorldPos(gWorld);
+        } else if (heroPacket.root && heroPacket.root.userData && typeof heroPacket.root.userData.getGummyWorldPos === 'function') {
+          heroPacket.root.userData.getGummyWorldPos(gWorld);
+        } else if (heroPacket.userData && typeof heroPacket.userData.getGummyWorldPos === 'function') {
+          heroPacket.userData.getGummyWorldPos(gWorld);
+        } else {
+          heroPacket.root.getWorldPosition(gWorld);
+          gWorld.x += 1.0 * heroPacket.root.scale.x;
+        }
+      } catch (err) {
+        heroPacket.root.getWorldPosition(gWorld);
+        gWorld.x += 1.0 * heroPacket.root.scale.x;
+      }
+      toScreen(gWorld, sp);
+      const gx = sp.x, gy = sp.y, W = o.vw, H = o.vh;
+      if (!Number.isFinite(gx) || !Number.isFinite(gy)) return;
+
+      const heroPxSize = Math.min(o.vw * (o.mobile ? 0.65 : 0.30), o.vh * (o.mobile ? 0.32 : 0.44));
+      const gummyR = Math.max(14, Math.min(38, heroPxSize * 0.15));
+
       items.forEach((it, k) => {
-        const g = ctl.pourOf[D.sel[k]];
         const a = (o.mobile ? clamp(1 - Math.abs(cur - k - 0.5) * 1.6) : clamp((cur - k) / 0.7)) * A;
         it.a = a;
         if (a <= 0.003) { it.el.style.opacity = '0'; it.line.setAttribute('opacity', '0'); it.dot.setAttribute('opacity', '0'); return; }
-        l0.set(ctl.world[g * 3], ctl.world[g * 3 + 1], ctl.world[g * 3 + 2]); toScreen(l0, sp);
-        const gx = sp.x, gy = sp.y, W = o.vw, H = o.vh;
-        if (!(Math.abs(gx) < 1e5 && Math.abs(gy) < 1e5)) { it.el.style.opacity = '0'; it.line.setAttribute('opacity', '0'); it.dot.setAttribute('opacity', '0'); return; }   // not placed yet
-        let lx, ly, ax, ay, w, anchorRight;
-        if (o.mobile) { w = Math.min(W * 0.84, 360); lx = (W - w) / 2; ly = H * 0.66; ax = W / 2; ay = ly; }
-        else {
-          const isLeft = cloud[D.sel[k]].x < W * 0.5, col = isLeft ? left : right, j = col.indexOf(k), n = col.length;
-          w = Math.min(270, W * 0.23); lx = isLeft ? Math.max(14, W * 0.05) : W - Math.max(14, W * 0.05) - w;
-          ly = H * 0.2 + (n > 1 ? j * (H * 0.5) / (n - 1) : H * 0.3); ax = isLeft ? lx + w : lx; ay = ly + 28; anchorRight = isLeft;
+
+        const isLeft = k < 4;
+        const j = isLeft ? k : k - 4; // index within column (0..3)
+        const n = 4;
+        let lx, ly, ax, ay, w, dotGx, dotGy;
+
+        if (o.mobile) {
+          w = Math.min(W * 0.86, 360);
+          lx = (W - w) / 2;
+          ly = H * 0.66;
+          ax = W / 2;
+          ay = ly;
+          dotGx = gx;
+          dotGy = gy + gummyR;
+        } else {
+          w = Math.min(270, W * 0.23);
+          lx = isLeft ? Math.max(16, W * 0.05) : W - Math.max(16, W * 0.05) - w;
+          ly = H * 0.20 + (j / (n - 1)) * (H * 0.52);
+          ax = isLeft ? lx + w : lx;
+          ay = ly + 26;
+
+          // Anchor points distributed along gummy contour
+          const angle = isLeft
+            ? Math.PI - 0.55 + (j / (n - 1)) * 1.10
+            : -0.55 + (j / (n - 1)) * 1.10;
+          dotGx = gx + Math.cos(angle) * gummyR;
+          dotGy = gy + Math.sin(angle) * gummyR;
         }
-        it.el.style.width = w + 'px'; it.el.style.transform = 'translate3d(' + lx.toFixed(1) + 'px,' + ly.toFixed(1) + 'px,0)';
-        it.el.style.opacity = a.toFixed(3); it.dotColor.style.background = ctl.colors[g];
+
+        it.el.style.width = w + 'px';
+        it.el.style.transform = 'translate3d(' + lx.toFixed(1) + 'px,' + ly.toFixed(1) + 'px,0)';
+        it.el.style.opacity = a.toFixed(3);
+        if (it.dotColor) it.dotColor.style.background = '#9e1022';
+
         const t = clamp(a * 1.3);
-        const ex = gx + (ax - gx) * t, ey = gy + (ay - gy) * t;       // the leader line draws out from the gummy to the label
-        it.line.setAttribute('x1', gx.toFixed(1)); it.line.setAttribute('y1', gy.toFixed(1)); it.line.setAttribute('x2', ex.toFixed(1)); it.line.setAttribute('y2', ey.toFixed(1));
-        it.line.setAttribute('opacity', a.toFixed(3)); it.dot.setAttribute('cx', gx.toFixed(1)); it.dot.setAttribute('cy', gy.toFixed(1)); it.dot.setAttribute('opacity', a.toFixed(3));
+        const ex = dotGx + (ax - dotGx) * t;
+        const ey = dotGy + (ay - dotGy) * t;
+
+        it.line.setAttribute('x1', dotGx.toFixed(1));
+        it.line.setAttribute('y1', dotGy.toFixed(1));
+        it.line.setAttribute('x2', ex.toFixed(1));
+        it.line.setAttribute('y2', ey.toFixed(1));
+        it.line.setAttribute('opacity', a.toFixed(3));
+        it.line.setAttribute('stroke', '#2f6b3a');
+
+        it.dot.setAttribute('cx', dotGx.toFixed(1));
+        it.dot.setAttribute('cy', dotGy.toFixed(1));
+        it.dot.setAttribute('opacity', a.toFixed(3));
+        it.dot.setAttribute('stroke', '#9e1022');
       });
     },
     hide() {
@@ -358,9 +530,14 @@ function createIngredientsDirector(L) {
     // put everything back (overlay closed / another product)
     reset(jar) {
       this.hide();
+      resetCamera();
+      if (heroPacket && heroPacket.root) {
+        heroPacket.root.visible = false;
+        heroPacket.updateOpen(0);
+      }
       const ud = jar && jar.b && jar.b.userData; if (!ud) return;
       if (ud.capPivot && ud.capRest) { ud.capPivot.rotation.y = 0; ud.capPivot.position.copy(ud.capRest); }
-      if (ud.gummies) ud.gummies.update(0, 0, targets);
+      if (ud.gummies) ud.gummies.update(0, 0, targets, null, 0);
     },
   };
 }
