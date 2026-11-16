@@ -492,28 +492,30 @@ function createIngredientsDirector(L) {
       let zoomK = 0;
       if (vVal <= 0) {
         const zIn = sm(clamp((u - 0.38) / 0.14, 0, 1));
-        const zOut = sm(clamp((u - 0.95) / 0.04, 0, 1));
+        const zOut = sm(clamp((u - 0.96) / 0.03, 0, 1));
         zoomK = zIn * (1 - zOut);
       }
 
-      // 1b. Close-up on the gummy: once it has emerged the camera pushes in tight, the ingredients are shown from there,
-      // and when they have faded (u 0.86 to 0.90) the camera eases back out to the normal view while the gummy goes home.
+      // 1b. Close-up on the gummy:
+      // Camera stays firmly locked tight in close-up while ingredients are shown AND while they fade out.
+      // Only after the gummy has retracted back inside (u >= 0.93) does the camera ease back out.
       closeK = 0; exitK = 0;
       if (vVal <= 0) {
         const cIn = sm(clamp((u - 0.58) / 0.08, 0, 1));
-        const cOut = sm(clamp((u - 0.86) / 0.08, 0, 1));
+        const cOut = sm(clamp((u - 0.93) / 0.05, 0, 1));
         closeK = cIn * (1 - cOut);
-        exitK = sm(clamp((u - 0.86) / 0.13, 0, 1));
+        exitK = sm(clamp((u - 0.93) / 0.06, 0, 1));
       }
 
       // 2. Tear schedule: flap peels, pouch mouth opens, and gummy emerges
-      // Gummy stays fully emerged at tearK = 1 until u = 0.90.
-      // Ingredients & pointing lines completely fade out between u = 0.86 and 0.90.
-      // Only THEN at u = 0.90 does the gummy slide back inside the pocket and flap closes.
+      // Gummy stays 100% frozen fully emerged at tearK = 1 until u = 0.88.
+      // Ingredients & pointing lines completely fade out between u = 0.82 and 0.87.
+      // Gummy does NOT move at all until u = 0.88!
+      // Only THEN (after ingredients are completely gone) at u = 0.88..0.93 does the gummy slide back inside the pocket and flap closes.
       let tearK = 0;
       if (vVal <= 0) {
         const tIn = sm(clamp((u - 0.52) / 0.14, 0, 1));
-        const tOut = sm(clamp((u - 0.90) / 0.05, 0, 1));
+        const tOut = sm(clamp((u - 0.88) / 0.05, 0, 1));
         tearK = tIn * (1 - tOut);
       }
 
@@ -536,11 +538,13 @@ function createIngredientsDirector(L) {
           lerp(cloudW.z, targetHeroZ, kEase)
         );
 
-        const idleY = zoomK > 0.85 ? Math.sin(o.time * 1.5) * 0.03 : 0;
+        // Freeze all idle bobbing during close-up / ingredient inspection so gummy is 100% rock-solid motionless
+        const isClose = closeK > 0.05;
+        const idleY = (zoomK > 0.85 && !isClose) ? Math.sin(o.time * 1.5) * 0.03 : 0;
         heroPacket.root.position.set(heroPos.x, heroPos.y + idleY, heroPos.z);
 
-        const rotYIdle = zoomK > 0.85 ? Math.sin(o.time * 0.8) * 0.03 : 0;
-        const swing = Math.sin(exitK * Math.PI);          // the exit: a little turn and wobble as the gummy heads home
+        const rotYIdle = (zoomK > 0.85 && !isClose) ? Math.sin(o.time * 0.8) * 0.03 : 0;
+        const swing = Math.sin(exitK * Math.PI);          // the exit: only plays after gummy is back inside
         heroPacket.root.rotation.set(
           lerp(0, 0.08, kEase) + swing * 0.10,
           lerp(0, -0.18 + rotYIdle, kEase) - swing * 0.55,

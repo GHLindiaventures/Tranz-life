@@ -67,13 +67,13 @@ describe('Animation Timeline & Choreography Math', () => {
     let tearK = 0;
     if (v <= 0) {
       const tIn = sm(clamp((u - 0.52) / 0.14, 0, 1));
-      const tOut = sm(clamp((u - 0.88) / 0.06, 0, 1));
+      const tOut = sm(clamp((u - 0.88) / 0.05, 0, 1));
       tearK = tIn * (1 - tOut);
     }
 
     // 4. Ingredients callout (pointing to the emerged gummy)
-    const calloutA = v > 0 ? 0 : clamp((u - 0.64) / 0.03, 0, 1) * (1 - clamp((u - 0.88) / 0.03, 0, 1));
-    const calloutC = clamp((u - 0.66) / 0.22, 0, 1);
+    const calloutA = v > 0 ? 0 : clamp((u - 0.66) / 0.03, 0, 1) * (1 - clamp((u - 0.82) / 0.05, 0, 1));
+    const calloutC = clamp((u - 0.68) / 0.14, 0, 1);
 
     return { open, zoomK, tearK, calloutA, calloutC };
   }
@@ -118,31 +118,38 @@ describe('Animation Timeline & Choreography Math', () => {
     expect(tTorn.tearK).toBe(1); // Gummy is fully emerged
   });
 
-  it('Phase 4 (u = 0.66..0.88): Ingredients are called out pointing to the emerged gummy', () => {
-    const tStartCallouts = calcTimeline(0.68);
+  it('Phase 4 (u = 0.66..0.82): Ingredients are called out pointing to the emerged gummy', () => {
+    const tStartCallouts = calcTimeline(0.69);
     expect(tStartCallouts.zoomK).toBe(1);
     expect(tStartCallouts.tearK).toBe(1);
-    expect(tStartCallouts.calloutA).toBe(1);
-    expect(tStartCallouts.calloutC).toBeCloseTo(0.09, 1);
+    expect(tStartCallouts.calloutA).toBeCloseTo(1, 4);
+    expect(tStartCallouts.calloutC).toBeCloseTo(0.07, 1);
 
-    const tMidCallouts = calcTimeline(0.77);
+    const tMidCallouts = calcTimeline(0.75);
     expect(tMidCallouts.calloutA).toBe(1);
     expect(tMidCallouts.calloutC).toBeCloseTo(0.5, 1);
 
-    const tEndCallouts = calcTimeline(0.88);
+    const tEndCallouts = calcTimeline(0.82);
     expect(tEndCallouts.calloutA).toBe(1);
     expect(tEndCallouts.calloutC).toBeCloseTo(1, 4);
   });
 
-  it('Phase 5 (u = 0.88..0.98): Gummy retracts, packet re-seals, packet zooms back into cloud', () => {
-    const tCalloutsFading = calcTimeline(0.91);
-    expect(tCalloutsFading.calloutA).toBeLessThan(0.1);
-    expect(tCalloutsFading.tearK).toBeLessThan(0.5); // Gummy retracting
-    expect(tCalloutsFading.zoomK).toBe(1); // Packet still at front while closing
+  it('Phase 5 (u = 0.82..0.98): Ingredients fade out FIRST while gummy stays frozen, then gummy retracts', () => {
+    // At u = 0.87: ingredients are completely faded out (calloutA = 0), but gummy has NOT moved yet (tearK = 1)
+    const tCalloutsFaded = calcTimeline(0.87);
+    expect(tCalloutsFaded.calloutA).toBe(0);
+    expect(tCalloutsFaded.tearK).toBe(1); // Gummy is STILL 100% fully emerged in place!
+    expect(tCalloutsFaded.zoomK).toBe(1);
 
-    const tPacketReturning = calcTimeline(0.96);
-    expect(tPacketReturning.tearK).toBe(0); // Packet sealed
-    expect(tPacketReturning.zoomK).toBeLessThan(0.5); // Zooming back to cloud
+    // At u = 0.905: now gummy retracts back into pocket
+    const tGummyRetracting = calcTimeline(0.905);
+    expect(tGummyRetracting.calloutA).toBe(0);
+    expect(tGummyRetracting.tearK).toBeLessThan(0.6);
+
+    // At u = 0.94: gummy is sealed back inside
+    const tPacketSealed = calcTimeline(0.94);
+    expect(tPacketSealed.tearK).toBe(0); // Packet completely sealed
+    expect(tPacketSealed.zoomK).toBe(1);
 
     const tBackInCloud = calcTimeline(1.0);
     expect(tBackInCloud.zoomK).toBe(0); // Back in cloud with other packets
