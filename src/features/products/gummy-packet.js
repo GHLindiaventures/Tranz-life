@@ -21,7 +21,6 @@ export function createPacketModel(options = {}) {
     open: 0,
     bodyMesh: null,
     flapMesh: null,
-    innerMesh: null,
     gMesh: null,
     bodyBasePos: null,
     flapBasePos: null,
@@ -35,7 +34,7 @@ export function createPacketModel(options = {}) {
   const loadGummy = new Promise((resolve) => {
     if (typeof document === 'undefined') {
       // Headless / Node testing fallback
-      const geo = new THREE.PlaneGeometry(0.56, 0.45);
+      const geo = new THREE.PlaneGeometry(0.86, 0.86);
       const mat = new THREE.MeshBasicMaterial({ transparent: true });
       const mesh = new THREE.Mesh(geo, mat);
       mesh.renderOrder = 10;
@@ -55,8 +54,8 @@ export function createPacketModel(options = {}) {
         texture.minFilter = THREE.LinearMipmapLinearFilter;
         texture.magFilter = THREE.LinearFilter;
 
-        // Aspect ratio: 331 / 267 = 1.24. Size: 0.56 x 0.45
-        const geo = new THREE.PlaneGeometry(0.56, 0.45);
+        // Quad scaled so 500x500 texture gives exact 0.56 x 0.45 visible gummy
+        const geo = new THREE.PlaneGeometry(0.86, 0.86);
         const mat = new THREE.MeshBasicMaterial({
           map: texture,
           transparent: true,
@@ -72,7 +71,10 @@ export function createPacketModel(options = {}) {
         resolve(mesh);
       },
       undefined,
-      () => resolve(null)
+      (err) => {
+        console.error('Error loading gummy texture:', err);
+        resolve(null);
+      }
     );
   });
 
@@ -95,13 +97,6 @@ export function createPacketModel(options = {}) {
     mat.metalness = 0.12;
     mat.envMapIntensity = 0.6;
     mat.depthWrite = true;
-
-    const innerMat = new THREE.MeshStandardMaterial({
-      color: 0x141812,
-      roughness: 0.28,
-      metalness: 0.88,
-      side: THREE.DoubleSide
-    });
 
     const posAttr = origGeo.attributes.position;
     const idx = origGeo.index;
@@ -152,21 +147,11 @@ export function createPacketModel(options = {}) {
     const flapMesh = new THREE.Mesh(flapGeo, mat);
     flapMesh.renderOrder = 2;
 
-    // Inner cavity lining inside packet: realistic metallic foil sleeve
-    const innerGeo = new THREE.CylinderGeometry(0.32, 0.32, 0.42, 32, 1, true);
-    innerGeo.rotateZ(Math.PI / 2);
-    innerGeo.scale(1.0, 0.72, 0.48);
-    innerGeo.translate(0.36, 0, 0);
-    const innerMesh = new THREE.Mesh(innerGeo, innerMat);
-    innerMesh.renderOrder = 0;
-    innerMesh.visible = false;
-
     root.add(bodyMesh);
     root.add(flapMesh);
-    root.add(innerMesh);
 
     if (gMesh) {
-      gMesh.position.set(0.25, 0, 0);
+      gMesh.position.set(0.28, 0, 0);
       gMesh.visible = false;
       root.add(gMesh);
       state.gMesh = gMesh;
@@ -174,7 +159,6 @@ export function createPacketModel(options = {}) {
 
     state.bodyMesh = bodyMesh;
     state.flapMesh = flapMesh;
-    state.innerMesh = innerMesh;
     state.bodyGeo = bodyGeo;
     state.flapGeo = flapGeo;
     state.bodyBasePos = bodyBasePos;
@@ -191,7 +175,7 @@ export function createPacketModel(options = {}) {
     t = Math.max(0, Math.min(1, t));
     state.open = t;
 
-    const { bodyGeo, flapGeo, bodyMesh, flapMesh, innerMesh, gMesh, bodyBasePos, flapBasePos } = state;
+    const { bodyGeo, flapGeo, bodyMesh, flapMesh, gMesh, bodyBasePos, flapBasePos } = state;
     const bodyPos = bodyGeo.attributes.position.array;
     const flapPos = flapGeo.attributes.position.array;
 
@@ -205,20 +189,17 @@ export function createPacketModel(options = {}) {
       flapGeo.computeVertexNormals();
       flapMesh.position.set(0, 0, 0);
       flapMesh.rotation.set(0, 0, 0);
-      innerMesh.visible = false;
       if (gMesh) {
         gMesh.visible = false;
-        gMesh.position.set(0.20, 0, 0);
+        gMesh.position.set(0.28, 0, 0);
       }
       return;
     }
 
-    innerMesh.visible = true;
-
-    // 1. Body Mouth Opening: Lips puff apart in Z, creating a clear 3D open pocket
+    // 1. Body Mouth Opening: Lips puff apart in Z near the cut edge
     const mouthEase = Math.min(1, t * 1.6);
     const mEase = mouthEase * mouthEase * (3 - 2 * mouthEase);
-    const puffZ = 0.26 * mEase;
+    const puffZ = 0.22 * mEase;
 
     const cutX = 0.58;
 
@@ -227,8 +208,8 @@ export function createPacketModel(options = {}) {
       const by = bodyBasePos[i + 1];
       const bz = bodyBasePos[i + 2];
 
-      if (bx > 0.18) {
-        const factor = Math.min(1, Math.max(0, (bx - 0.18) / (cutX - 0.18)));
+      if (bx > 0.28) {
+        const factor = Math.min(1, Math.max(0, (bx - 0.28) / (cutX - 0.28)));
         const edgeK = factor * factor;
         const vEnv = Math.max(0, 1.0 - Math.pow(by / 0.52, 2));
 
