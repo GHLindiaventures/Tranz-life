@@ -9,32 +9,40 @@ const BRAND = {
 
 const DETAILS = {
   gummies: {
-    eyebrow: 'Respiratory Wellness · PulmoClear™ formulation',
+    eyebrow: 'Nature-Inspired Respiratory Wellness · PulmoClear™ Formulation',
     title: 'TranzLife Lung Booster Gummies',
     tagline: 'Breathe Well. Live Better. Embrace Every Breath.',
     intro: [
       'Discover a new approach to everyday wellness with TranzLife Lung Booster Gummies, inspired by traditional botanical knowledge and contemporary product innovation.',
-      'Selected botanicals, vitamins and minerals come together in a convenient gummy format designed for modern lifestyles, rooted in nature-inspired innovation and a commitment to quality.'
+      'Developed under the wellness vision of TranzLife Biosciences, our gummy formulation concept brings together selected botanicals, vitamins and minerals in a convenient format designed for modern lifestyles.'
     ],
-    listTitle: 'Targeted botanical actions in every gummy',
+    listTitle: 'The Power of Botanicals in Every Gummy',
+    listSubtitle: 'Inspired by India’s rich botanical heritage, the TranzLife Lung Booster Gummies formulation combines selected plant-derived ingredients with essential micronutrients.',
     list: [
-      ['Airway Clearance', 'Vasaka and long pepper traditionally valued for supporting clear, comfortable respiratory flow.'],
-      ['Mucosal Soothing', 'Tulsi and licorice root provide gentle, comforting plant-derived nourishment for throat and chest.'],
-      ['Bioavailability & Warmth', 'Dry ginger and black pepper with piperine promote natural absorption and internal warmth.'],
-      ['Phytochemical Defense', 'Black turmeric, cumin, and small onion extract contribute distinctive antioxidant richness.'],
-      ['Cellular Resilience', 'Balanced Vitamin C, Vitamin D3, and Zinc support normal immune defenses and tissue vitality.']
+      ['Tulsi (Holy Basil)', 'A traditional Indian botanical valued in herbal wellness practices.'],
+      ['Vasaka', 'A botanical traditionally used in Ayurvedic respiratory wellness preparations.'],
+      ['Dry Ginger (Sukku)', 'A familiar botanical ingredient used in traditional wellness formulations.'],
+      ['Long Pepper (Thippili)', 'A traditional spice valued in Ayurvedic herbal preparations.'],
+      ['Black Pepper', 'A natural spice containing piperine, a compound studied for its interactions with certain nutrients and other substances.'],
+      ['Black Turmeric (Karumanjal)', 'A distinctive botanical being explored for its phytochemical properties.'],
+      ['Cumin (Jeera)', 'A traditional culinary ingredient included in the botanical formulation concept.'],
+      ['Licorice Root', 'A botanical used in traditional herbal preparations.'],
+      ['Small Onion Extract', 'A plant-derived ingredient included in the formulation concept.'],
+      ['Vitamin C, Vitamin D3 and Zinc', 'Essential micronutrients that contribute to normal physiological functions when supplied in appropriate quantities.']
     ],
-    highlightsTitle: 'Formulation highlights',
+    highlightsTitle: 'Why Choose TranzLife Lung Booster Gummies?',
     highlights: [
-      ['Standardized Botanical Extracts', 'Sourced with verified plant identity and strict purity standards.'],
-      ['Gelatin-Free Pectin Base', '100% plant-based chewy texture that is gentle on daily digestion.'],
-      ['Synergistic Micronutrient Matrix', 'Balanced levels of Vitamin C, D3, and Zinc for complementary immune support.'],
-      ['City Air Companion', 'Crafted specifically to support respiratory comfort against urban air pollutants.'],
-      ['Clean Label Commitment', 'No artificial colors, synthetic binders, or unnecessary fillers.']
+      ['Convenient Gummy Format', 'Designed for convenient consumption as directed on the product label.'],
+      ['Botanical-Inspired Formulation', 'Inspired by traditional plant-based wellness practices.'],
+      ['Micronutrient Inclusion', 'Incorporating vitamins and minerals as specified in the final formulation.'],
+      ['Quality-Focused Development', 'Emphasising ingredient specifications and formulation consistency.'],
+      ['Modern Wellness Approach', 'Bringing botanical inspiration and contemporary product development together.']
     ],
-    closingTitle: 'Daily Respiratory Vitality',
-    closing: 'Formulated to integrate seamlessly into your morning routine, providing consistent plant-based defense for active city life.',
-    note: 'Use only as directed on the product label. This product is not a substitute for medical treatment or a means of preventing or curing respiratory disease. Consult a qualified healthcare professional if you have a respiratory condition or take regular medication.'
+    closingTitle: 'Wellness Inspired by Nature. Innovation Guided by Science.',
+    closing: 'At TranzLife Biosciences, we believe that responsible innovation begins with understanding nature and advances through scientific knowledge. Our commitment is to explore thoughtfully developed wellness products that align with contemporary consumer needs, quality expectations and applicable regulatory requirements. TranzLife Lung Booster Gummies represent this philosophy through a convenient gummy format inspired by botanical ingredients and nutritional science.',
+    journeyTitle: 'Make TranzLife Part of Your Wellness Journey',
+    journeyText: 'Discover the TranzLife approach to nature-inspired wellness and experience our commitment to innovation, quality and responsible product development. TRANZLIFE BIOSCIENCES: Innovating Life Beyond Limits.',
+    note: 'Use only as directed on the product label. This product should not be presented as a substitute for medical treatment or as a means of preventing or curing respiratory disease. Product benefits and claims must be supported by the final formulation, relevant evidence and applicable regulatory approvals. Consult a qualified healthcare professional if you have a respiratory condition or take regular medication.'
   },
 
   inhaler: {

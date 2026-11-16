@@ -9,23 +9,24 @@ import { $, $$ } from './utils/dom.js';
 // Deep formulation scientific metadata directly aligned with official TranzLife documentation
 const CLINICAL_DETAILS = {
   gummies: {
-    category: 'Lung Booster & Craving Control',
-    eyebrow: '100% AYURVEDIC NUTRACEUTICAL · FOR HEAVY SMOKERS',
+    category: 'Respiratory Wellness · PulmoClear™ Formulation',
+    eyebrow: 'NATURE-INSPIRED RESPIRATORY WELLNESS · BOTANICAL GUMMIES',
     rating: '4.9/5 (240+ reviews)',
     highlights: [
-      'Helps reduce the urge to smoke & manages withdrawal discomfort',
-      'Vasaka, Tulsi & Mulethi soothe and cleanse respiratory airways',
-      'Adaptogenic herbs ease stress, irritability, and restlessness',
-      'Natural Berry Flavour — 100% Gelatin-Free, No Added Sugar, Zero Nicotine'
+      'Convenient Gummy Format: Designed for convenient consumption as directed on the product label.',
+      'Botanical-Inspired Formulation: Inspired by traditional plant-based wellness practices.',
+      'Micronutrient Inclusion: Incorporating vitamins and minerals as specified in the final formulation.',
+      'Quality-Focused Development: Emphasising ingredient specifications and formulation consistency.',
+      'Modern Wellness Approach: Bringing botanical inspiration and contemporary product development together.'
     ],
-    botanicals: 'Vasaka (Adhatoda vasica) 100mg, Tulsi (Ocimum sanctum) 100mg, Mulethi (Glycyrrhiza glabra) 100mg, Turmeric (Curcuma longa) 80mg, Giloy (Tinospora cordifolia) 80mg, Black Pepper (Piper nigrum) 50mg, Vitamin C 40mg, Vitamin D3 10mcg, Zinc 5mg.',
-    usage: 'Adults: 2 gummies twice daily after meals. Chew well before swallowing. Do not exceed the recommended daily usage. Not recommended for pregnant or lactating women.',
-    mechanism: 'Vasicine from Vasaka acts as a natural bronchodilator and mucolytic agent to liquefy tar, while Tulsi and Mulethi soothe inflamed mucosal lining. Black pepper extract and adaptogens help stabilize dopamine receptors during acute craving spikes.',
+    botanicals: 'Tulsi (Holy Basil), Vasaka, Dry Ginger (Sukku), Long Pepper (Thippili), Black Pepper, Black Turmeric (Karumanjal), Cumin (Jeera), Licorice Root, Small Onion Extract, Vitamin C, Vitamin D3 and Zinc.',
+    usage: 'Use only as directed on the product label. This product should not be presented as a substitute for medical treatment or as a means of preventing or curing respiratory disease. Consult a qualified healthcare professional if you have a respiratory condition or take regular medication.',
+    mechanism: 'Inspired by traditional botanical knowledge and contemporary product innovation, bringing together selected botanicals, vitamins and minerals in a convenient pectin gummy format designed for modern lifestyles.',
     packaging: 'High-barrier biophotonic container with tamper-evident seal. 60 Gummies. Barcode: 8 906132 540147. Mfg. Lic. No.: TN/AYU/24/1234.',
     scienceCards: [
-      { title: 'Bronchial Mucus Clearance', text: 'Vasicine stimulates ciliary movement in the bronchial tree, rapidly clearing accumulated particulate matter.' },
-      { title: 'Nicotine Craving Regulation', text: 'Black pepper and adaptogenic actives interact with neuro-receptors to mitigate withdrawal irritability and craving frequency.' },
-      { title: 'Antioxidant Lung Shield', text: 'Synergistic Vitamin C, Zinc, and Curcumin neutralize free radicals caused by tobacco smoke.' }
+      { title: 'The Power of Botanicals', text: 'Combines traditional Indian botanicals with essential micronutrients inspired by India’s rich botanical heritage.' },
+      { title: 'Wellness Inspired by Nature', text: 'At TranzLife Biosciences, responsible innovation begins with understanding nature and advances through scientific knowledge.' },
+      { title: 'Innovating Life Beyond Limits', text: 'Thoughtfully developed wellness products that align with contemporary consumer needs and strict quality expectations.' }
     ]
   },
   inhaler: {

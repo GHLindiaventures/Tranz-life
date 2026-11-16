@@ -376,7 +376,7 @@ function buildDetails(container, product, D, story) {
     '<li style="--i:' + i + '"><b>' + esc(t) + '</b>' + (d ? '<span>' + esc(d) + '</span>' : '') + '</li>').join('') + '</ul>';
 
   // the given details
-  const list = hasD && D.list && D.list.length ? D.list.slice(0, 8) : [];
+  const list = hasD && D.list && D.list.length ? D.list : [];
   const listHtml = (items, k) => (k === 0 ? '<p class="sc-kick">' + esc(D.listTitle || '') + '</p>' : '') + li(items);
   // as many botanicals to a frame as fit the screen at the big size (4, or fewer when the copy is long)
   const maxH = innerHeight * (small ? 0.62 : 0.66);
@@ -385,8 +385,9 @@ function buildDetails(container, product, D, story) {
   let chunks = chunk(4);
   if (list.length) for (let size = 4; size >= 2; size--) { chunks = chunk(size); if (chunks.every((c, k) => measure(listHtml(c, k)) <= maxH)) break; }
   root.innerHTML = '';
-  const ledeHtml = hasD && D.intro[1] ? '<p class="sc-lede">' + esc(D.intro[1]) + '</p>' : '';
+  const ledeHtml = hasD && D.intro[1] ? '<p class="sc-lede">' + esc(D.intro[1]) + (D.listSubtitle ? '<br><br><span style="font-size:0.92em;opacity:0.88">' + esc(D.listSubtitle) + '</span>' : '') + '</p>' : '';
   const closingHtml = hasD && D.closing ? '<h4 class="sc-blk__h">' + esc(D.closingTitle) + '</h4><p>' + esc(D.closing) + '</p>' : '';
+  const journeyHtml = hasD && D.journeyText ? '<h4 class="sc-blk__h">' + esc(D.journeyTitle) + '</h4><p>' + esc(D.journeyText) + '</p>' : '';
   // the small print stands where the price used to be (right side); no price is shown. The bag button stays under it.
   const buyHtml = (hasD && D.note ? '<p>' + esc(D.note) + '</p>' : '') + '<button class="pill mini-add" type="button" data-id="' + product.id + '"><i aria-hidden="true">+</i><b>Add to bag</b></button>';
 
@@ -394,7 +395,11 @@ function buildDetails(container, product, D, story) {
   // paragraph and the closing words on the right), or - for a product without a botanicals list - the paragraph and the
   // closing words side by side; then the price. A side with nothing for it is simply left out.
   const frames = [], Lq = chunks.map((c, k) => ['sc-c--list', listHtml(c, k)]);
-  const Rq = [ledeHtml && ['sc-c--lede', ledeHtml], closingHtml && ['sc-c--closing', closingHtml]].filter(Boolean);
+  const Rq = [
+    ledeHtml && ['sc-c--lede', ledeHtml],
+    closingHtml && ['sc-c--closing', closingHtml],
+    journeyHtml && ['sc-c--closing', journeyHtml]
+  ].filter(Boolean);
   if (Lq.length) { Lq.forEach(item => frames.push({ l: [item], r: Rq.length ? [Rq.shift()] : [] })); while (Rq.length) frames.push({ l: [Rq.shift()], r: [] }); }
   else while (Rq.length) frames.push({ l: [Rq.shift()], r: Rq.length ? [Rq.shift()] : [] });
   const lastF = frames[frames.length - 1];
