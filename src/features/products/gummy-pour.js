@@ -277,8 +277,8 @@ function createIngredientsDirector(L) {
 
   // Hero Packet model with progressive tear animation and emerged ruby gummy
   const heroPacket = createPacketModel({
-    gummyScale: 0.50,
-    gummyColor: '#9e1022'
+    gummyScale: 0.56,
+    gummyColor: '#d91438'
   });
   heroPacket.root.visible = false;
   heroPacket.root.renderOrder = 20;
@@ -408,13 +408,13 @@ function createIngredientsDirector(L) {
         heroPacket.root.updateMatrixWorld(true);
 
         // --- TRUE 3D CAMERA ZOOM (DOLLY + FOV) ---
-        // Look target: frames packet & emerged gummy
+        // Look target: frames packet & emerged gummy perfectly
         if (o.mobile) {
-          lookZoom.set(heroPos.x + 0.15, heroPos.y - 0.28, heroPos.z);
-          posZoom.set(lookZoom.x, lookZoom.y, heroPos.z + 5.8);
+          lookZoom.set(heroPos.x + 0.25, heroPos.y - 0.25, heroPos.z);
+          posZoom.set(lookZoom.x, lookZoom.y, heroPos.z + 5.6);
         } else {
-          lookZoom.set(heroPos.x + 0.52, heroPos.y, heroPos.z);
-          posZoom.set(lookZoom.x, lookZoom.y, heroPos.z + 5.0);
+          lookZoom.set(heroPos.x + 0.58, heroPos.y, heroPos.z);
+          posZoom.set(lookZoom.x, lookZoom.y, heroPos.z + 5.2);
         }
 
         const fov0 = 30;

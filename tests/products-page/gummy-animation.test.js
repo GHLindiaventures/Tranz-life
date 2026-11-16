@@ -41,7 +41,7 @@ describe('Gummy Packet Model & Tear Animation', () => {
 
     const out = new THREE.Vector3();
     model.root.userData.getGummyWorldPos(out);
-    expect(out.x).toBeCloseTo(10 + 0.72 * 2);
+    expect(out.x).toBeCloseTo(10 + 1.16 * 2);
     expect(out.y).toBeCloseTo(20);
     expect(out.z).toBeCloseTo(5);
   });
@@ -162,8 +162,8 @@ describe('Animation Timeline & Choreography Math', () => {
     const camPos0 = new THREE.Vector3(0, 0, 24);
     const camLook0 = new THREE.Vector3(0, 0, 0);
     const heroPos = new THREE.Vector3(-0.45, 1.05, 0.35);
-    const lookZoom = new THREE.Vector3(heroPos.x + 0.52, heroPos.y, heroPos.z);
-    const posZoom = new THREE.Vector3(lookZoom.x, lookZoom.y, heroPos.z + 5.0);
+    const lookZoom = new THREE.Vector3(heroPos.x + 0.58, heroPos.y, heroPos.z);
+    const posZoom = new THREE.Vector3(lookZoom.x, lookZoom.y, heroPos.z + 5.2);
 
     const lerp = (a, b, t) => a + (b - a) * t;
 
@@ -191,13 +191,13 @@ describe('Animation Timeline & Choreography Math', () => {
     // At u = 0.34: camera fully dollied in to close-up
     const cZoomed = getCamState(0.34);
     expect(cZoomed.zoomK).toBe(1);
-    expect(cZoomed.pos.z).toBeCloseTo(heroPos.z + 5.0, 1);
+    expect(cZoomed.pos.z).toBeCloseTo(heroPos.z + 5.2, 1);
     expect(cZoomed.fov).toBeCloseTo(23, 1);
 
     // At u = 0.60: camera remains locked in close-up during ingredients callouts
     const cIngredients = getCamState(0.60);
     expect(cIngredients.zoomK).toBe(1);
-    expect(cIngredients.pos.z).toBeCloseTo(heroPos.z + 5.0, 1);
+    expect(cIngredients.pos.z).toBeCloseTo(heroPos.z + 5.2, 1);
 
     // At u = 1.0: camera has returned to wide overview
     const cReturn = getCamState(1.0);

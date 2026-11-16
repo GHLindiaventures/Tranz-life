@@ -45,14 +45,14 @@ export function createPacketModel(options = {}) {
         geo.rotateX(Math.PI * 0.5);
 
         const mat = new THREE.MeshPhysicalMaterial({
-          color: new THREE.Color(options.gummyColor || '#9e1022'),
-          emissive: new THREE.Color('#1c0205'),
-          roughness: 0.22,
+          color: new THREE.Color(options.gummyColor || '#d91438'),
+          emissive: new THREE.Color('#38020a'),
+          roughness: 0.16,
           metalness: 0.0,
-          clearcoat: 0.95,
-          clearcoatRoughness: 0.08,
-          reflectivity: 0.75,
-          envMapIntensity: 1.4,
+          clearcoat: 1.0,
+          clearcoatRoughness: 0.04,
+          reflectivity: 0.85,
+          envMapIntensity: 1.8,
           transparent: false,
           depthWrite: true
         });
@@ -83,13 +83,13 @@ export function createPacketModel(options = {}) {
             `#include <dithering_fragment>
             float spk = sugarSparkle(vObjPos);
             if (spk > 0.05) {
-              gl_FragColor.rgb += vec3(0.18, 0.16, 0.14) * spk;
+              gl_FragColor.rgb += vec3(0.20, 0.18, 0.15) * spk;
             }`
           );
         };
 
         const mesh = new THREE.Mesh(geo, mat);
-        mesh.renderOrder = 1;
+        mesh.renderOrder = 10;
         mesh.visible = false;
         resolve(mesh);
       } else {
@@ -230,17 +230,17 @@ export function createPacketModel(options = {}) {
       innerMesh.visible = false;
       if (gMesh) {
         gMesh.visible = false;
-        gMesh.position.set(0.25, 0, 0);
+        gMesh.position.set(0.20, 0, 0);
       }
       return;
     }
 
     innerMesh.visible = true;
 
-    // 1. Body Mouth Opening: Lips puff apart in Z, creating a clear 3D pocket
-    const mouthEase = Math.min(1, t * 1.4);
+    // 1. Body Mouth Opening: Lips puff apart in Z, creating a clear 3D open pocket
+    const mouthEase = Math.min(1, t * 1.6);
     const mEase = mouthEase * mouthEase * (3 - 2 * mouthEase);
-    const puffZ = 0.22 * mEase;
+    const puffZ = 0.26 * mEase;
 
     const cutX = 0.58;
 
@@ -249,8 +249,8 @@ export function createPacketModel(options = {}) {
       const by = bodyBasePos[i + 1];
       const bz = bodyBasePos[i + 2];
 
-      if (bx > 0.20) {
-        const factor = Math.min(1, Math.max(0, (bx - 0.20) / (cutX - 0.20)));
+      if (bx > 0.18) {
+        const factor = Math.min(1, Math.max(0, (bx - 0.18) / (cutX - 0.18)));
         const edgeK = factor * factor;
         const vEnv = Math.max(0, 1.0 - Math.pow(by / 0.52, 2));
 
@@ -258,29 +258,29 @@ export function createPacketModel(options = {}) {
         if (isFront) {
           bodyPos[i + 2] = bz + puffZ * edgeK * vEnv;
         } else {
-          bodyPos[i + 2] = bz - puffZ * 0.85 * edgeK * vEnv;
+          bodyPos[i + 2] = bz - puffZ * 0.92 * edgeK * vEnv;
         }
 
         if (bx > cutX - 0.08) {
           const rimK = (bx - (cutX - 0.08)) / 0.08;
-          bodyPos[i] = bx - 0.035 * rimK * mEase * vEnv;
+          bodyPos[i] = bx - 0.04 * rimK * mEase * vEnv;
         }
       }
     }
     bodyGeo.attributes.position.needsUpdate = true;
     bodyGeo.computeVertexNormals();
 
-    // 2. Tear Flap: Peels away to the right and back, revealing the pocket opening
-    const peelT = Math.min(1, t * 1.3);
+    // 2. Tear Flap: SEPARATES completely from the packet and drifts away to the right and down
+    const peelT = Math.min(1, t * 1.5);
     const peelEase = peelT * peelT * (3 - 2 * peelT);
 
-    const flapSlideX = 0.16 * peelEase + 0.14 * Math.max(0, t - 0.35);
-    const flapSlideY = 0.04 * peelEase;
-    const flapSlideZ = -0.22 * peelEase;
+    const flapSlideX = 0.70 * peelEase + 0.85 * Math.max(0, t - 0.20);
+    const flapSlideY = -0.16 * peelEase - 0.32 * Math.max(0, t - 0.30);
+    const flapSlideZ = -0.28 * peelEase;
 
     const flapRotY = -1.15 * peelEase;
-    const flapRotZ = 0.08 * peelEase;
-    const flapRotX = 0.10 * peelEase;
+    const flapRotZ = -0.32 * peelEase;
+    const flapRotX = 0.18 * peelEase;
 
     flapMesh.position.set(flapSlideX, flapSlideY, flapSlideZ);
     flapMesh.rotation.set(flapRotX, flapRotY, flapRotZ);
@@ -290,41 +290,43 @@ export function createPacketModel(options = {}) {
       const fy = flapBasePos[i + 1];
       const fz = flapBasePos[i + 2];
 
-      if (fx < cutX + 0.14) {
-        const curlK = (cutX + 0.14 - fx) / 0.14;
-        flapPos[i + 2] = fz - 0.08 * curlK * peelEase;
-        flapPos[i] = fx + 0.035 * curlK * peelEase;
+      if (fx < cutX + 0.16) {
+        const curlK = (cutX + 0.16 - fx) / 0.16;
+        flapPos[i + 2] = fz - 0.10 * curlK * peelEase;
+        flapPos[i] = fx + 0.04 * curlK * peelEase;
       }
     }
     flapGeo.attributes.position.needsUpdate = true;
     flapGeo.computeVertexNormals();
 
-    // 3. Gummy emerges from inside the pocket
+    // 3. Gummy emerges from inside the pocket into full, unobstructed visibility
     if (gMesh) {
-      if (t > 0.15) {
+      if (t > 0.06) {
         gMesh.visible = true;
-        const gT = Math.min(1, Math.max(0, (t - 0.15) / 0.85));
+        const gT = Math.min(1, Math.max(0, (t - 0.06) / 0.94));
         const gEase = gT * gT * (3 - 2 * gT);
 
-        // Slides from deep inside pocket (x = 0.25) through the mouth (x = 0.58) to resting pose (x = 0.72)
-        const startX = 0.25;
-        const endX = 0.72;
+        // Slides from inside the pocket (x = 0.28) through the mouth (x = 0.58)
+        // to a final position COMPLETELY OUTSIDE the packet (x = 1.16)
+        // Zero overlap between the emerged gummy and the packet!
+        const startX = 0.28;
+        const endX = 1.16;
         const gx = startX + (endX - startX) * gEase;
-        const gy = 0.01 + 0.015 * Math.sin(gEase * Math.PI);
-        const gz = 0.01;
+        const gy = 0.01 + 0.03 * Math.sin(gEase * Math.PI);
+        const gz = 0.03 + 0.06 * gEase;
 
-        const gScale = options.gummyScale || 0.48;
+        const gScale = options.gummyScale || 0.56;
         gMesh.scale.set(gScale, gScale, gScale);
 
         gMesh.position.set(gx, gy, gz);
         gMesh.rotation.set(
-          0.08 * Math.sin(gEase * Math.PI),
-          -0.15 + 0.25 * gEase,
-          -0.06 * Math.sin(gEase * Math.PI)
+          0.12 * Math.sin(gEase * Math.PI),
+          -0.12 + 0.35 * gEase,
+          -0.08 * Math.sin(gEase * Math.PI)
         );
       } else {
         gMesh.visible = false;
-        gMesh.position.set(0.25, 0, 0);
+        gMesh.position.set(0.28, 0, 0);
       }
     }
   }
@@ -338,7 +340,7 @@ export function createPacketModel(options = {}) {
       return state.gMesh.getWorldPosition(out);
     }
     root.getWorldPosition(out);
-    out.x += 0.72 * root.scale.x;
+    out.x += 1.16 * root.scale.x;
     return out;
   };
 
