@@ -59,23 +59,31 @@ describe('Animation Timeline & Choreography Math', () => {
     let zoomK = 0;
     if (v <= 0) {
       const zIn = sm(clamp((u - 0.38) / 0.14, 0, 1));
-      const zOut = sm(clamp((u - 0.94) / 0.04, 0, 1));
+      const zOut = sm(clamp((u - 0.96) / 0.03, 0, 1));
       zoomK = zIn * (1 - zOut);
     }
 
-    // 3. Hero packet tear & gummy emergence (starts at u = 0.52 after zoom is locked)
+    // 3. Gummy emergence & return schedule:
+    let gummyK = 0;
+    if (v <= 0) {
+      const gIn = sm(clamp((u - 0.52) / 0.14, 0, 1));
+      const gRetract = sm(clamp((u - 0.86) / 0.05, 0, 1));
+      gummyK = gIn * (1 - gRetract);
+    }
+
+    // 4. Hero packet tear & close schedule:
     let tearK = 0;
     if (v <= 0) {
       const tIn = sm(clamp((u - 0.52) / 0.14, 0, 1));
-      const tOut = sm(clamp((u - 0.88) / 0.05, 0, 1));
-      tearK = tIn * (1 - tOut);
+      const tClose = sm(clamp((u - 0.91) / 0.04, 0, 1));
+      tearK = tIn * (1 - tClose);
     }
 
-    // 4. Ingredients callout (pointing to the emerged gummy)
-    const calloutA = v > 0 ? 0 : clamp((u - 0.66) / 0.03, 0, 1) * (1 - clamp((u - 0.82) / 0.05, 0, 1));
+    // 5. Ingredients callout (pointing to the emerged gummy)
+    const calloutA = v > 0 ? 0 : clamp((u - 0.66) / 0.03, 0, 1) * (1 - clamp((u - 0.82) / 0.04, 0, 1));
     const calloutC = clamp((u - 0.68) / 0.14, 0, 1);
 
-    return { open, zoomK, tearK, calloutA, calloutC };
+    return { open, zoomK, tearK, gummyK, calloutA, calloutC };
   }
 
   it('Phase 1 (u = 0.00..0.38): Letters exit (0.00-0.14), cap unscrews slowly and packets pour out (0.14-0.38)', () => {
@@ -134,21 +142,27 @@ describe('Animation Timeline & Choreography Math', () => {
     expect(tEndCallouts.calloutC).toBeCloseTo(1, 4);
   });
 
-  it('Phase 5 (u = 0.82..0.98): Ingredients fade out FIRST while gummy stays frozen, then gummy retracts', () => {
-    // At u = 0.87: ingredients are completely faded out (calloutA = 0), but gummy has NOT moved yet (tearK = 1)
-    const tCalloutsFaded = calcTimeline(0.87);
+  it('Phase 5 (u = 0.82..0.98): Ingredients fade out, gummy moves inside, THEN pocket closes', () => {
+    // At u = 0.86: ingredients are completely faded out (calloutA = 0), but gummy has NOT moved yet (gummyK = 1), packet still open (tearK = 1)
+    const tCalloutsFaded = calcTimeline(0.86);
     expect(tCalloutsFaded.calloutA).toBe(0);
-    expect(tCalloutsFaded.tearK).toBe(1); // Gummy is STILL 100% fully emerged in place!
-    expect(tCalloutsFaded.zoomK).toBe(1);
+    expect(tCalloutsFaded.gummyK).toBe(1); // Gummy is STILL fully emerged!
+    expect(tCalloutsFaded.tearK).toBe(1); // Packet is STILL open!
 
-    // At u = 0.905: now gummy retracts back into pocket
-    const tGummyRetracting = calcTimeline(0.905);
-    expect(tGummyRetracting.calloutA).toBe(0);
-    expect(tGummyRetracting.tearK).toBeLessThan(0.6);
+    // At u = 0.885: gummy moves inside the open packet (gummyK ~ 0.5), packet is STILL open (tearK = 1)
+    const tGummyMovingInside = calcTimeline(0.885);
+    expect(tGummyMovingInside.gummyK).toBeLessThan(0.6);
+    expect(tGummyMovingInside.tearK).toBe(1); // Packet does NOT close over gummy while moving!
 
-    // At u = 0.94: gummy is sealed back inside
-    const tPacketSealed = calcTimeline(0.94);
-    expect(tPacketSealed.tearK).toBe(0); // Packet completely sealed
+    // At u = 0.91: gummy is completely inside (gummyK = 0), packet now starts closing (tearK = 1)
+    const tGummyInside = calcTimeline(0.91);
+    expect(tGummyInside.gummyK).toBe(0); // Gummy is inside
+    expect(tGummyInside.tearK).toBe(1);
+
+    // At u = 0.95: pocket is completely closed and sealed AFTER gummy is inside
+    const tPacketSealed = calcTimeline(0.95);
+    expect(tPacketSealed.gummyK).toBe(0);
+    expect(tPacketSealed.tearK).toBe(0); // Pocket sealed
     expect(tPacketSealed.zoomK).toBe(1);
 
     const tBackInCloud = calcTimeline(1.0);

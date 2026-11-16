@@ -497,34 +497,41 @@ function createIngredientsDirector(L) {
       }
 
       // 1b. Close-up on the gummy:
-      // Camera stays firmly locked tight in close-up while ingredients are shown AND while they fade out.
-      // Only after the gummy has retracted back inside (u >= 0.93) does the camera ease back out.
+      // Camera stays firmly locked tight in close-up while:
+      // - ingredients are shown (u = 0.66..0.82)
+      // - ingredients fade out (u = 0.82..0.86)
+      // - gummy moves inside the packet (u = 0.86..0.91)
+      // - pocket closes shut after gummy is inside (u = 0.91..0.95)
+      // Only after the packet is completely closed (u >= 0.95) does the camera ease back out!
       closeK = 0; exitK = 0;
       if (vVal <= 0) {
         const cIn = sm(clamp((u - 0.58) / 0.08, 0, 1));
-        const cOut = sm(clamp((u - 0.93) / 0.05, 0, 1));
+        const cOut = sm(clamp((u - 0.95) / 0.04, 0, 1));
         closeK = cIn * (1 - cOut);
-        exitK = sm(clamp((u - 0.93) / 0.06, 0, 1));
+        exitK = sm(clamp((u - 0.95) / 0.04, 0, 1));
       }
 
-      // 2. Tear schedule: flap peels, pouch mouth opens
-      // Packet tears open at u = 0.52..0.66. Once open, the packet mouth stays OPEN (tearK = 1).
-      // The pocket DOES NOT close over the gummy!
-      let tearK = 0;
-      if (vVal <= 0) {
-        tearK = sm(clamp((u - 0.52) / 0.14, 0, 1));
-      }
-
-      // 3. Gummy emergence & return schedule:
+      // 2. Gummy emergence & return schedule:
       // Emerges at u = 0.52..0.66 to 1.0 (endX = 1.16)
-      // Stays frozen at 1.0 during ingredient display (0.66..0.82) AND during ingredient fade-out (0.82..0.87)
-      // Only THEN at u = 0.88..0.93 does the gummy slide back into the open pocket (gummyK: 1.0 -> 0.0)
-      // Notice: while gummy slides in, tearK stays 1.0 so the packet mouth stays open and does NOT close over the gummy!
+      // Stays frozen at 1.0 while ingredients show (0.66..0.82) AND while ingredients fade out (0.82..0.86)
+      // ONLY THEN at u = 0.86..0.91 does the gummy move and go inside the packet (1.0 -> 0.0)
       let gummyK = 0;
       if (vVal <= 0) {
         const gIn = sm(clamp((u - 0.52) / 0.14, 0, 1));
-        const gRetract = sm(clamp((u - 0.88) / 0.05, 0, 1));
+        const gRetract = sm(clamp((u - 0.86) / 0.05, 0, 1));
         gummyK = gIn * (1 - gRetract);
+      }
+
+      // 3. Tear schedule: flap peels, pouch mouth opens
+      // Opens at u = 0.52..0.66.
+      // Stays fully open (tearK = 1) while ingredients show, fade out, AND while gummy moves inside!
+      // The pocket DOES NOT close over the gummy!
+      // ONLY AFTER the gummy is safely inside the packet (u >= 0.91) does the pocket close (u = 0.91..0.95)!
+      let tearK = 0;
+      if (vVal <= 0) {
+        const tIn = sm(clamp((u - 0.52) / 0.14, 0, 1));
+        const tClose = sm(clamp((u - 0.91) / 0.04, 0, 1));
+        tearK = tIn * (1 - tClose);
       }
 
       // Update instanced cloud (hide packet #0 when zoomK is active)

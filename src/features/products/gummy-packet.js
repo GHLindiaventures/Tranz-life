@@ -270,9 +270,9 @@ export function createPacketModel(options = {}) {
         }
         const gEase = gK * gK * (3 - 2 * gK);
 
-        // Slides from inside the open pocket mouth (x = 0.36) to center stage outside (x = 1.16)
-        // Resting position at x = 0.36 is securely inside the open pocket, with the pocket lips remaining puffed open
-        const startX = 0.36;
+        // Slides from inside the pocket body (x = 0.28) through the mouth to center stage outside (x = 1.16)
+        // Resting position at x = 0.28 is completely inside the packet body
+        const startX = 0.28;
         const endX = 1.16;
         const gx = startX + (endX - startX) * gEase;
         const gy = 0.01 + 0.03 * Math.sin(gEase * Math.PI);

@@ -662,7 +662,7 @@ function initProductJourney() {
       letters = sm(clamp(ing.u / cfg.letters, 0, 1));
       open = ing.v > 0 ? 1 - clamp(ing.v / 0.88, 0, 1) : clamp((ing.u - cfg.open0) / (cfg.open1 - cfg.open0), 0, 1);   // cap starts only AFTER side letters cleanly exit (tuned +0.02 for 2-point slower unscrew)
       calloutC = clamp((ing.u - 0.68) / 0.14, 0, 1);
-      calloutA = ing.v > 0 ? 0 : clamp((ing.u - 0.66) / 0.03, 0, 1) * (1 - clamp((ing.u - 0.82) / 0.05, 0, 1));
+      calloutA = ing.v > 0 ? 0 : clamp((ing.u - 0.66) / 0.03, 0, 1) * (1 - clamp((ing.u - 0.82) / 0.04, 0, 1));
       if (ov.state === 'closing') { open *= a; calloutA *= a; }
       if (ingDir && open > 0) ingDir.pose(hold, open, { vw: geo.vw, vh, mobile: geo.mobile, front: restRot(i) });
     }
