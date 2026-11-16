@@ -188,6 +188,12 @@ console.log(`neck ${neck.V.length/3} verts, thread ${thr.V.length/3} verts`);
 
 js.scenes[js.scene || 0].nodes.push(pivotNode, neckNode, thrNode);
 
+// the scan's front label ("TranzLife ENERGY BOOSTERS") faces -Z; the site shows products from +Z, so turn the whole
+// bottle half a turn about its height axis (one root node; the parts keep their own transforms inside it)
+const scene = js.scenes[js.scene || 0];
+js.nodes.push({ name:'Energy_Booster', rotation:[0, 1, 0, 0], children:scene.nodes.slice() });
+scene.nodes = [js.nodes.length - 1];
+
 // 3. make it lighter for the web: drop data nothing uses any more (the scan's original index list) and shrink textures
 //    over MAX_TEX (the scan ships 4096px colour and normal maps) with Windows' System.Drawing, as JPEG
 const MAX_TEX = 2048;
