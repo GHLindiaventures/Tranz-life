@@ -25,7 +25,7 @@ describe('anonymous insights', () => {
     const dir = mkdtempSync(join(tmpdir(), 'tulsi-')), file = join(dir, 'i.jsonl');
     const prompts = [];
     const store = createInsights({ INSIGHTS_FILE:file }, { generateLabel:async p => { prompts.push(p); return 'dizziness, appetite loss \n'; } });
-    await store.record(ask('I feel dizzy and have no appetite since my wedding'), 'I feel dizzy and have no appetite since my wedding', { via:'fixed', first:true });
+    await store.record(ask('I feel strange since my wedding'), 'I feel strange since my wedding', { via:'fixed', first:true });
     await store.record(ask('I get acidity'), 'I get acidity', { via:'model' });
     await store.record(ask('hi'), 'hi', { via:'fixed' });
     await store.enquire('pulmoclear'); await store.enquire('not-a-product');
@@ -39,12 +39,12 @@ describe('anonymous insights', () => {
     const entries = [
       entryFor(ask('I want to quit smoking'), { first:true }), entryFor(ask('I get acidity'), { first:true }),
       entryFor(ask('acidity after food'), { first:true }), { ...entryFor(ask('I have a rash'), { first:true }), labels:['skin rash'] },
-      { d:'2026-01-01', k:'enquire', product:'craving-control' }
+      { d:'2026-01-01', k:'enquire', product:'breathefree' }
     ];
     const s = summarise(entries);
     expect(s.conversations).toBe(4); expect(s.topics[0]).toMatchObject({ id:'acidity', n:2, hasProduct:false });
     expect(s.gaps.topics[0]).toEqual({ name:'acidity or heartburn', n:2 }); expect(s.gaps.unmatched).toEqual([{ name:'skin rash', n:1 }]);
-    expect(s.products.find(p => p.id === 'craving-control')).toMatchObject({ shown:1, enquiries:1 });
+    expect(s.products.find(p => p.id === 'breathefree')).toMatchObject({ shown:1, enquiries:1 });
   });
   it('INSIGHTS=off saves nothing', async () => {
     const dir = mkdtempSync(join(tmpdir(), 'tulsi-')), file = join(dir, 'i.jsonl');

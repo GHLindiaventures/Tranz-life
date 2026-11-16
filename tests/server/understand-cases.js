@@ -3,7 +3,7 @@
 //   subject: self | other, concerns: topic ids (order matters only for the first), products: product ids shown.
 // t: messages, alternating user / assistant, ending with the user message being tested.
 const CC = 'craving-control', CG = 'craving-gummies', PC = 'pulmoclear', LB = 'liver-booster', EB = 'energy-booster', BF = 'breathefree', CR = 'cyclerelief';
-const SMOKE = [CC, CG, PC];
+const SMOKE = [BF, PC];   // client, 13 Nov 2026: only the 6 launch products
 
 const CASES = [
   // English paraphrases
@@ -80,7 +80,7 @@ const CASES = [
   { g:'subject', t:['my friend has diabetes', 'ok', 'I feel tired all the time'], subject:'self', concerns:['tired'], products:[EB] },
   { g:'subject', t:['my husband smokes a lot', 'ok', 'what can he use'], subject:'other', concerns:['smoking'], products:SMOKE },
   { g:'subject', t:['I am pregnant and stressed'], subject:'self', concerns:['stress'], products:[] },
-  { g:'subject', t:['my dad takes BP tablets and is tired'], subject:'other', concerns:['tired'], products:[] },
+  { g:'subject', t:['my dad takes BP tablets and is tired'], subject:'other', concerns:['tired'], products:[EB] },
   { g:'subject', t:['my father has diabetes', 'ok', 'I smoke daily'], subject:'self', concerns:['smoking'], products:SMOKE },
   { g:'subject', t:['my son has a cold'], subject:'other', concerns:['cold'], products:[] },
   { g:'subject', t:['en appa ku smoking pazhakkam'], subject:'other', concerns:['smoking'], products:SMOKE },
@@ -106,7 +106,7 @@ const CASES = [
   { g:'none', t:['I go for a walk every morning'], concerns:[], products:[] },
   { g:'none', t:['hi'], concerns:[], products:[] },
   { g:'none', t:['thanks'], concerns:[], products:[] },
-  { g:'none', t:['dizzy and no appetite'], concerns:[], products:[] },
+  { g:'everyday', t:['dizzy and no appetite'], concerns:['dizzy', 'appetite'], alt:['appetite'], products:[] },   // a topic since the knowledge base (13 Nov 2026)
   { g:'none', t:['hello bro how are you'], concerns:[], products:[] },
   { g:'none', t:['enaku udambu sari illa'], concerns:[], products:[] },
   { g:'none', t:['nice talking to you'], concerns:[], products:[] }

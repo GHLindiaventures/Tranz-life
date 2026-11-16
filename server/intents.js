@@ -1,3 +1,4 @@
+import { MORE_EXAMPLES } from './wellness-tips-more.js';
 // Example messages for the semantic understanding layer (server/understand.js).
 //
 // At server start every example is turned into an embedding. A visitor's message is matched against them, and the
@@ -158,5 +159,8 @@ const INTENT_EXAMPLES = {
     'I cook at home every day', 'evening la friends oda vilayaduven', 'I go jogging in the park', 'I moved to Bangalore last month'
   ]
 };
+
+// examples for the extra topics (server/wellness-tips-more.js)
+Object.assign(CONCERN_EXAMPLES, MORE_EXAMPLES);
 
 export { CONCERN_EXAMPLES, INTENT_EXAMPLES };

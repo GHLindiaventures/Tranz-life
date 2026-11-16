@@ -295,9 +295,9 @@
   ],
   "products": [],
   "intent": "health_problem",
-  "subject": null,
+  "subject": "self",
   "emergency": false,
-  "via": "embed"
+  "via": "llm"
  },
  "எனக்கு மன அழுத்தம் அதிகம்": {
   "concerns": [
@@ -451,21 +451,23 @@
  },
  "kannu romba vali ah iruku": {
   "concerns": [
-   "stress"
+   "eyes"
+  ],
+  "products": [],
+  "intent": "health_problem",
+  "subject": "self",
+  "emergency": false,
+  "via": "llm"
+ },
+ "muthugu valikuthu": {
+  "concerns": [
+   "ear"
   ],
   "products": [],
   "intent": "health_problem",
   "subject": null,
   "emergency": false,
   "via": "embed"
- },
- "muthugu valikuthu": {
-  "concerns": [],
-  "products": [],
-  "intent": "health_problem",
-  "subject": "self",
-  "emergency": false,
-  "via": "llm"
  },
  "mudi romba kottuthu": {
   "concerns": [
@@ -546,9 +548,7 @@
   "via": "embed"
  },
  "tierd all day": {
-  "concerns": [
-   "tired"
-  ],
+  "concerns": [],
   "products": [],
   "intent": "health_problem",
   "subject": "self",
@@ -675,23 +675,24 @@
  },
  "I am pregnant and stressed": {
   "concerns": [
+   "pregnancy",
    "stress"
+  ],
+  "products": [],
+  "intent": "health_problem",
+  "subject": "self",
+  "emergency": false,
+  "via": "llm"
+ },
+ "my dad takes BP tablets and is tired": {
+  "concerns": [
+   "bp"
   ],
   "products": [],
   "intent": "health_problem",
   "subject": null,
   "emergency": false,
   "via": "embed"
- },
- "my dad takes BP tablets and is tired": {
-  "concerns": [
-   "tired"
-  ],
-  "products": [],
-  "intent": "health_problem",
-  "subject": "other",
-  "emergency": false,
-  "via": "llm"
  },
  "I smoke daily": {
   "concerns": [
@@ -776,7 +777,7 @@
  "what do you have for smokers": {
   "concerns": [],
   "products": [
-   "craving-control"
+   "breathefree"
   ],
   "intent": "recommend",
   "subject": null,
@@ -899,9 +900,11 @@
   "via": "embed"
  },
  "dizzy and no appetite": {
-  "concerns": [],
+  "concerns": [
+   "appetite"
+  ],
   "products": [],
-  "intent": "other",
+  "intent": "health_problem",
   "subject": null,
   "emergency": false,
   "via": "embed"

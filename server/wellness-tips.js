@@ -20,11 +20,13 @@
 //   sugar   contains sugar or honey (dropped when diabetes is mentioned)
 //   adult   adults only (dropped for children)
 
+import { MORE_CONCERNS } from './wellness-tips-more.js';
+
 const CONCERNS = [
   {
     id:'period', label:'period cramps', products:['cyclerelief'],
     // pain or cramps must be mentioned: late, missed or irregular periods are not this topic (they need a doctor)
-    match:/(period|menstrua|menses|mensus|chums|maadhavidai|maathavidai|matha\s*vidai|பீரியட்|மாதவிடாய்).{0,45}(pain|painful|cramp|ache|hurt|discomfort|vali|வலி)|(pain|painful|cramp|ache|hurt|vali|வலி)\w*.{0,45}(period|menstrua|menses|chums|maadhavidai|மாதவிடாய்)|\bcramps?\b|\bpms\b|month(ly)?\s*(cycle\s*)?(pain|cramp|discomfort|vali)|\bcycle\s*(pain|cramp|vali)\b|chums\s*pain/i,
+    match:/(period|menstrua|menses|mensus|chums|maadhavidai|maathavidai|matha\s*vidai|பீரியட்|மாதவிடாய்).{0,45}(pain|painful|cramp|ache|hurt|discomfort|vali|வலி)|(pain|painful|cramp|ache|hurt|vali|வலி)\w*.{0,45}(period|menstrua|menses|chums|maadhavidai|மாதவிடாய்)|(?<!\b(leg|legs|muscle|muscles|calf|calves|foot|feet|hand|hands|thigh|thighs|toe|toes|night|kaal|neck|back)\s+)\bcramps?\b(?!\s+(in|on|at)\s+(my|the|his|her|your)?\s*(legs?|calf|calves|foot|feet|hands?|thighs?|toes?|neck|back|muscles?)\b)|\bpms\b|month(ly)?\s*(cycle\s*)?(pain|cramp|discomfort|vali)|\bcycle\s*(pain|cramp|vali)\b|chums\s*pain/i,
     tips:[
       { text:'Put a hot water bag or heat pad, wrapped in a towel, on your lower tummy.', kind:'heat', uses:['heat'] },
       { text:'A warm bath or shower can help.', kind:'lifestyle' },
@@ -36,7 +38,7 @@ const CONCERNS = [
   },
   {
     id:'stress', label:'stress', products:['breathefree'],
-    match:/stress|can'?t\s*(concentrate|focus)|(concentrat\w*|focus)\s*(panna\s*)?mudiyala|kavalai|anxious|anxiety|tension|overwhelm|restless|nervous|work\s*pressure|exam\s*(pressure|fear|tension)|deadlines?|burn\s*-?\s*out|overthink|pathattam|padapadap\w*|mana\s*azhutham|\b(calm|calming|relax|relaxing)\b|peace\s*of\s*mind|aromatherap\w*|மன\s*அழுத்த|பதட்ட/i,
+    match:/stress|can'?t\s*(concentrate|focus)|(concentrat\w*|focus)\s*(panna\s*)?mudiyala|kavalai|anxious|anxiety|(?<!hyper|hypo)tension|overwhelm|restless|nervous|work\s*pressure|exam\s*(pressure|fear|tension)|deadlines?|burn\s*-?\s*out|overthink|pathattam|padapadap\w*|mana\s*azhutham|\b(calm|calming|relax|relaxing)\b|peace\s*of\s*mind|aromatherap\w*|மன\s*அழுத்த|பதட்ட/i,
     tips:[
       { text:'Pause for a few minutes and breathe slowly: in gently through your nose, and out slowly through your mouth.', kind:'lifestyle' },
       { text:'Break big tasks into small steps, and give yourself credit as you finish each one.', kind:'lifestyle' },
@@ -82,7 +84,7 @@ const CONCERNS = [
   },
   {
     id:'tired', label:'tiredness', products:['energy-booster'],
-    match:/(?<!\beyes?\s+(\w+\s+){0,3})tired(?!.{0,20}\b(feet|foot|kaal|eyes?)\b)|fatigue|exhaust(ed|ion|ing)\b|worn\s*out|drained|no\s*energy|low\s*energy|(low|less|no|poor)\s*stamina|stamina|night\s*shifts?|long\s*(working\s*|work\s*)?hours|after\s*(the\s*)?(gym|workout)|workouts?\s*(tired|recovery)|busy\s*schedule|energy\s*(illa|ille|kammi|kuraivu)|(?<!\b(lungs?|chest|breathing|knees?|legs?|eyes?|eyesight|immunity)\s+(\w+\s+){0,2})weak(ness)?\b(?!\s*(lungs?|immun))|run\s*down|dull\b|drows\w*|letharg\w*|sluggish|sorv|soarv|kalaippu|kalaipa|சோர்வ|களைப்பு/i,
+    match:/(?<!\beyes?\s+(\w+\s+){0,3})tired(?!.{0,20}\b(feet|foot|kaal|eyes?)\b)|fatigue|(?<!heat\s+)exhaust(ed|ion|ing)\b|worn\s*out|drained|no\s*energy|low\s*energy|(low|less|no|poor)\s*stamina|stamina|night\s*shifts?|long\s*(working\s*|work\s*)?hours|after\s*(the\s*)?(gym|workout)|workouts?\s*(tired|recovery)|busy\s*schedule|energy\s*(illa|ille|kammi|kuraivu)|(?<!\b(lungs?|chest|breathing|knees?|legs?|eyes?|eyesight|immunity)\s+(\w+\s+){0,2})weak(ness)?\b(?!\s*(lungs?|immun))|run\s*down|dull\b|drows\w*|letharg\w*|sluggish|sorv|soarv|kalaippu|kalaipa|சோர்வ|களைப்பு/i,
     tips:[
       { text:'Go to bed and get up at the same times each day, aiming for 6 to 9 hours of sleep.', kind:'lifestyle' },
       { text:'Eat well and stay active, even a short walk each day helps.', kind:'lifestyle' },
@@ -171,7 +173,7 @@ const CONCERNS = [
   },
   {
     id:'acidity', label:'acidity or heartburn', products:[],
-    match:/acidity|(stomach|tummy)\s*(pain|ache|upset)\s*after\s*(eating|food|meals?|lunch|dinner)|(after|from)\s*(eating\s*)?(outside|hotel|street)\s*food|acid\s*reflux|reflux|heartburn|indigestion|gas\s*trouble|bloat|heavy\s*(after|stomach)|oily\s*food|fatty\s*food|nenju\s*erichal|vayiru\s*erichal|erichal|நெஞ்செரிச்சல்/i,
+    match:/acidity|(stomach|tummy)\s*(pain|ache|upset)\s*after\s*(eating|food|meals?|lunch|dinner)|(after|from)\s*(eating\s*)?(outside|hotel|street)\s*food|acid\s*reflux|reflux|heartburn|indigestion|gas\s*trouble|bloat|heavy\s*(after|stomach)|oily\s*food|fatty\s*food|nenju\s*erichal|vayiru\s*erichal|(?<!(urine|moothiram|mootharam|uchaa|pee)(\s*la)?\s+)erichal|நெஞ்செரிச்சல்/i,
     tips:[
       { text:'Eat smaller meals more often, instead of big ones.', kind:'lifestyle' },
       { text:'Avoid eating in the 3 to 4 hours before bed.', kind:'lifestyle' },
@@ -183,7 +185,7 @@ const CONCERNS = [
   },
   {
     id:'cold', label:'a cold or cough', products:['pulmoclear'],
-    match:/common\s*cold|\ba\s*cold\b|\bhave\s*(a\s*)?cold\b|caught\s*(a\s*)?cold|cold\s*(and|&)\s*cough|runny\s*nose|blocked\s*nose|stuffy\s*nose|sore\s*throat|throat\s*pain|cough|sneez|congestion|tickl\w*|thummal|mookk?adaip+u|mooku\s*(ozhuguthu|adaippu|adaikuthu)|sali\s*pidi\w*|jaladosh|jalathosh|\bsali\b|irumal|thondai\s*vali|ஜலதோஷ|இருமல்|சளி/i,
+    match:/common\s*cold|\b(monsoon|seasonal|rainy\s*season|winter|weather)\s*(cold|cough|flu)\b|\ba\s*cold\b|\bhave\s*(a\s*)?cold\b|caught\s*(a\s*)?cold|cold\s*(and|&)\s*cough|runny\s*nose|blocked\s*nose|stuffy\s*nose|sore\s*throat|throat\s*pain|cough|sneez|congestion|tickl\w*|thummal|mookk?adaip+u|mooku\s*(ozhuguthu|adaippu|adaikuthu)|sali\s*pidi\w*|jaladosh|jalathosh|\bsali\b|irumal|thondai\s*vali|ஜலதோஷ|இருமல்|சளி/i,
     tips:[
       { text:'Rest well and drink plenty of fluids, like water.', kind:'lifestyle' },
       { text:'Sip warm water or warm fluids to soothe a tickle in the throat or chest.', kind:'lifestyle' },
@@ -208,7 +210,7 @@ const CONCERNS = [
   },
   {
     id:'eyes', label:'tired or sore eyes', products:[],
-    match:/\beyes?\b.{0,25}(pain|strain|tired|sore|dry|ache|hurt|burn|itch|irritat|watering)|(pain|strain|tired|sore|dry|aching|burning|itchy)\w*\s*(in\s*(my\s*)?)?eyes?\b|eye\s*(pain|strain)|kann?u\s+(\w+\s+){0,2}(vali|erichal|valikuthu|valikudhu|erikuthu|erikudhu)|கண்\s*வலி/i,
+    match:/\beyes?\b.{0,25}(pain|strain|tired|sore|dry|ache|hurt|burn|itch|irritat|watering)|(pain|strain|tired|sore|dry|aching|burning|itchy)\w*\s*(in\s*(my\s*)?)?eyes?\b|eye\s*(pain|strain)|kann?u\s+(\w+\s+){0,2}(vali|(?<!(urine|moothiram|mootharam|uchaa|pee)(\s*la)?\s+)erichal|valikuthu|valikudhu|erikuthu|erikudhu)|கண்\s*வலி/i,
     tips:[
       { text:'Take regular breaks to rest your eyes when using a screen or watching TV.', kind:'lifestyle' },
       { text:'Keep your computer screen just below eye level.', kind:'lifestyle' },
@@ -290,7 +292,7 @@ const CONCERNS = [
   },
   {
     id:'fever', label:'a mild fever', products:[], alwaysDoctor:true,
-    match:/\bfever\b|temperature|kaaichal|kaichal|காய்ச்சல்/i,
+    match:/(?<!hay\s+)\bfever\b|temperature|kaaichal|kaichal|காய்ச்சல்/i,
     tips:[
       { text:'Get plenty of rest.', kind:'lifestyle' },
       { text:'Drink plenty of fluids, mainly water, so you do not get dehydrated.', kind:'lifestyle' },
@@ -312,7 +314,7 @@ const CONCERNS = [
     sources:['https://www.nhs.uk/conditions/dandruff/']
   },
   {
-    id:'smoking', label:'quitting smoking or tobacco', products:['craving-control', 'craving-gummies', 'pulmoclear'],
+    id:'smoking', label:'quitting smoking or tobacco', products:['breathefree', 'pulmoclear'],
     // smoking, beedi, chewing tobacco, gutka, hookah, vaping; smoking also affects the lungs, so PulmoClear is suggested too
     // ("traffic smoke", "breathe factory smoke" is pollution, not smoking)
     match:/(?<!\b(traffic|vehicle|factory|exhaust|chimney|kitchen|wood|fire|bus|breathe|breathing|inhale|inhaling)\s+)smok(?!e\s+from\s+(traffic|vehicles?|factor))|\bcig\w*|\bsig(a|e)ret\w*|\bpuffs?\b|\bbeedi|\bbidi|tobacco|nicotine|gutka|gutkha|pan\s*masala|\bkhaini\b|hookah|vape|vaping|quit\s*(smoking|tobacco)|thamm?\s*adik|\bcrav(e|es|ing|ings)\b|urge\s*to\s*smoke|chain\s*smok\w*|heavy\s*smok\w*|pugai|புகை/i,
@@ -328,5 +330,8 @@ const CONCERNS = [
     sources:['https://www.nhs.uk/better-health/quit-smoking/', 'https://ntcp.mohfw.gov.in/national_tobacco_quit_line_services']
   }
 ];
+
+// extra topics from public health guidance (November 2026): conditions and everyday problems
+CONCERNS.push(...MORE_CONCERNS);
 
 export { CONCERNS };

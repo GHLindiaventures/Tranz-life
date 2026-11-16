@@ -66,6 +66,8 @@
 .ch-actions{display:flex;flex-wrap:wrap;gap:8px}
 .ch-action{display:inline-flex;align-items:center;font-size:14px;font-weight:700;padding:7px 14px;border-radius:999px;background:var(--forest);color:#f4f8ef;transition:background .25s}
 .ch-action:hover{background:var(--sage)}
+.ch-wa{background:#1f8f4e}
+.ch-wa:hover{background:#18723e}
 .ch-restart{background:none;color:var(--forest);border:1px solid var(--line-strong)}
 .ch-restart:hover{background:var(--ground-2);color:var(--forest)}
 

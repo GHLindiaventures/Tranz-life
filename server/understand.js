@@ -17,6 +17,7 @@
 import { CONCERNS } from './wellness-tips.js';
 import { CONCERN_EXAMPLES, INTENT_EXAMPLES } from './intents.js';
 import { CATALOG } from '../src/data/catalog.js';
+import { FAQ_EXAMPLES } from './faq.js';
 
 const INTENTS = ['health_problem', 'product_question', 'recommend', 'shop', 'smalltalk', 'other'];
 const CONCERN_IDS = CONCERNS.map(c => c.id);
@@ -32,6 +33,9 @@ const DEFAULTS = {
   plainMargin:0.04,  // a topic must beat the closest non-health example by this much, or the LLM decides
   intent:0.62,       // an intent example must score at least this to count
   product:0.80,      // a product's matching data must score at least this
+  faq:0.71,          // a product/shop question example (server/faq.js) must score at least this, beat the next one by
+  faqMargin:0.015,   //   faqMargin and the best health topic by faqOverTopic; a general "suggest something" message keeps the
+  faqOverTopic:0.05, //   general answer (tuned 14 Nov 2026 on 108 product/shop questions and the 95 labelled health messages)
   embedTimeout:2000, llmTimeout:9000
 };
 
@@ -43,6 +47,8 @@ function documents(){
   const docs = [];
   for (const [id, list] of Object.entries(CONCERN_EXAMPLES)) if (CONCERN_IDS.includes(id)) list.forEach(text => docs.push({ kind:'concern', id, text }));
   for (const [id, list] of Object.entries(INTENT_EXAMPLES)) list.forEach(text => docs.push({ kind:'intent', id, text }));
+  // product and shop questions (server/faq.js): "a sweet supplement?", "cash on delivery?", "enaku inippa supplement"
+  for (const [id, list] of Object.entries(FAQ_EXAMPLES)) list.forEach(text => docs.push({ kind:'faq', id, text }));
   for (const p of CATALOG.filter(x => x.status === 'available'))
     [...(p.aliases || []), ...(p.forProblems || []).map(t => `product for ${t}`), ...(p.questions || [])].forEach(text => docs.push({ kind:'product', id:p.id, text }));
   return docs;
@@ -50,7 +56,7 @@ function documents(){
 
 // Step A scoring, separated so tests and the tuning script can run it on stored vectors.
 function score(vector, docs, vectors){
-  const best = { concern:{}, intent:{}, product:{} };
+  const best = { concern:{}, intent:{}, product:{}, faq:{} };
   docs.forEach((d, i) => { const s = cosine(vector, vectors[i]); if (!(best[d.kind][d.id] >= s)) best[d.kind][d.id] = s; });
   return best;
 }
@@ -74,7 +80,11 @@ function decide(best, t = DEFAULTS){
   // "unsupported": a complaint we have no approved tips for (dizziness, rashes...): no topic, no LLM, ask instead
   const noTopic = ['neutral', 'other', 'unsupported'].includes(intentHit);
   const intent = intentHit === 'neutral' || intentHit === 'unsupported' ? 'other' : intentHit || (concerns.length ? 'health_problem' : null);
-  return { concerns, products:noTopic ? [] : products, intent, ambiguous:ambiguous && !noTopic, top, second,
+  // a product or shop question, when it is clearly the closest meaning and closer than any health topic
+  const f = ranked(best.faq || {});
+  const faq = f[0] && f[0][1] >= t.faq && f[0][1] - (f[1]?.[1] || 0) >= t.faqMargin && f[0][1] - top >= t.faqOverTopic
+    && !(intentHit === 'recommend' && f[0][0] !== 'bestseller' && intentScore >= f[0][1] - 0.05) ? f[0][0] : null;
+  return { concerns, products:noTopic ? [] : products, intent, faq, faqScore:f[0]?.[1] || 0, ambiguous:ambiguous && !noTopic, top, second,
     candidates:c.slice(0, 5).map(([id]) => id) };
 }
 

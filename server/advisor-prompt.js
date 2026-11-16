@@ -5,7 +5,7 @@ import { CATALOG, COMING_SOON } from '../src/data/catalog.js';
 const ASSISTANT_NAME = 'Tulsi';
 
 function catalogue(){
-  return CATALOG.filter(p => p.status === 'available').map(p => `- ${p.name} (${[p.form, p.size, p.price ? `₹${p.price}` : 'price on request'].filter(Boolean).join(', ')}). ${p.about}${p.note ? ` ${p.note}` : ''}`).join('\n')
+  return CATALOG.filter(p => p.status === 'available').map(p => `- ${p.name} (${[p.form, p.size, p.price ? `₹${p.price}` : p.priceSoon ? 'price coming soon' : 'price on request'].filter(Boolean).join(', ')}). ${p.about}${p.note ? ` ${p.note}` : ''}`).join('\n')
     + `\nComing soon (not on sale yet, never recommend): ${COMING_SOON.join(', ')}.`;
 }
 

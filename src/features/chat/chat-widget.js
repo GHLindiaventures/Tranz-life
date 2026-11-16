@@ -7,7 +7,7 @@ import { inr } from '../../utils/format.js';
 
 const API = (import.meta.env.VITE_CHAT_API || '') + '/api/chat';
 const STORE = 'tl-chat-v1';
-const WELCOME = 'Hi, I\'m Tulsi 🌿 Tell me what\'s been bothering you, and we\'ll find a gentle, natural way to feel better. You can type in English, Tamil or Tanglish, and I\'ll reply in simple English. I share general wellness tips, not medical advice.';
+const WELCOME = 'Hi, I\'m Tulsi, TranzLife\'s wellness assistant 🌿 Tell me what\'s been bothering you, and I\'ll suggest the TranzLife product that may help, along with simple, natural care tips. You can also ask me about our products, prices or how to order. Type in English, Tamil or Tanglish, and I\'ll reply in simple English. I share general wellness guidance, not medical advice.';
 const CHIPS = ['Period cramps', 'Stressed at work', 'Dry, cracked feet', 'Always tired', 'Liver care', 'Can\'t sleep well'];
 
 const LEAF = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 19c0-8 5-13 14-14-1 9-6 14-14 14z"/><path d="M5 19c3-4 6-7 10-9"/></svg>';
@@ -32,6 +32,8 @@ const suggestRow = list => list && list.length ? `<div class="ch-chips ch-sugges
 
 // buttons the server asks for under a reply: open the contact form, or start a new chat
 const ACTIONS = {
+  // the official TranzLife WhatsApp number for enquiries and orders (client, 13 Nov 2026)
+  whatsapp:'<a class="ch-action ch-wa" href="https://wa.me/919150394443" target="_blank" rel="noopener">WhatsApp us</a>',
   contact:'<a class="ch-action ch-enquire" href="#contact" data-product="" data-id="">Contact our team</a>',
   new:'<button type="button" class="ch-action ch-restart">Start a new chat</button>'
 };
@@ -39,7 +41,7 @@ const actionRow = list => list && list.length ? `<div class="ch-actions">${list.
 
 function productCard(id){
   const p = CATALOG.find(x => x.id === id); if (!p) return '';
-  const meta = [p.form, p.size, p.price ? inr(p.price) : 'Price on request'].filter(Boolean).join(' · ');
+  const meta = [p.form, p.size, p.price ? inr(p.price) : p.priceSoon ? 'Price coming soon' : 'Price on request'].filter(Boolean).join(' · ');
   return `<div class="ch-prod"><span class="ch-prod-ic">${LEAF}</span>
     <div><b>${esc(p.name)}</b>${p.pitch ? `<span class="ch-prod-pitch">${esc(p.pitch)}</span>` : ''}<small>${esc(meta)}</small></div>
     <a class="ch-enquire" href="#contact" data-product="${esc(p.name)}" data-id="${esc(p.id)}">Enquire</a></div>`;

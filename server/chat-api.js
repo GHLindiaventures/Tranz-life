@@ -6,7 +6,7 @@
 //   - server/index.js serves it next to the built site for `npm start`
 import { emergencyReply, systemPrompt } from './advisor-prompt.js';
 import { analyse, routingNote } from './advisor-rules.js';
-import { fallbackReply, fixedReply, problems, replyActions, suggestChips } from './reply-check.js';
+import { NEXT_LINE, fallbackReply, fixedReply, problems, productLead, productTail, replyActions, suggestChips } from './reply-check.js';
 import { createUnderstanding } from './understand.js';
 import { createInsights } from './insights.js';
 
@@ -59,7 +59,10 @@ function createChatApi(env = {}){
     // The semantic layer helps with typos, Tamil and paraphrases; if it is missing or slow it returns null (regex only).
     const semantic = understanding ? await understanding.understandChat(msgs) : null;
     const a = analyse(msgs, { semantic });
-    const fixed = fixedReply(a);
+    // product questions are answered by the model from the products' facts; the fixed text is only the fallback
+    let fixed = a.modelWrite ? '' : fixedReply(a);
+    // helpful replies end by asking what next (client flow), with quick replies
+    if (fixed && a.askNext && !fixed.includes(NEXT_LINE)) fixed = `${fixed}\n\n${NEXT_LINE}`;
     if (fixed){
       // unmatched messages: only the length is logged, never the text
       if (a.mode === 'clarify') console.log(`[tulsi] clarify (message length ${msgs[msgs.length - 1].content.length})`);
@@ -68,20 +71,32 @@ function createChatApi(env = {}){
     // earlier turns only for a genuine follow-up about the same person; otherwise a clean context (no earlier replies to copy)
     const earlier = a.keepHistory ? msgs.slice(-5, -1) : [];
     const convo = [{ role:'system', content:SYSTEM }, ...earlier, { role:'system', content:routingNote(a) }, msgs[msgs.length - 1]];
-    let text = await generate(convo, .5, signal), found = problems(text, a), via = 'model';
+    // a slow or stuck model (timeout) never leaves the visitor with an error: the approved fallback answers instead
+    const draft = async (messages, temperature) => { try { return await generate(messages, temperature, signal); } catch(err){ if (signal?.aborted) throw err; console.log(`[tulsi] model failed: ${err.message}`); return null; } };
+    let text = await draft(convo, .5), found = text == null ? ['model unavailable'] : problems(text, a), via = 'model';
     const first = found;
-    if (found.length){
+    if (found.length && text != null){
       // second draft, told exactly what was wrong
       const fix = { role:'system', content:`Your previous draft broke these rules: ${found.join('; ')}. Write the reply again. Follow the routing note exactly, use only the approved tips, and fix every problem listed.` };
-      text = await generate([...convo, { role:'assistant', content:text }, fix], .2, signal); found = problems(text, a); via = 'retry';
+      text = await draft([...convo, { role:'assistant', content:text }, fix], .2); found = text == null ? ['model unavailable'] : problems(text, a); via = 'retry';
     }
     if (found.length){ text = fallbackReply(a); via = 'fallback'; }
     text = text.replace(/[ \t]+\n/g, '\n').replace(/\n{3,}/g, '\n\n').trim();
     const checked = text;
     // fixed sentences (e.g. "I can't advise on ashwagandha or doses") go first, written by code, not the model
+    // the TranzLife product comes first, then the model's care tips (client, 14 Nov 2026)
+    if (a.lead?.length) text = `${a.lead.join('\n\n')}\n\n${text}`;
+    // a model-written product answer: this person's cautions before it, the product's honesty note after
+    // (the fallback text already contains both)
+    if (a.modelWrite && via !== 'fallback'){
+      const before = productLead(a), after = productTail(a);
+      if (before.length) text = `${before.join(' ')}\n\n${text}`;
+      if (after.length) text = `${text}\n\n${after.join(' ')}`;
+    }
     if (a.prefix.length) text = `${a.prefix.join(' ')}\n\n${text}`;
     if (a.suffix.length) text = `${text}\n\n${a.suffix.join(' ')}`;
-    return { text, checked, products:a.products, suggest:[], actions:replyActions(a), via, problems:first, analysis:a };
+    if (a.askNext) text = `${text}\n\n${NEXT_LINE}`;
+    return { text, checked, products:a.products, suggest:suggestChips(a), actions:replyActions(a), via, problems:first, analysis:a };
   }
 
   async function chat(req, res){

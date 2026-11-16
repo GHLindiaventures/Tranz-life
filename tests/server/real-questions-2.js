@@ -1,7 +1,7 @@
 // Second held-out batch, written AFTER the fixes for real-questions.js and run once without tuning (an honest check).
 //   node scripts/understand-eval.mjs --set real2
 const CC = 'craving-control', CG = 'craving-gummies', PC = 'pulmoclear', LB = 'liver-booster', EB = 'energy-booster', BF = 'breathefree', CR = 'cyclerelief';
-const SMOKE = [CC, CG, PC];
+const SMOKE = [BF, PC];   // client, 13 Nov 2026: only the 6 launch products
 const TIPS = 'Here are a few simple things that may help...';
 
 const CASES = [
