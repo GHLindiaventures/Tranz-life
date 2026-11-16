@@ -507,16 +507,24 @@ function createIngredientsDirector(L) {
         exitK = sm(clamp((u - 0.93) / 0.06, 0, 1));
       }
 
-      // 2. Tear schedule: flap peels, pouch mouth opens, and gummy emerges
-      // Gummy stays 100% frozen fully emerged at tearK = 1 until u = 0.88.
-      // Ingredients & pointing lines completely fade out between u = 0.82 and 0.87.
-      // Gummy does NOT move at all until u = 0.88!
-      // Only THEN (after ingredients are completely gone) at u = 0.88..0.93 does the gummy slide back inside the pocket and flap closes.
+      // 2. Tear schedule: flap peels, pouch mouth opens
+      // Packet tears open at u = 0.52..0.66. Once open, the packet mouth stays OPEN (tearK = 1).
+      // The pocket DOES NOT close over the gummy!
       let tearK = 0;
       if (vVal <= 0) {
-        const tIn = sm(clamp((u - 0.52) / 0.14, 0, 1));
-        const tOut = sm(clamp((u - 0.88) / 0.05, 0, 1));
-        tearK = tIn * (1 - tOut);
+        tearK = sm(clamp((u - 0.52) / 0.14, 0, 1));
+      }
+
+      // 3. Gummy emergence & return schedule:
+      // Emerges at u = 0.52..0.66 to 1.0 (endX = 1.16)
+      // Stays frozen at 1.0 during ingredient display (0.66..0.82) AND during ingredient fade-out (0.82..0.87)
+      // Only THEN at u = 0.88..0.93 does the gummy slide back into the open pocket (gummyK: 1.0 -> 0.0)
+      // Notice: while gummy slides in, tearK stays 1.0 so the packet mouth stays open and does NOT close over the gummy!
+      let gummyK = 0;
+      if (vVal <= 0) {
+        const gIn = sm(clamp((u - 0.52) / 0.14, 0, 1));
+        const gRetract = sm(clamp((u - 0.88) / 0.05, 0, 1));
+        gummyK = gIn * (1 - gRetract);
       }
 
       // Update instanced cloud (hide packet #0 when zoomK is active)
@@ -556,7 +564,7 @@ function createIngredientsDirector(L) {
         const curScale = lerp(baseWorldScale, targetWorldScale, kEase) * (1 + Math.sin(exitK * Math.PI) * 0.06);
         heroPacket.root.scale.setScalar(curScale);
 
-        heroPacket.updateOpen(tearK);
+        heroPacket.updateOpen(tearK, gummyK);
         heroPacket.root.visible = true;
         heroPacket.root.updateMatrixWorld(true);
 

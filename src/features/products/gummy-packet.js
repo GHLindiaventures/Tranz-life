@@ -170,7 +170,7 @@ export function createPacketModel(options = {}) {
     }
   });
 
-  function updateOpen(t) {
+  function updateOpen(t, gProgress) {
     if (!state.ready) return;
     t = Math.max(0, Math.min(1, t));
     state.open = t;
@@ -260,19 +260,19 @@ export function createPacketModel(options = {}) {
     flapGeo.computeVertexNormals();
 
     // 3. Gummy emerges from inside the pocket into full, unobstructed visibility
+    // When gProgress is supplied (0..1), it controls the gummy slide independently of packet tear
     if (gMesh) {
+      const gK = gProgress !== undefined ? Math.max(0, Math.min(1, gProgress)) : Math.min(1, Math.max(0, (t - 0.06) / 0.94));
       if (t > 0.06) {
         gMesh.visible = true;
         if (gMesh.material) {
           gMesh.material.opacity = 1;
         }
-        const gT = Math.min(1, Math.max(0, (t - 0.06) / 0.94));
-        const gEase = gT * gT * (3 - 2 * gT);
+        const gEase = gK * gK * (3 - 2 * gK);
 
-        // Slides from inside the pocket (x = 0.28) through the mouth (x = 0.58)
-        // to a final position COMPLETELY OUTSIDE the packet (x = 1.16)
-        // Zero overlap between the emerged gummy and the packet!
-        const startX = 0.28;
+        // Slides from inside the open pocket mouth (x = 0.36) to center stage outside (x = 1.16)
+        // Resting position at x = 0.36 is securely inside the open pocket, with the pocket lips remaining puffed open
+        const startX = 0.36;
         const endX = 1.16;
         const gx = startX + (endX - startX) * gEase;
         const gy = 0.01 + 0.03 * Math.sin(gEase * Math.PI);
