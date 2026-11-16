@@ -414,6 +414,7 @@ function initProductJourney() {
     from: null, last: null, pending: null, returnFocus: null };
   const OPEN_MS = reduce ? 1 : 1400, CLOSE_MS = reduce ? 1 : 650;
   const easeIO = k => (k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2);
+  const sm = t => t * t * (3 - 2 * t);
 
   /* ---------- the Lung Booster's ingredients moment (gummy-pour.js) ----------
      Two stretches of extra scroll are spliced into the display for the Lung Booster only: ING_LEN screens right after the
