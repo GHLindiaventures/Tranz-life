@@ -30,43 +30,44 @@ const CLINICAL_DETAILS = {
     ]
   },
   inhaler: {
-    category: 'Tobacco & Smoking Cessation Aromatherapy',
-    eyebrow: '100% NATURAL · ZERO NICOTINE · PORTABLE & DISCREET',
+    category: 'Aromatherapy & Sensory Wellness',
+    eyebrow: 'A MOMENT OF CALM, WHEREVER LIFE TAKES YOU',
     rating: '4.9/5 (180+ reviews)',
     highlights: [
-      'Helps resist the urge to smoke and manages withdrawal anxiety',
-      'Unique aroma blend of 6 pure therapeutic essential oils',
-      'Available in 4 Targeted Editions: Standard, Plus, Gold & Night',
-      '100% Non-Addictive, Non-Toxic, Chemical-Free Pocket Inhaler'
+      'Convenient Wellness Companion: Compact, portable format designed to fit easily into everyday routines.',
+      'Aromatic Sensory Experience: Distinctive aroma of natural botanical ingredients as part of a personal wellness ritual.',
+      'A Moment to Pause: Incorporates brief pauses and mindful breathing into busy work and travel schedules.',
+      'Inspired by Nature: Reflects TranzLife’s commitment to botanical ingredients and quality-conscious development.',
+      'Designed for Modern Lifestyles: Practical format for people who value effortless daily self-care.'
     ],
-    botanicals: 'Peppermint Oil, Lavender Oil, Eucalyptus Oil, Lemon Oil, Black Pepper Oil, and Tulsi Oil.',
-    usage: 'Remove cap gently. Inhale deeply through each nostril 2–3 times whenever cravings arise or when experiencing stress. Combine with deep breathing.',
-    mechanism: 'Inhaled volatile aroma molecules stimulate the olfactory bulb and trigeminal sensory nerve endings in the throat, creating the sensation of smoke inhalation without harmful combustion or chemicals.',
-    packaging: 'Airtight medical-grade 10 ml pocket inhaler shell preserving volatile terpene vapor pressure for daily use.',
+    botanicals: 'Formulated with pure botanical essential oil aromas and natural plant extracts.',
+    usage: 'Use according to product directions. Individual experiences with aromas may differ. Aromatherapy should be viewed as a complementary wellness practice rather than a replacement for professional mental healthcare.',
+    mechanism: 'Volatile aromatic molecules engage olfactory sensory pathways to create a refreshing sensory pause, encouraging conscious breathing and mental clarity.',
+    packaging: 'Airtight portable pocket inhaler preserving volatile aromatic compounds for daily on-the-go use.',
     scienceCards: [
-      { title: 'Sensory Replacement', text: 'Black pepper volatile oil provides sensory throat satisfaction that blunts the habitual physical urge to smoke.' },
-      { title: 'Limbic Stress Relief', text: 'Lavender and Peppermint vapors activate parasympathetic neuro-circuits, soothing withdrawal tension.' },
-      { title: 'Airway Expansion', text: 'Eucalyptus cineole vaporizes across nasal passages to open airways and promote clear breathing.' }
+      { title: 'Sensory Perception', text: 'Engages olfactory sensory pathways to provide a distinct, refreshing pause during demanding routines.' },
+      { title: 'Mindful Breathing', text: 'Functions as a sensory anchor for conscious, deep breathing breaks during high-pressure work.' },
+      { title: 'Responsible Wellness', text: 'Developed under TranzLife Biosciences’ quality-conscious standards for modern self-care.' }
     ]
   },
   rollon: {
-    category: 'Natural Support for Menstrual Comfort',
-    eyebrow: '100% NATURAL PRODUCT · CYCLE RELIEF',
+    category: 'Women’s Menstrual Wellness & Comfort',
+    eyebrow: 'EMBRACE EVERY CYCLE. CELEBRATE EVERY YOU.',
     rating: '5.0/5 (310+ reviews)',
     highlights: [
-      'Eases menstrual cramps and soothes deep abdominal discomfort',
-      'Relaxes tense pelvic and abdominal smooth muscles',
-      'Fast-absorbing, non-greasy topical formula (MRP: ₹399)',
-      'Cruelty-free, recyclable packaging, zero added chemicals'
+      'A Focus on Comfort: Positioned as a women’s wellness solution recognising the importance of well-being during menstruation.',
+      'Convenience for Everyday Life: Designed with modern lifestyles in mind, fitting seamlessly into daily routines.',
+      'Inspired by Thoughtful Innovation: Combining scientific understanding, formulation expertise, and botanical innovation.',
+      'Quality-Conscious Development: Committed to responsible formulation practices, appropriate testing, and clear consumer info.'
     ],
-    botanicals: 'Pure essential oils of Dill (Anethum graveolens E.O) and Eucalyptus (Eucalyptus globulus E.O) in a nourishing plant-based carrier matrix.',
-    usage: 'Roll gently around the belly button every morning on an empty stomach. Use daily during menstruation for best results. For external use only.',
-    mechanism: 'Carvone and limonene from Dill essential oil deliver proven antispasmodic action across transdermal pathways, relaxing smooth uterine contractions while Eucalyptus promotes micro-vascular circulation.',
-    packaging: '50 ml roll-on bottle (and 8 ml travel size) with stainless steel rollerball. Barcode: 8 906132 540154.',
+    botanicals: 'Formulated with selected botanical oils and soothing plant extracts in a nourishing, non-greasy carrier base.',
+    usage: 'Use only as directed on the product label. Positioned around menstrual wellness, comfort, and everyday self-care. Consult a qualified healthcare professional if symptoms are severe, unusual, or persistent.',
+    mechanism: 'Thoughtfully formulated with botanical ingredients to deliver soothing topical comfort and sensory ease across localized abdominal and lower back areas.',
+    packaging: 'Ergonomic roll-on applicator for smooth, mess-free topical glide. Travel-ready design.',
     scienceCards: [
-      { title: 'Antispasmodic Action', text: 'Dill volatile oils block calcium influx in visceral smooth muscle cells, preventing intense abdominal spasms.' },
-      { title: 'Belly Button Absorption', text: 'The umbilical region (Nabhi) offers rich microvascular networks for rapid, non-systemic transdermal absorption.' },
-      { title: 'Non-Greasy Dry Down', text: 'Rapidly absorbed natural botanical esters leave zero oil residue on skin or clothing.' }
+      { title: 'Comfort & Well-Being', text: 'Recognising the physical changes throughout the menstrual cycle, supporting daily comfort and confidence.' },
+      { title: 'Thoughtful Innovation', text: 'Uniting nature-inspired ingredients with contemporary formulation standards for women’s wellness.' },
+      { title: 'Science-Led Care', text: 'TranzLife Biosciences is dedicated to accessible, quality-controlled self-care options.' }
     ]
   },
   reviva: {
@@ -90,23 +91,24 @@ const CLINICAL_DETAILS = {
     ]
   },
   liver: {
-    category: '100% Ayurvedic Liver Booster (500 ml)',
-    eyebrow: 'POLYHERBAL CONCOCTION · DETOXIFIES • PROTECTS • REJUVENATES',
-    rating: '4.9/5 (280+ reviews)',
+    category: 'Nature-Inspired Liver Wellness',
+    eyebrow: 'NOURISH YOUR WELLNESS. SUPPORT YOUR LIVER. EMBRACE A HEALTHIER LIFESTYLE.',
+    rating: '4.9/5 (210+ reviews)',
     highlights: [
-      'Flushes out accumulated toxins and supports natural liver cleansing',
-      'Protects hepatocytes and supports healthy liver enzyme levels',
-      'Potent antioxidant defense combating oxidative stress & fatigue',
-      'Improves digestion, bile flow, and systemic nutrient absorption'
+      'Botanical Inspiration: Exploring the potential of plant-derived ingredients and traditional botanical knowledge.',
+      'Quality-Focused Formulation: Prioritising ingredient identity, quality standards, and formulation consistency.',
+      'Science-Led Innovation: Bringing together scientific understanding to meet evolving consumer wellness needs.',
+      'Responsible Wellness: Encouraging informed lifestyle choices and a holistic approach to health and vitality.',
+      'Preventive Wellness Vision: Exploring the intersection of nature, biotechnology, and scientific innovation.'
     ],
-    botanicals: 'Each 10 ml contains: Bhumyamalaki (Phyllanthus niruri) 500mg, Kalmegh (Andrographis paniculata) 400mg, Kutki (Picrorhiza kurroa) 400mg, Punarnava (Boerhavia diffusa) 300mg, Bhringraj (Eclipta alba) 300mg, Daruharidra (Berberis aristata) 200mg, Guduchi (Tinospora cordifolia) 200mg, Amla (Emblica officinalis) 200mg, Haritaki (Terminalia chebula) 200mg, Turmeric (Curcuma longa) 150mg, Black Pepper (Piper nigrum) 50mg.',
-    usage: 'Adults: 10 ml (2 teaspoons) twice daily after meals. Shake well before use. Refrigerate after opening. Store away from direct sunlight.',
-    mechanism: 'Synergistic polyherbal bioactives protect liver parenchymal membranes, stimulate Phase II glutathione S-transferase enzymes, and promote bile acid synthesis to clear metabolic toxins.',
-    packaging: 'Pharmaceutical 500 ml amber bottle with calibrated dosing cap. Barcode: 8 906132 540130. Mfg. Lic. No.: TN/AYU/24/1234.',
+    botanicals: 'Selected traditional botanicals and plant extracts formulated according to quality-tested specifications.',
+    usage: 'Use only as directed on the approved product label. Liver wellness products should not replace a balanced lifestyle, appropriate medical assessment, or prescribed treatment. Consult a qualified healthcare professional for persistent health concerns.',
+    mechanism: 'Combines traditional botanical ingredients known for supporting internal balance, digestion, and metabolic vitality with modern quality-focused preparation.',
+    packaging: 'High-barrier amber glass bottle protecting botanical phytonutrients. 100 ml.',
     scienceCards: [
-      { title: 'Hepatocyte Protection', text: 'Phyllanthin and Kutkin alter outer hepatocyte membrane architecture, shielding cells against toxic metabolites.' },
-      { title: 'Biliary Secretion', text: 'Andrographolide and Daruharidra stimulate natural bile flow, accelerating digestion and toxin elimination.' },
-      { title: 'Antioxidant Defense', text: 'Amla and Haritaki deliver rich gallic and ellagic acid antioxidants that quench reactive oxygen species in hepatic tissue.' }
+      { title: 'Botanical Knowledge', text: 'Drawing on centuries of traditional botanical wisdom, verified through modern laboratory testing.' },
+      { title: 'Holistic Liver Health', text: 'Supporting internal balance in synergy with balanced nutrition, hydration, and healthy lifestyle habits.' },
+      { title: 'Responsible Innovation', text: 'Advancing life sciences and preventive wellness through transparent, evidence-based practices.' }
     ]
   }
 };

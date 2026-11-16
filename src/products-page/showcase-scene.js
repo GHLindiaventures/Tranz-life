@@ -32,9 +32,13 @@ function calcIntroText(sy, F, vh) {
  * Returns the rectangle { x, y, w, h, r } in screen px, with room around the product. Pure.
  */
 function calcProductFrame(x, y, h, ratio) {
-  const w = h * ratio, padX = Math.max(18, h * 0.05), padY = Math.max(24, h * 0.09);   // snug at the sides, airier above and below
+  const r = (ratio && ratio > 0.15 && ratio < 1.5) ? ratio : 0.45;
+  const w = h * r;
+  const padX = Math.max(10, Math.min(18, w * 0.04));
+  const padY = Math.max(12, Math.min(22, h * 0.035));
   const fw = w + padX * 2, fh = h + padY * 2;
-  return { x: x - fw / 2, y: y - fh / 2, w: fw, h: fh, r: Math.min(fw / 2, fw * 0.3) };
+  const cornerR = Math.min(24, Math.min(fw, fh) * 0.12);
+  return { x: x - fw / 2, y: y - fh / 2, w: fw, h: fh, r: cornerR };
 }
 // How far the outline has grown (0..1), against the progress counter ((P - ARRIVE) / (1 - ARRIVE) x 100):
 //   005 -> 013  grows (tendrils climb, leaves sprout, the bud opens)

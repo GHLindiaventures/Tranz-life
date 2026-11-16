@@ -23,33 +23,33 @@ export const PRODUCTS = [
   {
     id: 'inhaler',
     no: '02',
-    short: 'Craving Control™',
-    name: 'Craving Control™ Aromatherapy Inhaler',
+    short: 'Aroma Inhaler',
+    name: 'TranzLife Aromatherapy Inhaler',
     cat: 'inhaler',
-    tag: 'Quit Smoking',
+    tag: 'Relaxation & Balance',
     price: 249,
-    size: '10 ml Pocket Inhaler',
-    desc: '100% natural, non-addictive aromatherapy inhaler for tobacco and smoking cessation. Pure therapeutic blend of Peppermint, Black Pepper, Tulsi, Lavender and Eucalyptus oils to curb nicotine cravings instantly on the go.',
-    ing: ['Black Pepper Oil', 'Peppermint Oil', 'Tulsi Oil', 'Lavender Oil', 'Eucalyptus Oil'],
+    size: 'Portable Aromatherapy Inhaler',
+    desc: 'Discover the TranzLife Aromatherapy Inhaler, a portable aromatherapy product designed to bring a refreshing aromatic experience to your everyday self-care routine.',
+    ing: ['Portable Format', 'Botanical Essential Oils', 'Mindful Breathing'],
     model: 'inhaler',
     fit: 1.16,
-    dosage: 'Inhale deeply through each nostril 2–3 times whenever cravings arise'
+    dosage: 'Inhale gently as part of a personal relaxation routine alongside mindful breathing'
   },
   {
     id: 'rollon',
     no: '03',
-    short: 'CycleRelief™',
-    name: 'CycleRelief™ Menstrual Comfort Roll-On',
+    short: 'CycleRelief',
+    name: 'TranzLife CycleRelief',
     cat: 'rollon',
-    tag: 'Period Relief',
-    price: 399,
-    size: '50 ml Roll-On (8 ml pocket)',
-    desc: '100% natural plant-based formula that eases menstrual cramps, soothes abdominal discomfort, and relaxes tense pelvic muscles with pure Dill and Eucalyptus essential oils. Fast-absorbing and non-greasy.',
-    ing: ['Dill E.O', 'Eucalyptus E.O', '100% Plant-Based', 'Non-Greasy Formula'],
+    tag: 'Menstrual Wellness',
+    price: 349,
+    size: 'Roll-On with Gift Box',
+    desc: 'Discover TranzLife CycleRelief, a women’s wellness product developed with a focus on menstrual comfort, thoughtful innovation, and quality-conscious product development.',
+    ing: ['Comfort-Focused Formulation', 'Botanical Innovation', 'Non-Greasy Topical Care'],
     model: 'rollon',
     fit: 1.06,
     barcode: '8906132540154',
-    dosage: 'Roll gently around the belly button every morning on an empty stomach'
+    dosage: 'Apply gently for localized topical comfort as directed on the product label'
   },
   {
     id: 'reviva',
@@ -70,19 +70,19 @@ export const PRODUCTS = [
   {
     id: 'liver',
     no: '05',
-    short: 'LiverDetox™',
-    name: 'LiverDetox™ Polyherbal Concoction',
+    short: 'Liver Booster',
+    name: 'TranzLife Liver Booster',
     cat: 'liquid',
-    tag: 'Liver Booster',
+    tag: 'Liver Wellness',
     price: 649,
-    size: '500 ml Classical Concoction',
-    desc: '100% Ayurvedic Liver Booster. Detoxifies, protects, and rejuvenates liver parenchyma cells with 11 classical botanicals including Bhumyamalaki, Kalmegh, Kutki, Punarnava, and Daruharidra.',
-    ing: ['Bhumyamalaki 500mg', 'Kalmegh 400mg', 'Kutki 400mg', 'Punarnava 300mg', 'Bhringraj 300mg', 'Daruharidra 200mg'],
+    size: '100 ml Botanical Liquid',
+    desc: 'Discover TranzLife Liver Booster, a nature-inspired wellness product from TranzLife Biosciences, reflecting our commitment to quality-focused formulation and scientific innovation.',
+    ing: ['Botanical Inspiration', 'Quality-Focused Formulation', 'Holistic Wellness'],
     model: 'liver',
     fit: 1.14,
     barcode: '8906132540130',
     mfgLic: 'TN/AYU/24/1234',
-    dosage: 'Adults: 10 ml (2 tsp) twice daily after meals'
+    dosage: 'Use only as directed on the approved product label'
   }
 ];
 

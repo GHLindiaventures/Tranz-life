@@ -46,69 +46,95 @@ const DETAILS = {
   },
 
   inhaler: {
-    eyebrow: 'Aromatherapy · Sensory Reset',
+    eyebrow: 'A Moment of Calm, Wherever Life Takes You',
     title: 'TranzLife Aromatherapy Inhaler',
     tagline: 'Pause. Breathe. Relax. Rediscover Your Balance.',
     intro: [
-      'Work pressures, fast-paced commutes, and continuous screen time can leave our senses fatigued. Taking an intentional sensory reset can restore mental clarity and center your daily wellness routine.',
-      'Formulated with therapeutic essential oils, the TranzLife Aromatherapy Inhaler uses targeted olfactory stimulation to deliver an immediate sensation of crisp, refreshing coolness.'
+      'Modern life can be demanding. Work pressures, busy schedules, and everyday responsibilities can leave us feeling overwhelmed and mentally exhausted. Taking a moment to pause and reconnect can make a meaningful difference to your wellness routine.',
+      'At TranzLife Biosciences, we believe that small moments of self-care are essential to a balanced lifestyle. The TranzLife Aromatherapy Inhaler is a portable companion designed to bring a refreshing sensory experience into your everyday routine.'
     ],
-    highlightsTitle: 'Why carry the Aroma Inhaler?',
+    listTitle: 'Nature-Inspired Aromatherapy. Everyday Convenience.',
+    listSubtitle: 'Aromatherapy uses aromatic botanical substances to create distinctive sensory experiences. Certain aromas help create a refreshing sense of calm and mental clarity.',
+    list: [
+      ['A Convenient Wellness Companion', 'A sleek, pocket-sized format designed to fit effortlessly into your work, commute, and daily travel routines.'],
+      ['Distinctive Sensory Experience', 'Delivers the crisp, invigorating aroma of natural botanical volatile oils as part of your personal wellness ritual.'],
+      ['Mindful Breathing Anchor', 'Incorporate an intentional pause and deep breathing whenever you need a moment of clarity and decompression.'],
+      ['Botanical-Inspired Innovation', 'Formulated with an appreciation for natural plant compounds and contemporary product development standards.']
+    ],
+    highlightsTitle: 'Why Choose TranzLife Aromatherapy Inhaler?',
     highlights: [
-      ['Fast-Acting Sensory Reset', 'Direct inhalation delivers natural volatile botanicals straight to olfactory receptors.'],
-      ['Zero Nicotine & Additives', 'Pure plant essential oil blend with no synthetic fragrances, propellants, or habit-forming agents.'],
-      ['Airtight Pocket Shell', 'Engineered to lock in vapor pressure and maintain aromatic potency across months of daily use.'],
-      ['Mindful Transition Ritual', 'An effective sensory cue to decompress between meetings, travel, or intense work sessions.'],
-      ['Pure Botanical Vapors', 'Cold-extracted essential oils chosen for their clean, crisp, and uplifting aromatic profile.']
+      ['Pocket-Sized Portability', 'Compact, spill-proof format slips easily into pocket, purse, or desk drawer.'],
+      ['Natural Aromatic Essence', 'Distinctive plant-derived aromas crafted for personal sensory refreshment.'],
+      ['Mindful Daily Ritual', 'Serves as a tactile sensory anchor for conscious breathing breaks throughout the day.'],
+      ['Botanical Innovation', 'Combines nature-inspired aromatic ingredients with quality-conscious formulation.'],
+      ['Modern Convenience', 'Designed specifically for busy, active lifestyles seeking effortless self-care.']
     ],
-    closingTitle: 'Reset your sensory focus',
-    closing: 'Incorporate deep, rhythmic breathing whenever you open the cap to maximize the calming impact of the essential oil vapor.',
-    note: 'Use according to the product directions. Individual experiences with aromas may differ; aromatherapy is a complementary wellness practice, not a replacement for professional mental healthcare.'
+    closingTitle: 'Make Space for a Moment of Calm',
+    closing: 'Wellness is not always about making big changes. Sometimes, it begins with taking a short break, slowing down, and paying attention to the present moment. You can incorporate the TranzLife Aromatherapy Inhaler into a personal relaxation routine alongside mindful breathing, adequate rest, and healthy daily habits.',
+    journeyTitle: 'Our Commitment to Responsible Wellness',
+    journeyText: 'At TranzLife Biosciences, we explore innovative wellness solutions through thoughtful development, quality-conscious practices, and responsible communication. Where Natural Intelligence Meets Scientific Innovation.',
+    note: 'Use according to product directions. Individual experiences with aromas may differ. Aromatherapy should be viewed as a complementary wellness practice rather than a replacement for professional mental healthcare. Consult a qualified professional for chronic stress or clinical anxiety.'
   },
 
   rollon: {
     eyebrow: 'Women’s Menstrual Wellness & Comfort',
     title: 'TranzLife CycleRelief',
-    tagline: 'Comfort Through Every Phase. Care Designed for Women.',
+    tagline: 'Embrace Every Cycle. Celebrate Every You.',
     intro: [
-      'Menstrual cycles bring complex physical changes. CycleRelief was created to offer women a natural, discreet topical ritual for soothing recurring monthly tension.',
-      'Combining cooling essential oils with fast-absorbing botanical carrier lipids, it glides on smoothly over the lower abdomen and lower back without leaving greasy residue.'
+      'Every woman’s journey is unique, and every menstrual cycle deserves care, comfort, and understanding. TranzLife CycleRelief reflects our commitment to convenient wellness solutions designed around the evolving needs of women.',
+      'With a focus on menstrual wellness and everyday comfort, CycleRelief brings together nature-inspired thinking, scientific understanding, and consumer-focused product development to support practical self-care throughout your cycle.'
     ],
-    highlightsTitle: 'Targeted topical benefits',
-    highlights: [
-      ['Cooling Sensation', 'Menthol from natural peppermint oil delivers an invigorating thermogenic effect that eases localized tension.'],
-      ['Subtle Aromatherapy', 'Herbaceous rosemary and soothing rose essential oils create a delicate, calming botanical scent.'],
-      ['Non-Greasy Rollerball', 'Stainless-steel roller glides effortlessly, absorbing in seconds without staining clothing or bedding.'],
-      ['Travel-Ready Discretion', 'Compact, leak-proof vial easily slips into your handbag, desk drawer, or gym tote.']
-    ],
-    listTitle: 'Core botanical ingredients',
+    listTitle: 'Designed with Women in Mind',
+    listSubtitle: 'Menstruation is a natural part of the reproductive cycle. Access to practical self-care options and thoughtful innovation helps women make informed decisions about managing comfort.',
     list: [
-      ['Rosemary Leaf Oil', 'Traditionally celebrated for stimulating local microcirculation and soothing tired muscles.'],
-      ['Damask Rose Extract', 'Valued for its uplifting floral aromatic profile and delicate skin-toning benefits.'],
-      ['Peppermint Essential Oil', 'Provides crisp, lasting topical coolness to distract from deep abdominal cramping.'],
-      ['Plant Carrier Lipids', 'Lightweight plant oils that nourish skin while carrying active terpenes across the epidermis.']
+      ['A Focus on Comfort', 'Recognising the importance of comfort and well-being during menstruation, CycleRelief is positioned as a supportive women’s wellness solution.'],
+      ['Convenience for Everyday Life', 'Designed with modern lifestyles in mind, our approach emphasises practical solutions that seamlessly fit into women’s daily routines.'],
+      ['Inspired by Thoughtful Innovation', 'Combining scientific understanding, formulation expertise, and nature-inspired innovation in women’s wellness development.'],
+      ['Quality-Conscious Development', 'Committed to responsible formulation practices, appropriate product testing, and clear information for informed choices.']
     ],
-    note: 'For external topical use only. Avoid contact with eyes and broken skin. Please consult a qualified healthcare professional if severe pain persists.'
+    highlightsTitle: 'Our Commitment to Women’s Wellness',
+    highlights: [
+      ['Promoting Awareness', 'Encouraging positive awareness of menstrual health, cycle tracking, and proactive daily self-care.'],
+      ['Supporting Informed Choices', 'Providing practical options and clear information to help manage period-related discomfort.'],
+      ['Prioritising Quality', 'Upholding stringent formulation standards, responsible innovation, and consumer-centric design.'],
+      ['Encouraging Guidance', 'Promoting professional medical consultation whenever symptoms are severe, unusual, or persistent.']
+    ],
+    closingTitle: 'Making Every Cycle a Little Easier',
+    closing: 'At TranzLife Biosciences, we recognise that menstrual wellness is about more than a monthly routine. It is about helping women feel informed, supported, and confident in making decisions about their well-being. Through CycleRelief, we aim to contribute to a more thoughtful approach to women’s wellness, guided by our commitment to innovation, quality, and responsible product development.',
+    journeyTitle: 'Where Natural Intelligence Meets Scientific Innovation',
+    journeyText: 'Committed to exploring innovative wellness solutions for a healthier, more confident future. TRANZLIFE BIOSCIENCES: Innovating Life Beyond Limits.',
+    note: 'Use only as directed on the product label. Positioned around menstrual wellness, comfort, and everyday self-care. CycleRelief should not be presented as a medical treatment for clinical conditions. Consult a qualified healthcare professional if symptoms are severe, unusual, or persistent.'
   },
 
   liver: {
-    eyebrow: 'Hepatic Support & Daily Metabolic Balance',
+    eyebrow: 'Nature-Inspired Innovation for Liver Wellness',
     title: 'TranzLife Liver Booster',
-    tagline: 'Nourish From Within. Protect Your Core Vitality.',
+    tagline: 'Nourish Your Wellness. Support Your Liver. Embrace a Healthier Lifestyle.',
     intro: [
-      'As your body’s primary metabolic filter, the liver continuously processes nutrients, neutralizes toxins, and produces bile for digestion. Sustaining its function is essential for daily vitality.',
-      'TranzLife Liver Booster combines time-tested Ayurvedic bitter tonics with gentle restorative botanicals to create an easily assimilated liquid formulation.'
+      'At TranzLife Biosciences, we believe that better health begins with informed choices, responsible innovation, and a deeper understanding of nature. TranzLife Liver Booster reflects our commitment to exploring botanical-inspired wellness solutions designed for everyday well-being.',
+      'Developed as part of our wellness product portfolio, TranzLife Liver Booster combines traditional botanical knowledge with contemporary product development principles to support a holistic approach to internal balance.'
     ],
-    highlightsTitle: 'Physiological support pillars',
+    listTitle: 'Our Approach to Liver Wellness',
+    listSubtitle: 'The liver plays a vital role in maintaining internal balance, nutrient metabolism, and digestion. Thoughtful wellness development combines botanical knowledge with scientific care.',
+    list: [
+      ['Botanical Inspiration', 'Exploring the potential of plant-derived ingredients and traditional botanical knowledge in wellness-focused product development.'],
+      ['Quality-Focused Formulation', 'Prioritising ingredient identity, quality standards, formulation consistency, and appropriate product testing.'],
+      ['Science-Led Innovation', 'Bringing together scientific understanding and responsible innovation to develop products that meet evolving consumer needs.'],
+      ['Responsible Wellness', 'Encouraging informed lifestyle choices and a holistic approach to maintaining daily health and vitality.']
+    ],
+    highlightsTitle: 'The TranzLife Difference',
     highlights: [
-      ['Bile Secretion Support', 'Traditional bitter botanicals stimulate digestive bile production to ease lipid breakdown.'],
-      ['Antioxidant Enzyme Protection', 'Polyphenol-rich herbs defend hepatic cellular membranes against oxidative wear.'],
-      ['Rapid Liquid Bioavailability', 'Dissolved phytonutrients absorb faster through the digestive tract than dry compressed tablets.'],
-      ['Gentle Metabolic Cleanse', 'Encourages the body’s innate detoxification pathways without harsh purgative effects.']
+      ['Nature-Inspired Development', 'Exploring botanical traditions and plant-derived ingredients for daily vitality.'],
+      ['Quality-Conscious Practices', 'Upholding stringent ingredient identity, testing, and formulation consistency.'],
+      ['Science-Led Formulation', 'Uniting traditional botanical knowledge with modern nutritional understanding.'],
+      ['Informed Wellness Choices', 'Empowering consumers with transparent information and practical self-care options.'],
+      ['Preventive Wellness Vision', 'Dedicated to exploring long-term life science innovations beyond conventional limits.']
     ],
-    closingTitle: 'Complementing healthy daily habits',
-    closing: 'Pair with consistent hydration, antioxidant-rich whole foods, and regular exercise for comprehensive hepatic support.',
-    note: 'Dietary supplements should not replace a balanced lifestyle, appropriate medical assessment or prescribed treatment. Consult a healthcare professional if you have concerns about liver function.'
+    closingTitle: 'Making Liver Health a Priority',
+    closing: 'Supporting liver health begins with everyday habits. A balanced diet, regular physical activity, limiting alcohol exposure, maintaining a healthy weight, and following medical advice regarding medicines can all contribute to liver health. TranzLife encourages consumers to take a proactive approach to wellness and consult qualified healthcare professionals if they have concerns about liver function.',
+    journeyTitle: 'Where Natural Intelligence Meets Scientific Innovation',
+    journeyText: 'We are committed to exploring innovative wellness solutions that bring together botanical inspiration, scientific knowledge, and a vision for a healthier future. TRANZLIFE BIOSCIENCES: Innovating Life Beyond Limits.',
+    note: 'Use only as directed on the product label. Liver wellness products should not replace a balanced lifestyle, appropriate medical assessment, or prescribed treatment. Consult a qualified healthcare professional if you have concerns about liver function.'
   }
 };
 

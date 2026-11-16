@@ -63,11 +63,20 @@ function initProductJourney() {
   const flightJars = PRODUCTS.map((p, i) => L.jar(p, i));
   // each product's width / height from its 3D model (widest of x and z, so the frame fits it from every angle)
   // (measured again when a scanned model finishes loading: until then the drawn stand-in, or nothing, is measured)
+  const MODEL_RATIOS = {
+    gummies: 0.552,
+    inhaler: 0.267,
+    rollon: 0.244,
+    reviva: 0.262,
+    liver: 0.318
+  };
   let ratios = [];
-  const measureRatios = () => { ratios = flightJars.map(j => {
+  const measureRatios = () => { ratios = flightJars.map((j, idx) => {
     j.G.updateMatrixWorld(true);
+    const prodId = PRODUCTS[idx] && PRODUCTS[idx].id;
+    const defRatio = MODEL_RATIOS[prodId] || 0.45;
     const s = new THREE.Box3().setFromObject(j.b).getSize(new THREE.Vector3());
-    return s.y < 1e-3 ? 0.55 : Math.max(s.x, s.z) / s.y;
+    return s.y < 1e-3 ? defRatio : Math.max(s.x, s.z) / s.y;
   }); };
   measureRatios();
   window.addEventListener('tl:model-ready', measureRatios);
@@ -642,10 +651,10 @@ function initProductJourney() {
     let open = 0, calloutC = 0, calloutA = 0;
     let letters = 0;                                  // 0..1: the side letters go up and away first, then the bottle opens
     if (ingOn()) {
-      letters = sm(clamp(ing.u / 0.14, 0, 1));
-      open = ing.v > 0 ? 1 - clamp(ing.v / 0.88, 0, 1) : clamp((ing.u - 0.14) / 0.24, 0, 1);   // cap starts only AFTER side letters have cleanly exited
-      calloutC = clamp((ing.u - 0.66) / 0.22, 0, 1);
-      calloutA = ing.v > 0 ? 0 : clamp((ing.u - 0.64) / 0.03, 0, 1) * (1 - clamp((ing.u - 0.88) / 0.03, 0, 1));
+      letters = sm(clamp(ing.u / 0.18, 0, 1));
+      open = ing.v > 0 ? 1 - clamp(ing.v / 0.88, 0, 1) : clamp((ing.u - 0.18) / 0.28, 0, 1);   // cap starts only AFTER side letters have cleanly exited
+      calloutC = clamp((ing.u - 0.68) / 0.22, 0, 1);
+      calloutA = ing.v > 0 ? 0 : clamp((ing.u - 0.66) / 0.03, 0, 1) * (1 - clamp((ing.u - 0.90) / 0.03, 0, 1));
       if (ov.state === 'closing') { open *= a; calloutA *= a; }
       if (ingDir && open > 0) ingDir.pose(hold, open, { vh, mobile: geo.mobile, front: restRot(i) });
     }
@@ -678,7 +687,7 @@ function initProductJourney() {
     // here the words come in on time alone, from nothing, in one go as the product flies in (no half-played start);
     // the scroll only moves them up with the details later
     const fall = ov.sec._e || 0, tin = timed;
-    const letterDrift = ingOn() ? letters * (geo.mobile ? 40 : 70) : letters * vh * 0.45;
+    const letterDrift = ingOn() ? letters * (geo.mobile ? 32 : 54) : letters * vh * 0.45;
     const it = { tin, lift: (ingOn() ? 0 : fall) + letterDrift, o: (1 - Math.pow(1 - tin, 3)) * (!ingOn() && fall > vh * 1.2 ? 0 : 1) * (1 - letters) };
     const o = it.o * (ov.state === 'closing' ? a : 1);
     [ov.card, ov.lead].forEach((el, s) => {
