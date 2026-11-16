@@ -428,15 +428,15 @@ function initProductJourney() {
      While a stretch plays, the rest of the display is frozen: ingWarp maps the real scroll to the scroll the rest of the code
      sees (sy). (The display's layers are all sticky and driven by sy, so nothing else needs shifting.) Scrolling back up runs it
      all in reverse. */
-  const FLIP_LEN = 0.9;                              // screens the Lung Booster takes to finish its flip: only then does the outline start to draw
-  const BORDER = { grow: 1.0, hold: 0.5, away: 1.4 };   // screens the Lung Booster's outline takes to draw, to stay, and to withdraw (after the flip)
-  const ING_LEN = 7.0, ING_CL = 1.8;   // ING_LEN: the callouts get their own long, slow stretch
+  const FLIP_LEN = 0.55;                             // screens the Lung Booster takes to finish its flip
+  const BORDER = { grow: 0.45, hold: 0.20, away: 0.35 }; // screens for outline draw, hold, and retract
+  const ING_LEN = 3.6, ING_CL = 0.9;                 // snappy, responsive flow for gummy moment and return
   // the run-up (flip, outline in, outline out) in screens. On a short section (small screens) the highlights moment comes sooner (it starts
   // at H - 3 screens), so the run-up is squeezed to end before it: the gummy moment never starts under the highlights or the curtain
   function ingT(vh, F, H) {
     const room = (H - 3.5 * vh - F) / vh, tb = BORDER.grow + BORDER.hold + BORDER.away;
-    const k = clamp((room - FLIP_LEN - 0.1) / tb, 0.25, 1);
-    return { k, grow: BORDER.grow * k, hold: BORDER.hold * k, away: BORDER.away * k, flip: FLIP_LEN, A: FLIP_LEN + 0.1 + tb * k };
+    const k = clamp((room - FLIP_LEN - 0.05) / tb, 0.25, 1);
+    return { k, grow: BORDER.grow * k, hold: BORDER.hold * k, away: BORDER.away * k, flip: FLIP_LEN, A: FLIP_LEN + 0.05 + tb * k };
   }
   let ingDir = null;
   const ingOn = () => ov.idx === 0 && !reduce;
@@ -647,6 +647,8 @@ function initProductJourney() {
     let open = 0, calloutC = 0, calloutA = 0;
     let letters = 0;                                  // 0..1: the side letters go up and away first, then the bottle opens
     if (ingOn()) {
+      const postFlip = Math.max(0, (syRaw - F) - FLIP_LEN * vh);
+      hold.rotY += (postFlip / vh) * 0.75;
       letters = sm(clamp(ing.u / 0.18, 0, 1));
       open = ing.v > 0 ? 1 - clamp(ing.v / 0.88, 0, 1) : clamp((ing.u - 0.18) / 0.28, 0, 1);   // cap starts only AFTER side letters have cleanly exited
       calloutC = clamp((ing.u - 0.68) / 0.22, 0, 1);
