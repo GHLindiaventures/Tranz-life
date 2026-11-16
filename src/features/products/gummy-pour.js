@@ -356,7 +356,7 @@ function createIngredientsDirector(L) {
       let zoomK = 0;
       if (vVal <= 0) {
         const zIn = sm(clamp((u - 0.38) / 0.14, 0, 1));
-        const zOut = sm(clamp((u - 0.94) / 0.04, 0, 1));
+        const zOut = sm(clamp((u - 0.95) / 0.04, 0, 1));
         zoomK = zIn * (1 - zOut);
       }
 
@@ -364,8 +364,18 @@ function createIngredientsDirector(L) {
       let tearK = 0;
       if (vVal <= 0) {
         const tIn = sm(clamp((u - 0.52) / 0.14, 0, 1));
-        const tOut = sm(clamp((u - 0.88) / 0.06, 0, 1));
+        const tOut = sm(clamp((u - 0.91) / 0.05, 0, 1));
         tearK = tIn * (1 - tOut);
+      }
+
+      // 3. Gummy fade: emerges fully, stays 100% visible while all ingredients show,
+      // then completely fades out to 0 BEFORE going inside the pocket
+      let gOpacity = 1;
+      if (vVal <= 0) {
+        const gFadeOut = sm(clamp((u - 0.85) / 0.06, 0, 1));
+        gOpacity = 1 - gFadeOut;
+      } else {
+        gOpacity = 0;
       }
 
       // Update instanced cloud (hide packet #0 when zoomK is active)
@@ -402,7 +412,7 @@ function createIngredientsDirector(L) {
         const curScale = lerp(baseWorldScale, targetWorldScale, kEase);
         heroPacket.root.scale.setScalar(curScale);
 
-        heroPacket.updateOpen(tearK);
+        heroPacket.updateOpen(tearK, gOpacity);
         heroPacket.root.visible = true;
         heroPacket.root.updateMatrixWorld(true);
 

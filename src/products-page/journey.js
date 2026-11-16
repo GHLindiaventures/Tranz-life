@@ -430,7 +430,7 @@ function initProductJourney() {
      all in reverse. */
   const FLIP_LEN = 0.55;                             // screens the Lung Booster takes to finish its flip
   const BORDER = { grow: 0.55, hold: 0.25, away: 0.40 }; // screens for outline draw, hold, and retract (tuned +0.2 for graceful pace)
-  const ING_LEN = 4.4, ING_CL = 0.9;                 // tuned +0.4 across unscrew-to-ingredients for clearer viewing
+  const ING_LEN = 4.4, ING_CL = 1.1;                 // tuned +0.2 on screw-on return (ING_CL: 1.1 screens)
   // the run-up (flip, outline in, outline out) in screens. On a short section (small screens) the highlights moment comes sooner (it starts
   // at H - 3 screens), so the run-up is squeezed to end before it: the gummy moment never starts under the highlights or the curtain
   function ingT(vh, F, H) {
@@ -650,9 +650,9 @@ function initProductJourney() {
       const postFlip = Math.max(0, (syRaw - F) - FLIP_LEN * vh);
       hold.rotY += (postFlip / vh) * 0.75;
       letters = sm(clamp(ing.u / 0.18, 0, 1));
-      open = ing.v > 0 ? 1 - clamp(ing.v / 0.88, 0, 1) : clamp((ing.u - 0.18) / 0.28, 0, 1);   // cap starts only AFTER side letters have cleanly exited
-      calloutC = clamp((ing.u - 0.68) / 0.22, 0, 1);
-      calloutA = ing.v > 0 ? 0 : clamp((ing.u - 0.66) / 0.03, 0, 1) * (1 - clamp((ing.u - 0.90) / 0.03, 0, 1));
+      open = ing.v > 0 ? 1 - clamp(ing.v / 0.88, 0, 1) : clamp((ing.u - 0.18) / 0.30, 0, 1);   // cap starts only AFTER side letters cleanly exit (tuned +0.02 for 2-point slower unscrew)
+      calloutC = clamp((ing.u - 0.68) / 0.18, 0, 1);
+      calloutA = ing.v > 0 ? 0 : clamp((ing.u - 0.66) / 0.03, 0, 1) * (1 - clamp((ing.u - 0.86) / 0.04, 0, 1));
       if (ov.state === 'closing') { open *= a; calloutA *= a; }
       if (ingDir && open > 0) ingDir.pose(hold, open, { vh, mobile: geo.mobile, front: restRot(i) });
     }
