@@ -70,14 +70,10 @@ function initProductJourney() {
     reviva: 0.262,
     liver: 0.318
   };
-  let ratios = [];
-  const measureRatios = () => { ratios = flightJars.map((j, idx) => {
-    j.G.updateMatrixWorld(true);
-    const prodId = PRODUCTS[idx] && PRODUCTS[idx].id;
-    const defRatio = MODEL_RATIOS[prodId] || 0.45;
-    const s = new THREE.Box3().setFromObject(j.b).getSize(new THREE.Vector3());
-    return s.y < 1e-3 ? defRatio : Math.max(s.x, s.z) / s.y;
-  }); };
+  let ratios = PRODUCTS.map(p => MODEL_RATIOS[p.id] || 0.45);
+  const measureRatios = () => {
+    ratios = PRODUCTS.map(p => MODEL_RATIOS[p.id] || 0.45);
+  };
   measureRatios();
   window.addEventListener('tl:model-ready', measureRatios);
   // the outline around the product, grown like a plant: two tendrils climb from the bottom centre up both sides and
