@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>TranzLife Biosciences</title>
-<meta name="description" content="TranzLife Biosciences: nature meets science. Plant-based gummies, a calming inhaler, soothing roll-ons and a liver tonic.">
+<meta name="description" content="TranzLife Biosciences: nature meets science. Lung Booster gummies, a calming inhaler, soothing roll-ons and a liver tonic.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Caveat:wght@500;600&display=swap">
@@ -74,13 +74,13 @@
     <div class="fact" style="--a:66deg;--am:118deg"><b>6</b><span>stage testing</span></div>
   </div>
   <p class="st-note hand" aria-hidden="true">Real herbs,<br>honest care<svg viewBox="0 0 44 40"><path d="M6 4c-2 14 6 26 30 30m0 0l-9-7m9 7l-10 4"/></svg></p>
-  <a class="pill st-buy" href="#shop"><i aria-hidden="true">↗</i><b>Buy now</b></a>
   <div class="st-copy">
     <h1 class="st-h" aria-label="Innovating life beyond limits"><span class="ln"><span class="wl"><span class="w">Innovating</span></span></span><span class="ln"><span class="wl"><span class="w">life</span></span> <span class="wl"><span class="w">beyond</span></span></span><span class="ln"><span class="wl"><span class="w">limits</span></span></span></h1>
-    <p class="st-lede">Plant-based care in gummies, a calming inhaler, soothing roll-ons and a liver tonic <u>you'll actually reach for.</u></p>
+    <p class="st-lede">Plant-based care in lung booster gummies, a calming inhaler, soothing roll-ons and a liver tonic <u>you'll actually reach for.</u></p>
+    <a class="pill st-buy" href="#shop"><i aria-hidden="true">↗</i><b>Buy now</b></a>
   </div>
   <div class="stage-space" aria-hidden="true"></div>
-  <div class="mq" aria-hidden="true"><div class="mq-track" id="mq"></div></div>
+  <div class="curve-band" id="curveBand"></div>
 </section>
 
 <section class="page insider" id="insider" data-theme="cream"><div class="band">
@@ -90,7 +90,7 @@
       <div class="in-cards" aria-hidden="true"><div class="in-card"><div data-shot="reviva"></div></div><div class="in-card"><div data-shot="gummies"></div></div><div class="in-card"><div data-shot="liver"></div></div></div>
       <div class="in-copy">
         <p class="in-lead reveal">We want to make plant-based wellness simple, honest and easy to keep up, so you can feel a little better every single day.</p>
-        <p class="in-body reveal">Five products for everyday life: gummies for daily wellbeing, a calming nasal inhaler, a period relief roll-on, Reviva for tired feet and a liver tonic. Plant-based inside, sustainably packed outside.</p>
+        <p class="in-body reveal">Five products for everyday life: lung booster gummies for easier breathing, a calming nasal inhaler, a period relief roll-on, Reviva for tired feet and a liver tonic. Plant-based inside, sustainably packed outside.</p>
         <div class="in-row reveal"><button class="pill" type="button" id="aboutOpen" aria-haspopup="dialog" aria-controls="about"><i aria-hidden="true">↗</i><b>Know more</b></button><span>Five products · Plant-based · Sustainable packs</span></div>
       </div>
     </div>
@@ -189,18 +189,17 @@
 </section>
 
 <section class="page benefits" id="benefits" data-theme="cream"><div class="band">
-  <div class="wrap">
-    <div class="ben">
-      <div class="ben-img"><div class="ben-slides" id="benSlides"></div><div class="ben-dots" id="benDots" role="group" aria-label="Choose a product"></div></div>
-      <div class="ben-copy">
-        <h2 class="h2 rv-words"><span class="lt">More of what matters.</span> See the difference.</h2>
-        <div class="tbl" role="table" aria-label="What goes into each product">
-          <div class="tr th" role="row"><span class="td">What goes in</span><span class="td"><span class="brandmark">TranzLife</span></span><span class="td">Typical brand</span></div>
-          <div class="tbl-sets" id="benSets"></div>
-        </div>
-        <p class="tbl-note">“Typical” varies by brand; a dash means not always stated. *As printed on the pack.</p>
-      </div>
+  <div class="wrap ben-head">
+    <h2 class="h2 rv-words"><span class="lt">More of what matters.</span> See the difference.</h2>
+    <div class="ben-ctrl">
+      <p class="ben-count" aria-hidden="true"><b id="benNow">01</b> / <span id="benAll">05</span></p>
+      <button class="ben-arrow" type="button" data-ben-step="-1" aria-label="Previous product">←</button>
+      <button class="ben-arrow" type="button" data-ben-step="1" aria-label="Next product">→</button>
     </div>
+  </div>
+  <div class="wrap">
+    <div class="ben-stage" id="benStage" role="region" aria-label="Product benefits. Click the product, or use the arrows, to see the next one." tabindex="0"></div>
+    <p class="tbl-note">“Typical” varies by brand; a dash means not always stated. *As printed on the pack.</p>
   </div>
 </div></section>
 

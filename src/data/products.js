@@ -1,9 +1,9 @@
 // Product catalogue: the five TranzLife products from the client's design boards.
 // Prices are placeholders until the client confirms them.
 const PRODUCTS = [
-  { id:'gummies', no:'01', short:'Gummies', name:'TranzLife Gummies', cat:'gummies', tag:'Daily', price:549, size:'60 gummies',
-    desc:'Plant-based gummies with natural flavours and colours, made to support immunity, energy and everyday wellbeing. Packed in a biodegradable jar with a plant-fibre eco cap.',
-    ing:['Plant-based','Natural flavours & colours','60 gummies'] },
+  { id:'gummies', no:'01', short:'Lung Booster', name:'Lung Booster Gummies', cat:'gummies', tag:'Breathe', price:549, size:'60 gummies',
+    desc:'Herbal gummies in a natural apple mint flavour, made for respiratory care and immune support. Breathe well, live better. Packed in 100% biodegradable packaging with plant-based inks.',
+    ing:['Herbal blend','Immune support','Respiratory care'] },
   { id:'inhaler', no:'02', short:'Calm Inhaler', name:'Calm Inhaler', cat:'inhaler', tag:'Calm', price:249, size:'Premium nasal inhaler',
     desc:'A premium nasal inhaler made with 100% natural, organic ingredients. Slip it into a pocket and take two slow breaths whenever you need a calm moment.',
     ing:['100% natural','Organic ingredients','Pocket size'] },

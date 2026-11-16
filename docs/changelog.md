@@ -1,5 +1,91 @@
 # Changelog
 
+## v12.29 (16 Nov 2026): two marked stops under the hero, with a ground shadow
+- On the way down to the Lung Booster card the tub now rests at the two places the client marked: first top-centre just under the curved band as "You deserve the best" comes up, then down the left side of the headline. Between them it curves left above the headline instead of crossing it.
+- At each stop a soft ground shadow settles under the tub (a blurred ellipse in the `#flight` layer); it fades out while the tub is flying and while it is docked on the card.
+
+## v12.28 (16 Nov 2026): the tub fills empty card slots, and flies on to "See the difference"
+- The Lung Booster card in "You deserve the best" is now an empty mint slot (no tub photo in it). The flying tub comes down the left side of the headline (no longer through the upper-left corner), arrives at the card, fills it exactly (same place, size and tilt, tracked through the card's zoom and drift) and then moves on.
+- The same idea in "More of what matters. See the difference.": the Lung Booster photo card is empty, and when the product story lets go, the tub lifts out of the lineup (from the "Lung Booster" place on the left), curves down the left side and fills that card, where it stays. If the carousel moves to another product the tub fades out with that slide.
+- The empty slots only exist while the flight is on (desktop, motion allowed); phones and reduced motion keep the normal photos. Implemented with a `flight-on` class on `<html>` (`styles/sections/insider.css`, `benefits.css`) and a second path (route B) in `features/hero/hero-jar.js`.
+
+## v12.27 (16 Nov 2026): the tub drops straight down out of the hero
+- The tub no longer swings out to the right of the product when you start scrolling. It drops straight down out of the hero, in line with where it stands in the arc, and only then moves across to the left towards the Lung Booster card. The rest of the route (dock on the card, drop out below it, hand over to the product story) is unchanged.
+
+## v12.26 (16 Nov 2026): the flying tub follows the client's route and docks on the Lung Booster card
+- The tub's flight now follows the route marked on the screenshots: it swings out to the right, back across to the left (coming down from the upper right), then up to the upper left and in to the **Lung Booster card** in "You deserve the best", the matching product. It no longer crosses the story text card on the right.
+- On the card it settles exactly on the card's own photo of the tub (same place, size and tilt, tracked live through the card's zoom and drift) and rides along with it; as the card scrolls away the tub drops out below it, straight down and then down to the right, and carries on towards the product story.
+- It hands over to the product story's own first tub earlier: when that tub comes up into the bottom of the screen (45% of a screen before the story pins), so the tub never jumps. The path is now set by scroll position rather than by the share of the page.
+- Without the card (or with it too close to the story) the tub just weaves to the story as before. Phones and reduced motion are unchanged.
+
+## v12.25 (16 Nov 2026): the hero tub flies down the page in a zig-zag and lands on the product story
+- Scrolling down, the Lung Booster tub no longer just tips over and stays behind in the hero. It leaves the white arc and flies down the page, swinging right, left, right and left again (it leans into every turn, and shrinks to a third of the screen's height while it travels) until it lands on the first product of the product story, exactly where that scene shows it (`features/hero/hero-jar.js`).
+- It rides on a fixed layer (`#flight`) over the sections and under the nav, driven by the scroll position through GSAP's ticker, with the path built from a smooth curve through the waypoints, so it also flies back if you scroll up.
+- The product story's own first tub stays hidden until the flight lands (`state.heroFlight.landed`), so there is never a second tub on screen; the hand-over is within 2 px.
+- GSAP and ScrollTrigger are already bundled with the site (`lib/gsap.js`), so nothing extra is loaded in the HTML.
+- Phones and reduced motion keep the old behaviour: the tub stays in the hero and tips over onto the ribbon.
+
+## v12.24 (16 Nov 2026): the "Live naturally · Live healthier" band comes in on the next scroll
+- The first screen no longer shows the band. It is the Lung Booster tub standing up in the white arc (the arc's legs run off the bottom edge), the 5/4/6 facts on the left, and the headline, lede and "Buy now" on the right. The arc's centre moved down to 105% of the first screen's height, so the ribbon starts just below the fold.
+- The tub is bigger (1.25 × the arc's radius, so it stands up out of the top of the arc) and is held clear of the bottom edge on the first screen. As you scroll on, the band rises into view while the tub tips over (20°) and settles down onto the ribbon, so its base ends just above the band as before.
+- Phones are unchanged.
+
+## v12.23 (16 Nov 2026): the big TranzLife wordmark is removed from the hero
+- The big wordmark at the top of the hero is gone (its markup, styles and intro animation are deleted; the logo stays in the nav, menu and footer). The scene moves back up so there is no empty space: the arc's centre sits at 84% of the first screen's height, the hero is 1.12 screens tall, the headline starts at 20%, and "Buy now" sits under the lede. The tub stands fully inside the arc with its base just above the band, and on scroll it tips over and settles above the ribbon. Phones keep the headline first, then "Buy now", then the product.
+
+## v12.22 (16 Nov 2026): the hero opens on the big wordmark again, like the reference
+- The hero is back to the reference layout. The first screen is the huge TranzLife wordmark with "Buy now" centred under it, and the top of the Lung Booster tub, the white arc and the headline coming up from the bottom. The wordmark had gone from `index.html`, which left the empty band at the top; it is back (`.st-brand`), and v12.20's tighter layout is undone (arc centre at 106% of the first screen, hero 1.34 screens tall, "Buy now" under the wordmark, headline at 59%).
+- On the next scroll the tub tips over (20°) and settles with its base just above the curved band, as in the reference's second screen. It no longer floats up faster than the page, which left a gap between the tub and the ribbon.
+
+## v12.21 (16 Nov 2026): the product cut-out from the client's own background removal
+- `gummies-cut.webp` and `gummies.webp` are rebuilt from the client's clean cut-out of the Lung Booster tub (`image-removebg-preview.png`): its outline is used as the mask on the full-size photo, so the edge is clean (no leaf, arc or badge left over) and the hero, product story, shop, finder and benefits all stay sharp at full resolution.
+
+## v12.20 (16 Nov 2026): the hero fits the first screen
+- The big wordmark is no longer in the hero, which left an empty band at the top and pushed the product's base below the first screen. The whole scene now moves up: the white arc's centre sits at 84% of the first screen's height (was 106%) and the hero is 1.12 screens tall (was 1.34). The curved band follows the arc as before.
+- The Lung Booster tub stands fully inside the arc, its base just above the band, so nothing is cut off at the bottom.
+- "Buy now" moved under the lede on the right (it used to sit on top of the product). The headline block starts at 20% of the first screen instead of 59%.
+- Phones are unchanged.
+
+## v12.19 (16 Nov 2026): Lung Booster Gummies replace the old gummies
+- The gummies product is now **TranzLife Lung Booster Gummies**, from the client's new pack photo: herbal blend, immune support and respiratory care, natural apple mint flavour, 60 gummies, 100% biodegradable packaging with plant-based inks.
+- New images in `src/assets/products/`: `gummies-cut.webp` (the tub cut out of the photo), `gummies.webp` (the tub on a soft mint background, for the shop, finder, menu and benefits) and `gummies-design.webp` (the client's full photo, for the lightbox).
+- The hero shows the new tub as a photo instead of the old 3D jar, whose label was the previous design. It keeps the same place on the white arc above the band, fades in once, sways gently, leans towards the mouse and tips over on scroll.
+- Copy updated to match the pack: product name, short name, tag ("Breathe"), description, benefit list, product story card ("Breathe well", now green), product finder text and the page meta description and intro lines.
+- The "20G of Protein" badge on the client's photo is not used anywhere in the copy; it still appears in the full design board in the lightbox. Confirm with the client before launch.
+
+## v12.18 (14 Nov 2026): one calm 3D gummies jar, a broader arc that ends on the band
+- The hero shows only the TranzLife Gummies jar now, as a real 3D model drawn crisper (up to 2x pixel density). It fades in once and then just moves smoothly: it turns slowly from side to side (about 34° each way), tips very slightly and leans towards the mouse. No more jumping, popping, floating up and down or swapping to other products every 20 seconds. On scroll it still tips over and floats up a little. With reduced motion it stands still, facing front.
+- The white arc is bigger (radius 56% of the first screen's height instead of 50%) and its line is broader (2.4% instead of 1.5%). The number circles and the handwritten note follow it.
+- The curved band is drawn like the reference now: one long smooth sweep that rises from the bottom left, crests gently and falls away to the right (no more bump where it met the arc). It is still fitted to the arc so the arc ends on it as a semicircle: the ribbon's top edge passes through both ends of the circle's middle line. The lettering is a little lighter and taller so it nearly fills the ribbon, with small dots between the phrases ("LIVE NATURALLY · LIVE HEALTHIER"). `features/hero/curve-band.js` measures the arc and redraws the band whenever the layout changes, gives the next page just the room it needs, and tells the jar where the ribbon is so its base sits just above it.
+- The headline block moved up slightly (59% of the first screen instead of 66%) so the ribbon never covers the last line of the lede on smaller laptops.
+
+## v12.18 (14 Nov 2026): the hero laid out like a brand product page
+- The hero is now one tall scene, laid out like the reference product page: the first screen shows the TranzLife wordmark huge and centred (the real logo, about 60% of the screen width) with "Buy now" centred under it; scrolling on shows the product, the white arc, the facts and the headline, and then the curved "LIVE NATURALLY • LIVE HEALTHIER" band at its foot. The hero is 1.34 screens tall and everything in it is placed from the first screen's height (clamped between 680 and 1000 px).
+- The 3D product is much bigger (74% of the first screen's height) and leans over to the right like a product shot, sitting low inside the white arc. As you scroll it floats up a little slower than the page and leans a touch further.
+- The white arc is centred on the product, the three fact circles sit on its left side (low, middle and high), and "Real herbs, honest care" sits above them.
+- The headline "Innovating life beyond limits" is bigger and sits on the right beside the product, with the lede under it and a hand-drawn white underline.
+- On phones the wordmark comes first, then the headline, "Buy now", the product, the facts and the band.
+
+## v12.17 (14 Nov 2026): clean hero, a curved band that comes in with the scroll, and one product at a time in 3D
+- The straight giant "Live naturally · Live healthier" words under the hero are gone (`features/hero/marquee.js` deleted, along with its styles and the lean-with-scroll code).
+- The curved band now hangs from the foot of the hero like one scene, as in the reference (`features/hero/curve-band.js`): it sits just below the first screen, so the hero is clear when the page opens. The hero's green carries on down behind the white arc, which now runs on down behind the band, and in front a broad dark green ribbon (about 12% of the screen width) sweeps up from the bottom left, over a peak right of centre and off the right edge, with "LIVE NATURALLY • LIVE HEALTHIER" in big light green letters that nearly fill it. Below it the "You deserve the best" page starts with a domed top. The words move only with the scroll: they slide along the curve as you scroll down and back as you scroll up, and stand still when you stop.
+- The product floats free over the band, so the dark green hill and the ground shadow are gone.
+- The hero product is bigger (53% of the hero's height on desktop). As you scroll down it tips over to one side (20°) and floats up a little, keeping its size and its own 3D motion, so it rests above the band; scrolling back up reverses it.
+- On phones the curve is drawn wider than the screen so the words stay readable.
+- With reduced motion on, the band is simply there, its words stay still, and the products cross-fade every 20 seconds.
+
+## v12.16 (13 Nov 2026): hero products take turns along the semicircle
+- The hero no longer shows only the gummies jar. All five products take turns: each one rises in from the right along a semicircle that shares the white arc's centre, pops into place on the hill with a bounce and a soft white ring, stays a moment, then carries on to the left and sinks away as the next one comes in from the right. A new product arrives every 2.6 s and it loops.
+- The products lean into the curve as they travel. The roll-on photo is turned upright, and wide products are scaled down to fit.
+- It only plays while the hero is on screen and the tab is visible. With reduced motion on, the products simply cross-fade in place.
+
+## v12.15 (13 Nov 2026): benefits change with a zoom when you click the product
+- The Benefits panel no longer sits in a white card, and the row of product buttons is gone. One product shows at a time, straight on the page: its photo, name and its own "What goes in" table, with "Next: <product> →" under the table.
+- Click anywhere on the product (or use the arrows by the 01 / 05 counter, the left and right arrow keys, or Enter) to see the next one. The current product rushes towards you, blurs and fades, while the next one zooms in from further off: the photo first, then its name and each row one after another. After the last product it goes back to the first.
+- The product photo is smaller (at most 320 px wide on desktop) so the table has more room.
+- On phones the photo is a short wide strip above the table.
+- With reduced motion on, the products simply swap.
+
 ## v12.13 (13 Nov 2026): "Know more" as full-screen motion scenes
 - The "Know more" panel no longer shows cards. Each of the six parts is now a full-screen scene with its own background, and scrolling plays a zoom transition like motion graphics: the camera flies forward, so the current scene's headline, text and decorations zoom past you and blur away while the next scene's layers zoom in from far off and the backgrounds cross-fade. Each line moves at its own depth, so the layers separate as they fly. Scrolling back plays it in reverse.
 - Each scene has a giant outlined scene number and a thin ring behind the words that rush past the camera during the transition.

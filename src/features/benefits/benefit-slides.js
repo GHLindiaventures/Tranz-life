@@ -1,58 +1,74 @@
-// Benefits panel: shows one product at a time. The page scrolls past normally; the product only changes when you
-// pick one (the dots on the photo, or a tap on the photo for the next one). The change slides with a motion blur,
-// and the table swaps to that product's benefits.
+// Benefits: one product at a time, laid straight on the page (no card): its photo, name and "What goes in" table.
+// Click the product (or an arrow, or press left/right) to see the next one: the current product rushes towards you
+// and fades, while the next one zooms in from further off, photo first, then its words and rows one after another.
 import { PRODUCTS } from '../../data/products.js';
 import { BENEFITS } from '../../data/benefits.js';
 import { thumbs } from '../../app/state.js';
+import { gsap } from '../../lib/gsap.js';
 import { $, $$ } from '../../utils/dom.js';
-import { clamp } from '../../utils/math.js';
 import { reduce } from '../../utils/media.js';
 
-function initBenefits(){
-  const slides = $('#benSlides'), sets = $('#benSets'), dots = $('#benDots');
-  if (!slides || !sets) return null;
-  const N = PRODUCTS.length;
-  slides.innerHTML = PRODUCTS.map(p => `<figure class="bs"><img src="${thumbs[p.id]}" alt="${p.name}" width="960" height="960" loading="lazy" decoding="async">
-      <figcaption class="bs-cap"><span>${p.no} / ${String(N).padStart(2, '0')}</span>${p.name}</figcaption></figure>`).join('');
-  sets.innerHTML = PRODUCTS.map(p => `<div class="tbl-set" aria-label="${p.name}">${(BENEFITS[p.id] || []).map(b =>
-      `<div class="tr"><span class="td">${b}</span><span class="td"><span class="ok" aria-label="Yes">✓</span></span><span class="td"><span class="no" aria-label="Not always">–</span></span></div>`).join('')}</div>`).join('');
-  dots.innerHTML = PRODUCTS.map((p, i) => `<button type="button" data-i="${i}" aria-label="Show ${p.name}"></button>`).join('');
-  const figs = $$('.bs', slides), rows = $$('.tbl-set', sets), pips = $$('button', dots);
+const pad = n => String(n).padStart(2, '0');
 
-  let target = 0, cur = 0, shown = -1, running = false, last = 0;
-  function paint(s){
-    const blurMax = reduce ? 0 : 22;
-    figs.forEach((el, i) => { const d = s - i, a = Math.abs(d);
-      el.style.opacity = clamp(1 - a*1.25, 0, 1).toFixed(3);
-      el.style.transform = `translate3d(0, ${(-d*38).toFixed(2)}%, 0) scale(${(1 + a*.08).toFixed(3)})`;
-      el.style.filter = a < .002 ? 'none' : `blur(${Math.min(blurMax, a*blurMax*1.6).toFixed(1)}px)`;
-      el.style.zIndex = String(10 - Math.round(a*4)); });
-    rows.forEach((el, i) => { const d = s - i, a = Math.abs(d);
-      el.style.opacity = clamp(1 - a*1.6, 0, 1).toFixed(3);
-      el.style.transform = `translate3d(0, ${(-d*26).toFixed(1)}px, 0)`;
-      el.style.filter = a < .002 ? 'none' : `blur(${Math.min(blurMax*.6, a*blurMax).toFixed(1)}px)`;
-      el.style.visibility = a > .9 ? 'hidden' : 'visible'; });
-    const on = Math.round(s);
-    if (on !== shown){ shown = on;
-      pips.forEach((b, i) => b.classList.toggle('on', i === on));
-      rows.forEach((el, i) => el.setAttribute('aria-hidden', i === on ? 'false' : 'true')); }
-  }
-  // animate only after a click, then stop
-  function frame(now){
-    const dt = Math.min(.05, (now - last)/1000); last = now;
-    cur += (target - cur)*(1 - Math.exp(-dt*(reduce ? 60 : 7)));
-    if (Math.abs(target - cur) < 1e-3) cur = target;
-    paint(cur);
-    if (cur !== target) requestAnimationFrame(frame); else running = false;
-  }
-  function go(i){
-    target = (i + N) % N;
-    if (!running){ running = true; last = performance.now(); requestAnimationFrame(frame); }
-  }
-  dots.addEventListener('click', e => { const b = e.target.closest('button'); if (b) go(+b.dataset.i); });
-  slides.addEventListener('click', () => go(target + 1));
-  paint(0);
-  return { go };
+function initBenefits(){
+  const stage = $('#benStage');
+  if (!stage) return null;
+  const N = PRODUCTS.length, now = $('#benNow'), steps = $$('[data-ben-step]');
+  $('#benAll').textContent = pad(N);
+  stage.innerHTML = PRODUCTS.map((p, i) => `<article class="bi" aria-label="${p.name}, ${i + 1} of ${N}">
+      <figure class="bi-img"><img src="${thumbs[p.id]}" alt="${p.name}" width="960" height="960" loading="lazy" decoding="async" draggable="false">
+        <figcaption class="bs-cap"><span>${p.no} / ${pad(N)}</span>${p.short}</figcaption></figure>
+      <div class="bi-body">
+        <p class="bi-tag">${p.tag} · ${p.size}</p>
+        <h3 class="bi-name">${p.name}</h3>
+        <div class="tbl" role="table" aria-label="What goes into ${p.name}">
+          <div class="tr th" role="row"><span class="td" role="columnheader">What goes in</span><span class="td" role="columnheader"><span class="brandmark">TranzLife</span></span><span class="td" role="columnheader">Typical brand</span></div>
+          <div class="tbl-rows" role="rowgroup">${(BENEFITS[p.id] || []).map(b =>
+            `<div class="tr" role="row"><span class="td" role="cell">${b}</span><span class="td" role="cell"><span class="ok" aria-label="Yes">✓</span></span><span class="td" role="cell"><span class="no" aria-label="Not always">–</span></span></div>`).join('')}</div>
+        </div>
+        <p class="bi-next" aria-hidden="true">Next: ${PRODUCTS[(i + 1) % N].short} <i>→</i></p>
+      </div>
+    </article>`).join('');
+  const items = $$('.bi', stage);
+  // the parts of a product that zoom in one after another
+  const parts = el => [$('.bi-img', el), $('.bi-tag', el), $('.bi-name', el), $('.th', el), ...$$('.tbl-rows .tr', el), $('.bi-next', el)];
+
+  let sel = -1, tl = null;
+  const mark = i => {
+    now.textContent = pad(i + 1);
+    items.forEach((el, j) => { el.classList.toggle('on', j === i); el.setAttribute('aria-hidden', j === i ? 'false' : 'true'); });
+  };
+  const show = (i, first) => {
+    i = (i + N) % N;
+    if (i === sel) return;
+    const prev = items[sel], next = items[i];
+    sel = i; mark(i);
+    if (tl) tl.progress(1).kill();
+    items.forEach(el => { if (el !== prev && el !== next) gsap.set(el, { autoAlpha:0 }); });
+    if (first || reduce){
+      if (prev) gsap.set(prev, { autoAlpha:0 });
+      gsap.set(next, { autoAlpha:1, scale:1, filter:'none' }); gsap.set(parts(next), { clearProps:'all' });
+      return;
+    }
+    tl = gsap.timeline({ onComplete:() => { tl = null; } });
+    // the current product rushes past the camera and fades
+    if (prev) tl.to(prev, { scale:1.14, autoAlpha:0, filter:'blur(10px)', duration:.5, ease:'power2.in' }, 0)
+                .set(prev, { scale:1, filter:'none' });
+    // the next one zooms in from further off, layer by layer
+    tl.set(next, { autoAlpha:1, scale:1, filter:'none' }, .22)
+      .fromTo(parts(next), { autoAlpha:0, scale:.7, filter:'blur(12px)' },
+        { autoAlpha:1, scale:1, filter:'blur(0px)', duration:.75, ease:'power3.out', stagger:.045, clearProps:'filter,transform' }, .22);
+  };
+
+  stage.addEventListener('click', () => show(sel + 1));
+  steps.forEach(b => b.addEventListener('click', () => show(sel + +b.dataset.benStep)));
+  stage.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowLeft'){ e.preventDefault(); show(sel + (e.key === 'ArrowRight' ? 1 : -1)); }
+    else if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); show(sel + 1); }
+  });
+
+  show(0, true);
+  return { go:show };
 }
 
 export { initBenefits };
