@@ -14,6 +14,7 @@ dist-single/
 data/
 
 # tooling and OS noise
+.playwright-mcp/
 .vite/
 coverage/
 *.log

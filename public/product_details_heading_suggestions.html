@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TranzLife - Product Details Heading-Wise Separation Concepts</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,400..900;1,62..125,400..900&family=Caveat:wght@600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ground: #e9efe3;
+      --ground-2: #dfe8d5;
+      --panel: #ffffff;
+      --panel-2: #f4f8ef;
+      --ink: #1f4423;
+      --muted: #4c6648;
+      --faint: #7c9077;
+      --forest: #1d4424;
+      --gold: #d6a23a;
+      --sage: #6f9e4c;
+      --moss: #8cb86a;
+      --line: rgba(31, 70, 35, 0.12);
+      --glass: rgba(255, 255, 255, 0.7);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Archivo", sans-serif;
+      background: #dfd8cc;
+      color: var(--ink);
+      padding: 30px 20px 80px;
+      line-height: 1.5;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 35px;
+    }
+    .badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      background: rgba(31, 68, 35, 0.1);
+      color: var(--forest);
+      padding: 5px 14px;
+      border-radius: 99px;
+      margin-bottom: 12px;
+    }
+    h1 {
+      font-size: 34px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--forest);
+      margin-bottom: 8px;
+    }
+    .subtitle {
+      font-size: 16px;
+      color: var(--muted);
+      max-width: 680px;
+      margin: 0 auto;
+    }
+    .concept-switch {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin: 25px 0 35px;
+      flex-wrap: wrap;
+    }
+    .tab-btn {
+      padding: 10px 20px;
+      border-radius: 30px;
+      border: 1px solid var(--forest);
+      background: transparent;
+      color: var(--forest);
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .tab-btn.active {
+      background: var(--forest);
+      color: #fff;
+      box-shadow: 0 4px 15px rgba(29, 68, 36, 0.25);
+    }
+    .concept-panel {
+      display: none;
+      background: var(--ground);
+      border-radius: 24px;
+      padding: 40px;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
+      border: 1px solid var(--line);
+    }
+    .concept-panel.active {
+      display: block;
+      animation: fadeIn 0.3s ease-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Concept Description Banner */
+    .concept-meta {
+      background: rgba(255, 255, 255, 0.6);
+      border-left: 4px solid var(--forest);
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin-bottom: 35px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .concept-meta h3 {
+      font-size: 18px;
+      color: var(--forest);
+      margin-bottom: 4px;
+    }
+    .concept-meta p {
+      font-size: 13.5px;
+      color: var(--muted);
+    }
+    .tag-pill {
+      background: var(--forest);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 20px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* Common Card Styling */
+    .section-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--forest);
+      margin-bottom: 8px;
+    }
+    .section-eyebrow .num {
+      background: var(--forest);
+      color: #fff;
+      font-size: 10px;
+      padding: 2px 7px;
+      border-radius: 4px;
+    }
+    .section-heading {
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--forest);
+      letter-spacing: -0.02em;
+      margin-bottom: 6px;
+    }
+    .section-sub {
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 20px;
+      max-width: 650px;
+    }
+
+    /* OPTION A: STICKY CHAPTER HUD & SPLIT MILESTONES */
+    .layout-hud {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 40px;
+      position: relative;
+    }
+    .sticky-rail {
+      position: sticky;
+      top: 40px;
+      align-self: start;
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 22px;
+    }
+    .sticky-rail-title {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--faint);
+      margin-bottom: 16px;
+    }
+    .rail-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .rail-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--muted);
+      padding: 8px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .rail-item.active {
+      background: var(--forest);
+      color: #fff;
+    }
+    .rail-item .rail-no {
+      font-size: 11px;
+      font-weight: 800;
+      opacity: 0.7;
+    }
+    .hud-content {
+      display: flex;
+      flex-direction: column;
+      gap: 36px;
+    }
+    .hud-card {
+      background: #ffffff;
+      border-radius: 18px;
+      padding: 30px;
+      border: 1px solid var(--line);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+    }
+
+    /* Grid for Ingredients */
+    .ing-grid-preview {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 12px;
+      margin-top: 15px;
+    }
+    .ing-item-box {
+      background: var(--panel-2);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .ing-item-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+    }
+    .ing-item-head b {
+      font-size: 13.5px;
+      color: var(--forest);
+    }
+    .ing-item-head span.badge-mini {
+      font-size: 9.5px;
+      font-weight: 700;
+      color: var(--gold);
+      background: rgba(214, 162, 58, 0.12);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    .ing-item-box p {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.4;
+    }
+
+    /* Benefits Grid */
+    .benefits-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 15px;
+    }
+    .benefit-item {
+      display: flex;
+      gap: 12px;
+      padding: 14px;
+      background: var(--panel-2);
+      border-radius: 12px;
+      border-left: 3px solid var(--moss);
+    }
+    .benefit-icon {
+      width: 20px;
+      height: 20px;
+      color: var(--forest);
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .benefit-item b {
+      display: block;
+      font-size: 13.5px;
+      color: var(--forest);
+      margin-bottom: 2px;
+    }
+    .benefit-item p {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    /* Usage Box */
+    .usage-box {
+      background: linear-gradient(135deg, rgba(31, 68, 35, 0.05), rgba(140, 184, 106, 0.12));
+      border: 1px dashed var(--moss);
+      border-radius: 14px;
+      padding: 20px;
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+    .usage-icon-circle {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--forest);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    /* OPTION B: EDITORIAL BENTO CARDS */
+    .editorial-flow {
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+    }
+    .section-banner {
+      background: var(--forest);
+      color: #fff;
+      border-radius: 18px;
+      padding: 26px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 8px 24px rgba(29, 68, 36, 0.2);
+    }
+    .section-banner h2 {
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      margin-top: 4px;
+    }
+    .section-banner p.sub-banner {
+      font-size: 13px;
+      opacity: 0.82;
+      max-width: 500px;
+    }
+    .banner-counter {
+      font-size: 32px;
+      font-weight: 900;
+      opacity: 0.35;
+      font-family: "Caveat", cursive;
+    }
+    .bento-container {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+    .bento-card {
+      background: #ffffff;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+    }
+    .bento-card.col-2 {
+      grid-column: span 2;
+    }
+    .bento-tag {
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--moss);
+      margin-bottom: 6px;
+    }
+    .bento-card h4 {
+      font-size: 16px;
+      color: var(--forest);
+      margin-bottom: 8px;
+    }
+    .bento-card p {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    /* OPTION C: STICKY FLOATING FILTER PILL NAV */
+    .filter-sticky-bar {
+      position: sticky;
+      top: 20px;
+      z-index: 10;
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(14px);
+      padding: 8px 12px;
+      border-radius: 99px;
+      border: 1px solid var(--line);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+      margin-bottom: 30px;
+      width: fit-content;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .filter-pill {
+      border: none;
+      background: transparent;
+      padding: 8px 16px;
+      border-radius: 99px;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+    .filter-pill.active {
+      background: var(--forest);
+      color: #fff;
+    }
+
+    .cta-row {
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .btn-action {
+      background: var(--forest);
+      color: #fff;
+      padding: 12px 24px;
+      border-radius: 99px;
+      font-weight: 700;
+      font-size: 14px;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <span class="badge">Architecture & UI/UX Proposal</span>
+      <h1>How to Separate Details Heading-Wise</h1>
+      <p class="subtitle">
+        Transforming the unstructured product details scroll into clean, branded, readable thematic chapters.
+      </p>
+    </header>
+
+    <!-- Concept Switcher Tabs -->
+    <div class="concept-switch">
+      <button class="tab-btn active" onclick="switchConcept('concept-a')">Option 1: Pinned Chapter HUD (Recommended)</button>
+      <button class="tab-btn" onclick="switchConcept('concept-b')">Option 2: Editorial Bento Chapters</button>
+      <button class="tab-btn" onclick="switchConcept('concept-c')">Option 3: Sticky Floating Pill Filter</button>
+    </div>
+
+    <!-- OPTION 1: PINNED CHAPTER HUD -->
+    <div class="concept-panel active" id="concept-a">
+      <div class="concept-meta">
+        <div>
+          <h3>Option 1: The Pinned Chapter Rail / HUD</h3>
+          <p>A subtle sticky left milestone rail tracks your exact scroll progress while distinct cards glide past on the right.</p>
+        </div>
+        <span class="tag-pill">Best for Deep Storytelling</span>
+      </div>
+
+      <div class="layout-hud">
+        <!-- Left Sticky Rail -->
+        <aside class="sticky-rail">
+          <p class="sticky-rail-title">Table of Contents</p>
+          <ul class="rail-list">
+            <li class="rail-item active"><span class="rail-no">01</span> Botanical Actives</li>
+            <li class="rail-item"><span class="rail-no">02</span> Formulation Synergy</li>
+            <li class="rail-item"><span class="rail-no">03</span> Daily Ritual & Usage</li>
+            <li class="rail-item"><span class="rail-no">04</span> Clinical Purity</li>
+          </ul>
+        </aside>
+
+        <!-- Right Content Chapters -->
+        <div class="hud-content">
+          <!-- Chapter 1 -->
+          <article class="hud-card">
+            <div class="section-eyebrow"><span class="num">01</span> Botanical Pharmacopeia</div>
+            <h2 class="section-heading">The Power of Botanicals in Every Gummy</h2>
+            <p class="section-sub">Inspired by India’s rich botanical heritage, combining selected plant-derived ingredients with essential micronutrients.</p>
+            <div class="ing-grid-preview">
+              <div class="ing-item-box">
+                <div class="ing-item-head"><b>Tulsi (Holy Basil)</b><span class="badge-mini">ADAPTOGEN</span></div>
+                <p>Traditional Indian botanical valued in herbal respiratory wellness.</p>
+              </div>
+              <div class="ing-item-box">
+                <div class="ing-item-head"><b>Vasaka</b><span class="badge-mini">BRONCHODILATOR</span></div>
+                <p>Ayurvedic herb traditionally used to support clear airway passages.</p>
+              </div>
+              <div class="ing-item-box">
+                <div class="ing-item-head"><b>Dry Ginger (Sukku)</b><span class="badge-mini">METABOLIC HEAT</span></div>
+                <p>Familiar botanical active used in traditional soothing wellness preparations.</p>
+              </div>
+              <div class="ing-item-box">
+                <div class="ing-item-head"><b>Black Pepper & Curcumin</b><span class="badge-mini">BIO-ENHANCER</span></div>
+                <p>Contains piperine for enhanced phytochemical cellular absorption.</p>
+              </div>
+            </div>
+          </article>
+
+          <!-- Chapter 2 -->
+          <article class="hud-card">
+            <div class="section-eyebrow"><span class="num">02</span> Formulation Synergy</div>
+            <h2 class="section-heading">Why Choose PulmoClear™ Gummies?</h2>
+            <p class="section-sub">Engineered to bring together botanical intelligence and contemporary delivery.</p>
+            <div class="benefits-grid">
+              <div class="benefit-item">
+                <svg class="benefit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                <div>
+                  <b>Convenient Gummy Format</b>
+                  <p>Pocket-friendly, non-messy pectin format designed for active daily routines.</p>
+                </div>
+              </div>
+              <div class="benefit-item">
+                <svg class="benefit-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                <div>
+                  <b>Essential Micronutrients</b>
+                  <p>Fortified with Vitamin C, Vitamin D3, and Zinc for cellular resilience.</p>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- Chapter 3 -->
+          <article class="hud-card">
+            <div class="section-eyebrow"><span class="num">03</span> Daily Ritual & Directions</div>
+            <h2 class="section-heading">Recommended Consumption Protocol</h2>
+            <div class="usage-box">
+              <div class="usage-icon-circle">☀️</div>
+              <div>
+                <b style="font-size:15px; color:var(--forest);">Daily Morning or Mid-Day Ritual</b>
+                <p style="font-size:13px; color:var(--muted); margin-top:3px;">
+                  Chew 1–2 gummies thoroughly after breakfast. Inhale deeply to experience the natural aromatic herbal profile. Consistent daily usage supports respiratory equilibrium.
+                </p>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <!-- OPTION 2: EDITORIAL BENTO CARDS -->
+    <div class="concept-panel" id="concept-b">
+      <div class="concept-meta">
+        <div>
+          <h3>Option 2: Editorial Bento Chapters with Branded Banners</h3>
+          <p>Full-width luxury dark forest green divider banners announce each new chapter, followed by modern asymmetric bento grids.</p>
+        </div>
+        <span class="tag-pill">High Visual Impact</span>
+      </div>
+
+      <div class="editorial-flow">
+        <!-- Banner 01 -->
+        <div class="section-banner">
+          <div>
+            <span class="badge" style="background:rgba(255,255,255,0.15); color:#fff;">CHAPTER 01</span>
+            <h2>Botanical Roots & Phytochemistry</h2>
+            <p class="sub-banner">10 standardized Indian botanicals extracted at peak potency.</p>
+          </div>
+          <div class="banner-counter">01 / 04</div>
+        </div>
+
+        <div class="bento-container">
+          <div class="bento-card col-2">
+            <span class="bento-tag">Primary Bio-Actives</span>
+            <h4>Tulsi, Vasaka & Black Turmeric Synergy</h4>
+            <p>Traditional ayurvedic wisdom validated by modern phytochemistry. These three master herbs form the botanical core of the PulmoClear™ system to support normal bronchus comfort and clear respiration.</p>
+          </div>
+          <div class="bento-card">
+            <span class="bento-tag">Bio-Enhancer</span>
+            <h4>Piperine Synergy</h4>
+            <p>Black pepper extract naturally stimulates intestinal brush-border microvilli, increasing active botanical absorption by up to 200%.</p>
+          </div>
+        </div>
+
+        <!-- Banner 02 -->
+        <div class="section-banner" style="background:#255431;">
+          <div>
+            <span class="badge" style="background:rgba(255,255,255,0.15); color:#fff;">CHAPTER 02</span>
+            <h2>Clinical Formulation Standards</h2>
+            <p class="sub-banner">Clean label, gelatin-free, zero synthetic colors or harsh preservatives.</p>
+          </div>
+          <div class="banner-counter">02 / 04</div>
+        </div>
+
+        <div class="bento-container">
+          <div class="bento-card">
+            <span class="bento-tag">Base Matrix</span>
+            <h4>100% Citrus Pectin</h4>
+            <p>Zero animal gelatin. Formulated with soluble fruit fiber that melts smoothly without sticky tooth residue.</p>
+          </div>
+          <div class="bento-card">
+            <span class="bento-tag">Purity Verification</span>
+            <h4>AYUSH & GMP Certified</h4>
+            <p>Manufactured in ISO 7 pharmaceutical cleanrooms with triple batch testing for heavy metals and microbial purity.</p>
+          </div>
+          <div class="bento-card">
+            <span class="bento-tag">Packaging</span>
+            <h4>Biophotonic Barrier</h4>
+            <p>Sealed in high-barrier UV-shielded foil packets to lock in volatile botanical aromatics.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- OPTION 3: STICKY FLOATING PILL FILTER -->
+    <div class="concept-panel" id="concept-c">
+      <div class="concept-meta">
+        <div>
+          <h3>Option 3: Sticky Floating Category Pills</h3>
+          <p>A floating glassmorphic nav bar stays pinned as the user scrolls, allowing one-click instant jumping or filtering between headings.</p>
+        </div>
+        <span class="tag-pill">Best for Fast Scanning</span>
+      </div>
+
+      <!-- Sticky Pill Bar -->
+      <nav class="filter-sticky-bar">
+        <button class="filter-pill active">🌿 Ingredients</button>
+        <button class="filter-pill">⚡ Synergy</button>
+        <button class="filter-pill">⏱ Directions</button>
+        <button class="filter-pill">🛡 Lab Purity</button>
+      </nav>
+
+      <div class="hud-content">
+        <article class="hud-card">
+          <div class="section-eyebrow"><span class="num">01</span> Ingredients Matrix</div>
+          <h2 class="section-heading">Standardized Botanical Extract Spectrum</h2>
+          <p class="section-sub">Click any pill above to jump directly to that section during scroll.</p>
+          <div class="ing-grid-preview">
+            <div class="ing-item-box">
+              <div class="ing-item-head"><b>Holy Basil & Long Pepper</b><span class="badge-mini">Ayurvedic Core</span></div>
+              <p>Supports mucosal clarity and soothing warmth in throat tissues.</p>
+            </div>
+            <div class="ing-item-box">
+              <div class="ing-item-head"><b>Licorice Root & Cumin</b><span class="badge-mini">Demulcent</span></div>
+              <p>Provides gentle demulcent hydration to dry or irritated respiratory membranes.</p>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+
+    <div class="cta-row">
+      <div>
+        <b style="color:var(--forest); font-size:15px;">Summary of Recommended Headings:</b>
+        <p style="font-size:13px; color:var(--muted); margin-top:2px;">
+          1. <b>Actives & Botanicals</b> &nbsp;|&nbsp; 2. <b>Synergy & Benefits</b> &nbsp;|&nbsp; 3. <b>Usage Ritual</b> &nbsp;|&nbsp; 4. <b>Quality & Safety</b>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function switchConcept(id) {
+      document.querySelectorAll('.concept-panel').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      event.target.classList.add('active');
+    }
+  </script>
+</body>
+</html>
