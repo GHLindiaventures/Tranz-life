@@ -641,10 +641,10 @@ function initProductJourney() {
     let open = 0, calloutC = 0, calloutA = 0;
     let letters = 0;                                  // 0..1: the side letters go up and away first, then the bottle opens
     if (ingOn()) {
-      letters = clamp(ing.u / 0.045, 0, 1);
-      open = ing.v > 0 ? 1 - clamp(ing.v / 0.88, 0, 1) : clamp((ing.u - 0.02) / 0.18, 0, 1);   // the cap starts to unscrew when the letters are half-way up
-      calloutC = clamp((ing.u - 0.48) / 0.38, 0, 1);
-      calloutA = ing.v > 0 ? 0 : clamp((ing.u - 0.46) / 0.03, 0, 1) * (1 - clamp((ing.u - 0.88) / 0.03, 0, 1));
+      letters = sm(clamp(ing.u / 0.14, 0, 1));
+      open = ing.v > 0 ? 1 - clamp(ing.v / 0.88, 0, 1) : clamp((ing.u - 0.14) / 0.24, 0, 1);   // cap starts only AFTER side letters have cleanly exited
+      calloutC = clamp((ing.u - 0.66) / 0.22, 0, 1);
+      calloutA = ing.v > 0 ? 0 : clamp((ing.u - 0.64) / 0.03, 0, 1) * (1 - clamp((ing.u - 0.88) / 0.03, 0, 1));
       if (ov.state === 'closing') { open *= a; calloutA *= a; }
       if (ingDir && open > 0) ingDir.pose(hold, open, { vh, mobile: geo.mobile, front: restRot(i) });
     }
@@ -676,7 +676,9 @@ function initProductJourney() {
     const sc0 = calcIntroText(sy, F, vh), timed = reduce ? 1 : clamp((s - 0.4) / 0.6, 0, 1);
     // here the words come in on time alone, from nothing, in one go as the product flies in (no half-played start);
     // the scroll only moves them up with the details later
-    const fall = ov.sec._e || 0, tin = timed, it = { tin, lift: (ingOn() ? 0 : fall) + letters * vh * 1.5, o: (1 - Math.pow(1 - tin, 3)) * (!ingOn() && fall > vh * 1.2 ? 0 : 1) * (1 - letters) };
+    const fall = ov.sec._e || 0, tin = timed;
+    const letterDrift = ingOn() ? letters * (geo.mobile ? 40 : 70) : letters * vh * 0.45;
+    const it = { tin, lift: (ingOn() ? 0 : fall) + letterDrift, o: (1 - Math.pow(1 - tin, 3)) * (!ingOn() && fall > vh * 1.2 ? 0 : 1) * (1 - letters) };
     const o = it.o * (ov.state === 'closing' ? a : 1);
     [ov.card, ov.lead].forEach((el, s) => {
       if (!el) return;
@@ -701,7 +703,7 @@ function initProductJourney() {
       const T = ingT(vh, F, H), scB = Math.max(0, Math.min(syRaw, F + T.A * vh) - F - T.flip * vh), sm3 = t => t * t * (3 - 2 * t);
       frameDraw = sm3(clamp(scB / (T.grow * vh), 0, 1)) * (1 - sm3(clamp((scB - (T.grow + T.hold) * vh) / (T.away * vh), 0, 1)));
     } else frameDraw = calcFrameDraw(P);
-    if (ov.setFrame) ov.setFrame(ovBox, frameDraw * (a > 0.999 && s > 0.999 ? 1 : 0) * (1 - clamp(open / 0.1, 0, 1)));
+    if (ov.setFrame) ov.setFrame(ovBox, frameDraw * (a > 0.999 && s > 0.999 ? 1 : 0) * (ingOn() ? (1 - clamp(ing.u / 0.08, 0, 1)) : 1) * (1 - clamp(open / 0.1, 0, 1)));
     const hlc = calcHlCallout(sy, H, vh, (ov.sec._beats ? ov.sec._beats.hlFrom : H - 2.9 * vh) + 0.25 * vh);   // the highlights start once the last piece has left
     if (ov.setCallout) ov.setCallout(ovBox, hlc.o * a, hlc.draw, hlc.lines, 0, hlc.ex);
     decor.update(0, i, 0, 0, 1, tTime, true);

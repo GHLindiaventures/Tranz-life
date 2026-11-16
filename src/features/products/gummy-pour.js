@@ -306,7 +306,7 @@ function createIngredientsDirector(L) {
     // how the bottle is posed for `open`: it sinks to the bottom of the frame, smaller, turns to face front and tips a little
     pose(hold, open, o) {
       if (open <= 0) return hold;
-      const k = sm(clamp((open - 0.06) / 0.3));
+      const k = sm(clamp((open - 0.14) / 0.60));
       const d = ((hold.rotY - o.front + Math.PI) % (Math.PI * 2) + Math.PI * 2) % (Math.PI * 2) - Math.PI;
       hold.y = hold.y + (o.vh * (o.mobile ? 0.82 : 0.78) - hold.y) * k;
       hold.h = hold.h * (1 - 0.26 * k);
@@ -328,7 +328,7 @@ function createIngredientsDirector(L) {
       }
 
       // the cap: unscrews (turning and rising), then lifts to rest at the top of the frame
-      const turnK = sm(clamp(open / 0.2)), liftK = sm(clamp(open / 0.26));
+      const turnK = sm(clamp(open / 0.58)), liftK = sm(clamp((open - 0.15) / 0.70));
       pivot.rotation.y = turnK * TURNS * Math.PI * 2;
       pivot.position.copy(ud.capRest);
       if (liftK > 0) {
@@ -355,7 +355,7 @@ function createIngredientsDirector(L) {
       // Emerges from packet #0 in cloud, camera dollies in to hero product focus
       let zoomK = 0;
       if (vVal <= 0) {
-        const zIn = sm(clamp((u - 0.20) / 0.14, 0, 1));
+        const zIn = sm(clamp((u - 0.38) / 0.14, 0, 1));
         const zOut = sm(clamp((u - 0.94) / 0.04, 0, 1));
         zoomK = zIn * (1 - zOut);
       }
@@ -363,7 +363,7 @@ function createIngredientsDirector(L) {
       // 2. Tear schedule: flap peels, pouch mouth opens, and gummy emerges
       let tearK = 0;
       if (vVal <= 0) {
-        const tIn = sm(clamp((u - 0.34) / 0.14, 0, 1));
+        const tIn = sm(clamp((u - 0.52) / 0.14, 0, 1));
         const tOut = sm(clamp((u - 0.88) / 0.06, 0, 1));
         tearK = tIn * (1 - tOut);
       }

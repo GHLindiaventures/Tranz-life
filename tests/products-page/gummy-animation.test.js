@@ -52,82 +52,86 @@ describe('Animation Timeline & Choreography Math', () => {
   const sm = t => t * t * (3 - 2 * t);
 
   function calcTimeline(u, v = 0) {
-    // 1. Bottle cap unscrew & pour
-    const open = v > 0 ? 1 - clamp(v / 0.88, 0, 1) : clamp((u - 0.02) / 0.18, 0, 1);
+    // 1. Bottle cap unscrew & pour (starts at u = 0.14 after intro side letters exit)
+    const open = v > 0 ? 1 - clamp(v / 0.88, 0, 1) : clamp((u - 0.14) / 0.24, 0, 1);
 
-    // 2. Hero packet zoom
+    // 2. Hero packet zoom (starts at u = 0.38 after pour is complete)
     let zoomK = 0;
     if (v <= 0) {
-      const zIn = sm(clamp((u - 0.20) / 0.14, 0, 1));
+      const zIn = sm(clamp((u - 0.38) / 0.14, 0, 1));
       const zOut = sm(clamp((u - 0.94) / 0.04, 0, 1));
       zoomK = zIn * (1 - zOut);
     }
 
-    // 3. Hero packet tear & gummy emergence
+    // 3. Hero packet tear & gummy emergence (starts at u = 0.52 after zoom is locked)
     let tearK = 0;
     if (v <= 0) {
-      const tIn = sm(clamp((u - 0.34) / 0.14, 0, 1));
+      const tIn = sm(clamp((u - 0.52) / 0.14, 0, 1));
       const tOut = sm(clamp((u - 0.88) / 0.06, 0, 1));
       tearK = tIn * (1 - tOut);
     }
 
-    // 4. Ingredients callout
-    const calloutA = v > 0 ? 0 : clamp((u - 0.46) / 0.03, 0, 1) * (1 - clamp((u - 0.88) / 0.03, 0, 1));
-    const calloutC = clamp((u - 0.48) / 0.38, 0, 1);
+    // 4. Ingredients callout (pointing to the emerged gummy)
+    const calloutA = v > 0 ? 0 : clamp((u - 0.64) / 0.03, 0, 1) * (1 - clamp((u - 0.88) / 0.03, 0, 1));
+    const calloutC = clamp((u - 0.66) / 0.22, 0, 1);
 
     return { open, zoomK, tearK, calloutA, calloutC };
   }
 
-  it('Phase 1 (u = 0.00..0.20): Cap unscrews, all packets pour out into cloud', () => {
+  it('Phase 1 (u = 0.00..0.38): Letters exit (0.00-0.14), cap unscrews slowly and packets pour out (0.14-0.38)', () => {
     const tStart = calcTimeline(0.0);
     expect(tStart.open).toBe(0);
     expect(tStart.zoomK).toBe(0);
     expect(tStart.tearK).toBe(0);
     expect(tStart.calloutA).toBe(0);
 
-    const tPoured = calcTimeline(0.20);
+    const tLettersExit = calcTimeline(0.14);
+    expect(tLettersExit.open).toBe(0); // Cap still closed while letters leave
+    expect(tLettersExit.zoomK).toBe(0);
+
+    const tPoured = calcTimeline(0.38);
     expect(tPoured.open).toBe(1);
     expect(tPoured.zoomK).toBe(0);
     expect(tPoured.tearK).toBe(0);
   });
 
-  it('Phase 2 (u = 0.20..0.34): Hero packet zooms forward to center stage', () => {
-    const tMidZoom = calcTimeline(0.27);
+  it('Phase 2 (u = 0.38..0.52): Hero packet zooms forward to center stage', () => {
+    const tMidZoom = calcTimeline(0.45);
     expect(tMidZoom.open).toBe(1);
     expect(tMidZoom.zoomK).toBeGreaterThan(0.4);
     expect(tMidZoom.zoomK).toBeLessThan(0.6);
     expect(tMidZoom.tearK).toBe(0); // Flap is still sealed while zooming
 
-    const tZoomed = calcTimeline(0.34);
+    const tZoomed = calcTimeline(0.52);
     expect(tZoomed.zoomK).toBe(1);
     expect(tZoomed.tearK).toBe(0);
   });
 
-  it('Phase 3 (u = 0.34..0.48): Packet tears open, flap curls, gummy emerges', () => {
-    const tMidTear = calcTimeline(0.41);
+  it('Phase 3 (u = 0.52..0.66): Packet tears open, flap curls, gummy emerges completely', () => {
+    const tMidTear = calcTimeline(0.59);
     expect(tMidTear.zoomK).toBe(1);
     expect(tMidTear.tearK).toBeGreaterThan(0.4);
     expect(tMidTear.tearK).toBeLessThan(0.6);
 
-    const tTorn = calcTimeline(0.48);
+    const tTorn = calcTimeline(0.66);
     expect(tTorn.zoomK).toBe(1);
     expect(tTorn.tearK).toBe(1); // Gummy is fully emerged
   });
 
-  it('Phase 4 (u = 0.48..0.88): Ingredients are called out pointing to the emerged gummy', () => {
-    const tStartCallouts = calcTimeline(0.50);
+  it('Phase 4 (u = 0.66..0.88): Ingredients are called out pointing to the emerged gummy', () => {
+    const tStartCallouts = calcTimeline(0.68);
     expect(tStartCallouts.zoomK).toBe(1);
     expect(tStartCallouts.tearK).toBe(1);
     expect(tStartCallouts.calloutA).toBe(1);
-    expect(tStartCallouts.calloutC).toBeCloseTo(0.05, 1);
+    expect(tStartCallouts.calloutC).toBeCloseTo(0.09, 1);
 
-    const tMidCallouts = calcTimeline(0.67);
+    const tMidCallouts = calcTimeline(0.77);
     expect(tMidCallouts.calloutA).toBe(1);
     expect(tMidCallouts.calloutC).toBeCloseTo(0.5, 1);
 
-    const tEndCallouts = calcTimeline(0.86);
+    const tEndCallouts = calcTimeline(0.88);
     expect(tEndCallouts.calloutA).toBe(1);
-    expect(tEndCallouts.calloutC).toBe(1);
+    expect(tEndCallouts.calloutC).toBeCloseTo(1, 4);
   });
 
   it('Phase 5 (u = 0.88..0.98): Gummy retracts, packet re-seals, packet zooms back into cloud', () => {
@@ -176,26 +180,26 @@ describe('Animation Timeline & Choreography Math', () => {
       return { zoomK, kEase, pos, look, fov };
     }
 
-    // At u = 0.20: wide shot
-    const cWide = getCamState(0.20);
+    // At u = 0.35: wide shot before hero zoom
+    const cWide = getCamState(0.35);
     expect(cWide.zoomK).toBe(0);
     expect(cWide.pos.z).toBeCloseTo(24, 1);
     expect(cWide.fov).toBeCloseTo(30, 1);
 
-    // At u = 0.27: camera dollies halfway in
-    const cMid = getCamState(0.27);
+    // At u = 0.45: camera dollies halfway in
+    const cMid = getCamState(0.45);
     expect(cMid.pos.z).toBeLessThan(20);
     expect(cMid.pos.z).toBeGreaterThan(10);
     expect(cMid.fov).toBeLessThan(30);
 
-    // At u = 0.34: camera fully dollied in to close-up
-    const cZoomed = getCamState(0.34);
+    // At u = 0.52: camera fully dollied in to close-up
+    const cZoomed = getCamState(0.52);
     expect(cZoomed.zoomK).toBe(1);
     expect(cZoomed.pos.z).toBeCloseTo(heroPos.z + 5.2, 1);
     expect(cZoomed.fov).toBeCloseTo(23, 1);
 
-    // At u = 0.60: camera remains locked in close-up during ingredients callouts
-    const cIngredients = getCamState(0.60);
+    // At u = 0.70: camera remains locked in close-up during ingredients callouts
+    const cIngredients = getCamState(0.70);
     expect(cIngredients.zoomK).toBe(1);
     expect(cIngredients.pos.z).toBeCloseTo(heroPos.z + 5.2, 1);
 
