@@ -78,18 +78,19 @@ function slantCut(mat, y0, k){
 // Liquid inside an opaque frosted bottle, faked in the material: below a (gently sloshing) level the surface is tinted and
 // shaded darker toward the base, with a soft bright meniscus line on the level. `fill` is in the model's own units (y).
 function liquidFill(mat, { fill = .29, tint = [.62, .85, .22], amount = .75 } = {}){
-  const uTime = { value:0 };
+  const uTime = { value:0 }, uFill = { value:fill };   // uFill: the liquid level in the model's own units (the Liver Booster lowers it as it pours)
   mat.onBeforeCompile = sh => {
-    sh.uniforms.uTime = uTime;
+    sh.uniforms.uTime = uTime; sh.uniforms.uFill = uFill;
     sh.vertexShader = sh.vertexShader.replace('void main() {', `varying vec3 vLiqPos;
 void main() {
   vLiqPos = position;`);
     sh.fragmentShader = sh.fragmentShader
       .replace('void main() {', `varying vec3 vLiqPos;
 uniform float uTime;
+uniform float uFill;
 void main() {`)
       .replace('#include <map_fragment>', `#include <map_fragment>
-      float liqLevel = ${fill.toFixed(4)} + .006*sin(uTime*1.7 + vLiqPos.x*10.) + .014*sin(uTime*.8)*vLiqPos.x + .005*sin(uTime*1.1 + vLiqPos.z*8.);
+      float liqLevel = uFill + .006*sin(uTime*1.7 + vLiqPos.x*10.) + .014*sin(uTime*.8)*vLiqPos.x + .005*sin(uTime*1.1 + vLiqPos.z*8.);
       float liqD = vLiqPos.y - liqLevel;
       float inLiq = 1. - smoothstep(-.003, .003, liqD);
       float depthShade = smoothstep(0., .9, -liqD);
@@ -100,7 +101,7 @@ void main() {`)
       diffuseColor.rgb += vec3(.20, .26, .08)*exp(-liqD*liqD/.00006)*.9;`);
   };
   mat.customProgramCacheKey = () => 'liquid' + fill + ':' + amount;
-  mat.userData.uTime = uTime;
+  mat.userData.uTime = uTime; mat.userData.uFill = uFill;
   return mat;
 }
 
@@ -290,6 +291,11 @@ function withGlb(builder, url){
       if (cap && !pivot && holder.parent){
         const y0 = cap.position.y;
         holder.parent.userData.unscrew = u => { const k = Math.min(1, Math.max(0, u)), e = k*k*(3 - 2*k); cap.rotation.y = -k*2.5*Math.PI*2; cap.position.y = y0 + e*.5; };
+      }
+      // the Liver Booster's ingredients moment (liver-pour.js) drives the cap and the liquid level in the bottle
+      if (cap && !pivot && holder.parent && m.getObjectByName('Bottle')){
+        const ud = holder.parent.userData, bm = m.getObjectByName('Bottle');
+        ud.liverCap = cap; ud.capRest = cap.position.clone(); ud.modelRoot = m; ud.liverFill = bm.material && bm.material.userData && bm.material.userData.uFill;
       }
       window.dispatchEvent(new Event('tl:model-ready'));   // sizes taken from the stand-in are out of date now
     }).catch(() => { /* keep the drawn product */ });

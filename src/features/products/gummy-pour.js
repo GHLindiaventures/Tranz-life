@@ -13,6 +13,7 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import packetUrl from '../../assets/products/packet.glb?url';
+import packetLiteUrl from '../../assets/products/packet-lite.glb?url';   // 5k-triangle copy, used only while the jar is closed (62 full packets = millions of triangles per frame)
 import { createPacketModel } from './gummy-packet.js';
 import { DETAILS } from '../../products-page/data/product-details.js';
 
@@ -55,9 +56,9 @@ const CLOUD = (() => {
 
 // the packet (packet.glb: a wrapped gummy packet, flat, 1.9 x 1.08 x 0.23). Normalised to width 1 and turned to lie flat (its thickness
 // along y), so an instance scale of GS gives the packet's width. Its own textured material is used as it is.
-let geoPromise = null;
-function loadGeo() {
-  if (!geoPromise) geoPromise = new Promise((res, rej) => new GLTFLoader().load(packetUrl, g => {
+const geoPromises = new Map();
+function loadGeo(url = packetUrl) {
+  if (!geoPromises.has(url)) geoPromises.set(url, new Promise((res, rej) => new GLTFLoader().load(url, g => {
     let mesh = null; g.scene.traverse(n => { if (n.isMesh && !mesh) mesh = n; });
     if (!mesh) return rej(new Error('packet.glb has no mesh'));
     const geo = mesh.geometry.clone(); geo.computeBoundingBox();
@@ -66,8 +67,8 @@ function loadGeo() {
     geo.computeBoundingBox();
     const mat = mesh.material; mat.envMapIntensity = 0.55; mat.roughness = Math.max(0.35, mat.roughness != null ? mat.roughness : 0.5);
     res({ geo, mat, half: geo.boundingBox.max.clone() });
-  }, undefined, rej));
-  return geoPromise;
+  }, undefined, rej)));
+  return geoPromises.get(url);
 }
 // how far a packet reaches sideways from its centre when turned by q (its half-sizes are 0.5, 0.285 and 0.06 of its width)
 const HALF = new THREE.Vector3(0.5, 0.06, 0.285);
@@ -145,7 +146,13 @@ function attachGummies(root) {
     ctl.mesh.instanceMatrix.needsUpdate = true; ctl.atRest = true;
   };
   // open: 0..1; time: seconds; targets: Float32Array(n*3) world positions the gummies float to. Call after the jar's matrices are current.
-  ctl.update = (open, time, targets, ptr, heroHideK = 0) => {   // ptr: { x, y, r } the pointer in world units and its reach, or null
+  ctl.update = (open, time, targets, ptr, heroHideK = 0) => {
+    if (ctl.mesh && ctl.liteGeo) {
+      const wantFull = open > 0.0005;
+      if (wantFull && !ctl.fullGeo && !ctl.fullLoading) { ctl.fullLoading = true; loadGeo().then(({ geo }) => { ctl.fullGeo = geo; }).catch(() => {}); }
+      const g = wantFull && ctl.fullGeo ? ctl.fullGeo : ctl.liteGeo;
+      if (ctl.mesh.geometry !== g) ctl.mesh.geometry = g;
+    }   // ptr: { x, y, r } the pointer in world units and its reach, or null
     if (!ctl.mesh) return;
     if (open <= 0.0005) { if (!ctl.atRest) ctl.setIdle(); return; }
     ctl.atRest = false;
@@ -205,8 +212,13 @@ function attachGummies(root) {
   };
   ctl.restWorld = (i, out) => out.copy(rest[i]).applyMatrix4(root.matrixWorld);
 
-  loadGeo().then(({ geo, mat }) => {
+  // the jar on the product card starts with the light packets; the full-detail ones are swapped in as soon as the jar opens
+  loadGeo(packetLiteUrl).then(({ geo, mat }) => {
     const mesh = new THREE.InstancedMesh(geo, mat, GUMMY_COUNT);
+    ctl.liteGeo = geo;
+    // fetch the full-detail packets quietly in the background so they are ready by the time the jar opens
+    const pre = () => { if (!ctl.fullLoading) { ctl.fullLoading = true; loadGeo().then(({ geo: g }) => { ctl.fullGeo = g; }).catch(() => {}); } };
+    if ('requestIdleCallback' in window) requestIdleCallback(pre, { timeout: 4000 }); else setTimeout(pre, 1500);
     mesh.frustumCulled = false; mesh.name = 'Gummies'; mesh.renderOrder = 0;
     for (let i = 0; i < GUMMY_COUNT; i++) ctl.colors.push(PALETTE[0]);
     ctl.mesh = mesh; root.add(mesh); ctl.ready = true; ctl.setIdle();
@@ -263,6 +275,11 @@ function createIngredientsDirector(L) {
   const heroPos = new THREE.Vector3();
   const lookZoom = new THREE.Vector3();
   const posZoom = new THREE.Vector3();
+  const gClose = new THREE.Vector3();
+  const lookClose = new THREE.Vector3();
+  const posClose = new THREE.Vector3();
+  let closeK = 0;      // 0..1: camera pushed in tight on the emerged gummy (ingredients are read from here)
+  let exitK = 0;       // 0..1: the exit (ingredients gone, camera pulls back, gummy goes home)
 
   const resetCamera = () => {
     L.cam.position.set(0, 0, 24);
@@ -360,6 +377,16 @@ function createIngredientsDirector(L) {
         zoomK = zIn * (1 - zOut);
       }
 
+      // 1b. Close-up on the gummy: once it has emerged the camera pushes in tight, the ingredients are shown from there,
+      // and when they have faded (u 0.86 to 0.90) the camera eases back out to the normal view while the gummy goes home.
+      closeK = 0; exitK = 0;
+      if (vVal <= 0) {
+        const cIn = sm(clamp((u - 0.58) / 0.08, 0, 1));
+        const cOut = sm(clamp((u - 0.86) / 0.08, 0, 1));
+        closeK = cIn * (1 - cOut);
+        exitK = sm(clamp((u - 0.86) / 0.13, 0, 1));
+      }
+
       // 2. Tear schedule: flap peels, pouch mouth opens, and gummy emerges
       // Gummy stays fully emerged at tearK = 1 until u = 0.90.
       // Ingredients & pointing lines completely fade out between u = 0.86 and 0.90.
@@ -394,15 +421,16 @@ function createIngredientsDirector(L) {
         heroPacket.root.position.set(heroPos.x, heroPos.y + idleY, heroPos.z);
 
         const rotYIdle = zoomK > 0.85 ? Math.sin(o.time * 0.8) * 0.03 : 0;
+        const swing = Math.sin(exitK * Math.PI);          // the exit: a little turn and wobble as the gummy heads home
         heroPacket.root.rotation.set(
-          lerp(0, 0.08, kEase),
-          lerp(0, -0.18 + rotYIdle, kEase),
-          lerp(0, 0.04, kEase)
+          lerp(0, 0.08, kEase) + swing * 0.10,
+          lerp(0, -0.18 + rotYIdle, kEase) - swing * 0.55,
+          lerp(0, 0.04, kEase) + swing * 0.12
         );
 
         const baseWorldScale = 0.28;
         const targetWorldScale = o.mobile ? 0.35 : 0.38;
-        const curScale = lerp(baseWorldScale, targetWorldScale, kEase);
+        const curScale = lerp(baseWorldScale, targetWorldScale, kEase) * (1 + Math.sin(exitK * Math.PI) * 0.06);
         heroPacket.root.scale.setScalar(curScale);
 
         heroPacket.updateOpen(tearK);
@@ -421,7 +449,18 @@ function createIngredientsDirector(L) {
 
         const fov0 = 30;
         const fovZoom = o.mobile ? 25 : 23;
-        const curFov = lerp(fov0, fovZoom, kEase);
+        const fovClose = o.mobile ? 20 : 18;
+
+        // push in on the gummy itself
+        if (closeK > 0.001) {
+          if (typeof heroPacket.getGummyWorldPos === 'function') heroPacket.getGummyWorldPos(gClose);
+          else { heroPacket.root.getWorldPosition(gClose); gClose.x += 1.0 * heroPacket.root.scale.x; }
+          lookClose.copy(gClose);
+          posClose.set(gClose.x, gClose.y, gClose.z + (o.mobile ? 3.4 : 3.0));
+          lookZoom.lerp(lookClose, sm(closeK));
+          posZoom.lerp(posClose, sm(closeK));
+        }
+        const curFov = lerp(lerp(fov0, fovZoom, kEase), fovClose, sm(closeK));
 
         curCamLook.lerpVectors(camLook0, lookZoom, kEase);
         curCamPos.lerpVectors(camPos0, posZoom, kEase);
@@ -467,7 +506,8 @@ function createIngredientsDirector(L) {
       if (!Number.isFinite(gx) || !Number.isFinite(gy)) return;
 
       const heroPxSize = Math.min(o.vw * (o.mobile ? 0.65 : 0.30), o.vh * (o.mobile ? 0.32 : 0.44));
-      const gummyR = Math.max(14, Math.min(38, heroPxSize * 0.15));
+      const gummyR0 = Math.max(14, Math.min(38, heroPxSize * 0.15));
+      const gummyR = gummyR0 * (1 + sm(closeK) * (o.mobile ? 0.9 : 1.35));   // the gummy is bigger on screen in the close-up
 
       items.forEach((it, k) => {
         const a = (o.mobile ? clamp(1 - Math.abs(cur - k - 0.5) * 1.6) : clamp((cur - k) / 0.7)) * A;

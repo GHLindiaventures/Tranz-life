@@ -18,6 +18,7 @@ import { PRODUCTS } from './data/products.js';
 import { STORY } from './data/product-story.js';
 import { jarLayer } from '../features/products/jar-layer.js';
 import { createIngredientsDirector } from '../features/products/gummy-pour.js';
+// DISABLED until liver-pour.js exists: import { createLiverDirector } from '../features/products/liver-pour.js';
 import Lenis from 'lenis';
 import { state } from '../app/state.js';
 import { entranceOrder, highlightIndex } from './grid-math.js';
@@ -60,7 +61,7 @@ function initProductJourney() {
   if (!flightCanvas || !lineupSec || !pinEl || !ScrollTrigger) return null;
 
   const L = jarLayer(flightCanvas);
-  const flightJars = PRODUCTS.map((p, i) => L.jar(p, i));
+  const flightJars = PRODUCTS.map((p, i) => L.jar(p, i)); window.__dbg = { flightJars, L };   // TEMP-DEBUG
   // each product's width / height from its 3D model (widest of x and z, so the frame fits it from every angle)
   // (measured again when a scanned model finishes loading: until then the drawn stand-in, or nothing, is measured)
   const MODEL_RATIOS = {
@@ -430,7 +431,14 @@ function initProductJourney() {
      all in reverse. */
   const FLIP_LEN = 0.55;                             // screens the Lung Booster takes to finish its flip
   const BORDER = { grow: 0.55, hold: 0.25, away: 0.40 }; // screens for outline draw, hold, and retract (tuned +0.2 for graceful pace)
-  const ING_LEN = 4.4, ING_CL = 1.1;                 // tuned +0.2 on screw-on return (ING_CL: 1.1 screens)
+  const ING_CL = 1.1;                                // tuned +0.2 on screw-on return (ING_CL: 1.1 screens)
+  // one ingredients timeline for every product that has the moment: its length in screens, and where (in u, 0..1 of that length) the side letters
+  // leave, the bottle opens, and the outline fades. The Liver Booster runs longer (six callouts, one at a time) with the same screen counts for its early steps.
+  const ING_CFG = {
+    gummies: { len: 5.4, letters: 0.18, open0: 0.18, open1: 0.48, frame: 0.08, make: createIngredientsDirector },
+    // liver:   { len: 9.0, letters: 0.108, open0: 0.108, open1: 0.288, frame: 0.048, make: createLiverDirector },
+  };
+  const ingCfg = () => (ov.idx >= 0 && PRODUCTS[ov.idx] && ING_CFG[PRODUCTS[ov.idx].id]) || null;
   // the run-up (flip, outline in, outline out) in screens. On a short section (small screens) the highlights moment comes sooner (it starts
   // at H - 3 screens), so the run-up is squeezed to end before it: the gummy moment never starts under the highlights or the curtain
   function ingT(vh, F, H) {
@@ -438,11 +446,11 @@ function initProductJourney() {
     const k = clamp((room - FLIP_LEN - 0.05) / tb, 0.25, 1);
     return { k, grow: BORDER.grow * k, hold: BORDER.hold * k, away: BORDER.away * k, flip: FLIP_LEN, A: FLIP_LEN + 0.05 + tb * k };
   }
-  let ingDir = null;
-  const ingOn = () => ov.idx === 0 && !reduce;
+  const ingDirs = {};                                // one director per product that has the moment (made when first opened)
+  const ingOn = () => !reduce && !!ingCfg();
   function ingWarp(syRaw) {
     const vh = geo.vh, F = geo.fadeLen, H0 = ov.sec.offsetHeight - (ov.sec._extra || 0);
-    const A = F + ingT(vh, F, H0).A * vh, LEN = ING_LEN * vh, CL = ING_CL * vh;
+    const A = F + ingT(vh, F, H0).A * vh, LEN = ingCfg().len * vh, CL = ING_CL * vh;
     const r0 = ov.sec._beats ? ov.sec._beats.r0 : F + 1.05 * vh;           // where the falling page (the details) starts
     let sy = syRaw, u = 0, v = 0;
     if (syRaw >= A) {
@@ -521,9 +529,9 @@ function initProductJourney() {
     // the Lung Booster's extra scroll is part of the section itself (its pinned layers cannot leave the section): taller by ING_LEN + ING_CL
     // screens, and `_extra` tells the layout (showcase-scene.js) and this file to plan the timeline on the original height
     ov.sec.style.height = ''; ov.sec._extra = 0;
-    if (ingOn()) { const H0 = ov.sec.offsetHeight, Aq = geo.fadeLen + ingT(geo.vh, geo.fadeLen, H0).A * geo.vh, r0q = geo.fadeLen + 1.05 * geo.vh, extra = Math.round((ING_LEN + ING_CL) * geo.vh + Math.max(0, Aq - r0q));   // (+ the stretch the display winds back, so the details still run to their real end)
+    if (ingOn()) { const H0 = ov.sec.offsetHeight, Aq = geo.fadeLen + ingT(geo.vh, geo.fadeLen, H0).A * geo.vh, r0q = geo.fadeLen + 1.05 * geo.vh, extra = Math.round((ingCfg().len + ING_CL) * geo.vh + Math.max(0, Aq - r0q));   // (+ the stretch the display winds back, so the details still run to their real end)
       ov.sec._extra = extra; ov.sec.style.height = (ov.sec.offsetHeight + extra) + 'px'; }
-    if (ingOn() && !ingDir) ingDir = createIngredientsDirector(L);
+    if (ingOn() && !ingDirs[i]) ingDirs[i] = ingCfg().make(L);
     if (ov.lenis) { ov.lenis.resize(); ov.lenis.start(); ov.lenis.scrollTo(0, { immediate: true, force: true }); }
     const flow = ov.sec.querySelector('.sc-flow'); if (flow) { flow.style.visibility = 'visible'; flow.style.opacity = '1'; }
     placeBadges(ov.sec);
@@ -586,8 +594,9 @@ function initProductJourney() {
     if (ov.handY == null || performance.now() - ov.handT < 700) { ov.handY = sy; return false; }   // settle first: the page is still taking the scroll over
     ov.handY = Math.max(ov.handY, sy);                     // the furthest the page has been carried
     if (sy > ov.handY - 0.3 * vh || pSy >= H0 - 1.5 * vh) return false;   // only when the reader really scrolls back up
+    const back = ov.handed;                                // (hideScene forgets it)
     hideScene(sy);
-    openOverlay(0);
+    openOverlay(back);
     ov.state = 'open'; ov.el.classList.add('instant'); ov.t0 = performance.now();
     let lo = 0, hi = ov.sec.offsetHeight;
     for (let k = 0; k < 40; k++) { const mid = (lo + hi) / 2; if (ingWarp(mid).sy < pSy) lo = mid; else hi = mid; }
@@ -598,7 +607,7 @@ function initProductJourney() {
   }
 
   function finishClose() {
-    if (ingDir && ov.idx === 0) ingDir.reset(flightJars[0]);
+    if (ingDirs[ov.idx]) ingDirs[ov.idx].reset(flightJars[ov.idx]);
     ov.state = 'closed';
     if (ov.lenis) ov.lenis.stop();
     document.body.classList.remove('sc-ov-open');
@@ -649,12 +658,13 @@ function initProductJourney() {
     if (ingOn()) {
       const postFlip = Math.max(0, (syRaw - F) - FLIP_LEN * vh);
       hold.rotY += (postFlip / vh) * 0.75;
-      letters = sm(clamp(ing.u / 0.18, 0, 1));
-      open = ing.v > 0 ? 1 - clamp(ing.v / 0.88, 0, 1) : clamp((ing.u - 0.18) / 0.30, 0, 1);   // cap starts only AFTER side letters cleanly exit (tuned +0.02 for 2-point slower unscrew)
+      const cfg = ingCfg(), ingDir = ingDirs[i];
+      letters = sm(clamp(ing.u / cfg.letters, 0, 1));
+      open = ing.v > 0 ? 1 - clamp(ing.v / 0.88, 0, 1) : clamp((ing.u - cfg.open0) / (cfg.open1 - cfg.open0), 0, 1);   // cap starts only AFTER side letters cleanly exit (tuned +0.02 for 2-point slower unscrew)
       calloutC = clamp((ing.u - 0.68) / 0.18, 0, 1);
       calloutA = ing.v > 0 ? 0 : clamp((ing.u - 0.66) / 0.03, 0, 1) * (1 - clamp((ing.u - 0.86) / 0.04, 0, 1));
       if (ov.state === 'closing') { open *= a; calloutA *= a; }
-      if (ingDir && open > 0) ingDir.pose(hold, open, { vh, mobile: geo.mobile, front: restRot(i) });
+      if (ingDir && open > 0) ingDir.pose(hold, open, { vw: geo.vw, vh, mobile: geo.mobile, front: restRot(i) });
     }
     if (ingOn()) { const fl = ov.sec.querySelector('.sc-flow'); if (fl) { const on = ing.v >= 1 ? '1' : '0.001'; if (fl._ing !== on) { fl._ing = on; fl.style.opacity = on; } } }   // the details (and the falling page behind) wait until the gummies are back in
     const f = ov.from, lerp = (p, q) => p + (q - p) * a;
@@ -669,16 +679,16 @@ function initProductJourney() {
       FLIP_AXIS.set(Math.cos(tilt), Math.sin(tilt), 0);
       jar.G.quaternion.premultiply(FLIP_Q.setFromAxisAngle(FLIP_AXIS, fl * Math.PI * 2));
     }
-    if (ingDir) {
-      if (ingOn()) {
+    Object.keys(ingDirs).forEach(k => { if (+k !== i) ingDirs[k].hide(); });   // another product's display: its pieces stay hidden
+    {
+      const ingDir = ingDirs[i];
+      if (ingDir && ingOn()) {
         try {
           ingDir.update(jar, { u: ing.u, v: ing.v, open, c: calloutC, calloutA, vw: geo.vw, vh, mobile: geo.mobile, time: tTime, pointer: { x: mouse.x, y: mouse.y, on: canHover } });
         } catch (e) {
           console.error('ingDir.update error:', e);
         }
-      } else if (i !== 0) {
-        ingDir.hide();
-      }
+      } else if (ingDir) ingDir.hide();
     }
     // the two side texts and the outline, as on the page (they fade with the fly)
     const sc0 = calcIntroText(sy, F, vh), timed = reduce ? 1 : clamp((s - 0.4) / 0.6, 0, 1);
@@ -711,7 +721,7 @@ function initProductJourney() {
       const T = ingT(vh, F, H), scB = Math.max(0, Math.min(syRaw, F + T.A * vh) - F - T.flip * vh), sm3 = t => t * t * (3 - 2 * t);
       frameDraw = sm3(clamp(scB / (T.grow * vh), 0, 1)) * (1 - sm3(clamp((scB - (T.grow + T.hold) * vh) / (T.away * vh), 0, 1)));
     } else frameDraw = calcFrameDraw(P);
-    if (ov.setFrame) ov.setFrame(ovBox, frameDraw * (a > 0.999 && s > 0.999 ? 1 : 0) * (ingOn() ? (1 - clamp(ing.u / 0.08, 0, 1)) : 1) * (1 - clamp(open / 0.1, 0, 1)));
+    if (ov.setFrame) ov.setFrame(ovBox, frameDraw * (a > 0.999 && s > 0.999 ? 1 : 0) * (ingOn() ? (1 - clamp(ing.u / ingCfg().frame, 0, 1)) : 1) * (1 - clamp(open / 0.1, 0, 1)));
     const hlc = calcHlCallout(sy, H, vh, (ov.sec._beats ? ov.sec._beats.hlFrom : H - 2.9 * vh) + 0.25 * vh);   // the highlights start once the last piece has left
     if (ov.setCallout) ov.setCallout(ovBox, hlc.o * a, hlc.draw, hlc.lines, 0, hlc.ex);
     decor.update(0, i, 0, 0, 1, tTime, true);
@@ -749,7 +759,7 @@ function initProductJourney() {
     // anything has written a style earlier in this frame
     const sy = state.lenis ? state.lenis.scroll : scrollY, vh = geo.vh, tTime = now * 0.001;
     flightJars.forEach(j => { j.G.userData.shadowA = 0; });   // the ground shadow belongs to the list only: it is switched on there each frame
-    if (ov.state === 'closed' && ov.handed === 0 && !reduce && document.body.classList.contains('scene-on') && reenter(sy)) { rafId = schedule(frame); return; }
+    if (ov.state === 'closed' && ov.handed != null && ING_CFG[PRODUCTS[ov.handed].id] && !reduce && document.body.classList.contains('scene-on') && reenter(sy)) { rafId = schedule(frame); return; }
     if (ov.state !== 'closed') {
       if (ov.lenis) {
         try { ov.lenis.raf(now); } catch (e) {}
