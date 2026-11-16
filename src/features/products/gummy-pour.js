@@ -589,12 +589,13 @@ function createIngredientsDirector(L) {
         const fovZoom = o.mobile ? 25 : 23;
         const fovClose = o.mobile ? 20 : 18;
 
-        // push in on the gummy itself
+        // Push in on the emerged scene:
+        // Fixed framing anchor so the camera does NOT pan or track the gummy during return!
+        // This ensures the packet stays 100% STILL on screen while the gummy visibly travels inside it!
         if (closeK > 0.001) {
-          if (typeof heroPacket.getGummyWorldPos === 'function') heroPacket.getGummyWorldPos(gClose);
-          else { heroPacket.root.getWorldPosition(gClose); gClose.x += 1.0 * heroPacket.root.scale.x; }
-          lookClose.copy(gClose);
-          posClose.set(gClose.x, gClose.y, gClose.z + (o.mobile ? 3.4 : 3.0));
+          const frameOffsetX = o.mobile ? 0.35 : 0.44;
+          lookClose.set(heroPos.x + frameOffsetX, heroPos.y, heroPos.z);
+          posClose.set(lookClose.x, lookClose.y, heroPos.z + (o.mobile ? 3.4 : 3.0));
           lookZoom.lerp(lookClose, sm(closeK));
           posZoom.lerp(posClose, sm(closeK));
         }
