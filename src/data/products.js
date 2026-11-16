@@ -83,6 +83,21 @@ export const PRODUCTS = [
     barcode: '8906132540130',
     mfgLic: 'TN/AYU/24/1234',
     dosage: 'Adults: 10 ml (2 tsp) twice daily after meals'
+  },
+  {
+    id: 'energy',
+    no: '06',
+    short: 'Energy Booster™',
+    name: 'TranzLife Energy Booster™',
+    cat: 'liquid',
+    tag: 'Energy & Vitality',
+    price: 1850,
+    size: '500 ml Oral Liquid',
+    desc: 'A herbal and bioactive wellness formulation in a ready-to-use oral liquid, designed to complement an active lifestyle, daily energy and general well-being.',
+    ing: ['Ruta graveolens (Q)', 'Hecla lava (3X)', 'Symphytum officinale (Q)', 'Calcarea phosphorica (8X)', 'Echinacea angustifolia (Q)'],
+    model: 'energy',
+    fit: 1.12,
+    dosage: '7.5 ml twice daily, or as advised by a healthcare professional'
   }
 ];
 

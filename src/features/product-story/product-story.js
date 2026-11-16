@@ -1,4 +1,4 @@
-// Pinned product story: each product turns in the centre while its card glides past, then all five line up.
+// Pinned product story: each product turns in the centre while its card glides past, then all six line up.
 import * as THREE from 'three';
 import { PRODUCTS } from '../../data/products.js';
 import { STORY } from '../../data/product-story.js';
@@ -76,7 +76,7 @@ function initStory(){
     if (p < .78 && playing){ playing = false; final.classList.remove('play'); finAt = now; finDir = -1; }
     if (finDir > 0) finV = clamp(finV + dt/1.3, 0, 1); else if (finDir < 0) finV = clamp(finV - dt/.45, 0, 1);
 
-    // jars: one at a time in the glide, then all five line up
+    // jars: one at a time in the glide, then all six line up
     const gap = Math.min(W*(mobile ? .19 : .16), mobile ? 120 : 270);
     jars.forEach((jar, i) => {
       const a = i === 0 ? -9 : mOf(i - 1), b = mOf(i);

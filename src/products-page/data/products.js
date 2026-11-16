@@ -1,4 +1,4 @@
-// Product catalogue: the five TranzLife products from the client's design boards.
+// Product catalogue: the six TranzLife products from the client's design boards.
 // Names and short copy follow the client's product write-ups (full write-ups: product-details.js).
 // Prices are placeholders until the client confirms them.
 const PRODUCTS = [
@@ -11,12 +11,15 @@ const PRODUCTS = [
   { id:'rollon', no:'03', short:'CycleRelief', name:'TranzLife CycleRelief', cat:'rollon', tag:'Women’s care', price:349, size:'Roll-on with gift box',
     desc:'A women’s menstrual wellness roll-on with rosemary, rose and peppermint, designed around comfort and convenience throughout your cycle.',
     ing:['Rosemary','Rose','Peppermint'], model:'rollon', fit:1.06 },
-  { id:'reviva', no:'04', short:'Reviva', name:'Reviva Roll-On', cat:'rollon', tag:'Foot care', price:449, size:'Roll-on',
-    desc:'Diabetic foot care in a roll-on: soothing, plant-based and skin-friendly care for dry, tired feet, every day.',
+  { id:'reviva', no:'04', short:'Reviva', name:'Reviva Roll-On', cat:'rollon', tag:'Massage roll-on', price:449, size:'50 ml roll-on',
+    desc:'A botanical massage roll-on with dill and eucalyptus essential oils, for a simple everyday wellness and vitality ritual.',
     ing:['Plant-based','Skin friendly','Everyday care'], model:'reviva', fit:1.06 },
   { id:'liver', no:'05', short:'Liver Booster', name:'TranzLife Liver Booster', cat:'liquid', tag:'Liver wellness', price:649, size:'100 ml',
     desc:'A nature-inspired liquid reflecting our botanical, quality-focused approach to liver wellness and a healthier everyday lifestyle.',
-    ing:['Botanical-inspired','Quality-focused','Healthy lifestyle'], model:'liver', fit:1.14 }
+    ing:['Botanical-inspired','Quality-focused','Healthy lifestyle'], model:'liver', fit:1.14 },
+  { id:'energy', no:'06', short:'Energy Booster', name:'TranzLife Energy Booster', cat:'liquid', tag:'Energy & vitality', price:1850, size:'500 ml oral liquid',
+    desc:'A herbal and bioactive oral liquid designed to complement an active lifestyle, daily energy and general well-being.',
+    ing:['Botanical & mineral','Oral liquid','Daily routine'], model:'energy', fit:1.12 }
 ];
 
 export { PRODUCTS };
