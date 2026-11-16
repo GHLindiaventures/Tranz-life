@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import packetUrl from '../../assets/products/packet.glb?url';
-import gummyUrl from '../../assets/products/gummy.glb?url';
+import gummyImgUrl from '../../assets/products/gummy.png';
 
 /**
  * Creates an interactive 3D Gummy Packet model with a realistic open animation.
@@ -9,7 +9,7 @@ import gummyUrl from '../../assets/products/gummy.glb?url';
  * - Sealed packet with TranzLife logo and crimped serrated seals.
  * - Progressive tear animation: flap unseals, peels and curls away.
  * - Pouch mouth expands and puffs open, revealing dark metallic foil lining.
- * - Botanical berry gummy (gummy.glb) emerges with translucent jelly and sugar crystals.
+ * - Photorealistic botanical gummy emerges with glossy translucent jelly and natural highlights.
  * - updateOpen(t): scrub open progress from 0 (closed) to 1 (fully open).
  */
 export function createPacketModel(options = {}) {
@@ -31,71 +31,49 @@ export function createPacketModel(options = {}) {
 
   const loader = new GLTFLoader();
 
-  // 1. Load Gummy model
+  // 1. Load photorealistic Gummy image texture
   const loadGummy = new Promise((resolve) => {
-    loader.load(gummyUrl, (gltf) => {
-      let m = null;
-      gltf.scene.traverse((n) => { if (n.isMesh && !m) m = n; });
-      if (m) {
-        const geo = m.geometry.clone();
-        geo.center();
-        geo.computeVertexNormals();
+    if (typeof document === 'undefined') {
+      // Headless / Node testing fallback
+      const geo = new THREE.PlaneGeometry(0.56, 0.45);
+      const mat = new THREE.MeshBasicMaterial({ transparent: true });
+      const mesh = new THREE.Mesh(geo, mat);
+      mesh.renderOrder = 10;
+      mesh.visible = false;
+      resolve(mesh);
+      return;
+    }
 
-        // Orient dome facing camera (+Z) and flat base facing back (-Z)
-        geo.rotateX(Math.PI * 0.5);
+    const textureLoader = new THREE.TextureLoader();
+    textureLoader.load(
+      gummyImgUrl,
+      (texture) => {
+        if (THREE.sRGBEncoding) {
+          texture.encoding = THREE.sRGBEncoding;
+        }
+        texture.generateMipmaps = true;
+        texture.minFilter = THREE.LinearMipmapLinearFilter;
+        texture.magFilter = THREE.LinearFilter;
 
-        const mat = new THREE.MeshPhysicalMaterial({
-          color: new THREE.Color(options.gummyColor || '#d91438'),
-          emissive: new THREE.Color('#38020a'),
-          roughness: 0.16,
-          metalness: 0.0,
-          clearcoat: 1.0,
-          clearcoatRoughness: 0.04,
-          reflectivity: 0.85,
-          envMapIntensity: 1.8,
-          transparent: false,
-          depthWrite: true
+        // Aspect ratio: 331 / 267 = 1.24. Size: 0.56 x 0.45
+        const geo = new THREE.PlaneGeometry(0.56, 0.45);
+        const mat = new THREE.MeshBasicMaterial({
+          map: texture,
+          transparent: true,
+          alphaTest: 0.01,
+          depthTest: true,
+          depthWrite: false,
+          side: THREE.DoubleSide
         });
-
-        mat.onBeforeCompile = (sh) => {
-          sh.vertexShader = sh.vertexShader.replace(
-            'void main() {',
-            'varying vec3 vObjPos;\nvoid main() {'
-          ).replace(
-            '#include <begin_vertex>',
-            '#include <begin_vertex>\nvObjPos = position;'
-          );
-          sh.fragmentShader = sh.fragmentShader.replace(
-            'void main() {',
-            `varying vec3 vObjPos;
-            float gHash(vec3 p) {
-              p = fract(p * 0.3183099 + 0.1); p *= 17.0;
-              return fract(p.x * p.y * p.z * (p.x + p.y + p.z));
-            }
-            float sugarSparkle(vec3 p) {
-              vec3 ip = floor(p * 90.0);
-              float h = gHash(ip);
-              return smoothstep(0.91, 0.96, h);
-            }
-            void main() {`
-          ).replace(
-            '#include <dithering_fragment>',
-            `#include <dithering_fragment>
-            float spk = sugarSparkle(vObjPos);
-            if (spk > 0.05) {
-              gl_FragColor.rgb += vec3(0.20, 0.18, 0.15) * spk;
-            }`
-          );
-        };
 
         const mesh = new THREE.Mesh(geo, mat);
         mesh.renderOrder = 10;
         mesh.visible = false;
         resolve(mesh);
-      } else {
-        resolve(null);
-      }
-    }, undefined, () => resolve(null));
+      },
+      undefined,
+      () => resolve(null)
+    );
   });
 
   // 2. Load Packet model
@@ -315,14 +293,14 @@ export function createPacketModel(options = {}) {
         const gy = 0.01 + 0.03 * Math.sin(gEase * Math.PI);
         const gz = 0.03 + 0.06 * gEase;
 
-        const gScale = options.gummyScale || 0.56;
+        const gScale = options.gummyScale || 1.0;
         gMesh.scale.set(gScale, gScale, gScale);
 
         gMesh.position.set(gx, gy, gz);
         gMesh.rotation.set(
-          0.12 * Math.sin(gEase * Math.PI),
-          -0.12 + 0.35 * gEase,
-          -0.08 * Math.sin(gEase * Math.PI)
+          -0.04 * (1 - gEase),
+          0.18 * gEase,
+          -0.04 * Math.sin(gEase * Math.PI)
         );
       } else {
         gMesh.visible = false;

@@ -1,7 +1,7 @@
 // Lung Booster gummies: real gummies packed in the jar, and the ingredients moment (cap unscrews and lifts away, the bottle
 // tilts to the bottom of the frame, the gummies pour out and float between the two, each ingredient called out on a gummy).
 //
-//   attachGummies(root)            adds an InstancedMesh of gummies (src/assets/products/gummy.glb, one shared geometry and
+//   attachGummies(root)            adds an InstancedMesh of packets (src/assets/products/packet.glb, one shared geometry and
 //                                  material) to the jar's model, packed at the bottom of the bottle. Cheap enough to stay
 //                                  in every scene that shows the jar. Returns a controller (see below).
 //   createIngredientsDirector(L)   drives the moment from ONE number, `open` (0 = closed, 1 = poured and floating), plus the
@@ -275,10 +275,9 @@ function createIngredientsDirector(L) {
     L.cam.updateMatrixWorld(true);
   };
 
-  // Hero Packet model with progressive tear animation and emerged ruby gummy
+  // Hero Packet model with progressive tear animation and photorealistic emerged gummy
   const heroPacket = createPacketModel({
-    gummyScale: 0.56,
-    gummyColor: '#d91438'
+    gummyScale: 1.0
   });
   heroPacket.root.visible = false;
   heroPacket.root.renderOrder = 20;
