@@ -234,28 +234,147 @@ function addStyle() {
   s.textContent = `
   #ingLayer{position:fixed;inset:0;z-index:47;pointer-events:none !important;visibility:hidden}
   #ingLayer svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none !important}
-  #ingLayer line{stroke:#2f6b3a;stroke-width:1.5;stroke-linecap:round;pointer-events:none !important}
-  #ingLayer circle{fill:#fff;stroke:#2f6b3a;stroke-width:2;pointer-events:none !important}
-  .ing-label{position:absolute;box-sizing:border-box;padding:10px 14px 11px;border-radius:14px;background:rgba(244,249,240,.86);
-    -webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);color:#1d4a2b;box-shadow:0 6px 22px rgba(30,70,40,.12);will-change:opacity,transform;pointer-events:none !important}
-  .ing-label b{display:block;font-size:15px;line-height:1.2;font-weight:700;letter-spacing:.01em;pointer-events:none !important}
-  .ing-label span{display:block;margin-top:4px;font-size:12.5px;line-height:1.35;opacity:.82;pointer-events:none !important}
-  .ing-label i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:7px;vertical-align:baseline;pointer-events:none !important}
-  @media (max-width:720px){.ing-label{padding:9px 12px 10px}.ing-label b{font-size:14px}.ing-label span{font-size:12px}}`;
+  
+  .ing-tendril-path{
+    fill:none;
+    stroke:#2f6b3a;
+    stroke-width:1.5;
+    stroke-linecap:round;
+    pointer-events:none !important;
+  }
+  .ing-dot-glow{
+    fill:none;
+    stroke:rgba(47,107,58,0.32);
+    stroke-width:2.2;
+    pointer-events:none !important;
+  }
+  .ing-dot-core{
+    fill:#fff;
+    stroke:#2f6b3a;
+    stroke-width:2;
+    pointer-events:none !important;
+  }
+
+  .ing-label.glass-pill{
+    position:absolute;
+    box-sizing:border-box;
+    padding:11px 15px 12px;
+    border-radius:16px;
+    background:rgba(255,255,255,0.78);
+    -webkit-backdrop-filter:blur(14px) saturate(160%);
+    backdrop-filter:blur(14px) saturate(160%);
+    border:1px solid rgba(255,255,255,0.85);
+    box-shadow:0 12px 30px -8px rgba(24,52,30,0.13), 0 2px 6px rgba(0,0,0,0.03);
+    color:#1a3d24;
+    will-change:opacity,transform;
+    pointer-events:none !important;
+    transition:box-shadow 0.25s ease, border-color 0.25s ease;
+  }
+  :root.dark .ing-label.glass-pill, [data-theme="dark"] .ing-label.glass-pill{
+    background:rgba(20,32,24,0.82);
+    border:1px solid rgba(255,255,255,0.14);
+    box-shadow:0 12px 30px -8px rgba(0,0,0,0.48);
+    color:#e4f2e7;
+  }
+
+  .ing-pill-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:8px;
+  }
+  .ing-pill-title{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    font-size:13.5px;
+    line-height:1.25;
+    font-weight:700;
+    letter-spacing:-0.01em;
+    color:inherit;
+    pointer-events:none !important;
+  }
+  .ing-pill-dot{
+    display:inline-block;
+    width:6.5px;
+    height:6.5px;
+    border-radius:50%;
+    background:#2f6b3a;
+    flex-shrink:0;
+    pointer-events:none !important;
+  }
+  .ing-pill-badge{
+    display:inline-block;
+    font-size:8.5px;
+    font-weight:700;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    padding:2px 6px;
+    border-radius:6px;
+    line-height:1.2;
+    flex-shrink:0;
+    pointer-events:none !important;
+  }
+  .ing-pill-text{
+    margin:5px 0 0;
+    font-size:11.5px;
+    line-height:1.38;
+    opacity:0.80;
+    font-weight:400;
+    color:inherit;
+    pointer-events:none !important;
+  }
+
+  @media (max-width:720px){
+    .ing-label.glass-pill{padding:9px 13px 10px;border-radius:14px}
+    .ing-pill-title{font-size:13px}
+    .ing-pill-text{font-size:11px;margin-top:4px}
+    .ing-pill-badge{font-size:8px;padding:1.5px 5px}
+  }`;
   document.head.appendChild(s);
 }
+
+const CALLOUT_TAGS = [
+  { tag: 'ADAPTOGEN', badgeBg: 'rgba(47, 107, 58, 0.12)', badgeColor: '#245a30' },
+  { tag: 'BRONCHODILATOR', badgeBg: 'rgba(47, 107, 58, 0.12)', badgeColor: '#245a30' },
+  { tag: 'METABOLIC HEAT', badgeBg: 'rgba(180, 100, 20, 0.12)', badgeColor: '#94530f' },
+  { tag: 'BIO-ENHANCER', badgeBg: 'rgba(180, 100, 20, 0.12)', badgeColor: '#94530f' },
+  { tag: 'PIPERINE 95%', badgeBg: 'rgba(180, 100, 20, 0.12)', badgeColor: '#94530f' },
+  { tag: 'PHYTO-SHIELD', badgeBg: 'rgba(47, 107, 58, 0.12)', badgeColor: '#245a30' },
+  { tag: 'SOOTHING', badgeBg: 'rgba(47, 107, 58, 0.12)', badgeColor: '#245a30' },
+  { tag: 'IMMUNE BARRIER', badgeBg: 'rgba(30, 120, 90, 0.12)', badgeColor: '#166249' },
+];
 
 function createIngredientsDirector(L) {
   addStyle();
   const layer = document.createElement('div'); layer.id = 'ingLayer'; layer.setAttribute('aria-hidden', 'true');
   const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); layer.appendChild(svg);
   const list = CALLOUTS.map(i => DETAILS.gummies.list[i]).filter(Boolean);
-  const items = list.map(([name, text]) => {
-    const line = document.createElementNS('http://www.w3.org/2000/svg', 'line'), dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-    dot.setAttribute('r', '4.5'); svg.appendChild(line); svg.appendChild(dot);
-    const el = document.createElement('div'); el.className = 'ing-label';
-    el.innerHTML = '<b><i></i>' + name + '</b><span>' + text + '</span>'; layer.appendChild(el);
-    return { line, dot, el, dotColor: el.querySelector('i'), g: -1, a: 0 };
+  const items = list.map(([name, text], k) => {
+    const meta = CALLOUT_TAGS[k] || { tag: 'BOTANICAL', badgeBg: 'rgba(47, 107, 58, 0.12)', badgeColor: '#245a30' };
+    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    path.setAttribute('class', 'ing-tendril-path');
+    const dotGlow = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    dotGlow.setAttribute('class', 'ing-dot-glow');
+    dotGlow.setAttribute('r', '6.5');
+    const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    dot.setAttribute('class', 'ing-dot-core');
+    dot.setAttribute('r', '3.5');
+    svg.appendChild(path);
+    svg.appendChild(dotGlow);
+    svg.appendChild(dot);
+
+    const el = document.createElement('div');
+    el.className = 'ing-label glass-pill';
+    el.innerHTML = `
+      <div class="ing-pill-head">
+        <span class="ing-pill-title"><i class="ing-pill-dot"></i>${name}</span>
+        <span class="ing-pill-badge" style="background:${meta.badgeBg};color:${meta.badgeColor}">${meta.tag}</span>
+      </div>
+      <p class="ing-pill-text">${text}</p>
+    `;
+    layer.appendChild(el);
+    return { path, dotGlow, dot, el, g: -1, a: 0 };
   });
   document.body.appendChild(layer);
 
@@ -512,7 +631,13 @@ function createIngredientsDirector(L) {
       items.forEach((it, k) => {
         const a = (o.mobile ? clamp(1 - Math.abs(cur - k - 0.5) * 1.6) : clamp((cur - k) / 0.7)) * A;
         it.a = a;
-        if (a <= 0.003) { it.el.style.opacity = '0'; it.line.setAttribute('opacity', '0'); it.dot.setAttribute('opacity', '0'); return; }
+        if (a <= 0.003) {
+          it.el.style.opacity = '0';
+          it.path.setAttribute('opacity', '0');
+          it.dotGlow.setAttribute('opacity', '0');
+          it.dot.setAttribute('opacity', '0');
+          return;
+        }
 
         const isLeft = k < 4;
         const j = isLeft ? k : k - 4; // index within column (0..3)
@@ -520,19 +645,19 @@ function createIngredientsDirector(L) {
         let lx, ly, ax, ay, w, dotGx, dotGy;
 
         if (o.mobile) {
-          w = Math.min(W * 0.86, 360);
+          w = Math.min(W * 0.88, 360);
           lx = (W - w) / 2;
-          ly = H * 0.66;
+          ly = H * 0.65;
           ax = W / 2;
           ay = ly;
           dotGx = gx;
           dotGy = gy + gummyR;
         } else {
           w = Math.min(270, W * 0.23);
-          lx = isLeft ? Math.max(16, W * 0.05) : W - Math.max(16, W * 0.05) - w;
-          ly = H * 0.20 + (j / (n - 1)) * (H * 0.52);
+          lx = isLeft ? Math.max(18, W * 0.045) : W - Math.max(18, W * 0.045) - w;
+          ly = H * 0.18 + (j / (n - 1)) * (H * 0.56);
           ax = isLeft ? lx + w : lx;
-          ay = ly + 26;
+          ay = ly + 28;
 
           // Anchor points distributed along gummy contour
           const angle = isLeft
@@ -542,32 +667,57 @@ function createIngredientsDirector(L) {
           dotGy = gy + Math.sin(angle) * gummyR;
         }
 
+        // Slide card subtly inward as it fades in (spring entrance)
+        const slideX = o.mobile ? 0 : (isLeft ? (1 - a) * -12 : (1 - a) * 12);
         it.el.style.width = w + 'px';
-        it.el.style.transform = 'translate3d(' + lx.toFixed(1) + 'px,' + ly.toFixed(1) + 'px,0)';
+        it.el.style.transform = 'translate3d(' + (lx + slideX).toFixed(1) + 'px,' + ly.toFixed(1) + 'px,0)';
         it.el.style.opacity = a.toFixed(3);
-        if (it.dotColor) it.dotColor.style.background = '#9e1022';
 
-        const t = clamp(a * 1.3);
-        const ex = dotGx + (ax - dotGx) * t;
-        const ey = dotGy + (ay - dotGy) * t;
+        // Smooth Bezier Tendril:
+        // P0 = (dotGx, dotGy) on gummy contour
+        // P2 = (ax, ay) anchor at the edge of card
+        // P1 = (cx, cy) control point producing a gentle organic curve
+        let cx, cy;
+        if (o.mobile) {
+          cx = (dotGx + ax) * 0.5;
+          cy = (dotGy + ay) * 0.5;
+        } else {
+          const bowX = isLeft ? -22 : 22;
+          const bowY = (j - 1.5) * 8;
+          cx = (dotGx + ax) * 0.5 + bowX;
+          cy = (dotGy + ay) * 0.5 + bowY;
+        }
 
-        it.line.setAttribute('x1', dotGx.toFixed(1));
-        it.line.setAttribute('y1', dotGy.toFixed(1));
-        it.line.setAttribute('x2', ex.toFixed(1));
-        it.line.setAttribute('y2', ey.toFixed(1));
-        it.line.setAttribute('opacity', a.toFixed(3));
-        it.line.setAttribute('stroke', '#2f6b3a');
+        // Progressive tendril growth (0 to t) from gummy to card
+        const t = clamp(a * 1.25, 0, 1);
+        const q1x = dotGx + (cx - dotGx) * t;
+        const q1y = dotGy + (cy - dotGy) * t;
+        const p12x = cx + (ax - cx) * t;
+        const p12y = cy + (ay - cy) * t;
+        const q2x = q1x + (p12x - q1x) * t;
+        const q2y = q1y + (p12y - q1y) * t;
+
+        it.path.setAttribute('d', 'M ' + dotGx.toFixed(1) + ',' + dotGy.toFixed(1) + ' Q ' + q1x.toFixed(1) + ',' + q1y.toFixed(1) + ' ' + q2x.toFixed(1) + ',' + q2y.toFixed(1));
+        it.path.setAttribute('opacity', (a * 0.85).toFixed(3));
+
+        it.dotGlow.setAttribute('cx', dotGx.toFixed(1));
+        it.dotGlow.setAttribute('cy', dotGy.toFixed(1));
+        it.dotGlow.setAttribute('opacity', (a * 0.5).toFixed(3));
 
         it.dot.setAttribute('cx', dotGx.toFixed(1));
         it.dot.setAttribute('cy', dotGy.toFixed(1));
         it.dot.setAttribute('opacity', a.toFixed(3));
-        it.dot.setAttribute('stroke', '#9e1022');
       });
     },
     hide() {
       if (!D.shown) return;
       layer.style.visibility = 'hidden'; D.shown = false;
-      items.forEach(it => { it.el.style.opacity = '0'; });
+      items.forEach(it => {
+        it.el.style.opacity = '0';
+        it.path.setAttribute('opacity', '0');
+        it.dotGlow.setAttribute('opacity', '0');
+        it.dot.setAttribute('opacity', '0');
+      });
     },
     // put everything back (overlay closed / another product)
     reset(jar) {
