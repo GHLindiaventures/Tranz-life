@@ -10,6 +10,9 @@ dist-single/
 .env.local
 .env.*.local
 
+# Tulsi anonymous insights (customer data stays on the server, never in git)
+data/
+
 # tooling and OS noise
 .vite/
 coverage/

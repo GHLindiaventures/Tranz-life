@@ -17,6 +17,7 @@ import { buildMarquee } from './features/hero/marquee.js';
 import { initNav } from './features/navigation/navigation.js';
 import { SHOTS } from './features/products/product-images.js';
 import { initLightbox } from './components/lightbox.js';
+import { initChat } from './features/chat/chat-widget.js';
 import { initAyurveda } from './features/ayurveda/ayurveda-video.js';
 import { initTaglineMotion } from './features/tagline/tagline-motion.js';
 import { initPremiumFx } from './features/ui/premium-fx.js';
@@ -33,7 +34,7 @@ async function boot(){
   try { state.heroApi = initHeroJar(); } catch(err){ console.warn('hero jar unavailable', err); }
   try { state.layeredDepth = initLayeredDepth(); } catch(err){ console.warn('layered depth unavailable', err); }
   try { initMossReveal(); } catch(err){ console.warn('moss reveal unavailable', err); }
-  Object.assign(thumbs, SHOTS); initLightbox();
+  Object.assign(thumbs, SHOTS); initLightbox(); initChat();
   setLoad(88);
   try { state.ayurApi = initAyurveda(); } catch(err){ console.warn('ayurveda video unavailable', err); }
   try { initPages(); } catch(err){ console.warn('page tracking unavailable', err); }
