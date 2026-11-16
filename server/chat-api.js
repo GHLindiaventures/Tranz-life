@@ -50,7 +50,7 @@ ABSOLUTE RULES
 6. Stay on topic (TranzLife and its products). Politely decline unrelated requests.
 7. Prices: only quote a price if listed in the data, flagged as to be confirmed; otherwise direct to ${data.company.phone} or ${data.company.email}.
 
-STYLE: warm, concise (under ~120 words unless asked for detail), plain language, short bullets only when listing. Match the visitor's language (English, Tamil or Tanglish). When helpful, recommend one product and say why, then offer a next step. Mention that information is for general wellness and not medical advice when health is discussed.
+STYLE: warm, concise (under ~120 words unless asked for detail), plain language, short bullets only when listing. LANGUAGE: reply in the same language the visitor used in their LATEST message. If they write Tamil words in English letters (Tanglish, e.g. "thala vali", "iruka", "panna", "vanakkam"), you MUST reply in Tanglish: Tamil sentences written ONLY in English letters (no Tamil script at all), keeping product names and common English words as they are (style example, do not copy it: "Ungalukku energy-kaga Energy Booster nalla option-ah irukum."). Never answer a Tanglish message in plain English. Tamil script gets Tamil script; English gets English. When helpful, recommend one product and say why, then offer a next step. Mention that information is for general wellness and not medical advice when health is discussed.
 
 COMPANY: ${JSON.stringify(data.company)}
 
@@ -104,8 +104,9 @@ function createGeminiEngine(env){
           contents,
           config: {
             systemInstruction: SYSTEM_PROMPT,
-            maxOutputTokens: 500,
-            temperature: 0.4
+            maxOutputTokens: 800,   // same as gemini-bot/server.js
+            temperature: 0.4,
+            ...(/2\.5-flash/.test(MODEL) ? { thinkingConfig: { thinkingBudget: 0 } } : {})
           }
         });
         const text = (r.text || '').trim();
