@@ -429,8 +429,8 @@ function initProductJourney() {
      sees (sy). (The display's layers are all sticky and driven by sy, so nothing else needs shifting.) Scrolling back up runs it
      all in reverse. */
   const FLIP_LEN = 0.55;                             // screens the Lung Booster takes to finish its flip
-  const BORDER = { grow: 0.45, hold: 0.20, away: 0.35 }; // screens for outline draw, hold, and retract
-  const ING_LEN = 3.6, ING_CL = 0.9;                 // snappy, responsive flow for gummy moment and return
+  const BORDER = { grow: 0.55, hold: 0.25, away: 0.40 }; // screens for outline draw, hold, and retract (tuned +0.2 for graceful pace)
+  const ING_LEN = 4.4, ING_CL = 0.9;                 // tuned +0.4 across unscrew-to-ingredients for clearer viewing
   // the run-up (flip, outline in, outline out) in screens. On a short section (small screens) the highlights moment comes sooner (it starts
   // at H - 3 screens), so the run-up is squeezed to end before it: the gummy moment never starts under the highlights or the curtain
   function ingT(vh, F, H) {
