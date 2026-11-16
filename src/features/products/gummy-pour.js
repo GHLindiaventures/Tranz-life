@@ -361,21 +361,14 @@ function createIngredientsDirector(L) {
       }
 
       // 2. Tear schedule: flap peels, pouch mouth opens, and gummy emerges
+      // Gummy stays fully emerged at tearK = 1 until u = 0.90.
+      // Ingredients & pointing lines completely fade out between u = 0.86 and 0.90.
+      // Only THEN at u = 0.90 does the gummy slide back inside the pocket and flap closes.
       let tearK = 0;
       if (vVal <= 0) {
         const tIn = sm(clamp((u - 0.52) / 0.14, 0, 1));
-        const tOut = sm(clamp((u - 0.91) / 0.05, 0, 1));
+        const tOut = sm(clamp((u - 0.90) / 0.05, 0, 1));
         tearK = tIn * (1 - tOut);
-      }
-
-      // 3. Gummy fade: emerges fully, stays 100% visible while all ingredients show,
-      // then completely fades out to 0 BEFORE going inside the pocket
-      let gOpacity = 1;
-      if (vVal <= 0) {
-        const gFadeOut = sm(clamp((u - 0.85) / 0.06, 0, 1));
-        gOpacity = 1 - gFadeOut;
-      } else {
-        gOpacity = 0;
       }
 
       // Update instanced cloud (hide packet #0 when zoomK is active)
@@ -412,7 +405,7 @@ function createIngredientsDirector(L) {
         const curScale = lerp(baseWorldScale, targetWorldScale, kEase);
         heroPacket.root.scale.setScalar(curScale);
 
-        heroPacket.updateOpen(tearK, gOpacity);
+        heroPacket.updateOpen(tearK);
         heroPacket.root.visible = true;
         heroPacket.root.updateMatrixWorld(true);
 

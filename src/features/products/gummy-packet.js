@@ -170,10 +170,9 @@ export function createPacketModel(options = {}) {
     }
   });
 
-  function updateOpen(t, gOpacity = 1.0) {
+  function updateOpen(t) {
     if (!state.ready) return;
     t = Math.max(0, Math.min(1, t));
-    const opacity = Math.max(0, Math.min(1, gOpacity));
     state.open = t;
 
     const { bodyGeo, flapGeo, bodyMesh, flapMesh, gMesh, bodyBasePos, flapBasePos } = state;
@@ -262,11 +261,10 @@ export function createPacketModel(options = {}) {
 
     // 3. Gummy emerges from inside the pocket into full, unobstructed visibility
     if (gMesh) {
-      if (t > 0.06 && opacity > 0.002) {
+      if (t > 0.06) {
         gMesh.visible = true;
         if (gMesh.material) {
-          gMesh.material.transparent = true;
-          gMesh.material.opacity = opacity;
+          gMesh.material.opacity = 1;
         }
         const gT = Math.min(1, Math.max(0, (t - 0.06) / 0.94));
         const gEase = gT * gT * (3 - 2 * gT);
@@ -291,7 +289,6 @@ export function createPacketModel(options = {}) {
         );
       } else {
         gMesh.visible = false;
-        if (gMesh.material) gMesh.material.opacity = 0;
         gMesh.position.set(0.28, 0, 0);
       }
     }
