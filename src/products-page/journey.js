@@ -302,11 +302,11 @@ function initProductJourney() {
         const h = b.holds[f]; if (!h) return;
         const len = h.end - h.start;
         cards.forEach((el, j) => {
-          const on = !!box && k > 0 && r >= h.start + (0.05 + j * 0.28) * len;
+          const on = !!box && k > 0 && r >= h.start + (0.01 + j * 0.05) * len;
           if (el.classList.contains('in') !== on) el.classList.toggle('in', on);
         });
-        // while the page stands still the frame drifts slowly (15px down to 15px up), so a stop never looks frozen
-        const drift = 'translate3d(0,' + ((0.5 - (box ? clamp((r - h.start) / len, 0, 1) : 0)) * 30).toFixed(1) + 'px,0)';
+        // while the page stands still the frame drifts slowly (10px down to 10px up), so a stop never looks frozen
+        const drift = 'translate3d(0,' + ((0.5 - (box ? clamp((r - h.start) / len, 0, 1) : 0)) * 20).toFixed(1) + 'px,0)';
         (sc._frameSlots[f] || []).forEach(sl => { if (sl._dr !== drift) { sl._dr = drift; sl.style.transform = drift; } });
         const price = cards.map(c => c.querySelector('.sc-price[data-v]')).find(Boolean);   // the price counts up
         if (price) {

@@ -435,9 +435,9 @@ function buildDetails(container, product, D, story) {
 // and the stops shrink last. Pure.
 function planBeats(naturals, V, r0, A) {
   const n = naturals.length, nh = Math.max(0, n - 1), N = naturals.reduce((s, x) => s + x, 0);
-  let Lh = clamp((A - N) / Math.max(1, nh), 0.45 * V, 0.7 * V);
+  let Lh = clamp((A - N) / Math.max(1, nh), 0.5 * V, 1.2 * V);
   const a = N > 0 ? clamp((A - nh * Lh) / N, 0.45, 1.7) : 1;       // scroll px per px of falling
-  Lh = clamp((A - a * N) / Math.max(1, nh), 0.4 * V, 0.9 * V);
+  Lh = clamp((A - a * N) / Math.max(1, nh), 0.4 * V, 1.5 * V);
   const stretches = [], holds = []; let cur = r0, E = 0;
   naturals.forEach((Lf, k) => {
     stretches.push({ start: cur, end: cur + a * Lf, E, Lf }); cur += a * Lf; E += Lf;
@@ -491,7 +491,7 @@ function layoutBeats(container) {
     if (g < nF) {
       const h = Math.max(0, ...slots[g].map(s => s.offsetHeight)), yc = cursor + h / 2;
       slots[g].forEach(s => { s.style.top = yc.toFixed(0) + 'px'; });
-      stops.push(yc - cy); cursor += h + Math.max(64, V * 0.07);   // plenty of room after a frame, so the faint next one never crowds it
+      stops.push(yc - cy); cursor += h + Math.max(V * 0.45, 340);   // generous room between frames so the next frame never crowds or overlaps
     }
   }
   // the falling ends when the last piece's bottom edge is above the highlights' columns (30% down) and the
