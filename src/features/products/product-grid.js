@@ -4,7 +4,6 @@ import { PRODUCTS } from '../../data/products.js';
 import { STORY } from '../../data/product-story.js';
 import { ScrollTrigger, gsap, hasGsap } from '../../lib/gsap.js';
 import { $, $$ } from '../../utils/dom.js';
-import { inr } from '../../utils/format.js';
 
 function thumbImg(p, cls = ''){ return thumbs[p.id] ? `<img class="${cls}" src="${thumbs[p.id]}" width="960" height="960" alt="${p.name}, ${p.size}" loading="lazy">` : `<div class="ph" aria-hidden="true"></div>`; }
 
@@ -17,7 +16,7 @@ function buildGrid(){
         <h3>${p.name}</h3>
         <p class="pc-d">${p.desc}</p>
         <ul class="pc-ing">${p.ing.map(x => `<li>${x}</li>`).join('')}</ul>
-        <div class="pc-foot"><span class="pc-price">${inr(p.price)}<small>${p.size}</small></span><button class="add pill" data-id="${p.id}"><i aria-hidden="true">+</i>Add to bag</button></div>
+        <div class="pc-foot"><span class="pc-price"><small>${p.size}</small></span><button class="add pill" data-id="${p.id}"><i aria-hidden="true">+</i>Add to bag</button></div>
       </div>
     </article>`).join('');
 }

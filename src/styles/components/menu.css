@@ -1,5 +1,5 @@
 /* ---------- menu: a fresh sage sheet that bursts open from the dock ---------- */
-.menu{position:fixed;inset:0;z-index:58;visibility:hidden;pointer-events:none;transition:visibility 0s linear .95s}
+.menu{position:fixed;inset:0;z-index:95;visibility:hidden;pointer-events:none;transition:visibility 0s linear .95s}
 .menu.open{visibility:visible;pointer-events:auto;transition-delay:0s}
 .menu-bg{position:absolute;inset:0;overflow:hidden;background:radial-gradient(60% 70% at 85% 15%,rgba(255,255,255,.4),transparent 60%),radial-gradient(50% 60% at 8% 95%,rgba(36,80,42,.18),transparent 70%),var(--stage);clip-path:circle(0px at var(--ox,40px) var(--oy,50%));transition:clip-path .95s cubic-bezier(.7,0,.2,1)}
 .menu.open .menu-bg{clip-path:circle(160vmax at var(--ox,40px) var(--oy,50%))}

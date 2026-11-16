@@ -1,4 +1,5 @@
 // Bag drawer: add, change quantity, subtotal, checkout.
+import '../navigation/dropdown.js';
 import { cart, thumbs } from '../../app/state.js';
 import { toast } from '../../components/toast.js';
 import { PRODUCTS } from '../../data/products.js';

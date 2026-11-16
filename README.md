@@ -11,70 +11,25 @@ The site is a single page built with Vite and plain JavaScript (ES modules). It 
 - smooth scrolling (Lenis) with GSAP ScrollTrigger animations
 - a left dock menu
 - a front-end bag
-- "Ask Tulsi", a friendly natural-health chat assistant running on a local AI model
 
 ## Requirements
 
-- Node.js 22.9 or newer (`npm start` reads `.env` with `--env-file-if-exists`)
-- [Ollama](https://ollama.com) with the chat model pulled: `ollama pull gemma2:9b` (the site still works without it; only the chat shows a "can't connect" message)
+- Node.js 18 or newer (20 LTS recommended)
 - Python 3.10+ only if you want to regenerate the image assets in `scripts/`
 
 ## Setup and run
 
 ```bash
 npm install
-npm run dev          # http://localhost:5173 with live reload, Tulsi chat included
+npm run dev          # http://localhost:5173 with live reload
 ```
-
-## Tulsi wellness chat (local AI)
-
-The "Ask Tulsi" button opens a chat with a friendly natural-health advisor. It answers through a local Ollama model, so no chat data leaves the machine.
-
-The chat is part of the site: its API (`server/chat-api.js`) runs inside `npm run dev` and `npm run preview`, and inside `npm start` in production. There is no separate chat server to start.
-
-Because this is health advice, the model never decides what to say. **Read [docs/tulsi-safety-review.md](docs/tulsi-safety-review.md) before changing anything.** In short:
-
-- `server/wellness-tips.js`: the **only** health advice Tulsi may give, 20 everyday topics, each tip reworded from NHS / Diabetes UK guidance with the source link. Small problems get tips without "see a doctor"; that is added only when the visitor says it is severe, lasting or getting worse.
-- `src/data/catalog.js`: the products Tulsi talks about, from the client's brochure (`new resource/`). The shop section still uses `src/data/products.js`.
-- `server/advisor-rules.js`: plain code that picks the topic, tips, product, warning signs (doctor first) and caution rules (pregnancy, children, diabetes, medicine).
-- `server/advisor-prompt.js`: Tulsi's personality, and fixed replies for emergencies (112) and self-harm (Tele-MANAS 14416) that never go through the model.
-- `server/reply-check.js`: checks every reply before it is shown (unapproved remedies, doses, cure claims, diagnoses, stopping medicine…); a failing reply is rewritten once, then replaced with a fixed safe reply.
-
-```bash
-npm test            # unit tests, including the chat rules
-npm run test:chat   # 86 realistic questions through the real model; every answer is saved to docs/tulsi-test-results.md
-```
-
-Run `npm run test:chat` and read the answers after changing tips, rules or `CHAT_MODEL`. `npm run test:real` checks how well Tulsi understands realistic customer questions (`tests/server/real-questions*.js`); add any miss you find there.
-
-### Customer insights (anonymous)
-
-Tulsi counts what customers ask about, so the team can see common problems and **product gaps** (issues people bring up often that we have no product for):
-
-```bash
-npm run insights                  # everything so far
-npm run insights -- --days 30     # the last 30 days
-```
-
-The report lists top topics, topics with no product, issues Tulsi could not match (as short labels like "dizziness"), medical conditions mentioned, how often each product was suggested and how often Enquire was clicked, warning signs and languages.
-
-**Privacy:** no message text, names, phone numbers, IP addresses or session ids are stored, only the day, topic ids, product ids, warning-sign ids, language and a 1-3 word generic label (checked by code before saving). The chat window tells visitors this. Data is saved in `data/insights.jsonl` on the server that runs the chat (kept out of git); set `INSIGHTS=off` to turn it off or `INSIGHTS_FILE` to save elsewhere. On a host where the disk is wiped on every deploy, point `INSIGHTS_FILE` at persistent storage.
-
-## Going live
-
-```bash
-npm run build
-npm start            # site + chat on http://localhost:3000 (PORT in .env)
-```
-
-`npm start` (`server/index.js`) serves the built site and the chat API from one Node process, so host it on a machine that has a GPU and runs Ollama, behind your domain and HTTPS. Uploading only `dist/` to a static host gives you the site without the chat.
 
 ## Build
 
 ```bash
-npm run build        # site in dist/
-npm run preview      # serve dist/ locally (with the chat) to check the build
-npm run build:single # one self-contained file: dist-single/index.html (works from disk, easy to email, no chat)
+npm run build        # static site in dist/  (upload this folder to any static host)
+npm run preview      # serve dist/ locally to check the build
+npm run build:single # one self-contained file: dist-single/index.html (works from disk, easy to email)
 ```
 
 `dist/` uses ES modules, so open it through a web server (`npm run preview` or your host), not by double-clicking. Use `build:single` when you need a file that opens straight from disk.
@@ -82,22 +37,17 @@ npm run build:single # one self-contained file: dist-single/index.html (works fr
 ## Test
 
 ```bash
-npm test             # Vitest unit tests: helpers, catalogue data and the chat routing rules
+npm test             # Vitest unit tests: helpers and catalogue data integrity
 ```
 
 ## Configuration
 
-Copy `.env.example` to `.env`. All values are optional:
+Copy `.env.example` to `.env`. Both values are optional:
 
 | Variable | What it does when set |
 |---|---|
 | `VITE_CHECKOUT_URL` | "Checkout" in the bag goes to this hosted checkout with `?items=id:qty,...` |
 | `VITE_CONTACT_ENDPOINT` | The contact form is posted to this URL as JSON |
-| `CHAT_MODEL` | Ollama model for the Tulsi chat (default `gemma2:9b`) |
-| `OLLAMA_URL` | Where Ollama runs (default `http://localhost:11434`) |
-| `PORT` | Port for `npm start` (default 3000) |
-| `INSIGHTS` | `off` stops the anonymous issue counting |
-| `INSIGHTS_FILE` | Where insights are saved (default `data/insights.jsonl`) |
 
 Without them, checkout and the contact form show friendly placeholder messages. Anything starting with `VITE_` is public, so never put secret keys there.
 
@@ -110,11 +60,10 @@ src/
 ├── assets/        images and logo parts (imported by CSS/HTML, hashed at build)
 ├── components/    small shared UI (toast, design lightbox)
 ├── data/          content: products, product story cards, herbs, needs, lab, sections, pipeline stages
-├── features/      one folder per page feature (hero, product-story, products, pipeline, science, lab, finder, cart, contact, navigation, chat)
+├── features/      one folder per page feature (hero, product-story, products, pipeline, science, lab, finder, cart, contact, navigation)
 ├── lib/           GSAP setup, canvas artwork, 3D reflection environments
 ├── styles/        base/, components/, sections/, responsive.css, imported by main.css in cascade order
 └── utils/         dom, math/easing, formatting, media preferences
-server/            Tulsi chat API (chat-api.js, advisor rules and prompt) and the production server (index.js)
 public/            files copied as-is (favicons)
 tests/             unit tests mirroring src/
 scripts/           Python tools that regenerate the logo cut-out, the botanical background and the product images

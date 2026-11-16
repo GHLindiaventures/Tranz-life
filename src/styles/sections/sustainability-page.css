@@ -1,0 +1,472 @@
+/* ==========================================================================
+   TranzLife Biosciences - Official Sustainability Page Styles
+   Strictly aligned with tokens.css, global.css, and existing design language
+   ========================================================================== */
+
+/* Page Wrapper */
+.sustainability-page {
+  position: relative;
+  isolation: isolate;
+  background: var(--ground);
+  color: var(--ink);
+  overflow-x: clip;
+}
+
+/* --------------------------------------------------------------------------
+   SECTION 1: HERO
+   -------------------------------------------------------------------------- */
+.sus-hero {
+  position: relative;
+  min-height: 82vh;
+  min-height: 82svh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: clamp(120px, 16vh, 180px);
+  padding-bottom: clamp(60px, 8vh, 100px);
+  background: radial-gradient(ellipse 130% 95% at 50% 15%, #faf8ee 0%, #f2ecdd 45%, #e8dfcf 80%, var(--ground) 100%);
+  text-align: center;
+  overflow: hidden;
+}
+
+.sus-hero-bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.sus-hero-glow-1 {
+  position: absolute;
+  top: -20%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 900px;
+  height: 600px;
+  background: radial-gradient(ellipse at center, rgba(140, 184, 106, 0.3) 0%, rgba(231, 198, 128, 0.18) 45%, transparent 70%);
+  filter: blur(60px);
+}
+
+.sus-hero-glow-2 {
+  position: absolute;
+  bottom: -20%;
+  left: 10%;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle at center, rgba(36, 80, 42, 0.12) 0%, transparent 70%);
+  filter: blur(50px);
+}
+
+.sus-hero-content {
+  position: relative;
+  z-index: 1;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.sus-breadcrumb {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--faint);
+  margin-bottom: 24px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.sus-breadcrumb a {
+  color: var(--muted);
+  transition: color 0.2s ease;
+}
+
+.sus-breadcrumb a:hover {
+  color: var(--forest);
+}
+
+.sus-breadcrumb span {
+  opacity: 0.5;
+}
+
+.sus-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 18px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid var(--line-strong);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--forest);
+  margin-bottom: 22px;
+  box-shadow: 0 4px 14px rgba(20, 52, 26, 0.06);
+}
+
+.sus-badge i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--moss);
+  display: inline-block;
+  box-shadow: 0 0 8px var(--moss);
+}
+
+.sus-hero h1 {
+  font-size: clamp(2.6rem, 5.8vw, 4.8rem);
+  font-weight: 850;
+  font-stretch: 78%;
+  line-height: 1.04;
+  letter-spacing: -0.025em;
+  color: var(--forest);
+  max-width: 22ch;
+  margin: 0 auto 24px;
+}
+
+.sus-hero h1 em {
+  font-style: normal;
+  color: var(--sage);
+  background: linear-gradient(135deg, #24502a 0%, #6f9e4c 65%, #d6a23a 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.sus-hero-sub {
+  font-size: clamp(1.05rem, 1.8vw, 1.28rem);
+  line-height: 1.55;
+  color: var(--muted);
+  max-width: 66ch;
+  margin: 0 auto 36px;
+}
+
+/* Quick Metrics Grid */
+.sus-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  width: 100%;
+  max-width: 980px;
+  margin-top: 20px;
+}
+
+.sus-stat-card {
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 22px 18px;
+  text-align: left;
+  transition: transform 0.3s var(--ease-expo), box-shadow 0.3s ease;
+}
+
+.sus-stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(20, 52, 26, 0.1);
+  border-color: rgba(111, 158, 76, 0.4);
+}
+
+.sus-stat-num {
+  font-size: clamp(2rem, 3.2vw, 2.7rem);
+  font-weight: 850;
+  font-stretch: 80%;
+  color: var(--forest);
+  line-height: 1;
+}
+
+.sus-stat-num small {
+  font-size: 0.55em;
+  font-weight: 700;
+  color: var(--sage);
+  margin-left: 2px;
+}
+
+.sus-stat-label {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-top: 8px;
+  line-height: 1.3;
+}
+
+.sus-stat-sub {
+  font-size: 12px;
+  color: var(--faint);
+  margin-top: 4px;
+}
+
+/* --------------------------------------------------------------------------
+   SECTION 2: 4 CIRCULAR COMMITMENTS
+   -------------------------------------------------------------------------- */
+.sus-commit-sec {
+  padding: clamp(64px, 10vw, 120px) 0;
+  background: var(--ground-2);
+  border-top: 1px solid var(--line);
+}
+
+.sus-commit-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 28px;
+  margin-top: 48px;
+}
+
+.sus-commit-card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  padding: 36px 32px;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s var(--ease-expo), box-shadow 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.sus-commit-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 36px rgba(20, 52, 26, 0.08);
+}
+
+.sus-commit-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--sage), var(--gold));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.sus-commit-card:hover::before {
+  opacity: 1;
+}
+
+.sus-commit-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  display: grid;
+  place-items: center;
+  color: var(--forest);
+  margin-bottom: 22px;
+}
+
+.sus-commit-no {
+  font-family: var(--f-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--sage);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.sus-commit-card h3 {
+  font-size: clamp(1.3rem, 1.9vw, 1.6rem);
+  font-weight: 850;
+  font-stretch: 80%;
+  color: var(--forest);
+  line-height: 1.2;
+  margin-bottom: 12px;
+}
+
+.sus-commit-card p {
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+/* --------------------------------------------------------------------------
+   SECTION 3: INTERACTIVE IMPACT CALCULATOR
+   -------------------------------------------------------------------------- */
+.sus-calc-sec {
+  padding: clamp(64px, 10vw, 120px) 0;
+  background: var(--ground);
+  border-top: 1px solid var(--line);
+}
+
+.sus-calc-box {
+  background: var(--panel);
+  border: 1px solid var(--line-strong);
+  border-radius: 28px;
+  padding: clamp(28px, 5vw, 48px);
+  box-shadow: 0 20px 48px rgba(20, 52, 26, 0.08);
+  margin-top: 40px;
+}
+
+.sus-calc-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 32px;
+}
+
+.sus-slider-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.sus-slider-header label {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--forest);
+}
+
+.sus-slider-header span {
+  font-family: var(--f-mono);
+  font-size: 1.4rem;
+  font-weight: 850;
+  color: var(--sage);
+}
+
+.sus-slider-input {
+  width: 100%;
+  accent-color: var(--forest);
+  height: 8px;
+  border-radius: 4px;
+  background: var(--panel-2);
+  outline: none;
+  cursor: pointer;
+}
+
+.sus-calc-results {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.sus-result-card {
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 24px 20px;
+  text-align: center;
+  transition: transform 0.25s ease;
+}
+
+.sus-result-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(20, 52, 26, 0.08);
+}
+
+.sus-result-num {
+  font-size: clamp(2rem, 3.4vw, 2.8rem);
+  font-weight: 850;
+  font-stretch: 80%;
+  color: var(--forest);
+  line-height: 1;
+}
+
+.sus-result-label {
+  font-size: 13.5px;
+  font-weight: 750;
+  color: var(--ink);
+  margin-top: 10px;
+}
+
+.sus-result-sub {
+  font-size: 11.5px;
+  color: var(--faint);
+  margin-top: 4px;
+  line-height: 1.35;
+}
+
+/* --------------------------------------------------------------------------
+   SECTION 4: REGENERATIVE TIMELINE ROADMAP
+   -------------------------------------------------------------------------- */
+.sus-road-sec {
+  padding: clamp(64px, 10vw, 120px) 0;
+  background: var(--ground-2);
+  border-top: 1px solid var(--line);
+}
+
+.sus-road-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 16px;
+  margin-top: 48px;
+}
+
+.sus-road-step {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 24px 18px;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s ease;
+}
+
+.sus-road-step:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 24px rgba(20, 52, 26, 0.08);
+}
+
+.sus-road-num {
+  font-family: var(--f-mono);
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--sage);
+  margin-bottom: 12px;
+}
+
+.sus-road-step h4 {
+  font-size: 1.15rem;
+  font-weight: 850;
+  color: var(--forest);
+  margin-bottom: 8px;
+  line-height: 1.25;
+}
+
+.sus-road-step p {
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--muted);
+}
+
+/* --------------------------------------------------------------------------
+   RESPONSIVE DESIGN (TABLET & MOBILE)
+   -------------------------------------------------------------------------- */
+@media (max-width: 1024px) {
+  .sus-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .sus-commit-grid {
+    grid-template-columns: 1fr;
+  }
+  .sus-calc-results {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .sus-road-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .sus-stats-grid {
+    grid-template-columns: 1fr;
+  }
+  .sus-calc-results {
+    grid-template-columns: 1fr;
+  }
+  .sus-road-grid {
+    grid-template-columns: 1fr;
+  }
+}
+

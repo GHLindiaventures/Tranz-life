@@ -1,0 +1,354 @@
+/* ==========================================================================
+   TranzLife Biosciences - Official Certifications & Compliance Page Styles
+   Strictly aligned with tokens.css, global.css, and existing design language
+   ========================================================================== */
+
+/* Page Wrapper */
+.certifications-page {
+  position: relative;
+  isolation: isolate;
+  background: var(--ground);
+  color: var(--ink);
+  overflow-x: clip;
+}
+
+/* --------------------------------------------------------------------------
+   SECTION 1: HERO
+   -------------------------------------------------------------------------- */
+.cert-hero {
+  position: relative;
+  min-height: 75vh;
+  min-height: 75svh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: clamp(120px, 16vh, 180px);
+  padding-bottom: clamp(60px, 8vh, 100px);
+  background: radial-gradient(ellipse 130% 95% at 50% 15%, #faf8ee 0%, #f3ede0 45%, #e9e1d1 80%, var(--ground) 100%);
+  text-align: center;
+  overflow: hidden;
+}
+
+.cert-hero-bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.cert-hero-glow-1 {
+  position: absolute;
+  top: -20%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 900px;
+  height: 600px;
+  background: radial-gradient(ellipse at center, rgba(140, 184, 106, 0.28) 0%, rgba(231, 198, 128, 0.16) 45%, transparent 70%);
+  filter: blur(60px);
+}
+
+.cert-hero-content {
+  position: relative;
+  z-index: 1;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.cert-breadcrumb {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--faint);
+  margin-bottom: 24px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.cert-breadcrumb a {
+  color: var(--muted);
+  transition: color 0.2s ease;
+}
+
+.cert-breadcrumb a:hover {
+  color: var(--forest);
+}
+
+.cert-breadcrumb span {
+  opacity: 0.5;
+}
+
+.cert-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 18px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid var(--line-strong);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--forest);
+  margin-bottom: 22px;
+  box-shadow: 0 4px 14px rgba(20, 52, 26, 0.06);
+}
+
+.cert-badge i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--moss);
+  display: inline-block;
+  box-shadow: 0 0 8px var(--moss);
+}
+
+.cert-hero h1 {
+  font-size: clamp(2.6rem, 5.8vw, 4.8rem);
+  font-weight: 850;
+  font-stretch: 78%;
+  line-height: 1.04;
+  letter-spacing: -0.025em;
+  color: var(--forest);
+  max-width: 22ch;
+  margin: 0 auto 24px;
+}
+
+.cert-hero h1 em {
+  font-style: normal;
+  color: var(--sage);
+  background: linear-gradient(135deg, #24502a 0%, #6f9e4c 65%, #d6a23a 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.cert-hero-sub {
+  font-size: clamp(1.05rem, 1.8vw, 1.28rem);
+  line-height: 1.55;
+  color: var(--muted);
+  max-width: 66ch;
+}
+
+/* --------------------------------------------------------------------------
+   SECTION 2: ACCREDITATIONS GRID
+   -------------------------------------------------------------------------- */
+.cert-grid-sec {
+  padding: clamp(64px, 10vw, 120px) 0;
+  background: var(--ground-2);
+  border-top: 1px solid var(--line);
+}
+
+.cert-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+  margin-top: 48px;
+}
+
+.cert-card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  padding: 34px 28px;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s var(--ease-expo), box-shadow 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.cert-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 36px rgba(20, 52, 26, 0.08);
+}
+
+.cert-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.cert-card-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 14px;
+  background: var(--panel-2);
+  display: grid;
+  place-items: center;
+  color: var(--forest);
+}
+
+.cert-card-status {
+  font-family: var(--f-mono);
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--forest);
+  background: rgba(111, 158, 76, 0.15);
+  padding: 4px 10px;
+  border-radius: 999px;
+  text-transform: uppercase;
+}
+
+.cert-card h3 {
+  font-size: 1.35rem;
+  font-weight: 850;
+  color: var(--forest);
+  margin-bottom: 6px;
+  line-height: 1.2;
+}
+
+.cert-card-body-auth {
+  font-family: var(--f-mono);
+  font-size: 12px;
+  color: var(--sage);
+  margin-bottom: 14px;
+  display: block;
+}
+
+.cert-card p {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--muted);
+  margin-bottom: 20px;
+}
+
+.cert-card-specs {
+  margin-top: auto;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--faint);
+}
+
+.cert-card-specs strong {
+  color: var(--forest);
+  font-weight: 700;
+}
+
+/* --------------------------------------------------------------------------
+   SECTION 3: REPORT VIEWER
+   -------------------------------------------------------------------------- */
+.cert-report-sec {
+  padding: clamp(64px, 10vw, 120px) 0;
+  background: var(--ground);
+  border-top: 1px solid var(--line);
+}
+
+.cert-report-box {
+  background: var(--panel);
+  border: 1px solid var(--line-strong);
+  border-radius: 28px;
+  padding: clamp(28px, 5vw, 48px);
+  box-shadow: 0 20px 48px rgba(20, 52, 26, 0.08);
+  margin-top: 40px;
+}
+
+.cert-report-tabs {
+  display: flex;
+  gap: 8px;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 20px;
+  margin-bottom: 28px;
+  overflow-x: auto;
+}
+
+.cert-tab-btn {
+  padding: 8px 18px;
+  border-radius: 999px;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--forest);
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.25s ease;
+}
+
+.cert-tab-btn:hover {
+  background: #ffffff;
+}
+
+.cert-tab-btn.active {
+  background: var(--cream);
+  color: var(--on-cream);
+  border-color: var(--cream);
+  box-shadow: 0 4px 12px rgba(20, 52, 26, 0.18);
+}
+
+.cert-report-display {
+  background: #fafaf7;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: clamp(20px, 3vw, 32px);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.cert-display-head h4 {
+  font-size: 1.4rem;
+  font-weight: 850;
+  color: var(--forest);
+  margin-bottom: 6px;
+}
+
+.cert-display-head p {
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.cert-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+}
+
+.cert-table th {
+  text-align: left;
+  padding: 12px 14px;
+  font-family: var(--f-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  color: var(--faint);
+  letter-spacing: 0.08em;
+  background: var(--panel-2);
+  border-bottom: 1px solid var(--line);
+}
+
+.cert-table td {
+  padding: 14px;
+  border-bottom: 1px solid var(--line);
+  color: var(--ink);
+}
+
+/* --------------------------------------------------------------------------
+   RESPONSIVE DESIGN (TABLET & MOBILE)
+   -------------------------------------------------------------------------- */
+@media (max-width: 1024px) {
+  .cert-cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .cert-cards-grid {
+    grid-template-columns: 1fr;
+  }
+  .cert-table {
+    display: block;
+    overflow-x: auto;
+  }
+}
+

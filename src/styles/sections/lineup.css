@@ -1,0 +1,131 @@
+/* ---------- Section 2: Lineup & Flight Layer ---------- */
+
+/* Fixed flight canvas spanning the viewport */
+#flightCanvas {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 45; /* above sections, below nav(50), menu(58), dock(60), drawer(80) */
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+#flightCanvas.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Section styling */
+.lineup {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-block: clamp(80px, 12vh, 140px);
+  background: var(--ground);
+}
+
+.lineup-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 1320px;
+  margin-inline: auto;
+  padding-inline: max(24px, env(safe-area-inset-left, 0px));
+}
+
+/* Row of 5 product slots */
+.lineup-grid {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: clamp(16px, 2.8vw, 36px);
+  align-items: end;
+  justify-items: center;
+  width: 100%;
+}
+
+.lineup-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 210px;
+  cursor: pointer;
+}
+
+/* Individual slot container with fixed aspect ratio */
+.lineup-slot {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1.35;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Soft contact shadow under each 3D model */
+.lineup-shadow {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 68%;
+  height: 14px;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(22, 36, 18, 0.28), rgba(22, 36, 18, 0.08) 55%, transparent);
+  filter: blur(4px);
+  pointer-events: none;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+/* When active landing jar is flying, shadow is temporarily hidden */
+.lineup-slot.landing .lineup-shadow {
+  opacity: 0;
+}
+
+/* Existing short product label below each slot */
+.lineup-name {
+  margin-top: 18px;
+  font-family: var(--f-display);
+  font-stretch: 72%;
+  font-weight: 800;
+  font-size: clamp(14px, 1.4vw, 18px);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--forest);
+  opacity: 0.85;
+}
+
+/* Responsive: 2 + 3 grid on mobile */
+@media (max-width: 768px) {
+  .lineup {
+    min-height: auto;
+    padding-block: 90px 60px;
+  }
+  .lineup-grid {
+    grid-template-columns: repeat(6, 1fr);
+    gap: 16px 12px;
+  }
+  .lineup-item:nth-child(1),
+  .lineup-item:nth-child(2) {
+    grid-column: span 3;
+    max-width: 160px;
+  }
+  .lineup-item:nth-child(3),
+  .lineup-item:nth-child(4),
+  .lineup-item:nth-child(5) {
+    grid-column: span 2;
+    max-width: 130px;
+  }
+  .lineup-name {
+    font-size: 13px;
+    margin-top: 10px;
+  }
+}
+

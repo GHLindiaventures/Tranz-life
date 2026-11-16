@@ -6,7 +6,9 @@
 .filters button{padding:8px 18px;border-radius:999px;background:rgba(255,255,255,.55);font-weight:700;font-stretch:85%;font-size:15px;transition:all .3s}
 .filters button.on{background:var(--cream);color:var(--on-cream)}
 .grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:18px;margin-top:46px}
-.pc{grid-column:span 2;display:flex;flex-direction:column;border-radius:24px;background:#fff;overflow:hidden;box-shadow:0 30px 60px -44px rgba(31,70,35,.4)}
+.pc{grid-column:span 2;display:flex;flex-direction:column;border-radius:24px;background:#fff;overflow:hidden;box-shadow:0 16px 36px -16px rgba(31,70,35,.15),0 4px 12px rgba(31,70,35,.05);transition:transform .4s var(--ease-expo),box-shadow .4s var(--ease-expo);will-change:transform,box-shadow}
+.pc:hover{transform:translateY(-5px);box-shadow:0 28px 56px -20px rgba(31,70,35,.22),0 8px 24px rgba(31,70,35,.08)}
+.pc:active{transform:translateY(-2px) scale(.99)}
 .pc:nth-child(4),.pc:nth-child(5){grid-column:span 3}
 .pc.hide{display:none}
 .pc-media{position:relative;aspect-ratio:1/1;background:var(--c);overflow:hidden}

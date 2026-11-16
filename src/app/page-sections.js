@@ -1,5 +1,7 @@
 // Tracks the current section and theme, and scrolls to sections.
 import { state } from './state.js';
+import { ScrollTrigger } from '../lib/gsap.js';
+import { MOTION } from './motion-tokens.js';
 import { NSTAGE } from '../data/pipeline.js';
 import { $, $$ } from '../utils/dom.js';
 import { clamp } from '../utils/math.js';
@@ -9,9 +11,29 @@ const LAYOUT = { pages:[], tops:[], hs:[], vh:window.innerHeight, cur:-1, theme:
 
 const GROUND = { green:'#112117', cream:'#eee3c6' };
 
-function scrollToY(y){ if (state.lenis){ state.lenis.scrollTo(Math.max(0, y), { duration:1.4 }); return; } window.scrollTo({ top:Math.max(0, y), behavior: reduce ? 'auto' : 'smooth' }); }
+function scrollToY(y){
+  if (state.lenis){
+    state.lenis.scrollTo(Math.max(0, y), {
+      duration: 1.2,
+      easing: MOTION.ease.easedScroll
+    });
+    return;
+  }
+  window.scrollTo({ top:Math.max(0, y), behavior: reduce ? 'auto' : 'smooth' });
+}
 
-function scrollToPage(id){ const el = document.getElementById(id); if (el) scrollToY(el.getBoundingClientRect().top + window.scrollY); }
+function scrollToPage(id){
+  const el = document.getElementById(id);
+  if (!el) return;
+  const pages = LAYOUT.pages || [];
+  const i = pages.findIndex(p => p.id === id);
+  if (i >= 0 && LAYOUT.tops && LAYOUT.tops[i] !== undefined) {
+    scrollToY(LAYOUT.tops[i]);
+    return;
+  }
+  const r = el.getBoundingClientRect();
+  scrollToY(r.top + window.scrollY);
+}
 
 function pageProgress(id){
   const el = document.getElementById(id); if (!el) return { p:0, visible:false };
@@ -22,13 +44,17 @@ function pageProgress(id){
 function initPages(){
   const pages = $$('main > .page'); LAYOUT.pages = pages;
   const first = p => p.id === 'process' ? 'cream' : p.dataset.theme, last = p => p.id === 'process' ? 'green' : p.dataset.theme;
+  const ring = document.querySelector('.dm-ring');
+  let docH = document.documentElement.scrollHeight, lastSp = '';
   function measure(){
     LAYOUT.vh = window.innerHeight;
+    docH = document.documentElement.scrollHeight;
     LAYOUT.hs = pages.map(p => p.offsetHeight);
-    LAYOUT.tops = pages.map(p => p.getBoundingClientRect().top + window.scrollY);
+    LAYOUT.tops = pages.map(p => p.offsetTop);
     // where two themes meet, the upper colour fades into the next page
     pages.forEach((p, i) => { if (i && !p.querySelector(':scope > .show, :scope > .pin')) p.style.setProperty('--prev', GROUND[last(pages[i - 1])] + ' '); });
     update();
+    if (ScrollTrigger && ScrollTrigger.refresh) ScrollTrigger.refresh();
   }
   function update(){
     const y = window.scrollY;
@@ -36,14 +62,19 @@ function initPages(){
     const id = pages[cur].id; let theme = pages[cur].dataset.theme;
     if (id === 'process' && LAYOUT.reactor) theme = LAYOUT.reactor.theme();
     if (cur !== LAYOUT.cur || theme !== LAYOUT.theme){ LAYOUT.cur = cur; LAYOUT.theme = theme; window.dispatchEvent(new CustomEvent('tl:page', { detail:{ id, theme, index:cur, count:pages.length } })); }
-    document.documentElement.style.setProperty('--sp', clamp(y/Math.max(1, document.documentElement.scrollHeight - LAYOUT.vh), 0, 1).toFixed(4));
+    // scroll progress for the dock ring. Written on the ring itself (not <html>): an inherited custom property on
+    // the root restyles the whole document every scroll frame. Document height comes from measure(), not a live read.
+    const sp = clamp(y/Math.max(1, docH - LAYOUT.vh), 0, 1).toFixed(3);
+    if (sp !== lastSp && ring){ lastSp = sp; ring.style.setProperty('--sp', sp); }
   }
   let ticking = false;
   window.addEventListener('scroll', () => { if (ticking) return; ticking = true; requestAnimationFrame(() => { ticking = false; update(); }); }, { passive:true });
   window.addEventListener('resize', () => requestAnimationFrame(measure));
   if ('ResizeObserver' in window){ let t; new ResizeObserver(() => { clearTimeout(t); t = setTimeout(measure, 80); }).observe($('main')); }
-  // the nav theme follows the reaction slides, which change after scrolling stops
-  (function tick(){ requestAnimationFrame(tick); if (LAYOUT.reactor && pages[LAYOUT.cur] && pages[LAYOUT.cur].id === 'process') update(); })();
+  // the nav theme follows the reaction slides reactively when theme changes
+  window.addEventListener('tl:reactor-theme', () => {
+    if (pages[LAYOUT.cur] && pages[LAYOUT.cur].id === 'process') update();
+  });
 
   // anchors: smooth scroll to a section
   document.addEventListener('click', e => {

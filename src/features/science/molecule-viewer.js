@@ -51,13 +51,38 @@ function initMolecule(){
   canvas.addEventListener('pointerdown', e => { st.drag = true; st.lx = e.clientX; st.ly = e.clientY; canvas.setPointerCapture(e.pointerId); });
   canvas.addEventListener('pointermove', e => { if (!st.drag) return; st.vx = (e.clientX - st.lx)*.008; st.vy = (e.clientY - st.ly)*.008; st.lx = e.clientX; st.ly = e.clientY; });
   ['pointerup','pointercancel'].forEach(ev => canvas.addEventListener(ev, () => st.drag = false));
-  new IntersectionObserver(es2 => es2.forEach(en => st.visible = en.isIntersecting)).observe(canvas);
+  let rafId = null;
+  function loop(){
+    if (!st.visible){ rafId = null; return; }
+    rafId = requestAnimationFrame(loop);
+    holder.rotation.y += st.vx; holder.rotation.x += st.vy;
+    if (!st.drag){
+      st.vx = lerp(st.vx, reduce ? 0 : .004, .03);
+      st.vy = lerp(st.vy, 0, .05);
+      holder.rotation.x = lerp(holder.rotation.x, .25, .01);
+    }
+    renderer.render(scene, cam);
+  }
+
+  const observer = new IntersectionObserver(es2 => {
+    es2.forEach(en => {
+      st.visible = en.isIntersecting;
+      if (st.visible && !rafId) {
+        rafId = requestAnimationFrame(loop);
+      }
+    });
+  }, { rootMargin: '100px 0px' });
+  observer.observe(canvas);
+
   function resize(){ const r = canvas.getBoundingClientRect(); renderer.setSize(Math.max(1,r.width), Math.max(1,r.height), false); cam.aspect = r.width/Math.max(1,r.height); cam.updateProjectionMatrix(); }
   window.addEventListener('resize', resize); resize();
-  (function loop(){ requestAnimationFrame(loop); if (!st.visible) return;
-    holder.rotation.y += st.vx; holder.rotation.x += st.vy; if (!st.drag){ st.vx = lerp(st.vx, reduce ? 0 : .004, .03); st.vy = lerp(st.vy, 0, .05); holder.rotation.x = lerp(holder.rotation.x, .25, .01); }
-    renderer.render(scene, cam); })();
-  return { show };
+  return {
+    show,
+    destroy: () => {
+      observer.disconnect();
+      if (rafId) cancelAnimationFrame(rafId);
+    }
+  };
 }
 
 export { initMolecule };

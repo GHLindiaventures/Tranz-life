@@ -5,12 +5,25 @@ import { SECTIONS } from '../../data/sections.js';
 import { SEC_IC, svgI } from './nav-icons.js';
 import { $, $$ } from '../../utils/dom.js';
 import { reduce } from '../../utils/media.js';
+import { initNavDropdowns } from './dropdown.js';
 
 function initNav(){
   const nav = $('#nav'), dock = $('#dock'), btn = $('#dockMenu'), menu = $('#menu'), ind = $('#dockInd');
   const pad = n => String(n).padStart(2, '0');
+  const SITE_PAGES = [
+    { no: '01', name: 'Home', sub: 'Nature meets science', href: 'index.html#home' },
+    { no: '02', name: 'About Us', sub: 'Our mission & innovation', href: 'about.html' },
+    { no: '03', name: 'Our Products', sub: 'All five formulations', href: 'products.html' },
+    { no: '04', name: 'Science & Innovation', sub: 'Molecular delivery & 3D lab', href: 'science.html' },
+    { no: '05', name: 'Our Ingredients', sub: 'Botanical pharmacopeia', href: 'ingredients.html' },
+    { no: '06', name: 'Quality & Manufacturing', sub: 'Cleanrooms & batch audit', href: 'quality.html' },
+    { no: '07', name: 'Sustainability', sub: 'Regeneration & zero-plastic', href: 'sustainability.html' },
+    { no: '08', name: 'Certifications & Compliance', sub: 'Regulatory accreditations', href: 'certifications.html' },
+    { no: '09', name: 'Contact', sub: 'Say hello', href: 'contact.html' }
+  ];
+
   $('#dockList').innerHTML = SECTIONS.map((s, i) => `<li style="--i:${i}"><a href="#${s.id}" data-sec="${s.id}" aria-label="${s.name}" tabindex="-1">${svgI(SEC_IC[s.id])}<b>${s.name}</b></a></li>`).join('');
-  $('#menuList').innerHTML = SECTIONS.map((s, i) => `<li data-sec="${s.id}" style="--i:${i}"><a href="#${s.id}"><span class="mi-no">${pad(i + 1)}</span><span class="mi-name">${s.name}</span><span class="mi-sub">${s.sub}</span></a></li>`).join('');
+  $('#menuList').innerHTML = SITE_PAGES.map((p, i) => `<li style="--i:${i}"><a href="${p.href}"><span class="mi-no">${p.no}</span><span class="mi-name">${p.name}</span><span class="mi-sub">${p.sub}</span></a></li>`).join('');
   const links = $$('#dockList a');
 
   // featured product card inside the menu
@@ -62,19 +75,33 @@ function initNav(){
     const changed = id !== cur; cur = id;
     links.forEach(a => a.classList.toggle('on', a.dataset.sec === id));
     $$('#menuList li').forEach(li => li.classList.toggle('on', li.dataset.sec === id));
-    $$('.nav-pills a').forEach(a => a.classList.toggle('on', a.dataset.sec === id));
+    $$('.nav-pills > a').forEach(a => a.classList.toggle('on', a.dataset.sec === id));
     const si = Math.max(0, SECTIONS.findIndex(s => s.id === id)), cl = $('#dockCur');
     cl.textContent = SECTIONS[si].name; cl.dataset.no = pad(si + 1);
     place();
     if (changed && !menu.classList.contains('open')){ dock.classList.add('peek'); clearTimeout(peekT); peekT = setTimeout(() => dock.classList.remove('peek'), 1600); }
   };
   setOn('home'); window.addEventListener('resize', place);
-  window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 40), { passive:true });
+  initNavDropdowns();
+  window.addEventListener('scroll', () => {
+    const y = window.scrollY;
+    nav.classList.toggle('scrolled', y > 20);
+  }, { passive: true });
   // the dark footer counts as a green page for the dock and nav
-  let pageDark = false; const foot = $('footer');
-  const tone = () => { const dark = pageDark || foot.getBoundingClientRect().top < innerHeight*.5; nav.classList.toggle('t-green', dark); dock.classList.toggle('t-green', dark); };
-  window.addEventListener('scroll', tone, { passive:true });
-  window.addEventListener('tl:page', e => { setOn(e.detail.id); pageDark = e.detail.theme === 'green'; tone(); });
+  let pageDark = false, footDark = false;
+  const foot = $('footer');
+  const updateTone = () => {
+    const dark = pageDark || footDark;
+    nav.classList.toggle('t-green', dark);
+    dock.classList.toggle('t-green', dark);
+  };
+  if (foot && 'IntersectionObserver' in window) {
+    new IntersectionObserver(([entry]) => {
+      footDark = entry.isIntersecting;
+      updateTone();
+    }, { rootMargin: '0px 0px -50% 0px' }).observe(foot);
+  }
+  window.addEventListener('tl:page', e => { setOn(e.detail.id); pageDark = e.detail.theme === 'green'; updateTone(); });
 }
 
 export { initNav };
