@@ -9,8 +9,9 @@ import reviva from '../../assets/products/reviva.webp';
 import revivaDesign from '../../assets/products/reviva-design.webp';
 import liver from '../../assets/products/liver.webp';
 import liverDesign from '../../assets/products/liver-design.webp';
+import energy from '../../assets/products/energy.webp';   // rendered from energy-booster.glb (no client photo or design board yet)
 
-const SHOTS = { gummies, inhaler, rollon, reviva, liver };
+const SHOTS = { gummies, inhaler, rollon, reviva, liver, energy };
 const DESIGNS = { gummies:gummiesDesign, inhaler:inhalerDesign, rollon:rollonDesign, reviva:revivaDesign, liver:liverDesign };
 
 export { SHOTS, DESIGNS };

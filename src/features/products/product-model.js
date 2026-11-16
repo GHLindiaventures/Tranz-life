@@ -1,4 +1,4 @@
-// Procedural 3D models of the five TranzLife products. Shapes follow the client's design boards and the
+// 3D models of the six TranzLife products (procedural, or scanned .glb files). Shapes follow the client's design boards and the
 // printed labels are the real artwork lifted from those boards (see scripts/make-product-assets.py).
 import * as THREE from 'three';
 import { seeded } from '../../utils/math.js';
@@ -13,6 +13,7 @@ import { attachGummies } from './gummy-pour.js';
 import liverGlbUrl from '../../assets/products/liver-booster.glb?url';
 import cycleReliefGlbUrl from '../../assets/products/cyclerelief.glb?url';
 import lungBoosterGlbUrl from '../../assets/products/lungbooster.glb?url';
+import energyGlbUrl from '../../assets/products/energy-booster.glb?url';   // scripts/add_energy_threads.mjs
 
 const V2 = (x, y) => new THREE.Vector2(x, y);
 const lin = hex => new THREE.Color(hex).convertSRGBToLinear();
@@ -272,7 +273,7 @@ function withGlb(builder, url){
       m.traverse(n => { if (n.isMesh && n.name === 'Bottle' && n.material && n.material.map){ const lm = liquidFill(n.material = n.material.clone()); n.onBeforeRender = () => { lm.userData.uTime.value = performance.now()/1000; }; } });
       wrap.traverse(n => { if (n.isMesh) { n.frustumCulled = false; if (n.material && n.material.map) n.material.map.anisotropy = 4; n.userData.product = holder.parent ? holder.parent.userData.index : undefined; } });
       holder.remove(base.G); holder.add(wrap);
-      // the Lung Booster's cap is its own part (Jar_Cap_Pivot, turning on the cap's own axis): userData.unscrew(u), u 0..1,
+      // the Lung Booster's and the Energy Booster's caps are their own part (Jar_Cap_Pivot, turning on the cap's own axis): userData.unscrew(u), u 0..1,
       // turns it counter-clockwise (right-hand thread) while it rises off the threaded neck; 0 = closed
       const pivot = m.getObjectByName('Jar_Cap_Pivot');
       if (pivot && holder.parent){
@@ -296,7 +297,8 @@ function withGlb(builder, url){
   };
 }
 
-const BUILDERS = { jar:withGlb(() => ({ G: new THREE.Group(), h: 4.0 }), lungBoosterGlbUrl), inhaler:calmInhaler, rollon:withGlb(calmRollOn, cycleReliefGlbUrl), reviva:revivaRollOn, liver:withGlb(liverBottle, liverGlbUrl) };
+const BUILDERS = { jar:withGlb(() => ({ G: new THREE.Group(), h: 4.0 }), lungBoosterGlbUrl), inhaler:calmInhaler, rollon:withGlb(calmRollOn, cycleReliefGlbUrl), reviva:revivaRollOn, liver:withGlb(liverBottle, liverGlbUrl),
+  energy:withGlb(() => ({ G: new THREE.Group(), h: 4.4 }), energyGlbUrl) };
 
 // Builds a product, centred on its own middle. Returns a group with userData.h (its height).
 function makeProduct(p, i, o = {}){

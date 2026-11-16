@@ -26,7 +26,7 @@ export const STORY = [
     t: ['Balance &', 'Vitality'],
     d: 'Ayurvedic roll-on with Dill and Eucalyptus to support healthy blood sugar balance, nerve strength, and peripheral circulation.',
     note: 'Balance · Restore · Revitalize',
-    ic: 'foot',
+    ic: 'leaf',
     c: '#4d8b47'
   },
   {
@@ -35,5 +35,12 @@ export const STORY = [
     note: 'Classical Ayurvedic Wisdom',
     ic: 'drop',
     c: '#a4b955'
+  },
+  {
+    t: ['Energy', 'Booster'],
+    d: '500 ml herbal and bioactive oral liquid with Ruta, Symphytum and Echinacea, made to complement daily energy and an active routine.',
+    note: 'Energy · Stamina · Vitality',
+    ic: 'spark',
+    c: '#e2b23a'
   }
 ];

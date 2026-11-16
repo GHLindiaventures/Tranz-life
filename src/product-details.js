@@ -110,6 +110,26 @@ const CLINICAL_DETAILS = {
       { title: 'Holistic Liver Health', text: 'Supporting internal balance in synergy with balanced nutrition, hydration, and healthy lifestyle habits.' },
       { title: 'Responsible Innovation', text: 'Advancing life sciences and preventive wellness through transparent, evidence-based practices.' }
     ]
+  },
+  energy: {
+    category: 'Herbal & Bioactive Oral Liquid (500 ml)',
+    eyebrow: 'ENERGY BOOSTER™ · ENERGY • STAMINA • VITALITY',
+    rating: 'New launch',
+    highlights: [
+      'Designed to complement daily energy, activity and general well-being',
+      'Selected botanical and mineral-origin ingredients in one measured routine',
+      'Ready-to-use oral liquid with a measuring device in the pack',
+      'For adults aged 14 and above, as directed on the label'
+    ],
+    botanicals: 'Ruta graveolens (Q), Hecla lava (3X), Symphytum officinale (Q), Calcarea phosphorica (8X), Echinacea angustifolia (Q). Refer to the approved product specification for the complete composition and ingredient quantities.',
+    usage: '7.5 ml twice daily, or as advised by a healthcare professional. Shake well if directed on the label. Use the measuring device supplied with the pack. Do not exceed the recommended serving.',
+    mechanism: 'Energy Booster combines selected botanical and mineral-origin ingredients in a simple, measured daily liquid, made to complement an active lifestyle. How the full blend works has not been published, so it is positioned as everyday wellness support, not a medicine.',
+    packaging: '500 ml bottle with a screw-on wooden-finish cap and measuring device.',
+    scienceCards: [
+      { title: 'Botanical Ingredients', text: 'Ruta graveolens, Symphytum officinale and Echinacea angustifolia, taken from the supplied formulation artwork.' },
+      { title: 'Mineral-Origin Preparations', text: 'Hecla lava (3X) and Calcarea phosphorica (8X), mineral-origin homeopathic preparations.' },
+      { title: 'Measured Daily Routine', text: 'A simple 7.5 ml serving twice a day, designed around an easy, consistent everyday habit.' }
+    ]
   }
 };
 

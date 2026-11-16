@@ -1,7 +1,7 @@
 // Product hand-off transition between #home and #lineup.
 // Ultra-smooth, zero-lag single-canvas architecture:
 // The settled hero product lifts off the stone plinth, flies down in a 3D arc,
-// and lands directly in its slot on page 2, where all 5 products stand as interactive 3D models.
+// and lands directly in its slot on page 2, where all 6 products stand as interactive 3D models.
 import { ScrollTrigger } from '../../lib/gsap.js';
 import { PRODUCTS } from '../../data/products.js';
 import { jarLayer } from '../products/jar-layer.js';

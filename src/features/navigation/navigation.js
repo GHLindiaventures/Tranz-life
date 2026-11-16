@@ -13,7 +13,7 @@ function initNav(){
   const SITE_PAGES = [
     { no: '01', name: 'Home', sub: 'Nature meets science', href: 'index.html#home' },
     { no: '02', name: 'About Us', sub: 'Our mission & innovation', href: 'about.html' },
-    { no: '03', name: 'Our Products', sub: 'All five formulations', href: 'products.html' },
+    { no: '03', name: 'Our Products', sub: 'All six formulations', href: 'products.html' },
     { no: '04', name: 'Science & Innovation', sub: 'Molecular delivery & 3D lab', href: 'science.html' },
     { no: '05', name: 'Our Ingredients', sub: 'Botanical pharmacopeia', href: 'ingredients.html' },
     { no: '06', name: 'Quality & Manufacturing', sub: 'Cleanrooms & batch audit', href: 'quality.html' },

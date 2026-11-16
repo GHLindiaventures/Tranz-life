@@ -3,7 +3,7 @@
 // Scroll drives one progress value P (0..1) through the showcase: see journeyProgress() in showcase-scene.js.
 //   0.12 .. 0.70  pinned scene: spin, reveal, detail
 //   0.70 .. 1     the statement's scalloped curtain rises over the pin; the product drifts up and is covered
-// Below the curtain, #lineup shows five cards; each product stands on the panel of its card (measured from the DOM).
+// Below the curtain, #lineup shows six cards; each product stands on the panel of its card (measured from the DOM).
 //
 // Changes from dhina-dev for this page:
 //  - there is no hero here: the page opens where dhina-dev's journey has the product in the middle (P = ARRIVE),
@@ -493,7 +493,7 @@ function initProductJourney() {
   }
 
   // matte gradient behind each product: [top, middle, bottom]
-  const OV_BG = { gummies: ['#ebcba0', '#d99a68', '#b86b43'], inhaler: ['#b0dccd', '#72b8a2', '#418f7c'], rollon: ['#ecbcc5', '#d68b9e', '#ab5a76'], reviva: ['#cddca4', '#9fba66', '#6c903c'], liver: ['#e3d68c', '#bfb24f', '#8c8531'] };
+  const OV_BG = { gummies: ['#ebcba0', '#d99a68', '#b86b43'], inhaler: ['#b0dccd', '#72b8a2', '#418f7c'], rollon: ['#ecbcc5', '#d68b9e', '#ab5a76'], reviva: ['#cddca4', '#9fba66', '#6c903c'], liver: ['#e3d68c', '#bfb24f', '#8c8531'], energy: ['#f1dc95', '#ddb24a', '#a77a22'] };
   function openOverlay(i) {
     if (i == null || i < 0 || i >= N) return;
     if (ov.state === 'opening' || ov.state === 'closing') { ov.pending = i; return; }   // finish the current one first
