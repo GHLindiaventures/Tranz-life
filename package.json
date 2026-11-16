@@ -17,6 +17,7 @@
     "test:real": "node --env-file-if-exists=.env scripts/understand-eval.mjs --set real && node --env-file-if-exists=.env scripts/understand-eval.mjs --set real2"
   },
   "dependencies": {
+    "@google/genai": "^3.3.0",
     "gsap": "3.12.5",
     "lenis": "1.1.13",
     "three": "0.128.0"
