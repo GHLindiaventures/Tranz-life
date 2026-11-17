@@ -401,6 +401,7 @@ function bindModelHooks(m, holder) {
     if (!ud.gummies) {
       ud.gummies = attachGummies(m);
     } else {
+      if (ud.gummies.setRoot) ud.gummies.setRoot(m);
       const gm = ud.gummies.mesh;
       if (gm && gm.parent !== m) {
         if (gm.parent) gm.parent.remove(gm);

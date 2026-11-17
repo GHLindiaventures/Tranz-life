@@ -117,7 +117,8 @@ function settlePile(n, quats, sizes) {
   return pos;
 }
 
-function attachGummies(root) {
+function attachGummies(rootArg) {
+  let root = rootArg;   // the model the packets live in; it changes when the HD model is swapped in (ctl.setRoot), and every matrix below must use the CURRENT one
   const ctl = { ready: false, mesh: null, n: GUMMY_COUNT, world: new Float32Array(GUMMY_COUNT * 3), colors: [], arrived: new Float32Array(GUMMY_COUNT), atRest: true };
   const push = new Float32Array(GUMMY_COUNT * 3);   // how far the pointer has pushed each floating gummy (eased)
   const R = rng(5);
@@ -210,6 +211,7 @@ function attachGummies(root) {
     }
     ctl.mesh.instanceMatrix.needsUpdate = true;
   };
+  ctl.setRoot = r => { if (r) { root = r; ctl.atRest = false; } };   // the HD swap (or back): re-parent the packets and use this model's world matrix
   ctl.restWorld = (i, out) => out.copy(rest[i]).applyMatrix4(root.matrixWorld);
 
   // the jar on the product card starts with the light packets; the full-detail ones are swapped in as soon as the jar opens
@@ -421,9 +423,11 @@ function createIngredientsDirector(L) {
 
   // where the gummies float to (screen px): a spiral cloud between the cap (top) and the bottle (bottom)
   function layout(vw, vh, mobile, mouthY) {
-    // between the cap (top) and the bottle's mouth (with a clear gap above it, so no gummy touches the bottle)
-    const top = vh * 0.19, bottom = Math.max(top + vh * 0.22, Math.min(vh * 0.62, mouthY - vh * 0.08));
-    const cx = vw * 0.5, cy = (top + bottom) / 2, ry = (bottom - top) / 2, rx = mobile ? vw * 0.42 : Math.min(vw * 0.28, vh * 0.55);
+    // between the cap (top) and the bottle's mouth (with a clear gap above it, so no gummy touches the bottle or cap)
+    const top = vh * (mobile ? 0.23 : 0.24);
+    const bottom = Math.max(top + vh * 0.18, Math.min(vh * 0.55, mouthY - vh * 0.08));
+    const cx = vw * 0.5, cy = (top + bottom) / 2, ry = (bottom - top) / 2;
+    const rx = mobile ? vw * 0.38 : Math.min(vw * 0.27, vh * 0.52);
     return CLOUD.map(c => ({ x: cx + rx * c.u, y: cy + ry * c.v, r: c.r, th: c.th, z: c.z }));
   }
   // which gummy carries which callout: items 0-3 go to the right column, 4-7 to the left; on each side the outer gummies are picked
