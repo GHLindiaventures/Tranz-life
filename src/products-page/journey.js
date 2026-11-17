@@ -445,9 +445,9 @@ function initProductJourney() {
   const ING_CFG = {
     gummies: { len: 5.4, letters: 0.18, open0: 0.18, open1: 0.48, frame: 0.08, make: createIngredientsDirector },
     liver: { len: 5.4, letters: 0.18, open0: 0.18, open1: 0.48, frame: 0.08, make: createLiverDirector },
-    energy:  { len: 5.4, letters: 0.18, open0: 0.18, open1: 0.48, frame: 0.08, make: (L, id) => createLiquidDirector(L, id) },
-    reviva:  { len: 5.4, letters: 0.18, open0: 0.18, open1: 0.48, frame: 0.08, make: (L, id) => createRollonDirector(L, id) },
-    rollon:  { len: 5.4, letters: 0.18, open0: 0.18, open1: 0.48, frame: 0.08, make: (L, id) => createRollonDirector(L, id) },
+    energy: { len: 5.4, letters: 0.18, open0: 0.18, open1: 0.48, frame: 0.08, make: (L, id) => createLiquidDirector(L, id) },
+    reviva: { len: 5.4, letters: 0.18, open0: 0.18, open1: 0.48, frame: 0.08, make: (L, id) => createRollonDirector(L, id) },
+    rollon: { len: 5.4, letters: 0.18, open0: 0.18, open1: 0.48, frame: 0.08, make: (L, id) => createRollonDirector(L, id) },
   };
   const ingCfg = () => (ov.idx >= 0 && PRODUCTS[ov.idx] && ING_CFG[PRODUCTS[ov.idx].id]) || null;
   // the run-up (flip, outline in, outline out) in screens. On a short section (small screens) the highlights moment comes sooner (it starts
@@ -563,7 +563,7 @@ function initProductJourney() {
     if (ov.state === 'open') { if (i !== ov.idx) { ov.pending = i; closeOverlay(); } return; }
     buildOverlay(); if (!ov.el) return;
     ov.idx = i; ov.returnFocus = itemEls[i];
-    { const g = OV_BG[PRODUCTS[i].id] || OV_BG.gummies; if (ov.smoke) { const hc = ov.smoke.setColors(g); ov.el.style.setProperty('--hn', hc.name); ov.el.style.setProperty('--hn-shade', hc.shade); } ov.el.style.setProperty('--ov-a', g[0]); ov.el.style.setProperty('--ov-b', g[1]); ov.el.style.setProperty('--ov-c', g[2]); [['--ov-a', g[0]], ['--ov-b', g[1]], ['--ov-c', g[2]]].forEach(([k, v]) => document.documentElement.style.setProperty(k, v)); ov.handed = null; }
+    { const g = OV_BG[PRODUCTS[i].id] || OV_BG.gummies; if (ov.smoke) { const hc = ov.smoke.setColors(g); ov.el.style.setProperty('--hn', hc.name); ov.el.style.setProperty('--hn-shade', hc.shade); } ov.el.style.setProperty('--ov-a', g[0]); ov.el.style.setProperty('--ov-b', g[1]); ov.el.style.setProperty('--ov-c', g[2]);[['--ov-a', g[0]], ['--ov-b', g[1]], ['--ov-c', g[2]]].forEach(([k, v]) => document.documentElement.style.setProperty(k, v)); ov.handed = null; }
     populateShowcaseDOM(ov.sec, i);
     if (ov.heroName) {
       const srEl = itemEls[i] && itemEls[i].querySelector('.sr'), nm = (srEl ? srEl.textContent : PRODUCTS[i].short || '').trim();
