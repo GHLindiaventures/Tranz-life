@@ -119,8 +119,7 @@ function settlePile(n, quats, sizes) {
 
 function attachGummies(rootArg) {
   let root = rootArg;   // the model the packets live in; it changes when the HD model is swapped in (ctl.setRoot), and every matrix below must use the CURRENT one
-  const ctl = { ready: false, mesh: null, n: GUMMY_COUNT, world: new Float32Array(GUMMY_COUNT * 3), colors: [], arrived: new Float32Array(GUMMY_COUNT), atRest: true,
-    heroQ: new THREE.Quaternion(), heroS: 0 };   // heroQ / heroS: the first poured packet's world turn and width (the hero packet takes over from it)
+  const ctl = { ready: false, mesh: null, n: GUMMY_COUNT, world: new Float32Array(GUMMY_COUNT * 3), colors: [], arrived: new Float32Array(GUMMY_COUNT), atRest: true };
   const push = new Float32Array(GUMMY_COUNT * 3);   // how far the pointer has pushed each floating gummy (eased)
   const R = rng(5);
   const restQ = [], ph = [], wy = [], order = [], size = [], axes = [], arcK = [], eu = new THREE.Euler();
@@ -177,8 +176,7 @@ function attachGummies(rootArg) {
       const tau = rank[i] < 0 ? 0 : clamp((open - T0 - order[i] * SPAN) / DUR);   // (order has its own jitter)
       if (tau <= 0) {
         let sc0 = size[i];
-        if (rank[i] === 0) { ctl.heroQ.copy(tmpQ).multiply(restQ[i]); ctl.heroS = size[i] * ws.x; P.copy(rest[i]).applyMatrix4(rm); ctl.world[i * 3] = P.x; ctl.world[i * 3 + 1] = P.y; ctl.world[i * 3 + 2] = P.z; }
-        if (rank[i] === 0 && heroHideK > 0.002) sc0 = 0;   // the hero packet has taken its place
+        if (rank[i] === 0 && heroHideK > 0) sc0 *= Math.max(0, 1 - heroHideK);
         m4.compose(rest[i], restQ[i], sc.set(sc0, sc0, sc0));
         ctl.mesh.setMatrixAt(i, m4);
         ctl.arrived[i] = 0;
@@ -215,8 +213,9 @@ function attachGummies(rootArg) {
       pl.copy(P).applyMatrix4(rinv);
       const tumble = (1 - easeOut(u2)) * (4 + 5 * wy[i]) + (arrived ? time * 0.25 * wy[i] : 0) + kick * 2.2;   // each one tumbles about its own axis
       q.setFromAxisAngle(axes[i], tumble).multiply(restQ[i]);
-      if (rank[i] === 0) { ctl.heroQ.copy(tmpQ).multiply(q); ctl.heroS = scale * ws.x; }   // this packet's world turn and width: the hero packet starts exactly here
-      if (rank[i] === 0 && heroHideK > 0.002) scale = 0;   // the hero packet has taken its place (same pose, so no pop)
+      if (rank[i] === 0 && heroHideK > 0) {
+        scale *= Math.max(0, 1 - heroHideK);
+      }
       m4.compose(pl, q, sc.set(scale, scale, scale));
       if (fullM) { fullM.setMatrixAt(nFull++, m4); ctl.mesh.setMatrixAt(i, ZERO); }   // out of the jar: full detail
       else ctl.mesh.setMatrixAt(i, m4);
@@ -412,8 +411,6 @@ function createIngredientsDirector(L) {
   const curCamPos = new THREE.Vector3();
   const curCamLook = new THREE.Vector3();
   const heroPos = new THREE.Vector3();
-  const heroOrigin0 = new THREE.Vector3(), heroStartQ = new THREE.Quaternion(), heroTargetQ = new THREE.Quaternion(), heroEuler = new THREE.Euler();
-  const qFlat = new THREE.Quaternion().setFromEuler(new THREE.Euler(Math.PI / 2, 0, 0));   // loadGeo() lays the packet flat with rotateX(PI/2)
   const lookZoom = new THREE.Vector3();
   const posZoom = new THREE.Vector3();
   const gClose = new THREE.Vector3();
@@ -443,10 +440,11 @@ function createIngredientsDirector(L) {
 
   // where the gummies float to (screen px): a spiral cloud between the cap (top) and the bottle (bottom)
   function layout(vw, vh, mobile, mouthY) {
-    // between the cap (top) and the bottle's mouth (with a clear gap above it, so no gummy touches the bottle)
-    // (top: clear of the lifted cap, which rests at ~0.15 vh; bottom: clear of the bottle's rim, so no packet ever overlaps the bottle or the cap)
-    const top = vh * (mobile ? 0.24 : 0.25), bottom = Math.max(top + vh * 0.2, Math.min(vh * 0.62, mouthY - vh * 0.1));
-    const cx = vw * 0.5, cy = (top + bottom) / 2, ry = (bottom - top) / 2, rx = mobile ? vw * 0.42 : Math.min(vw * 0.28, vh * 0.55);
+    // between the cap (top) and the bottle's mouth (with a clear gap above it, so no gummy touches the bottle or cap)
+    const top = vh * (mobile ? 0.23 : 0.24);
+    const bottom = Math.max(top + vh * 0.18, Math.min(vh * 0.55, mouthY - vh * 0.08));
+    const cx = vw * 0.5, cy = (top + bottom) / 2, ry = (bottom - top) / 2;
+    const rx = mobile ? vw * 0.38 : Math.min(vw * 0.27, vh * 0.52);
     return CLOUD.map(c => ({ x: cx + rx * c.u, y: cy + ry * c.v, r: c.r, th: c.th, z: c.z }));
   }
   // which gummy carries which callout: items 0-3 go to the right column, 4-7 to the left; on each side the outer gummies are picked
@@ -570,17 +568,10 @@ function createIngredientsDirector(L) {
         const targetHeroZ = 0.35;
 
         const kEase = sm(zoomK);
-        // START POSE = the jar packet itself (same turn, same width, same spot), so the swap is invisible and the packet that
-        // floated out of the jar is the one that flies in, turns to face us and tears open
-        const st = heroPacket.state, nk = st.norm || 1 / 1.9;
-        heroStartQ.copy(ctl.heroQ).multiply(qFlat);                  // normalised (flat) space -> the model's own space
-        const sStart = ctl.heroS * nk;
-        if (st.center) heroOrigin0.copy(st.center).multiplyScalar(sStart).applyQuaternion(heroStartQ); else heroOrigin0.set(0, 0, 0);
-        heroOrigin0.negate().add(cloudW);                            // where the model's origin sits so its centre is on the jar packet
         heroPos.set(
-          lerp(heroOrigin0.x, targetHeroX, kEase),
-          lerp(heroOrigin0.y, targetHeroY, kEase),
-          lerp(heroOrigin0.z, targetHeroZ, kEase)
+          lerp(cloudW.x, targetHeroX, kEase),
+          lerp(cloudW.y, targetHeroY, kEase),
+          lerp(cloudW.z, targetHeroZ, kEase)
         );
 
         // Freeze all idle bobbing during close-up / ingredient inspection so gummy is 100% rock-solid motionless
@@ -590,15 +581,15 @@ function createIngredientsDirector(L) {
 
         const rotYIdle = (zoomK > 0.85 && !isClose) ? Math.sin(o.time * 0.8) * 0.03 : 0;
         const swing = Math.sin(exitK * Math.PI);          // the exit: only plays after gummy is back inside
-        heroTargetQ.setFromEuler(heroEuler.set(
-          0.08 + swing * 0.10,
-          -0.18 + rotYIdle - swing * 0.55,
-          0.04 + swing * 0.12
-        ));
-        heroPacket.root.quaternion.copy(heroStartQ).slerp(heroTargetQ, kEase);   // turns from the floating packet's own tumble to facing us
+        heroPacket.root.rotation.set(
+          lerp(0, 0.08, kEase) + swing * 0.10,
+          lerp(0, -0.18 + rotYIdle, kEase) - swing * 0.55,
+          lerp(0, 0.04, kEase) + swing * 0.12
+        );
 
+        const baseWorldScale = 0.28;
         const targetWorldScale = o.mobile ? 0.35 : 0.38;
-        const curScale = lerp(sStart, targetWorldScale, kEase) * (1 + Math.sin(exitK * Math.PI) * 0.06);
+        const curScale = lerp(baseWorldScale, targetWorldScale, kEase) * (1 + Math.sin(exitK * Math.PI) * 0.06);
         heroPacket.root.scale.setScalar(curScale);
 
         heroPacket.updateOpen(tearK, gummyK);

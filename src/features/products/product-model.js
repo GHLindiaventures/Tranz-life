@@ -10,6 +10,7 @@ import decalLiver from '../../assets/products/decal-liver.webp';
 import decalEnergy from '../../assets/products/decal-energy.webp';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { attachGummies } from './gummy-pour.js';
+import { applyJarGlass, applyBottleGlass, disposeGlass } from './glass.js';
 import liverGlbUrl from '../../assets/products/liver-booster.glb?url';
 import cycleReliefGlbUrl from '../../assets/products/cyclerelief.glb?url';
 import lungBoosterGlbUrl from '../../assets/products/lungbooster.glb?url';
@@ -77,7 +78,7 @@ function slantCut(mat, y0, k){
 
 // Liquid inside an opaque frosted bottle, faked in the material: below a (gently sloshing) level the surface is tinted and
 // shaded darker toward the base, with a soft bright meniscus line on the level. `fill` is in the model's own units (y).
-function liquidFill(mat, { fill = .29, tint = [.62, .85, .22], amount = .75 } = {}){
+function liquidFill(mat, { fill = .29, tint = [.70, .90, .26], amount = .68 } = {}){
   const uTime = { value:0 }, uFill = { value:fill };   // uFill: the liquid level in the model's own units (the Liver Booster lowers it as it pours)
   mat.onBeforeCompile = sh => {
     sh.uniforms.uTime = uTime; sh.uniforms.uFill = uFill;
@@ -95,10 +96,16 @@ void main() {`)
       float inLiq = 1. - smoothstep(-.003, .003, liqD);
       float depthShade = smoothstep(0., .9, -liqD);
       vec3 liqCol = vec3(${tint[0].toFixed(3)}, ${tint[1].toFixed(3)}, ${tint[2].toFixed(3)});
-      diffuseColor.rgb = mix(diffuseColor.rgb, diffuseColor.rgb*liqCol*1.25, inLiq*${amount.toFixed(3)});
-      diffuseColor.rgb *= 1. - .3*depthShade*inLiq;
-      diffuseColor.rgb = mix(diffuseColor.rgb*1.08 + .03, diffuseColor.rgb, inLiq);   // the air above the liquid is lighter
-      diffuseColor.rgb += vec3(.20, .26, .08)*exp(-liqD*liqD/.00006)*.9;`);
+      diffuseColor.rgb = mix(diffuseColor.rgb, diffuseColor.rgb*liqCol*1.22, inLiq*${amount.toFixed(3)});
+      diffuseColor.rgb *= 1. - .22*depthShade*inLiq;
+      diffuseColor.rgb = mix(diffuseColor.rgb*1.05 + vec3(.03, .04, .01), diffuseColor.rgb, inLiq);   // frosted air above
+      diffuseColor.rgb += vec3(.20, .26, .08)*exp(-liqD*liqD/.00006)*.9;
+
+      // Golden radiant illumination for the liver emblem at the bottom front
+      if (vLiqPos.z > 0.12 && vLiqPos.y > -0.76 && vLiqPos.y < -0.42) {
+        float goldMask = smoothstep(0.46, 0.76, diffuseColor.r) * smoothstep(0.40, 0.70, diffuseColor.g);
+        diffuseColor.rgb += vec3(0.36, 0.30, 0.08) * goldMask;
+      }`);
   };
   mat.customProgramCacheKey = () => 'liquid' + fill + ':' + amount;
   mat.userData.uTime = uTime; mat.userData.uFill = uFill;
@@ -209,12 +216,27 @@ function revivaRollOn(){
   const hous = [V2(0,3.3),V2(.33,3.3),V2(.33,3.36),V2(.3,3.4),V2(.29,3.55),V2(.26,3.6),V2(.19,3.62),V2(0,3.62)];
   G.add(new THREE.Mesh(new THREE.LatheGeometry(hous, 64), new THREE.MeshPhysicalMaterial({ color:lin('#f4f4f2'), roughness:.35, clearcoat:.4 })));
   const ball = new THREE.Mesh(new THREE.SphereGeometry(.2, 40, 28), new THREE.MeshStandardMaterial({ color:lin('#d9dcdf'), metalness:1, roughness:.12, envMapIntensity:1.6 }));
+  ball.name = 'Roller_Ball';
   ball.position.y = 3.62; G.add(ball);
   // dark green label all round, printed front from the design
   const labelProf = [V2(.5,.27),V2(.5,2.5)];
   G.add(new THREE.Mesh(new THREE.LatheGeometry(band(labelProf, .27, 2.5, 1.008, 2), 96), new THREE.MeshStandardMaterial({ color:lin('#1d4527'), roughness:.55, envMapIntensity:.5 })));
   G.add(labelBand(labelProf, .27, 2.5, 2.24, 1.016, image(decalReviva)));
-  return { G, h:3.82 };
+
+  // Sleek black threaded cap on its own pivot for the unscrew animation
+  const capPivot = new THREE.Group();
+  capPivot.name = 'Jar_Cap_Pivot';
+  const capProf = [V2(0,2.98),V2(.48,2.98),V2(.485,3.02),V2(.485,4.0),V2(.46,4.08),V2(.4,4.12),V2(0,4.13)];
+  const capMesh = new THREE.Mesh(new THREE.LatheGeometry(capProf, 72), new THREE.MeshPhysicalMaterial({ color:lin('#141414'), roughness:.2, clearcoat:1, clearcoatRoughness:.1, envMapIntensity:1.2 }));
+  capMesh.name = 'Jar_Cap';
+  capPivot.add(capMesh);
+  G.add(capPivot);
+
+  G.userData.capPivot = capPivot;
+  G.userData.capRest = capPivot.position.clone();
+  G.userData.ball = ball;
+  G.userData.modelRoot = G;
+  return { G, h:4.13 };
 }
 
 function liverBottle(){
@@ -284,6 +306,7 @@ const HD_LOADERS = {
 
 function disposeObject(obj) {
   if (!obj) return;
+  disposeGlass(obj);
   obj.traverse(n => {
     if (n.isMesh) {
       if (n.geometry) n.geometry.dispose();
@@ -307,12 +330,76 @@ function applyModelStyling(m, baseH, holder) {
   m.scale.setScalar(k); m.position.set(-mid.x * k, -box.min.y * k, -mid.z * k);
   const wrap = new THREE.Group(); wrap.add(m);
 
-  // glass (KHR_materials_transmission) is not drawn by this version of three.js and comes out solid white: show it as
-  // clear, lightly tinted glass that lets the product behind it through
-  m.traverse(n => { if (n.isMesh && n.material && n.material.transmission > 0) { const gm = n.material = n.material.clone(); gm.transmission = 0; gm.transparent = true; gm.opacity = .5; gm.depthWrite = false; gm.envMapIntensity = 1.6; gm.roughness = Math.min(gm.roughness, .12); n.renderOrder = 2;
-    // the Lung Booster jar is glossier: a hard clear-coat on top and brighter reflections (the more reflective glass reads as thicker)
-    if (n.name === 'Jar_Glass'){ gm.color = new THREE.Color(0x24382d); gm.roughness = 0; gm.metalness = 0; gm.clearcoat = 1; gm.clearcoatRoughness = 0; gm.reflectivity = 1; gm.envMapIntensity = 0.9; gm.opacity = .24; }
-  } });
+  // Glass rendering: apply realistic cheap glass to the Lung Booster jar (Jar_Glass & Jar_Neck)
+  if (m.getObjectByName('Jar_Glass')) {
+    applyJarGlass(m);
+
+    // Clean diagonal slant cut on Jar_Label to match brand design (removing jagged scan tear)
+    const label = m.getObjectByName('Jar_Label');
+    if (label && label.material) {
+      const lm = label.material = label.material.clone();
+      lm.roughness = 0.85;
+      lm.metalness = 0.0;
+      lm.envMapIntensity = 0.45;
+      lm.onBeforeCompile = sh => {
+        sh.vertexShader = sh.vertexShader.replace('void main() {', 'varying vec3 vObjPos;\nvoid main() {\n  vObjPos = position;');
+        sh.fragmentShader = sh.fragmentShader
+          .replace('void main() {', 'varying vec3 vObjPos;\nvoid main() {')
+          .replace('#include <map_fragment>', `#include <map_fragment>
+          float cutLine = -0.27 + 0.40 * vObjPos.x - 0.15 * vObjPos.x * vObjPos.x;
+          float distToCut = vObjPos.y - cutLine;
+          if (distToCut < 0.0) discard;
+          diffuseColor.rgb += vec3(0.14, 0.13, 0.11) * exp(-distToCut * distToCut / 0.00012);`);
+      };
+      lm.customProgramCacheKey = () => 'jar_label_slant_v2';
+      lm.needsUpdate = true;
+    }
+
+    // Kraft / eco pressed plant-fiber cap styling with top leaf engraving
+    const cap = m.getObjectByName('Jar_Cap');
+    if (cap && cap.material) {
+      const cm = cap.material = cap.material.clone();
+      const kt = kraft();
+      const leafTex = capLeaf();
+      cm.map = kt;
+      cm.roughness = 0.85;
+      cm.metalness = 0.0;
+      cm.envMapIntensity = 0.45;
+      cm.color.set(lin('#dfcbb4'));
+
+      cm.onBeforeCompile = sh => {
+        sh.uniforms.uLeafMap = { value: leafTex };
+        sh.vertexShader = sh.vertexShader.replace('void main() {', 'varying vec3 vObjPos;\nvoid main() {\n  vObjPos = position;');
+        sh.fragmentShader = sh.fragmentShader
+          .replace('void main() {', 'varying vec3 vObjPos;\nuniform sampler2D uLeafMap;\nvoid main() {')
+          .replace('#include <map_fragment>', `#include <map_fragment>
+          if (vObjPos.y > 0.94) {
+            vec2 leafUV = vec2(vObjPos.x, -vObjPos.z) / 0.74 + 0.5;
+            if (leafUV.x >= 0.0 && leafUV.x <= 1.0 && leafUV.y >= 0.0 && leafUV.y <= 1.0) {
+              float leafVal = texture2D(uLeafMap, leafUV).r;
+              float leafLine = smoothstep(0.40, 0.48, leafVal);
+              diffuseColor.rgb = mix(diffuseColor.rgb * 0.68, diffuseColor.rgb, leafLine);
+            }
+          }`);
+      };
+      cm.customProgramCacheKey = () => 'jar_cap_leaf_engrave';
+      cm.needsUpdate = true;
+    }
+  } else {
+    // Other models with transmission materials (energy, cyclerelief) keep fallback styling
+    m.traverse(n => {
+      if (n.isMesh && n.material && n.material.transmission > 0) {
+        const gm = n.material = n.material.clone();
+        gm.transmission = 0;
+        gm.transparent = true;
+        gm.opacity = .5;
+        gm.depthWrite = false;
+        gm.envMapIntensity = 1.6;
+        gm.roughness = Math.min(gm.roughness, .12);
+        n.renderOrder = 2;
+      }
+    });
+  }
 
   // the CycleRelief scan's texture atlas is a patchwork: its normal map and metal/roughness map carry the seams between the patches,
   // which read as cracks and scratches on the cap and label. Drop those maps (the colour map is clean) and set plain values.
@@ -324,7 +411,21 @@ function applyModelStyling(m, baseH, holder) {
     cm.needsUpdate = true; } });
 
   // the Liver Booster's bottle holds liquid (its cap shares the material, so the bottle gets its own copy)
-  m.traverse(n => { if (n.isMesh && n.name === 'Bottle' && n.material && n.material.map){ const lm = liquidFill(n.material = n.material.clone()); n.onBeforeRender = () => { lm.userData.uTime.value = performance.now()/1000; }; } });
+  m.traverse(n => {
+    if (n.isMesh && n.name === 'Bottle' && n.material && n.material.map) {
+      const bm = n.material = n.material.clone();
+      bm.metalness = 0.0;
+      bm.metalnessMap = null;
+      bm.roughness = 0.38; // Silky frosted glass
+      const lm = liquidFill(bm);
+      n.onBeforeRender = () => { lm.userData.uTime.value = performance.now() / 1000; };
+    }
+  });
+
+  // Glass shell: apply realistic glass sheen to the Liver Booster bottle
+  if (m.getObjectByName('Bottle') && m.getObjectByName('Cap')) {
+    applyBottleGlass(m);
+  }
 
   // Anisotropy = 8 and mipmaps kept on for all textures on the model
   wrap.traverse(n => {
@@ -364,13 +465,42 @@ function bindModelHooks(m, holder) {
     if (!ud.gummies) {
       ud.gummies = attachGummies(m);
     } else {
+      if (ud.gummies.setRoot) ud.gummies.setRoot(m);
       const gm = ud.gummies.mesh;
       if (gm && gm.parent !== m) {
         if (gm.parent) gm.parent.remove(gm);
         m.add(gm);
       }
-      if (ud.gummies.setRoot) ud.gummies.setRoot(m);   // the packets' matrices follow the model they now live in (HD or grid), not the first one
     }
+  }
+  // Roll-on products (cyclerelief / rollon): cap pivot and roller ball for rollon-director
+  const isRoller = !!m.getObjectByName('Roller_Body');
+  if (isRoller){
+    const ballMesh = m.getObjectByName('Roller_Ball');
+    if (ballMesh && ballMesh.geometry) {
+      ballMesh.geometry.computeBoundingBox();
+      const ballCenter = new THREE.Vector3();
+      ballMesh.geometry.boundingBox.getCenter(ballCenter);
+      ballMesh.geometry.center();
+      ballMesh.position.copy(ballCenter);
+      if (ballMesh.material) {
+        ballMesh.material.metalness = 1.0;
+        ballMesh.material.roughness = 0.10;
+        ballMesh.material.envMapIntensity = 1.8;
+        ballMesh.material.needsUpdate = true;
+      }
+    }
+    const setUd = target => {
+      if (!target) return;
+      if (pivot) {
+        target.userData.capPivot = pivot;
+        target.userData.capRest = pivot.position.clone();
+      }
+      if (ballMesh) target.userData.ball = ballMesh;
+      target.userData.modelRoot = m;
+    };
+    setUd(holder);
+    setUd(holder.parent);
   }
   // the Liver Booster's cap is the separate node `Cap` (on the model's own axis); its neck thread is left-handed, so it turns clockwise
   const cap = m.getObjectByName('Cap');
@@ -500,6 +630,12 @@ function makeProduct(p, i, o = {}){
   G.position.y = -h/2;
   const g = new THREE.Group(); g.add(G);
   g.userData = { index:i, h };
+  if (G.userData.capPivot) {
+    g.userData.capPivot = G.userData.capPivot;
+    g.userData.capRest = G.userData.capRest;
+    g.userData.ball = G.userData.ball;
+    g.userData.modelRoot = G.userData.modelRoot;
+  }
   g.traverse(m => { m.userData.product = i; });
   return g;
 }

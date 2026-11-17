@@ -69,6 +69,13 @@ const DETAILS = {
       'Every woman’s journey is unique, and every menstrual cycle deserves care, comfort and understanding. CycleRelief is part of our commitment to convenient wellness solutions designed around the evolving needs of women.',
       'Some women experience discomfort, cramps, lower back pain, bloating or fatigue during their periods. CycleRelief is developed with an emphasis on comfort, convenience and individual care throughout the cycle.'
     ],
+    listTitle: 'Key Botanical Actives',
+    list: [
+      ['Rosemary Essential Oil (Salvia rosmarinus)', 'Rich in 1,8-cineole and camphor to support healthy micro-circulation and gently ease localized muscular tension.'],
+      ['Damask Rose Extract (Rosa damascena)', 'Delicate floral essence containing geraniol and citronellol for soothing emotional balance and nervous system comfort.'],
+      ['Peppermint Cooling Oil (Mentha piperita)', 'Natural menthol triggers TRPM8 sensory cooling to provide instant, refreshing comfort for abdominal tightness.'],
+      ['100% Botanical Carrier Complex', 'Nourishing lightweight plant lipids providing effortless roller glide and fast absorption without greasy residue.']
+    ],
     highlightsTitle: 'Designed with women in mind',
     highlights: [
       ['A focus on comfort', 'Positioned as a women’s wellness solution for comfort and well-being during menstruation.'],
@@ -76,14 +83,32 @@ const DETAILS = {
       ['Thoughtful innovation', 'Scientific understanding, formulation expertise and nature-inspired innovation combined.'],
       ['Quality-conscious development', 'Responsible formulation, appropriate testing and clear information for informed choices.']
     ],
-    listTitle: 'Our commitment to women’s wellness',
-    list: [
-      ['Awareness', 'Promoting awareness of menstrual health and self-care.'],
-      ['Informed choices', 'Supporting informed decisions about period-related discomfort.'],
-      ['Quality', 'Prioritising product quality and responsible innovation.'],
-      ['Professional guidance', 'Encouraging medical advice when symptoms are severe, unusual or persistent.']
-    ],
     note: 'Use as directed on the label. Please consult a healthcare professional if your symptoms are severe, unusual or persistent.'
+  },
+
+  reviva: {
+    eyebrow: 'Botanical Vitality · Targeted Roll-On Ritual',
+    title: 'Reviva™ Vitality & Comfort Roll-On',
+    tagline: 'Vitality in Every Touch. Botanical Care in Every Roll.',
+    intro: [
+      'TranzLife Reviva™ is formulated with pure Dill and Eucalyptus essential oils in the Spirit of Organics, crafted for daily vitality, micro-circulation, and nerve comfort.',
+      'Applied with a smooth, cooling massage roll-on around the navel to stimulate vitality reflex points as part of your morning wellness routine.'
+    ],
+    highlightsTitle: 'Why choose Reviva™ Roll-On?',
+    highlights: [
+      ['Convenient rollerball format', 'Mess-free, targeted topical application anytime, anywhere.'],
+      ['100% Pure Essential Oils', 'Carefully distilled Dill and Eucalyptus oils with zero synthetic fragrances.'],
+      ['Fast-absorbing & non-greasy', 'Penetrates quickly leaving skin nourished and comfortable.'],
+      ['Daily morning ritual', 'Effortlessly integrates into your everyday wellness lifestyle.']
+    ],
+    listTitle: 'Botanical Active Essentials',
+    list: [
+      ['Dill Essential Oil (E.O)', 'Pure botanical extract traditionally valued for micro-circulation and metabolic calm.'],
+      ['100% Plant-Based Carrier', 'Lightweight, nourishing plant lipids ensuring rapid skin absorption without greasy residue.'],
+      ['Eucalyptus Essential Oil', 'Provides a refreshing aromatic profile with a soothing, cooling sensory effect.'],
+      ['Targeted Reflex Ritual', 'Designed for gentle circular application around the navel to stimulate wellness pathways.']
+    ],
+    note: 'For external use only. Roll gently around the belly button every morning. This wellness product is not intended to treat, cure, or prevent disease. Consult a healthcare practitioner for personal medical conditions.'
   },
 
   liver: {

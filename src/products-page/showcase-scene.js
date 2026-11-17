@@ -577,15 +577,6 @@ function updateShowcaseDOM(container, p, tTime = 0) {
     }
     const on = t > 0.15; if (el.classList.contains('in') !== on) el.classList.toggle('in', on);
   });
-  // white ribbons behind the details: each draws in, then draws away, one after another (from the old display)
-  s.ribbons = s.ribbons || [...container.querySelectorAll('.sc-ribbons path')].map(path => ({ path, len: path.getTotalLength() }));
-  // they follow the scroll itself (not how far the page has fallen), so they keep drawing through the stops too
-  const bt = container._beats, ru = bt ? clamp(((container._r || 0) - bt.r0) / Math.max(1, bt.hlFrom - bt.r0), 0, 1) : clamp((p - 0.2) / 0.38, 0, 1);
-  s.ribbons.forEach((a, k) => {
-    const st = k * 0.3, hd = clamp((ru - st) / 0.26, 0, 1), tl = clamp((ru - st - 0.2) / 0.26, 0, 1);
-    put(a.path, 'strokeDasharray', ((hd - tl) * a.len).toFixed(0) + ' ' + a.len.toFixed(0));
-    put(a.path, 'strokeDashoffset', (-tl * a.len).toFixed(0));
-  });
   // big outlined names: the letters come in in reading order (first letter first), each sliding in from the left
   // and the whole name drifts sideways with the scroll (the first one right, the second one left), so it keeps moving
   // through the stops too
