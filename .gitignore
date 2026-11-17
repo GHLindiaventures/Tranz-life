@@ -20,3 +20,6 @@ Thumbs.db
 .vscode/
 .claude/
 __pycache__/
+
+# raw hero video sources (28 MB); the web versions are in public/videos/hero
+scripts/source/videos/

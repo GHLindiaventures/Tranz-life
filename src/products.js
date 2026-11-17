@@ -7,6 +7,7 @@ import { state, thumbs } from './app/state.js';
 import { initSmooth } from './app/smooth-scroll.js';
 import { SHOTS } from './features/products/product-images.js';
 import './features/navigation/dropdown.js';
+import './components/page-scrollbar.js';
 import { initGrain } from './products-page/grain.js';
 import { initProductJourney } from './products-page/journey.js';
 import { initStatementPage } from './products-page/statement-page.js';

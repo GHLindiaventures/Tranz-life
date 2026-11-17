@@ -1,6 +1,6 @@
 /* ==========================================================================
    Home page: "Root to Ritual". One scroll from dawn to night:
-   hero (dawn) → Roots to Helix (forest night) → A Day with TranzLife (sky follows the hour) → Your Ritual (night)
+   hero (four films) → Roots to Helix (forest night) → A Day with TranzLife (sky follows the hour) → Your Ritual (night)
    → Proof. Colour tokens: --amber is the one warm accent, used only for actions.
    ========================================================================== */
 :root { --amber: #e8a93a; --amber-ink: #16301a; --amber-hi: #f0b445; }
@@ -32,78 +32,110 @@
 }
 .loader-roots path:nth-child(2n) { stroke: #b88a2c; }
 
-/* ---------- hero (dawn) ---------- */
-.hero__title { margin-bottom: 50vh; }
-.hero__title .ln:first-child { color: var(--forest); }
-.hero__title .ln:last-child { color: #2f6a33; }
-.hero__offer {
-  position: absolute; z-index: 23; left: clamp(20px, 5vw, 80px); bottom: clamp(28px, 7vh, 72px); max-width: 430px;
-  padding: 22px 24px; border-radius: 24px; background: rgba(248, 245, 238, .8); color: var(--ink);
-  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
-  border: 1px solid rgba(255, 255, 255, .55); box-shadow: 0 24px 50px -28px rgba(20, 52, 26, .55);
-}
-.hero__lede { margin: 0; font-size: 17px; font-weight: 500; line-height: 1.45; }
-.hero__ctas { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
-.hero__facts {
-  position: absolute; z-index: 23; right: clamp(20px, 5vw, 80px); bottom: clamp(36px, 8vh, 80px); margin: 0;
-  display: flex; align-items: center; gap: 10px; padding: 10px 18px; border-radius: 999px;
-  background: rgba(248, 245, 238, .78); color: var(--forest); font-size: 12.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
-  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); animation: lfade 1s 1.2s var(--ease) backwards; /* backwards: the scroll fade (hero-scroll.js) takes over afterwards */
-}
-.hero__facts b { font-family: var(--f-display); font-size: 18px; font-stretch: 75%; letter-spacing: 0; }
-.hero__facts i { width: 4px; height: 4px; border-radius: 50%; background: var(--amber); }
-.hero__cue {
-  position: absolute; z-index: 23; left: 50%; bottom: 18px; width: 26px; height: 42px; margin-left: -13px;
-  border: 2px solid rgba(31, 68, 35, .5); border-radius: 14px; animation: lfade 1s 1.6s var(--ease) backwards;
-}
-/* the hero's lower edge fades into the colour the roots section starts from, so the rocks never end on a hard line */
-.stage::after { content: ""; position: absolute; z-index: 22; left: 0; right: 0; bottom: 0; height: 18vh; pointer-events: none; background: linear-gradient(180deg, rgba(167, 189, 150, 0) 0%, #a7bd96 100%); }
-.hero__cue span { position: absolute; left: 50%; top: 8px; width: 4px; height: 8px; margin-left: -2px; border-radius: 2px; background: var(--forest); animation: cue 1.8s ease-in-out infinite; }
-@keyframes cue { 0% { transform: translateY(0); opacity: 1; } 70% { transform: translateY(12px); opacity: 0; } 100% { opacity: 0; } }
 
-/* ---------- Roots to Helix (forest night) ---------- */
-/* The hand-off from the hero's light green into the night is part of the section's own background (under the roots
-   canvas), so the roots are visible from the very first pixel the section shows; it scrolls away as the pin settles. */
-.roots {
-  height: 260vh; color: #eef3e8;
-  background: linear-gradient(180deg, #a7bd96 0, #8fa982 max(6vh, 50px), #5a7f5b max(13vh, 110px), #2a5132 max(20vh, 170px), #11291a max(27vh, 225px), #0b1f13 max(32vh, 270px)) top / 100% 100% no-repeat, #0b1f13;
-}
+/* ---------- Our Roots: "Root Map" (features/story/root-map.js) ----------
+   Forest night, six roots, one per moment of the day; the canvas paints the sky (night, then dawn) under them.
+   Set by JS on each .rm-root: --x/--y (tip), --tv (tip shown), --lvl (active), --dim (another root is active). */
+.roots { height: 200vh; color: #eef3e8; background: #0b1f13; }
 .roots-pin { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; }
-/* the forest glow behind the helix; masked out at the top so the section starts on exactly the hero's colour (no seam) */
-.roots-pin::before {
-  content: ""; position: absolute; inset: 0; pointer-events: none;
-  background: radial-gradient(ellipse 80% 60% at 50% 42%, rgba(23, 58, 34, .95) 0%, rgba(14, 36, 22, .55) 55%, rgba(7, 21, 13, 0) 100%);
-  -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 max(30vh, 240px)); mask-image: linear-gradient(180deg, transparent 0, #000 max(30vh, 240px));
-}
 .roots-canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
-.roots-logo {
-  position: absolute; left: 50%; top: 44%; width: clamp(120px, 12vw, 180px); opacity: 0; pointer-events: none;
-  transform: translate(-50%, -50%) scale(.75); filter: drop-shadow(0 0 34px rgba(231, 198, 128, .55));
+
+.rm-roots { position: absolute; inset: 0; margin: 0; padding: 0; list-style: none; pointer-events: none; }
+.rm-tip {
+  position: absolute; left: var(--x); top: var(--y); transform: translate(-50%, -9px); display: grid; justify-items: center; gap: 3px;
+  padding: 0 6px 6px; border: 0; background: none; color: #eef3e8; font: inherit; text-align: center; cursor: pointer;
+  opacity: calc(var(--tv, 0) * (1 - var(--dim, 0) * .55)); pointer-events: auto; transition: color .3s;
 }
-.roots-copy { position: absolute; left: 50%; bottom: clamp(44px, 10vh, 110px); transform: translateX(-50%); width: min(1180px, 92vw); text-align: center; }
-.roots-kicker { margin: 0 0 14px; font-size: 13px; font-weight: 700; letter-spacing: .22em; text-transform: uppercase; color: #e7c680; opacity: 0; }
+.roots.is-done .rm-tip { pointer-events: none; }
+.rm-node {
+  width: 18px; height: 18px; border-radius: 50%; background: radial-gradient(circle, #fff3cf 0 22%, #e7c680 32% 58%, rgba(231, 198, 128, 0) 62%);
+  box-shadow: 0 0 calc(10px + var(--lvl, 0) * 18px) rgba(231, 198, 128, calc(.5 + var(--lvl, 0) * .4));
+  transform: scale(calc(1 + var(--lvl, 0) * .35)); animation: rmPulse 2.6s calc(var(--i) * .35s) ease-in-out infinite;
+}
+@keyframes rmPulse { 0%, 100% { box-shadow: 0 0 8px rgba(231, 198, 128, .45); } 50% { box-shadow: 0 0 20px rgba(231, 198, 128, .85); } }
+.rm-root.is-on .rm-node { animation: none; }
+.rm-tip b { margin-top: 6px; font-size: 15px; font-weight: 800; letter-spacing: .01em; white-space: nowrap; }
+.rm-tip small { font-size: 12px; font-weight: 600; color: #bfd1b6; white-space: nowrap; }
+.rm-root.is-on .rm-tip b, .rm-tip:hover b { color: #e7c680; }
+.rm-tip:focus-visible { outline: none; }
+.rm-tip:focus-visible b { outline: 2px solid #e7c680; outline-offset: 3px; border-radius: 4px; }
+.rm-list { display: none; }
+
+/* the moment's ingredients, carried up the active root (placed by JS along its path) */
+.rm-ings { position: absolute; inset: 0; margin: 0; padding: 0; list-style: none; }
+.rm-ings li { position: absolute; left: 0; top: 0; width: 62px; height: 62px; opacity: 0; will-change: transform, opacity; }
+.rm-ings img { display: block; width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 8px 12px rgba(0, 0, 0, .45)); }
+.rm-ings span {
+  position: absolute; left: calc(100% + 4px); top: 50%; transform: translateY(-50%); white-space: nowrap;
+  padding: 3px 9px; border-radius: 999px; font-size: 12px; font-weight: 700; color: #f3ecd8; background: rgba(8, 26, 15, .62);
+  border: 1px solid rgba(231, 198, 128, .3);
+}
+.rm-ings li.is-left span { left: auto; right: calc(100% + 4px); }
+
+/* the words, along the foot */
+.roots-copy {
+  position: absolute; left: 50%; bottom: clamp(36px, 8vh, 96px); transform: translateX(-50%); width: min(1100px, 92vw);
+  text-align: center; opacity: 0; pointer-events: none;
+}
+.roots-kicker { margin: 0 0 12px; font-size: 13px; font-weight: 700; letter-spacing: .22em; text-transform: uppercase; color: #e7c680; }
 .roots-line {
-  margin: 0; font-family: var(--f-display); font-weight: 850; font-size: clamp(34px, 5.2vw, 90px); line-height: .96;
-  text-transform: uppercase; letter-spacing: -.005em; color: #eef3e8;
+  margin: 0; font-family: var(--f-display); font-weight: 850; font-stretch: 78%; font-size: clamp(32px, 4.2vw, 68px); line-height: 1;
+  text-transform: uppercase; letter-spacing: -.005em; color: #eef3e8; text-wrap: balance;
 }
-.rl-row { display: block; white-space: nowrap; }
-.rl-w { display: inline-block; opacity: 0; font-stretch: 62%; will-change: transform, opacity; }
 .rl-em { color: #e7c680; }
-.roots-sub { margin: 18px auto 0; max-width: 560px; font-size: 17px; line-height: 1.5; color: #bfd1b6; opacity: 0; }
+.roots-hint { margin: 14px 0 0; font-size: 14px; font-weight: 600; color: #bfd1b6; }
+.roots-hint span::before { content: ""; display: inline-block; width: 7px; height: 7px; margin-right: 8px; border-radius: 50%; background: #e7c680; vertical-align: 1px; animation: rmPulse 2s ease-in-out infinite; }
+.rh-touch { display: none; }
+@media (hover: none) { .rh-fine { display: none; } .rh-touch { display: inline; } }
+
+/* dawn: दिनचर्या, the idea behind "A Day", set like a dictionary entry; it sits right of the thread (left on phones the
+   thread stays clear of it) and comes in line by line as the light rises (--rd 0..1 from root-map.js) */
+.roots-dawn { position: absolute; left: 54%; right: 4%; top: 34%; color: #5a3416; pointer-events: none; --rd: 0; }
+.roots-dawn > * {
+  margin: 0; --p: clamp(0, calc(var(--rd) * 1.9 - var(--k) * .3), 1);
+  opacity: var(--p); transform: translate3d(0, calc((1 - var(--p)) * 16px), 0); filter: blur(calc((1 - var(--p)) * 6px));
+  will-change: opacity, transform, filter;   /* own GPU layers: the fade and blur do not re-render the large text each frame */
+}
+.rd-word { font-family: "Tiro Devanagari Sanskrit", "Noto Serif Devanagari", "Nirmala UI", "Kohinoor Devanagari", serif; font-size: clamp(64px, 7.6vw, 132px); line-height: 1.15; color: #7a4210; letter-spacing: .01em; }
+.rd-say { margin-top: 2px; font-size: 15px; font-weight: 600; letter-spacing: .06em; color: #8a5a2b; }
+.rd-say i { font-family: "Cormorant Garamond", Georgia, serif; font-size: 18px; letter-spacing: 0; margin: 0 4px; }
+.rd-say b { display: inline-block; margin-left: 4px; padding: 2px 9px; border-radius: 999px; font-size: 11px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: #7a4210; border: 1px solid rgba(122, 66, 16, .35); vertical-align: 2px; }
+.rd-def { max-width: 430px; margin-top: 14px; font-size: clamp(16px, 1.25vw, 19px); line-height: 1.5; font-weight: 500; color: #5a3416; }
+.rd-hello { margin-top: 18px; font-family: var(--f-hand); font-weight: 600; font-size: clamp(26px, 2.4vw, 36px); line-height: 1.15; color: #b0601c; }
+
+/* reduced motion: not pinned, drawn once */
 .roots.is-static { height: auto; }
 .roots.is-static .roots-pin { position: relative; }
+.roots.is-static .roots-copy { opacity: 1; }
+.roots.is-static .rm-node, .roots.is-static .roots-hint span::before { animation: none; }
+.roots.is-static .roots-dawn { display: none; }   /* no dawn without the pin (the map fades to the day's colour instead) */
+
+/* the hand-over: a gold thread from the top of "A Day" down to its sun (placed by root-map.js) */
+/* a small canvas drawn with the same strokes as the roots' thread (so they are one line), under the sun (z-index 3) */
+.day-thread { position: absolute; z-index: 2; top: 0; pointer-events: none; }
+
+@media (max-width: 767px) {
+  .roots { height: 180vh; }
+  .roots-dawn { left: 26%; right: 6%; top: 22%; }
+  .rd-word { font-size: clamp(54px, 15vw, 80px); }
+  .rd-say { font-size: 13px; }
+  .rd-def { font-size: 15px; }
+  .rm-tip { padding: 0 2px 4px; }
+  .rm-tip b { font-size: 12.5px; }
+  .rm-tip small { display: none; }
+  .rm-root.is-on .rm-list { display: block; max-width: 150px; margin-top: 2px; font-size: 11.5px; line-height: 1.35; color: #e7c680; white-space: normal; }
+  .rm-ings li { width: 44px; height: 44px; }
+  .rm-ings span { display: none; }
+  .roots-line { font-size: clamp(28px, 8.4vw, 44px); }
+  .roots-hint { font-size: 13px; }
+}
 
 /* ---------- A Day with TranzLife ---------- */
 .day { background: #e7efd9; }
-.day.is-pinned { height: calc(var(--moments, 6) * 70vh + 100vh); }
+.day.is-pinned { height: calc(var(--moments, 6) * 90vh + 100vh); }
 .day-pin { position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden; color: var(--ink, #1f4423); transition: color .6s; }
 .day.is-static .day-pin, .day:not(.is-static) .day-cards { display: none; }
 .day-sky { position: absolute; inset: 0; background: linear-gradient(180deg, #f7e3c4, #e7efd9); }
-.day-sky::after {
-  /* the golden thread from the helix arrives at the top edge */
-  content: ""; position: absolute; left: 4%; right: 4%; top: 0; height: 2px; background: linear-gradient(90deg, transparent, #e7c680 15%, #e7c680 85%, transparent);
-  opacity: .9;
-}
 .day-head { position: absolute; z-index: 3; top: clamp(76px, 10vh, 104px); left: 50%; transform: translateX(-50%); width: min(1100px, 88vw); text-align: center; }
 .day-kicker { margin: 0; font-size: 12px; font-weight: 700; letter-spacing: .22em; text-transform: uppercase; opacity: .8; }
 .day-clock { position: relative; margin: 6px auto 0; width: 100%; }
@@ -116,6 +148,15 @@
   box-shadow: 0 0 0 6px rgba(242, 182, 64, .18), 0 0 30px 8px rgba(242, 182, 64, .45);
   transition: background .6s, box-shadow .6s, border-color .6s;
 }
+/* a slow breathing halo, so the sun reads as alive while it drifts along the arc (the auto-play countdown) */
+.day-sun::after {
+  content: ""; position: absolute; inset: -8px; border-radius: 50%; pointer-events: none;
+  background: radial-gradient(circle, rgba(242, 182, 64, .45), rgba(242, 182, 64, 0) 70%);
+  animation: sunPulse 3.2s ease-in-out infinite;
+}
+.is-night .day-sun::after { background: radial-gradient(circle, rgba(220, 230, 210, .35), rgba(220, 230, 210, 0) 70%); }
+.is-cycle .day-sun::after { background: radial-gradient(circle, rgba(196, 106, 124, .3), rgba(196, 106, 124, 0) 70%); }
+@keyframes sunPulse { 0%, 100% { transform: scale(.85); opacity: .55; } 50% { transform: scale(1.45); opacity: 1; } }
 .is-night .day-sun { background: radial-gradient(circle at 35% 35%, #fbfbf2, #d8dccb 70%); box-shadow: 0 0 24px 6px rgba(220, 230, 210, .35); }
 .is-cycle .day-sun { background: transparent; border: 3px solid #c46a7c; box-shadow: 0 0 0 6px rgba(196, 106, 124, .18); }
 .day-dots { display: flex; justify-content: space-between; gap: 6px; margin: 4px 0 0; padding: 0; list-style: none; }
@@ -157,19 +198,36 @@
 .day-flow, .day-product { position: absolute; inset: 0; width: 100%; height: 100%; }
 .day-flow { z-index: 1; } .day-product { z-index: 2; }
 .no-3d .day-product { display: none; }
-.day-chips { position: absolute; inset: 0; z-index: 3; pointer-events: none; }
-.day-chip {
-  position: absolute; left: calc(var(--x) * 100%); top: calc(var(--y) * 100%); transform: translate(-50%, -50%); pointer-events: auto;
-  display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 15px 0 11px; border-radius: 999px;
-  background: rgba(255, 255, 255, .8); color: #1f4423; font-size: 13.5px; font-weight: 700; border: 1px solid rgba(255, 255, 255, .7);
-  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); box-shadow: 0 10px 24px -14px rgba(20, 40, 20, .45);
-  animation: chipIn .6s var(--d, 0ms) var(--ease) both; transition: transform .25s var(--ease), box-shadow .25s;
+/* the ingredient orbit (features/story/day-story.js): items are positioned each frame; no z-index on the container,
+   so each item stacks against the product canvas (z 2): 1 = behind the product, 3 = in front, 5 = hovered */
+.day-product { pointer-events: none; }
+.day-orbit { position: absolute; inset: 0; pointer-events: none; }
+.day-set[hidden] { display: none; }
+.day-ing {
+  position: absolute; left: 0; top: 0; z-index: 1; display: grid; justify-items: center; gap: 2px;
+  width: var(--u, 130px); padding: 0; border: 0; background: none; color: inherit; cursor: pointer; pointer-events: auto;
+  will-change: transform, opacity; visibility: hidden; -webkit-tap-highlight-color: transparent;
 }
-.day-chip i { width: 12px; height: 12px; border-radius: 50%; background: var(--c); box-shadow: 0 0 0 3px color-mix(in srgb, var(--c) 30%, transparent); }
-.day-chip:hover, .day-chip:focus-visible { transform: translate(-50%, -50%) scale(1.06); box-shadow: 0 14px 30px -14px rgba(20, 40, 20, .55); }
-.day-chip:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
-.is-night .day-chip { background: rgba(16, 36, 26, .72); color: #eef3e8; border-color: rgba(233, 239, 227, .18); }
-@keyframes chipIn { from { opacity: 0; transform: translate(-50%, -30%) scale(.9); } to { opacity: 1; transform: translate(-50%, -50%); } }
+.day-ing img {
+  display: block; width: 100%; height: var(--u, 130px); object-fit: contain; user-select: none; -webkit-user-drag: none;
+  filter: drop-shadow(0 14px 14px rgba(28, 40, 20, .22)) drop-shadow(0 0 1px rgba(255, 246, 216, .6));
+  transition: filter .5s;
+}
+.day-ing.is-far img { filter: blur(1.4px) brightness(.9) saturate(.85) drop-shadow(0 10px 12px rgba(28, 40, 20, .14)); }
+.day-ing span {
+  padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; white-space: nowrap;
+  background: rgba(255, 255, 255, .72); color: #1f4423; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 6px 16px -10px rgba(20, 40, 20, .5); opacity: 0; transform: translateY(-4px); transition: opacity .35s, transform .35s var(--ease);
+}
+.day-ing.is-out:not(.is-far) span, .day-ing:hover span, .day-ing:focus-visible span { opacity: 1; transform: none; }
+.day-ing:focus-visible { outline: none; }
+.day-ing:focus-visible img { outline: 2px solid var(--amber); outline-offset: 4px; border-radius: 18px; }
+/* night: moonlit rim instead of a daylight shadow */
+.is-night .day-ing img { filter: brightness(.86) saturate(.9) drop-shadow(0 0 12px rgba(200, 220, 255, .35)) drop-shadow(0 10px 14px rgba(0, 0, 0, .35)); }
+.is-night .day-ing.is-far img { filter: blur(1.4px) brightness(.7) saturate(.8) drop-shadow(0 0 10px rgba(200, 220, 255, .2)); }
+.is-night .day-ing span { background: rgba(16, 36, 26, .72); color: #eef3e8; }
+/* the cycle moment: a rose rim */
+.is-cycle .day-ing img { filter: drop-shadow(0 14px 14px rgba(59, 36, 48, .2)) drop-shadow(0 0 8px rgba(232, 160, 172, .35)); }
 .day-lens {
   position: absolute; z-index: 4; display: grid; gap: 3px; min-width: 210px; padding: 14px 16px; border-radius: 16px;
   background: #10241a; color: #eef3e8; font-size: 13px; box-shadow: 0 22px 44px -20px rgba(0, 0, 0, .6);
@@ -184,11 +242,20 @@
 .day-lens code { font-family: ui-monospace, "SFMono-Regular", Consolas, monospace; font-size: 15px; color: #b3d78f; }
 
 /* stacked cards: phones and reduced motion */
-.day.is-static { padding: 72px 0 0; }
+.day.is-static { padding: 72px 0 0; background: #f7e3c4; }   /* the dawn the roots section ends on, and the first card's sky */
 .day-kicker--static { text-align: center; margin-bottom: 20px; color: var(--forest); }
 .day-cards { margin: 0; padding: 0; list-style: none; }
-.day-card { display: grid; gap: 20px; align-items: center; padding: 40px max(20px, 5vw); background: linear-gradient(180deg, var(--sky-a), var(--sky-b)); color: var(--ink); }
-.dk-img { justify-self: center; width: min(76%, 320px); height: auto; border-radius: 24px; box-shadow: 0 24px 50px -30px rgba(0, 0, 0, .5); }
+.day-card { overflow: clip; display: grid; gap: 20px; align-items: center; padding: 40px max(20px, 5vw); background: linear-gradient(180deg, var(--sky-a), var(--sky-b)); color: var(--ink); }
+.dk-vis { position: relative; justify-self: center; width: min(76%, 320px); }
+.dk-img { display: block; width: 100%; height: auto; border-radius: 24px; box-shadow: 0 24px 50px -30px rgba(0, 0, 0, .5); }
+/* the real ingredients floating around the product photo */
+.dk-ing {
+  position: absolute; z-index: 1; width: 34%; aspect-ratio: 1; object-fit: contain; pointer-events: none;
+  filter: drop-shadow(0 10px 10px rgba(28, 40, 20, .25)); animation: dkFloat 5s calc(var(--k) * -1.3s) ease-in-out infinite alternate;
+}
+.dk-ing:nth-child(1) { left: -14%; top: -8%; } .dk-ing:nth-child(2) { right: -14%; top: 4%; }
+.dk-ing:nth-child(3) { left: -12%; bottom: -6%; } .dk-ing:nth-child(4) { right: -12%; bottom: -10%; }
+@keyframes dkFloat { from { transform: translateY(-6px) rotate(-5deg); } to { transform: translateY(6px) rotate(5deg); } }
 .dk-bots { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 16px; padding: 0; list-style: none; }
 .dk-bots li { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px; background: rgba(255, 255, 255, .62); color: #1f4423; font-size: 13px; font-weight: 700; }
 .dk-bots li::before { content: ""; width: 9px; height: 9px; border-radius: 50%; background: var(--c); }
@@ -214,6 +281,7 @@
 .ritual-head { margin-bottom: clamp(36px, 6vh, 64px); text-align: center; }
 .ritual-title { margin: 10px 0 26px; font-family: var(--f-display); font-weight: 850; font-stretch: 70%; text-transform: uppercase; font-size: clamp(40px, 6vw, 96px); line-height: .92; }
 .ritual-title span { display: block; color: #e7c680; }
+.ritual-care { margin: -12px 0 24px; font-family: var(--f-hand); font-weight: 600; font-size: clamp(24px, 2.2vw, 32px); color: #e7c680; opacity: .9; }
 .ritual-needs { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 8px; }
 .rn-q { width: 100%; margin-bottom: 6px; font-size: 14px; color: #bfd1b6; }
 .rn-chip { min-height: 42px; padding: 0 18px; border-radius: 999px; border: 1px solid rgba(233, 239, 227, .25); background: rgba(255, 255, 255, .04); color: #eef3e8; font-size: 14px; font-weight: 700; transition: background .25s, color .25s, border-color .25s; }
@@ -264,15 +332,6 @@
   .proof-badges { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 @media (max-width: 980px) {
-  .hero__title { margin-bottom: 52vh; }
-  .hero__offer { left: 16px; right: 16px; bottom: 16px; max-width: none; padding: 18px; text-align: center; }
-  .hero__lede { font-size: 15px; }
-  .hero__ctas { justify-content: center; }
-  .hero__facts, .hero__cue { display: none; }
-  .roots { height: 220vh; }
-  .rl-row { white-space: normal; }
-  .roots-line { font-size: clamp(30px, 8.6vw, 60px); }
-  .roots-sub { font-size: 15px; }
 }
 @media (max-width: 600px) {
   .ritual-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -281,6 +340,5 @@
   .btn-amber, .btn-ghost { padding: 0 18px; font-size: 14px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .day-chip, .day-copy.in > *, .hero__cue span, .hero__facts, .hero__cue { animation: none; }
-  .rl-w, .roots-kicker, .roots-sub { opacity: 1; font-stretch: 100%; }
+  .dk-ing, .day-sun::after, .day-copy.in > * { animation: none; }
 }

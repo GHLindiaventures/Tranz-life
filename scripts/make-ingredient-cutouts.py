@@ -22,6 +22,9 @@ PHOTOS = {"haritaki"}
 TOL = {"calc-phos": 14, "vitamin-c": 16, "hecla-lava": 34, "peppermint": 36, "licorice": 34}
 # background also trapped between leaves (not reachable from the edges): remove every near-background pixel
 ENCLOSED = {"bhringraj": 14}
+# gentler: only background *patches* trapped between leaves/petals (still there after shrinking by this many px),
+# grown back to their full outline; thin pale highlights on the subject survive
+HOLES = {"symphytum": 7, "eucalyptus": 7, "kalmegh": 7}
 DEFAULT_TOL = 24
 # soft grey drop shadows (light, colourless) count as background too, except where the subject itself is white/grey
 KEEP_GREYS = {"calc-phos", "kutki", "zinc", "vitamin-c", "vitamin-d3"}
@@ -62,6 +65,10 @@ def cutout(pid):
     bg = grow(seed, allowed)
     if pid in ENCLOSED:
         bg |= np.abs(a - bgc).max(axis=2) <= ENCLOSED[pid]
+    if pid in HOLES:
+        trapped = allowed & ~bg
+        core = Image.fromarray((trapped * 255).astype(np.uint8)).filter(ImageFilter.MinFilter(HOLES[pid] | 1))
+        bg |= grow(np.asarray(core) > 0, trapped)
     alpha = Image.fromarray(((~bg) * 255).astype(np.uint8))
     alpha = alpha.filter(ImageFilter.MinFilter(3)).filter(ImageFilter.GaussianBlur(1.1))   # pull in the fringe, soften
     rgba = img.convert("RGBA"); rgba.putalpha(alpha)

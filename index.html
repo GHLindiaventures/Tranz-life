@@ -14,6 +14,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet"
     href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Caveat:wght@500;600&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap">
+  <!-- just the letters of दिनचर्या (Our Roots, at dawn), in a typeface made for Sanskrit -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tiro+Devanagari+Sanskrit&amp;text=%E0%A4%A6%E0%A4%BF%E0%A4%A8%E0%A4%9A%E0%A4%B0%E0%A5%8D%E0%A4%AF%E0%A4%BE&amp;display=swap">
   <link rel="icon" type="image/png" href="/favicon.png">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <meta name="theme-color" content="#b6cba5">
@@ -217,68 +219,70 @@
   <canvas id="flightCanvas" aria-hidden="true"></canvas>
 
   <main>
-    <section class="page stage" id="home" data-theme="cream">
-      <!-- Layer 1: Ambient Background Video (MotionSites Layered Depth) -->
-      <video class="hero__bg st-photo" autoplay muted loop playsinline preload="auto" disablepictureinpicture
-        src="/layered-depth-bg.mp4" width="1280" height="720"></video>
-
-      <!-- Layer 2: Warm Atmospheric Overlay -->
-      <div class="hero__overlay" aria-hidden="true"></div>
-
-      <!-- Layer 3: Headline, layered behind the stone slab -->
-      <div class="hero__brand">
-        <p class="hero__tag">Innovating life beyond limits</p>
-        <h1 class="hero__title"><span class="ln">Nature</span> <span class="ln">meets science</span></h1>
+    <!-- HERO, "Four Windows, One Story": four vertical films side by side (Root, Lab, Formula, You). Three headlines
+         take turns; their letters are windows onto the films behind, sharp where the panels are soft
+         (features/hero/four-windows.js). On phones the films play one after another, full screen. -->
+    <section class="page fw" id="home" data-theme="green">
+      <div class="fw-panels" id="fwPanels">
+        <figure class="fw-panel" style="--i:0">
+          <video muted loop playsinline preload="none" disablepictureinpicture poster="/videos/hero/root.webp" data-src="/videos/hero/root.mp4" width="720" height="1280"></video>
+          <figcaption><b>01</b> Root<small>Pulled from living soil</small></figcaption>
+        </figure>
+        <figure class="fw-panel" style="--i:1">
+          <video muted loop playsinline preload="none" disablepictureinpicture poster="/videos/hero/lab.webp" data-src="/videos/hero/lab.mp4" width="720" height="1280"></video>
+          <figcaption><b>02</b> Lab<small>Studied in the lab</small></figcaption>
+        </figure>
+        <figure class="fw-panel" style="--i:2">
+          <video muted loop playsinline preload="none" disablepictureinpicture poster="/videos/hero/formula.webp" data-src="/videos/hero/formula.mp4" width="720" height="1280"></video>
+          <figcaption><b>03</b> Formula<small>Blended into a formula</small></figcaption>
+        </figure>
+        <figure class="fw-panel" style="--i:3">
+          <video muted loop playsinline preload="none" disablepictureinpicture poster="/videos/hero/you.webp" data-src="/videos/hero/you.mp4" width="720" height="1280"></video>
+          <figcaption><b>04</b> You<small>Part of your day</small></figcaption>
+        </figure>
       </div>
+      <div class="fw-shade" aria-hidden="true"></div>
+      <canvas class="fw-type" id="fwType" aria-hidden="true"></canvas>
+      <div class="fw-bars" id="fwBars" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
 
-      <!-- Layer 4: Sculpted Mossy Stone Slab Plinth -->
-      <img class="hero__slab" id="slab" src="/layered-depth-slab-set.webp" alt="Sculpted mossy stone plinth"
-        aria-hidden="true" draggable="false">
-      <!-- the same rock covered in moss, revealed under the pointer (moss-reveal.js) -->
-      <canvas class="hero__slab hero__slab--moss" id="slabMoss" width="960" height="540" aria-hidden="true"></canvas>
-
-      <!-- Layer 5: Interactive Bird Video System -->
-      <div class="birds" id="birds" aria-hidden="true">
-        <video id="bird-enter" muted playsinline src="/bird-enter.webm"></video>
-        <video id="bird-idle1" muted playsinline style="display:none" src="/bird-idle1.webm"></video>
-        <video id="bird-idle2" muted playsinline style="display:none" src="/bird-idle2.webm"></video>
-        <video id="bird-leave" muted playsinline style="display:none" src="/bird-leave.webm"></video>
+      <div class="fw-copy">
+        <p class="fw-tag">Innovating life beyond limits</p>
+        <h1 class="fw-head" id="fwHead">
+          <span class="fw-line">Where nature meets science</span>
+          <span class="fw-line">Rooted in nature. Backed by science.</span>
+          <span class="fw-line">From root to ritual.</span>
+        </h1>
       </div>
-
-      <!-- Layer 6: 3D Product Canvas & Soft Plinth Contact Shadow -->
-      <canvas id="heroCanvas" aria-hidden="true"></canvas>
-      <div class="st-shadow" aria-hidden="true"></div>
-
-      <!-- what TranzLife makes, and where to go next -->
-      <div class="hero__offer">
-        <p class="hero__lede">Plant-based wellness for breath, calm, comfort and everyday vitality. Six products rooted in Ayurveda, made with modern science.</p>
-        <div class="hero__ctas">
-          <a class="btn-amber" href="products.html">Explore our products <i aria-hidden="true">→</i></a>
-          <a class="btn-ghost" href="#ritual">Find your ritual <i aria-hidden="true">↓</i></a>
-        </div>
+      <div class="fw-ctas">
+        <a class="btn-amber" href="products.html">Explore our products <i aria-hidden="true">→</i></a>
+        <a class="btn-ghost" href="#ritual">Find your ritual <i aria-hidden="true">↓</i></a>
       </div>
-      <p class="hero__facts"><b>6</b> plant-based products <i aria-hidden="true"></i> <b>4</b> everyday formats <i aria-hidden="true"></i> Made in India</p>
-      <a class="hero__cue" href="#roots" aria-label="Scroll to our story"><span aria-hidden="true"></span></a>
     </section>
 
-    <!-- ROOTS TO HELIX: the hero product sinks into the stone; its roots grow down and twist into a DNA helix,
-         which unwinds into the golden thread of the day below (features/story/roots-helix.js) -->
-    <section class="page roots" id="roots" data-theme="green">
+    <!-- OUR ROOTS, "Root Map": six roots grow down from the hero's films, one for each moment of the day below. Hover or
+         tap a root and its real ingredients rise up it; click to jump to that moment. Scrolling on, the roots draw
+         together into one golden thread while the night turns to dawn, ending on the exact colour "A Day" starts with
+         (features/story/root-map.js; the six roots are built from data/day.js). -->
+    <section class="page roots" id="roots" data-theme="green" aria-labelledby="rootsTitle">
       <div class="roots-pin" id="rootsPin">
         <canvas class="roots-canvas" id="rootsCanvas" aria-hidden="true"></canvas>
-        <span class="roots-logo logo-em" id="rootsLogo" aria-hidden="true"></span>
-        <div class="roots-copy">
-          <p class="roots-kicker" id="rootsKicker">Our roots</p>
-          <h2 class="roots-line" id="rootsLine" aria-label="From the roots of nature to the infinity of science.">
-            <span class="rl-row"><span class="rl-w">From</span> <span class="rl-w">the</span> <span class="rl-w rl-em">roots</span> <span class="rl-w">of</span> <span class="rl-w rl-em">nature</span></span>
-            <span class="rl-row"><span class="rl-w">to</span> <span class="rl-w">the</span> <span class="rl-w rl-em">infinity</span> <span class="rl-w">of</span> <span class="rl-w rl-em">science.</span></span>
-          </h2>
-          <p class="roots-sub" id="rootsSub">Classical Ayurvedic botanicals, studied with modern science and made for the way you live today.</p>
+        <ol class="rm-roots" id="rmRoots" aria-label="Six moments of the day"></ol>
+        <div class="roots-copy" id="rootsCopy">
+          <p class="roots-kicker">Our roots</p>
+          <h2 class="roots-line" id="rootsTitle"><span>Six roots.</span> <span class="rl-em">One for every part of your day.</span></h2>
+          <p class="roots-hint" id="rootsHint"><span class="rh-fine">Hover a root to see what grows from it</span><span class="rh-touch">Tap a root to see what grows from it</span></p>
+        </div>
+        <!-- at dawn: the idea behind "A Day" below, and a greeting for the visitor's own time of day (root-map.js) -->
+        <div class="roots-dawn" id="rootsDawn">
+          <p class="rd-word" style="--k:0" lang="sa">दिनचर्या</p>
+          <p class="rd-say" style="--k:1"><span>di·na·char·ya</span> <i>(n.)</i> <b>Sanskrit</b></p>
+          <p class="rd-def" style="--k:2">The Ayurvedic art of the daily routine: small rituals, from sunrise to night.</p>
+          <p class="rd-hello" style="--k:3" id="rootsHello">Your day begins here.</p>
         </div>
       </div>
     </section>
 
-    <!-- A DAY WITH TRANZLIFE: one moment per product, morning to night; each product's botanicals flow into it
+    <!-- A DAY WITH TRANZLIFE: one moment per product, morning to night; each product's real ingredients orbit it
          (features/story/day-story.js, content: data/day.js). Phones and reduced motion get the stacked cards. -->
     <section class="page day" id="day" data-theme="cream">
       <div class="day-pin" id="dayPin">
@@ -299,7 +303,7 @@
           <div class="day-stage" id="dayStage">
             <canvas class="day-flow" id="dayFlow" aria-hidden="true"></canvas>
             <canvas class="day-product" id="dayProduct" aria-hidden="true"></canvas>
-            <div class="day-chips" id="dayChips"></div>
+            <div class="day-orbit" id="dayOrbit"></div>
             <div class="day-lens" id="dayLens" role="status" aria-live="polite"></div>
           </div>
         </div>
@@ -313,6 +317,7 @@
         <div class="ritual-head">
           <p class="eyebrow">Your ritual</p>
           <h2 class="ritual-title">Six products. <span>One daily ritual.</span></h2>
+          <p class="ritual-care">Not a cure. A daily ritual of care.</p>
           <div class="ritual-needs" id="ritualNeeds" role="group" aria-label="What does your day need?">
             <span class="rn-q">What does your day need?</span>
           </div>
@@ -353,7 +358,7 @@
         <span class="nf-store" id="nfStore">Online store · coming soon</span>
       </div>
       <div class="nf-legal">
-        <p class="nf-disc">TranzLife products are plant-based wellness products and are not intended to diagnose, treat, cure or prevent any disease. Consult your doctor before use if you are pregnant, nursing, managing a health condition or taking medication.</p>
+        <p class="nf-care"><b>We don’t cure. We care.</b> TranzLife products support everyday well-being and are not intended to treat or cure any disease.</p>
         <p class="nf-fine"><span>© 2026 TranzLife Biosciences</span><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a></p>
       </div>
     </div>

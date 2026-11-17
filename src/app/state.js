@@ -6,6 +6,6 @@ const thumbs = {};
 
 
 // live handles created during boot
-const state = { heroApi:null, storyApi:null, lenis:null, mol:null };
+const state = { hero:null, storyApi:null, lenis:null, mol:null };
 
 export { thumbs, state };

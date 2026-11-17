@@ -1,0 +1,105 @@
+/* ---------- About: "Cure ≠ Heal" interlude (features/about/heal-interlude.js) ----------
+   Each part's progress (0..1) is set on .heal by the script: --q question, --a "Not really.", --c cure, --h heal (the
+   circle opens), --lb the four words around it, --e the closing line. Pinned and scroll-driven on wide screens;
+   stacked on phones, where the same values jump to 1 as it comes into view and CSS transitions carry them. */
+.heal {
+  position: relative; color: #1f4423; overflow: clip;
+  background: radial-gradient(ellipse 60% 55% at 72% 58%, rgba(246, 207, 134, calc(var(--h) * .35)), rgba(246, 207, 134, 0) 70%), linear-gradient(180deg, #f4efe2, #efe8d6);
+  --q: 0; --a: 0; --c: 0; --h: 0; --lb: 0; --e: 0;
+}
+.heal.is-pinned { height: 240vh; }
+.heal-pin {
+  display: grid; align-content: center; justify-items: center; gap: 0; text-align: center;
+  padding: clamp(100px, 13vh, 124px) 24px clamp(24px, 4vh, 48px);
+}
+.heal.is-pinned .heal-pin { position: sticky; top: 0; height: 100vh; height: 100svh; }
+
+.heal-kicker { margin: 0 0 12px; font-size: 13px; font-weight: 800; letter-spacing: .22em; text-transform: uppercase; color: #b0601c; opacity: var(--q); }
+.heal-q {
+  margin: 0; font-family: var(--f-display); font-weight: 850; font-stretch: 72%; font-size: clamp(34px, 4vw, 64px); line-height: .96;
+  letter-spacing: -.01em; text-wrap: balance; max-width: 16ch;
+  opacity: var(--q); transform: translate3d(0, calc((1 - var(--q)) * 24px), 0); filter: blur(calc((1 - var(--q)) * 8px));
+}
+.heal-q em { font-style: normal; color: #b0601c; }
+.heal-a {
+  margin: 6px 0 0; font-family: var(--f-hand); font-weight: 600; font-size: clamp(28px, 2.6vw, 40px); color: #3f7a3a;
+  opacity: var(--a); transform: translate3d(0, calc((1 - var(--a)) * 12px), 0) rotate(-2deg);
+}
+
+/* the two answers, side by side */
+.heal-split { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1.25fr); align-items: center; gap: clamp(12px, 3vw, 48px); width: min(1040px, 100%); margin-top: clamp(4px, 1.5vh, 20px); }
+.heal-side { position: relative; margin: 0; display: grid; justify-items: center; }
+.heal-art { display: block; width: min(100%, var(--art, 300px)); height: auto; overflow: visible; }
+.heal-cure { --art: clamp(200px, 22vw, 320px); opacity: var(--c); transform: translate3d(calc((1 - var(--c)) * -30px), 0, 0); }
+.heal-heal { --art: clamp(200px, 22vw, 320px); }
+.heal-side figcaption { display: grid; gap: 4px; margin-top: 4px; }
+.heal-side b { font-family: var(--f-display); font-weight: 850; font-stretch: 72%; font-size: clamp(30px, 3vw, 46px); line-height: 1; text-transform: uppercase; letter-spacing: .02em; }
+.heal-side figcaption span { font-size: clamp(15px, 1.15vw, 18px); font-weight: 600; }
+.heal-cure b { color: #5d7480; } .heal-cure figcaption span { color: #61737c; }
+.heal-heal b { color: #b0601c; } .heal-heal figcaption span { color: #6b4a2a; }
+.heal-heal figcaption { opacity: var(--h); transform: translate3d(0, calc((1 - var(--h)) * 14px), 0); }
+
+/* cure: one sharp point in a target, cool and clinical */
+.hc-ring { fill: none; stroke: #7d939e; stroke-width: 1.6; }
+.hc-cross { stroke: #9aacb4; stroke-width: 1; stroke-dasharray: 3 5; }
+.hc-dot { fill: #5d7480; }
+
+/* heal: the same point opens into a warm circle that reaches all of you */
+.hh-glow, .hh-ring, .hh-orbit { transform-box: fill-box; transform-origin: center; }
+.hh-glow { transform: scale(calc(.06 + .94 * var(--h))); opacity: calc(.3 + .7 * var(--h)); }
+.hh-ring { fill: none; stroke: #c8862e; stroke-width: 1.8; transform: scale(calc(.07 + .93 * var(--h))); opacity: var(--h); }
+.hh-orbit { fill: none; stroke: #d9a35a; stroke-width: 1; stroke-dasharray: 2 9; opacity: calc(var(--h) * .9); animation: healTurn 60s linear infinite; }
+@keyframes healTurn { to { transform: rotate(360deg); } }
+.hh-dot { fill: #b0601c; opacity: var(--c); }
+
+/* the four words, around the circle (top, right, bottom, left), one after another */
+.heal-whole { position: absolute; left: 50%; top: 0; width: min(100%, var(--art)); aspect-ratio: 1; transform: translateX(-50%); margin: 0; padding: 0; list-style: none; pointer-events: none; }
+.heal-whole li {
+  position: absolute; padding: 5px 12px; border-radius: 999px; font-size: clamp(13px, 1vw, 15px); font-weight: 800; letter-spacing: .06em;
+  color: #6b3f12; background: rgba(255, 250, 238, .9); border: 1px solid rgba(200, 134, 46, .45); box-shadow: 0 8px 18px -10px rgba(120, 70, 20, .45);
+  --o: clamp(0, calc(var(--lb) * 4 - var(--k)), 1);
+  opacity: var(--o); transform: translate(-50%, -50%) scale(calc(.7 + .3 * var(--o)));
+}
+.heal-whole li:nth-child(1) { left: 50%; top: 7%; }
+.heal-whole li:nth-child(2) { left: 93%; top: 50%; }
+.heal-whole li:nth-child(3) { left: 50%; top: 93%; }
+.heal-whole li:nth-child(4) { left: 7%; top: 50%; }
+
+.heal-ne { font-family: var(--f-display); font-weight: 300; font-size: clamp(40px, 4vw, 64px); color: #c8862e; opacity: var(--c); }
+
+.heal-close {
+  margin: clamp(10px, 2.5vh, 28px) 0 0; max-width: 34ch; font-size: clamp(18px, 1.6vw, 24px); line-height: 1.4; font-weight: 600; color: #1f4423;
+  opacity: var(--e); transform: translate3d(0, calc((1 - var(--e)) * 16px), 0);
+}
+.heal-close span { display: block; font-family: var(--f-hand); font-size: 1.45em; color: #b0601c; }
+
+/* short windows: tighter */
+@media (min-width: 900px) and (max-height: 800px) {
+  .heal-pin { padding-top: 92px; padding-bottom: 28px; }
+  .heal-q { font-size: clamp(32px, 3.8vw, 58px); }
+  .heal-cure, .heal-heal { --art: clamp(170px, 19vw, 250px); }
+  .heal-close { margin-top: 12px; }
+}
+
+/* phones: stacked (cure above heal); the parts come in one after another as it scrolls into view */
+@media (max-width: 899px) {
+  .heal-pin { padding: 84px 20px 72px; }
+  .heal-split { grid-template-columns: minmax(0, 1fr); gap: 6px; }
+  .heal-cure { --art: 170px; }
+  .heal-heal { --art: min(78vw, 320px); }
+}
+.heal.is-static .heal-kicker, .heal.is-static .heal-q, .heal.is-static .heal-a, .heal.is-static .heal-cure, .heal.is-static .heal-ne,
+.heal.is-static .heal-heal figcaption, .heal.is-static .hh-glow, .heal.is-static .hh-ring, .heal.is-static .heal-whole li, .heal.is-static .heal-close {
+  transition: opacity .9s var(--ease), transform 1.2s var(--ease), filter .9s var(--ease);
+}
+.heal.is-static .heal-a { transition-delay: .3s; }
+.heal.is-static .heal-cure, .heal.is-static .heal-ne { transition-delay: .5s; }
+.heal.is-static .hh-glow, .heal.is-static .hh-ring { transition-delay: .8s; transition-duration: 1.6s; }
+.heal.is-static .heal-heal figcaption { transition-delay: 1.1s; }
+.heal.is-static .heal-whole li { transition-delay: calc(1.3s + var(--k) * .15s); }
+.heal.is-static .heal-close { transition-delay: 1.9s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .heal { --q: 1; --a: 1; --c: 1; --h: 1; --lb: 1; --e: 1; }
+  .heal *, .heal.is-static * { transition: none !important; animation: none !important; }
+}

@@ -55,14 +55,15 @@
 .nf-dawn:hover i { transform: translateY(-3px); }
 .nf-dawn:focus-visible { outline: 2px solid var(--amber, #e8a93a); outline-offset: 3px; }
 
-/* one clean row of links: a gold underline grows from the centre and a small star lights up on hover */
-.nf-links { display: flex; flex-wrap: wrap; gap: 6px clamp(16px, 2.4vw, 38px); margin: clamp(44px, 6vw, 72px) 0 0; }
+/* one clean row of links: a gold underline grows from the centre and a small star lights up on hover. Nothing on hover
+   changes a link's size (the lift is a transform), so the row never reflows or wraps as the pointer moves along it. */
+.nf-links { display: flex; flex-wrap: nowrap; justify-content: space-between; gap: 6px clamp(12px, 1.6vw, 30px); margin: clamp(44px, 6vw, 72px) 0 0; }
 .nf-links a {
   position: relative; display: inline-flex; align-items: center; min-height: 44px; color: #eef3e8; text-decoration: none;
-  font-family: var(--f-display); font-weight: 800; font-stretch: 78%; font-size: clamp(22px, 2vw, 32px); letter-spacing: -.005em;
-  transition: color .3s, font-stretch .45s cubic-bezier(.2, .7, .1, 1);
+  font-family: var(--f-display); font-weight: 800; font-stretch: 78%; font-size: clamp(19px, 1.65vw, 27px); letter-spacing: -.005em;
+  white-space: nowrap; transition: color .3s;
 }
-.nf-links a span { position: relative; }
+.nf-links a span { position: relative; display: inline-block; transition: transform .45s cubic-bezier(.2, .7, .1, 1); }
 .nf-links a span::after {
   content: ""; position: absolute; left: 0; right: 0; bottom: -4px; height: 2px; border-radius: 2px; background: #e7c680;
   transform: scaleX(0); transition: transform .45s cubic-bezier(.2, .7, .1, 1);
@@ -72,7 +73,7 @@
   transition: opacity .3s, transform .45s cubic-bezier(.2, .7, .1, 1);
 }
 .nf-links a:hover, .nf-links a:focus-visible, .nf-links a[aria-current="page"] { color: #e7c680; }
-.nf-links a:hover { font-stretch: 92%; }
+.nf-links a:hover span { transform: translateY(-2px); }
 .nf-links a:hover span::after, .nf-links a:focus-visible span::after, .nf-links a[aria-current="page"] span::after { transform: scaleX(1); }
 .nf-links a:hover::before { opacity: 1; transform: none; }
 .nf-links a:focus-visible { outline: 2px solid #e7c680; outline-offset: 4px; border-radius: 4px; }
@@ -87,7 +88,9 @@
   margin-top: clamp(30px, 4vw, 48px); padding-top: 20px; border-top: 1px solid rgba(233, 239, 227, .14);
   font-size: 13px; line-height: 1.55; color: #a9bda1;
 }
-.nf-disc { margin: 0; max-width: 72ch; }
+/* the wellness note, in the brand's own voice (the old legal line, rewritten) */
+.nf-care { margin: 0; max-width: 66ch; }
+.nf-care b { color: #e7c680; font-weight: 700; }
 .nf-fine { display: flex; gap: 18px; margin: 0; white-space: nowrap; }
 .nf-fine a { color: #d3dfcb; text-decoration: none; }
 .nf-fine a:hover { color: #e7c680; text-decoration: underline; text-underline-offset: 3px; }
@@ -104,6 +107,10 @@
   -webkit-background-clip: text; background-clip: text; color: transparent;
 }
 
+/* below ~780px the eight links no longer fit on one line: two even rows of four (two columns on phones, below) */
+@media (max-width: 780px) {
+  .nf-links { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
 @media (max-width: 700px) {
   .nf-top { padding-left: 0; padding-top: 52px; }
   .nf-moon { top: 18px; left: 20px; width: 30px; }

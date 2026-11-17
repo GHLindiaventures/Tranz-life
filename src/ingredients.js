@@ -3,6 +3,7 @@
 // The benefit filter is shared by both; "View Details" (or any tile) opens a details dialog.
 import './features/footer/night-footer.js';
 import './features/navigation/dropdown.js';
+import './components/page-scrollbar.js';
 import { $ } from './utils/dom.js';
 import { BOTANICAL_INGREDIENTS, INGREDIENT_CATEGORIES } from './data/ingredients.js';
 import { initAyurveda } from './features/ayurveda/ayurveda-video.js';

@@ -2,6 +2,18 @@
 [hidden]{display:none!important}
 *,*::before,*::after{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
+/* page scrollbar: on mouse/trackpad devices the native bar (which sits in its own strip) is hidden and a slim thumb is
+   drawn over the page instead, with no track (components/page-scrollbar.js). Phones keep their own overlay bars. */
+@media (hover:hover) and (pointer:fine){
+  html{scrollbar-width:none}
+  html::-webkit-scrollbar{display:none}
+}
+.page-thumb{position:fixed;z-index:2147483000;top:0;right:3px;width:6px;border-radius:999px;background:rgba(118,138,106,.55);box-shadow:0 0 0 1px rgba(255,255,255,.18);cursor:grab;touch-action:none;transition:width .2s,right .2s,background .2s,opacity .3s}
+.page-thumb::before{content:"";position:absolute;inset:0 -8px}   /* a wider grab area than it looks */
+.page-thumb:hover,.page-thumb.is-drag{width:9px;right:2px;background:rgba(118,138,106,.85)}
+.page-thumb.is-drag,html.is-thumb-drag,html.is-thumb-drag *{cursor:grabbing!important;user-select:none}
+.page-thumb.is-none{opacity:0;pointer-events:none}
+@media print{.page-thumb{display:none}}
 html.lenis,html.lenis body{height:auto}
 .lenis.lenis-smooth{scroll-behavior:auto!important}
 body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--f-body);font-stretch:88%;font-weight:500;font-size:17px;line-height:1.45;overflow-x:clip;-webkit-font-smoothing:antialiased}

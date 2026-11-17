@@ -35,5 +35,3 @@
    Registered as non-inherited so each per-frame write restyles that one element, not its whole subtree
    (the sheet radius is written on the large tagline section every scroll frame). */
 @property --sheet-radius { syntax: '<length>'; inherits: false; initial-value: 0px; }
-@property --slab-y { syntax: '<length>'; inherits: false; initial-value: 0px; }
-@property --brand-y { syntax: '<length>'; inherits: false; initial-value: 0px; }

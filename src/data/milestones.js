@@ -29,7 +29,7 @@ export const milestones = [
   {
     year: '2026',
     title: 'Expanded Portfolio & Global Outreach',
-    description: '9 market-ready wellness formulations, 14 products in research and development pipeline, and 6 specialized delivery formats.'
+    description: '6 market-ready wellness formulations, 14 products in research and development pipeline, and 6 specialized delivery formats.'
   }
 ];
 

@@ -5,6 +5,7 @@ import { storeCta } from './app/store.js';
 import { PRODUCTS, EXTRA_PRODUCTS } from './data/products.js';
 import { SHOTS, DESIGNS } from './features/products/product-images.js';
 import './features/navigation/dropdown.js';
+import './components/page-scrollbar.js';
 import { $, $$ } from './utils/dom.js';
 import { initBeforeAfter } from './features/compare/before-after.js';
 

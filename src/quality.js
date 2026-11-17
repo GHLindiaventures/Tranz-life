@@ -1,6 +1,7 @@
 // TranzLife Biosciences - Quality & Manufacturing Interactive Controller
 import './features/footer/night-footer.js';
 import './features/navigation/dropdown.js';
+import './components/page-scrollbar.js';
 import { $ } from './utils/dom.js';
 
 // Simulated Live Batch Quality Database

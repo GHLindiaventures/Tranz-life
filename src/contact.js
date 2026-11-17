@@ -1,6 +1,7 @@
 // TranzLife Biosciences - Contact Us Page Interactive Controller
 import './features/footer/night-footer.js';
 import './features/navigation/dropdown.js';
+import './components/page-scrollbar.js';
 import { $ } from './utils/dom.js';
 import { PRODUCTS, EXTRA_PRODUCTS } from './data/products.js';
 

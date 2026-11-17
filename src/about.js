@@ -2,8 +2,10 @@
 import './features/footer/night-footer.js';
 import { state } from './app/state.js';
 import './features/navigation/dropdown.js';
+import './components/page-scrollbar.js';
 import { $ } from './utils/dom.js';
-import { milestones } from './data/milestones.js';
+import { initAboutStory } from './features/about/about-story.js';
+import { initHealInterlude } from './features/about/heal-interlude.js';
 
 function initAboutPage() {
   // Ensure all eyebrows are drawn immediately without animation
@@ -48,18 +50,10 @@ function initAboutPage() {
   });
 
 
-  // 5. Anchor link navigation (instant jump, completely static)
-  document.addEventListener('click', e => {
-    const a = e.target.closest('a[href^="#"]');
-    if (!a) return;
-    const hash = a.getAttribute('href');
-    if (hash === '#') return;
-    const target = document.querySelector(hash);
-    if (target) {
-      e.preventDefault();
-      target.scrollIntoView({ behavior: 'auto' });
-    }
-  });
+  // 5. The "Cure ≠ Heal" interlude, then the story: chapters, chapter rail, in-page links, prologue spotlight
+  //    (features/about/heal-interlude.js, features/about/about-story.js)
+  initHealInterlude();   // first: it sets its own height, which the story below measures from
+  initAboutStory();
 
   // 6. Live Hero Journey Motion (Subtle ambient pulse, particles & gentle foliage parallax)
   initAboutHeroLive();

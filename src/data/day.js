@@ -70,7 +70,7 @@ export const MOMENTS = [
     sky: ['#f6d9cf', '#ecdfe0'], ink: '#3b2430', sun: 0.8
   },
   {
-    id: 'evening', name: 'Evening massage', productId: 'reviva',
+    id: 'evening', name: 'Massage', productId: 'reviva',
     title: ['Unwind with', 'a gentle ritual'],
     copy: 'End the day with a slow massage: a botanical roll-on with dill and eucalyptus oils, for an everyday wellness and vitality ritual.',
     benefit: 'An evening massage ritual',

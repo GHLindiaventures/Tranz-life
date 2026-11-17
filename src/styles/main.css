@@ -27,6 +27,8 @@
 @import './sections/shop.css';
 @import './sections/contact.css';
 @import './sections/about.css';
+@import './sections/about-story.css';
+@import './sections/about-heal.css';
 @import './sections/product-details.css';
 @import './sections/science-page.css';
 @import './sections/ingredients.css';
