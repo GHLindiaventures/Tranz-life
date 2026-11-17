@@ -8,6 +8,7 @@ import { initSmooth } from './app/smooth-scroll.js';
 import { SHOTS } from './features/products/product-images.js';
 import './features/navigation/dropdown.js';
 import './components/page-scrollbar.js';
+import './components/chat-loader.js';
 import { initGrain } from './products-page/grain.js';
 import { initProductJourney } from './products-page/journey.js';
 import { useScannedModels } from './features/products/product-model.js';

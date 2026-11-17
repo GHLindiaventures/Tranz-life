@@ -1,11 +1,16 @@
 // "Tulsi" wellness chat: a floating button that opens a chat panel. Replies stream from the chat API
 // (server/chat-api.js, built into the site's server, which talks to a local Ollama model). Recommended products appear as cards
 // from the brochure catalogue (src/data/catalog.js), with an "Enquire" button that opens the contact form.
+import '../../styles/components/chat.css';   // the chat brings its own styles, so every page (whatever its stylesheet) gets it
 import { CATALOG } from '../../data/catalog.js';
+import { PRODUCTS, EXTRA_PRODUCTS } from '../../data/products.js';
 import { $ } from '../../utils/dom.js';
 
 const API = (import.meta.env.VITE_CHAT_API || '') + '/api/chat';
 const STORE = 'tl-chat-v1';
+const UI = 'tl-chat-ui';            // open / min / closed, kept while the visitor moves between pages (this visit)
+const TEASED = 'tl-chat-teased';    // the welcome bubble shows once per visit
+const TEASE_AFTER = 8000, TEASE_FOR = 8000, TYPE_FOR = 1200;   // ms: wait before it, how long it stays, the "typing" dots
 const WELCOME = 'Hi, I\'m Tulsi, TranzLife\'s wellness assistant 🌿 Tell me what\'s been bothering you, and I\'ll suggest the TranzLife product that may help, along with simple, natural care tips. You can also ask me about our products and their ingredients. Type in English, Tamil or Tanglish, and I\'ll reply in simple English. I share general wellness guidance, not medical advice.';
 const CHIPS = ['Period cramps', 'Stressed at work', 'Dry, cracked feet', 'Always tired', 'Liver care', 'Can\'t sleep well'];
 
@@ -103,23 +108,72 @@ async function send(text){
 function autosize(){ els.input.style.height = 'auto'; els.input.style.height = Math.min(els.input.scrollHeight, 120) + 'px'; }
 
 // minimized: the chat stays on screen as a small header bar; the conversation is kept
-function minimize(on){
+function remember(){ try { sessionStorage.setItem(UI, els.root.classList.contains('open') ? (els.root.classList.contains('min') ? 'min' : 'open') : 'closed'); } catch(e){} }
+
+function minimize(on, quiet){
   els.root.classList.toggle('min', on);
   els.min.setAttribute('aria-label', on ? 'Expand chat' : 'Minimize chat');
   els.min.title = on ? 'Expand' : 'Minimize';
   els.min.setAttribute('aria-expanded', !on);
-  if (!on){ scrollDown(); setTimeout(() => els.input.focus(), 250); }
+  if (!on){ scrollDown(); if (!quiet) setTimeout(() => els.input.focus(), 250); }
+  remember();
 }
 
-function open(on){
+function open(on, quiet){
   els.root.classList.remove('min'); els.min.setAttribute('aria-label', 'Minimize chat'); els.min.title = 'Minimize'; els.min.setAttribute('aria-expanded', true);
   els.root.classList.toggle('open', on);
   els.fab.setAttribute('aria-expanded', on);
   els.panel.setAttribute('aria-hidden', !on);
-  if (on){ scrollDown(); setTimeout(() => els.input.focus(), 250); }
+  if (on){ scrollDown(); if (!quiet) setTimeout(() => els.input.focus(), 250); hideTease(true); }
+  remember();
+}
+
+// ---------- the welcome bubble: once per visit, a few seconds after the page settles, beside the button
+function teaseText(){
+  const page = location.pathname.split('/').pop() || 'index.html';
+  if (page.startsWith('product-details')){
+    const id = new URLSearchParams(location.search).get('id'), p = [...PRODUCTS, ...EXTRA_PRODUCTS].find(x => x.id === id);
+    if (p) return `Curious about the ${p.short || p.name}? Ask me anything here! 🌿`;
+  }
+  if (page.startsWith('products')) return 'Not sure which product fits your day? Ask me here! 🌿';
+  if (page.startsWith('ingredients')) return 'Want to know more about an ingredient? Ask me here! 🌿';
+  return 'Questions about our products? Ask me anything here! 🌿';
+}
+let tease = null, teaseT = 0;
+function hideTease(now){
+  if (!tease || tease.hidden) return;
+  clearTimeout(teaseT); els.root.classList.remove('teasing');
+  tease.classList.remove('in'); tease.classList.add('out');
+  setTimeout(() => { tease.hidden = true; tease.classList.remove('out', 'typed'); }, now ? 0 : 420);
+}
+function showTease(){
+  try { sessionStorage.setItem(TEASED, '1'); } catch(e){}
+  tease.querySelector('.ch-msg').textContent = teaseText();
+  tease.hidden = false; els.root.classList.add('teasing');
+  requestAnimationFrame(() => requestAnimationFrame(() => tease.classList.add('in')));
+  teaseT = setTimeout(() => { tease.classList.add('typed'); teaseT = setTimeout(() => hideTease(), TEASE_FOR); }, TYPE_FOR);
+}
+// waits until the visitor has been still for a moment (not mid-scroll), nothing else is in front (page loader, menu,
+// the chat itself) and the tab is visible
+function scheduleTease(){
+  let done = false; try { done = !!sessionStorage.getItem(TEASED); } catch(e){}
+  if (done) return;
+  let moved = 0; const mark = () => { moved = performance.now(); };
+  ['scroll', 'wheel', 'touchmove', 'keydown'].forEach(t => window.addEventListener(t, mark, { passive:true, capture:true }));
+  const check = () => {
+    try { if (sessionStorage.getItem(TEASED)) return; } catch(e){}
+    if (els.root.classList.contains('open')) return;   // already chatting: no need
+    const loader = document.getElementById('loader');
+    const busy = document.hidden || performance.now() - moved < 1500 || document.documentElement.classList.contains('pt-show')
+      || (loader && !loader.classList.contains('done')) || document.querySelector('.menu.open') || document.body.classList.contains('sc-ov-open');
+    if (busy){ setTimeout(check, 700); return; }
+    showTease();
+  };
+  setTimeout(check, TEASE_AFTER);
 }
 
 function initChat(){
+  if (document.getElementById('chat')) return;   // once per page
   const root = document.createElement('div');
   root.className = 'chat t-cream'; root.id = 'chat';
   root.innerHTML = `
@@ -139,6 +193,13 @@ function initChat(){
       </form>
       <p class="ch-note">General wellness tips, not medical advice. In an emergency, call 112. We count common topics anonymously to improve our products; your messages are not stored.</p>
     </section>
+    <div class="ch-tease" hidden>
+      <button class="ch-tease-body" type="button" aria-controls="chatPanel">
+        <span class="ch-av">${LEAF}</span>
+        <span class="ch-tease-txt" role="status" aria-live="polite"><b>Tulsi</b><span class="ch-dots" aria-hidden="true"><span></span><span></span><span></span></span><span class="ch-msg"></span></span>
+      </button>
+      <button class="ch-tease-x" type="button" aria-label="Dismiss">×</button>
+    </div>
     <button class="ch-fab" type="button" aria-controls="chatPanel" aria-expanded="false">
       <span class="ch-fab-ic">${LEAF}</span><b>Ask Tulsi</b>
     </button>`;
@@ -171,7 +232,23 @@ function initChat(){
   $('.ch-form', root).addEventListener('submit', e => { e.preventDefault(); send(els.input.value); });
   els.input.addEventListener('input', autosize);
   els.input.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); send(els.input.value); } });
-  document.addEventListener('keydown', e => { if (e.key === 'Escape' && root.classList.contains('open')) open(false); });
+  document.addEventListener('keydown', e => { if (e.key !== 'Escape') return; if (root.classList.contains('open')) open(false); else hideTease(); });
+  // the welcome bubble: tap it to open the chat with its question already there; × dismisses it (once per visit)
+  tease = $('.ch-tease', root);
+  $('.ch-tease-body', tease).addEventListener('click', () => {
+    const text = tease.querySelector('.ch-msg').textContent || teaseText();
+    if (!msgs.length || msgs[msgs.length - 1].content !== text){ msgs.push({ role:'assistant', content:text }); save(); render(); }
+    hideTease(true); open(true);
+  });
+  $('.ch-tease-x', tease).addEventListener('click', () => hideTease());
+  // hovering or focusing it keeps it up; leaving it starts a short goodbye
+  tease.addEventListener('pointerenter', () => { if (tease.classList.contains('typed')) clearTimeout(teaseT); });
+  tease.addEventListener('pointerleave', () => { if (tease.classList.contains('typed')){ clearTimeout(teaseT); teaseT = setTimeout(() => hideTease(), 3000); } });
+  tease.addEventListener('focusin', () => clearTimeout(teaseT));
+  // the same state on every page of this visit: open, minimized or closed
+  let ui = 'closed'; try { ui = sessionStorage.getItem(UI) || 'closed'; } catch(e){}
+  if (ui === 'open' || ui === 'min'){ root.classList.add('instant'); open(true, true); if (ui === 'min') minimize(true, true); requestAnimationFrame(() => root.classList.remove('instant')); }
+  scheduleTease();
   // the bag opens on top of the chat; close the chat so they don't overlap on small screens
   $('#bagBtn')?.addEventListener('click', () => { if (innerWidth < 620) open(false); });
 }

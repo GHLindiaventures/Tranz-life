@@ -3,6 +3,7 @@ import './features/footer/night-footer.js';
 import { state } from './app/state.js';
 import './features/navigation/dropdown.js';
 import './components/page-scrollbar.js';
+import './components/chat-loader.js';
 import { $ } from './utils/dom.js';
 import { initAboutStory } from './features/about/about-story.js';
 import { initHealInterlude } from './features/about/heal-interlude.js';

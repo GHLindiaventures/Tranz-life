@@ -2,6 +2,7 @@
 import './features/footer/night-footer.js';
 import './features/navigation/dropdown.js';
 import './components/page-scrollbar.js';
+import './components/chat-loader.js';
 import { $ } from './utils/dom.js';
 
 export const COMPLIANCE_REPORTS = {

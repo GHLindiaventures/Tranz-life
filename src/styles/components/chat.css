@@ -83,11 +83,44 @@
 .ch-send:disabled{opacity:.45;cursor:default}
 .ch-note{font-size:11.5px;color:var(--faint);text-align:center;padding:8px 14px 12px}
 
+/* ---------- noticing it: a breathing ring and a leaf that sways now and then (transform / opacity only) ---------- */
+.ch-fab{position:relative}
+.ch-fab::before{content:"";position:absolute;inset:0;border-radius:inherit;border:2px solid var(--moss);opacity:0;pointer-events:none;animation:chBreath 3.4s cubic-bezier(.3,0,.2,1) 2s infinite}
+@keyframes chBreath{0%{opacity:.55;transform:scale(1)}70%,100%{opacity:0;transform:scale(1.14,1.42)}}
+.ch-fab-ic svg{transform-origin:30% 85%;animation:chSway 7s ease-in-out 3s infinite}
+@keyframes chSway{0%,72%,100%{transform:rotate(0)}78%{transform:rotate(-14deg)}86%{transform:rotate(10deg)}93%{transform:rotate(-4deg)}}
+.chat.open .ch-fab::before,.chat.open .ch-fab-ic svg,.chat.teasing .ch-fab::before{animation:none;opacity:0}
+
+/* ---------- the welcome bubble beside the button (chat-widget.js: once per visit) ---------- */
+.ch-tease{position:relative;display:flex;align-items:flex-start;gap:4px;max-width:min(300px,calc(100vw - 32px));padding:12px 8px 12px 12px;border-radius:20px 20px 6px 20px;background:var(--panel-2);border:1px solid var(--line);box-shadow:0 18px 40px -16px rgba(20,45,24,.45);transform-origin:100% 100%;opacity:0;transform:translate3d(0,10px,0) scale(.6);transition:opacity .35s ease,transform .5s var(--ease)}
+.ch-tease[hidden]{display:none}
+.chat.instant,.chat.instant *{transition:none!important}   /* restoring the chat's state on a new page: no replayed opening */
+.ch-tease.in{opacity:1;transform:none}
+.ch-tease.out{opacity:0;transform:translate3d(8px,14px,0) scale(.55);transition:opacity .3s ease,transform .4s cubic-bezier(.6,0,.8,.4)}
+.ch-tease::after{content:"";position:absolute;right:22px;bottom:-7px;width:14px;height:14px;background:var(--panel-2);border-right:1px solid var(--line);border-bottom:1px solid var(--line);transform:rotate(45deg)}
+.ch-tease-body{display:flex;align-items:flex-start;gap:10px;padding:0;border:0;background:none;text-align:left;color:var(--ink);cursor:pointer}
+.ch-tease-body .ch-av{flex:none;width:30px;height:30px;border-radius:50%;background:var(--moss);color:var(--forest);display:grid;place-items:center}
+.ch-tease-body .ch-av svg{width:17px;height:17px}
+.ch-tease-txt{display:grid;min-height:30px;align-items:center;font-size:15px;line-height:1.4}
+.ch-tease-txt b{display:block;font-size:12px;font-weight:700;letter-spacing:.04em;color:var(--sage);margin-bottom:2px}
+.ch-tease .ch-dots{display:inline-flex;gap:4px;padding:4px 0}
+.ch-tease .ch-msg{display:none}
+.ch-tease.typed .ch-dots{display:none}
+.ch-tease.typed .ch-msg{display:block;animation:chMsgIn .4s ease both}
+@keyframes chMsgIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.ch-tease-x{flex:none;width:24px;height:24px;margin:-4px -2px 0 0;border:0;border-radius:50%;background:none;color:var(--muted);font-size:18px;line-height:1;cursor:pointer}
+.ch-tease-x:hover{background:var(--ground-2);color:var(--ink)}
+.ch-tease-body:focus-visible,.ch-tease-x:focus-visible{outline:2px solid var(--forest);outline-offset:3px;border-radius:12px}
+
 @media (max-width:620px){
   .chat{right:max(12px,env(safe-area-inset-right,0px));bottom:calc(12px + env(safe-area-inset-bottom,0px))}
   .ch-panel{width:calc(100vw - 24px);height:calc(100svh - 96px);border-radius:22px}
+  .ch-tease{max-width:min(260px,calc(100vw - 24px));padding:10px 6px 10px 10px}
+  .ch-tease-txt{font-size:14px}
 }
 @media (prefers-reduced-motion:reduce){
   .ch-panel,.chat.open .ch-panel{transition:opacity .2s,visibility 0s}
   .ch-dots span{animation:none;opacity:.6}
+  .ch-fab::before,.ch-fab-ic svg{animation:none}
+  .ch-tease,.ch-tease.out,.ch-tease.typed .ch-msg{transition:opacity .2s;transform:none;animation:none}
 }
