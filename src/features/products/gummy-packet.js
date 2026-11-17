@@ -91,11 +91,15 @@ export function createPacketModel(options = {}) {
     if (!origMesh) return;
 
     const origGeo = origMesh.geometry;
+    // the jar's packets (gummy-pour.js loadGeo) use this same geometry, centred and scaled to width 1 and laid flat. Keep that
+    // mapping so the hero packet can take over from one of them with no visible change (position, turn, size and look all match).
+    origGeo.computeBoundingBox();
+    state.norm = 1 / (origGeo.boundingBox.max.x - origGeo.boundingBox.min.x);
+    state.center = origGeo.boundingBox.getCenter(new THREE.Vector3());
     const mat = origMesh.material.clone();
     mat.side = THREE.DoubleSide;
-    mat.roughness = 0.32;
-    mat.metalness = 0.12;
-    mat.envMapIntensity = 0.6;
+    mat.roughness = Math.max(0.35, mat.roughness != null ? mat.roughness : 0.5);   // same as the jar's packets
+    mat.envMapIntensity = 0.55;
     mat.depthWrite = true;
 
     const posAttr = origGeo.attributes.position;

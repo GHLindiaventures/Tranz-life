@@ -340,6 +340,7 @@ function bindModelHooks(m, holder) {
         if (gm.parent) gm.parent.remove(gm);
         m.add(gm);
       }
+      if (ud.gummies.setRoot) ud.gummies.setRoot(m);   // the packets' matrices follow the model they now live in (HD or grid), not the first one
     }
   }
   // the Liver Booster's cap is the separate node `Cap` (on the model's own axis); its neck thread is left-handed, so it turns clockwise
