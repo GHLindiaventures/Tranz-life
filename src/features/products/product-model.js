@@ -78,7 +78,7 @@ function slantCut(mat, y0, k){
 
 // Liquid inside an opaque frosted bottle, faked in the material: below a (gently sloshing) level the surface is tinted and
 // shaded darker toward the base, with a soft bright meniscus line on the level. `fill` is in the model's own units (y).
-function liquidFill(mat, { fill = .29, tint = [.62, .85, .22], amount = .75 } = {}){
+function liquidFill(mat, { fill = .29, tint = [.70, .90, .26], amount = .68 } = {}){
   const uTime = { value:0 }, uFill = { value:fill };   // uFill: the liquid level in the model's own units (the Liver Booster lowers it as it pours)
   mat.onBeforeCompile = sh => {
     sh.uniforms.uTime = uTime; sh.uniforms.uFill = uFill;
@@ -96,10 +96,16 @@ void main() {`)
       float inLiq = 1. - smoothstep(-.003, .003, liqD);
       float depthShade = smoothstep(0., .9, -liqD);
       vec3 liqCol = vec3(${tint[0].toFixed(3)}, ${tint[1].toFixed(3)}, ${tint[2].toFixed(3)});
-      diffuseColor.rgb = mix(diffuseColor.rgb, diffuseColor.rgb*liqCol*1.25, inLiq*${amount.toFixed(3)});
-      diffuseColor.rgb *= 1. - .3*depthShade*inLiq;
-      diffuseColor.rgb = mix(diffuseColor.rgb*1.08 + .03, diffuseColor.rgb, inLiq);   // the air above the liquid is lighter
-      diffuseColor.rgb += vec3(.20, .26, .08)*exp(-liqD*liqD/.00006)*.9;`);
+      diffuseColor.rgb = mix(diffuseColor.rgb, diffuseColor.rgb*liqCol*1.22, inLiq*${amount.toFixed(3)});
+      diffuseColor.rgb *= 1. - .22*depthShade*inLiq;
+      diffuseColor.rgb = mix(diffuseColor.rgb*1.05 + vec3(.03, .04, .01), diffuseColor.rgb, inLiq);   // frosted air above
+      diffuseColor.rgb += vec3(.20, .26, .08)*exp(-liqD*liqD/.00006)*.9;
+
+      // Golden radiant illumination for the liver emblem at the bottom front
+      if (vLiqPos.z > 0.12 && vLiqPos.y > -0.76 && vLiqPos.y < -0.42) {
+        float goldMask = smoothstep(0.46, 0.76, diffuseColor.r) * smoothstep(0.40, 0.70, diffuseColor.g);
+        diffuseColor.rgb += vec3(0.36, 0.30, 0.08) * goldMask;
+      }`);
   };
   mat.customProgramCacheKey = () => 'liquid' + fill + ':' + amount;
   mat.userData.uTime = uTime; mat.userData.uFill = uFill;
@@ -361,7 +367,16 @@ function applyModelStyling(m, baseH, holder) {
     cm.needsUpdate = true; } });
 
   // the Liver Booster's bottle holds liquid (its cap shares the material, so the bottle gets its own copy)
-  m.traverse(n => { if (n.isMesh && n.name === 'Bottle' && n.material && n.material.map){ const lm = liquidFill(n.material = n.material.clone()); n.onBeforeRender = () => { lm.userData.uTime.value = performance.now()/1000; }; } });
+  m.traverse(n => {
+    if (n.isMesh && n.name === 'Bottle' && n.material && n.material.map) {
+      const bm = n.material = n.material.clone();
+      bm.metalness = 0.0;
+      bm.metalnessMap = null;
+      bm.roughness = 0.38; // Silky frosted glass
+      const lm = liquidFill(bm);
+      n.onBeforeRender = () => { lm.userData.uTime.value = performance.now() / 1000; };
+    }
+  });
 
   // Glass shell: apply realistic glass sheen to the Liver Booster bottle
   if (m.getObjectByName('Bottle') && m.getObjectByName('Cap')) {

@@ -167,25 +167,29 @@ export function makeGlassMaterial(base, opts = {}) {
     );
 
     const fragShaderBody = opts.isBottleShell
-      ? `// Bottle glass shell: rim fresnel, moving specular streak, faint inner glow
+      ? `// Bottle glass shell: rim fresnel, soft studio streaks, flared foot refraction, faint inner glow
   vec3 viewDir = normalize(vViewPosition);
   vec3 norm = normalize(vNormal);
   float NdotV = clamp(dot(norm, viewDir), 0.0, 1.0);
   float fresnel = pow(1.0 - NdotV, 3.0);
   float fBoost = clamp(uFresnelBoost, 0.0, 1.0);
 
-  // Glancing rim factor and soft shoulder curve
+  // Soft shoulder curve and heavy glass base pedestal
   float shoulderCurve = smoothstep(0.20, 0.45, vGlassPos.y) * (1.0 - smoothstep(0.45, 0.75, vGlassPos.y));
-  float rim = clamp(fresnel * 0.75 + shoulderCurve * 0.15, 0.0, 1.0);
+  float footBase = smoothstep(-0.78, -0.95, vGlassPos.y);
+  float rim = clamp(fresnel * 0.72 + shoulderCurve * 0.14 + footBase * 0.28, 0.0, 1.0);
 
   // Very low center alpha so frosted green body, label, and liquid shader remain crisp underneath
-  gl_FragColor.a = clamp(mix(uGlassAlpha, 0.58, rim), 0.0, 0.70);
+  gl_FragColor.a = clamp(mix(uGlassAlpha, 0.54, rim), 0.0, 0.68);
 
-  // Soft moving specular streak from studio lighting
+  // Soft diffused studio softbox highlights from left and right
   vec3 refl = reflect(-viewDir, norm);
-  float streak = smoothstep(0.35, 0.85, max(0.0, refl.x * 0.75 + refl.z * 0.35)) * 0.45;
+  float softboxL = smoothstep(0.36, 0.84, max(0.0, -refl.x * 0.85 + refl.z * 0.35));
+  float softboxR = smoothstep(0.42, 0.88, max(0.0, refl.x * 0.80 + refl.z * 0.30));
+  float streak = (softboxL * 0.38 + softboxR * 0.32);
   float rimLight = pow(fresnel, 2.2) * 0.55;
-  vec3 innerGlow = vec3(0.88, 1.0, 0.92) * (pow(fresnel, 3.0) * 0.20 + shoulderCurve * 0.10);
+  float footRing = smoothstep(-0.88, -0.95, vGlassPos.y) * (0.4 + 0.6 * pow(fresnel, 0.8));
+  vec3 innerGlow = vec3(0.92, 1.0, 0.88) * (pow(fresnel, 2.8) * 0.22 + shoulderCurve * 0.12 + footRing * 0.35);
 
   gl_FragColor.rgb += (vec3(1.0) * (streak + rimLight) + innerGlow) * fBoost;
 
@@ -411,10 +415,14 @@ export function applyBottleGlass(m) {
     return;
   }
 
-  // Subtle improvement to the Cap only: keep its material, just envMapIntensity ~0.8
+  // Warm natural golden oak cap with organic wood finish
   if (cap.material) {
     cap.material = cap.material.clone();
-    cap.material.envMapIntensity = 0.8;
+    cap.material.color.set(0xffe6c8); // warm natural honey oak
+    cap.material.metalness = 0.0;
+    cap.material.metalnessMap = null;
+    cap.material.roughness = 0.82;
+    cap.material.envMapIntensity = 0.40;
     cap.material.needsUpdate = true;
   }
 
@@ -450,12 +458,26 @@ export function applyBottleGlass(m) {
     }
   }
 
-  // Build lathe profile points (+0.8% larger, in Bottle's own local space)
+  // Build lathe profile points with flared pedestal foot (matching design board artwork)
   const points = [];
   points.push(new THREE.Vector2(0, minY));
   for (let i = 0; i < N; i++) {
+    const normH = i / (N - 1); // 0 at bottom, 1 at top
     const y = minY + (spanY * i) / (N - 1);
-    points.push(new THREE.Vector2(radii[i] * 1.008, y));
+    let r = radii[i];
+
+    // Flared pedestal foot styling near base (normH < 0.12):
+    // Incurve waist around normH = 0.08, flare out to rounded pedestal foot at base
+    if (normH < 0.03) {
+      r *= 1.055;
+    } else if (normH < 0.06) {
+      r *= 1.042;
+    } else if (normH < 0.10) {
+      r *= 1.002;
+    } else {
+      r *= 1.008;
+    }
+    points.push(new THREE.Vector2(r, y));
   }
 
   const latheGeo = new THREE.LatheGeometry(points, 48);
