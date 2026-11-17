@@ -402,7 +402,7 @@ function withGlb(builder, url){
   };
 }
 
-async function swapToHd(jar, p) {
+async function swapToHd(jar, p, renderer) {   // renderer (optional): upload the HD textures one per frame before the swap
   if (!jar || !p || !HD_LOADERS[p.id]) return;
   if (jar._isHd || jar._loadingHd) return;
   jar._loadingHd = true;
@@ -421,19 +421,33 @@ async function swapToHd(jar, p) {
       }
       const baseH = holder._baseH || jar.h || 4.0;
       const { wrap: wrapHd, m: mHd } = applyModelStyling(gltf.scene, baseH, holder);
-      const oldWrap = holder._currentWrap;
+      const attach = () => {
+        const oldWrap = holder._currentWrap;
+        if (oldWrap) {
+          holder.remove(oldWrap);
+        }
+        holder.add(wrapHd);
+        holder._currentWrap = wrapHd;
+        holder._hdWrap = wrapHd;
+        jar._isHd = true;
+        jar._loadingHd = false;
 
-      if (oldWrap) {
-        holder.remove(oldWrap);
-      }
-      holder.add(wrapHd);
-      holder._currentWrap = wrapHd;
-      holder._hdWrap = wrapHd;
-      jar._isHd = true;
-      jar._loadingHd = false;
-
-      bindModelHooks(mHd, holder);
-      window.dispatchEvent(new Event('tl:model-ready'));
+        bindModelHooks(mHd, holder);
+        window.dispatchEvent(new Event('tl:model-ready'));
+      };
+      // the HD textures are large: uploaded all in the first frame that draws them, they stalled that frame for 100-300 ms.
+      // Uploaded one per frame first (the grid model stays on screen meanwhile, as it does while the file downloads).
+      if (!renderer || !renderer.initTexture) { attach(); return; }
+      const texs = [];
+      wrapHd.traverse(n => { if (!n.isMesh || !n.material) return; (Array.isArray(n.material) ? n.material : [n.material]).forEach(mat => {
+        ['map', 'normalMap', 'roughnessMap', 'metalnessMap', 'alphaMap', 'bumpMap', 'emissiveMap', 'aoMap'].forEach(k => { const t = mat[k]; if (t && t.isTexture && !texs.includes(t)) texs.push(t); }); }); });
+      const step = () => {
+        if (!jar._loadingHd) { disposeObject(wrapHd); return; }   // closed meanwhile (restoreFromHd): drop it, as before
+        const t = texs.shift();
+        if (t) { try { renderer.initTexture(t); } catch (e) { /* drawn normally then */ } requestAnimationFrame(step); return; }
+        attach();
+      };
+      requestAnimationFrame(step);
     }, undefined, () => {
       jar._loadingHd = false;
     });

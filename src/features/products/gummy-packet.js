@@ -183,14 +183,23 @@ export function createPacketModel(options = {}) {
     const bodyPos = bodyGeo.attributes.position.array;
     const flapPos = flapGeo.attributes.position.array;
 
-    bodyPos.set(bodyBasePos);
-    flapPos.set(flapBasePos);
+    // The packet's shape depends only on t. This runs every frame (with t = 0 while the packet waits), and rewriting
+    // every vertex and recomputing the normals each time cost ~11 s of CPU per pass through the story; so the shape is
+    // rebuilt only when t changes. Everything else below (the flap's move, the gummy) still runs every call.
+    const shapeSame = state.shapeT === t;
+    state.shapeT = t;
+    if (!shapeSame) {
+      bodyPos.set(bodyBasePos);
+      flapPos.set(flapBasePos);
+    }
 
     if (t <= 0.001) {
-      bodyGeo.attributes.position.needsUpdate = true;
-      flapGeo.attributes.position.needsUpdate = true;
-      bodyGeo.computeVertexNormals();
-      flapGeo.computeVertexNormals();
+      if (!shapeSame) {
+        bodyGeo.attributes.position.needsUpdate = true;
+        flapGeo.attributes.position.needsUpdate = true;
+        bodyGeo.computeVertexNormals();
+        flapGeo.computeVertexNormals();
+      }
       flapMesh.position.set(0, 0, 0);
       flapMesh.rotation.set(0, 0, 0);
       if (gMesh) {
@@ -208,7 +217,7 @@ export function createPacketModel(options = {}) {
 
     const cutX = 0.58;
 
-    for (let i = 0; i < bodyPos.length; i += 3) {
+    if (!shapeSame) for (let i = 0; i < bodyPos.length; i += 3) {
       const bx = bodyBasePos[i];
       const by = bodyBasePos[i + 1];
       const bz = bodyBasePos[i + 2];
@@ -231,8 +240,10 @@ export function createPacketModel(options = {}) {
         }
       }
     }
-    bodyGeo.attributes.position.needsUpdate = true;
-    bodyGeo.computeVertexNormals();
+    if (!shapeSame) {
+      bodyGeo.attributes.position.needsUpdate = true;
+      bodyGeo.computeVertexNormals();
+    }
 
     // 2. Tear Flap: SEPARATES completely from the packet and drifts away to the right and down
     const peelT = Math.min(1, t * 1.5);
@@ -249,7 +260,7 @@ export function createPacketModel(options = {}) {
     flapMesh.position.set(flapSlideX, flapSlideY, flapSlideZ);
     flapMesh.rotation.set(flapRotX, flapRotY, flapRotZ);
 
-    for (let i = 0; i < flapPos.length; i += 3) {
+    if (!shapeSame) for (let i = 0; i < flapPos.length; i += 3) {
       const fx = flapBasePos[i];
       const fy = flapBasePos[i + 1];
       const fz = flapBasePos[i + 2];
@@ -260,8 +271,10 @@ export function createPacketModel(options = {}) {
         flapPos[i] = fx + 0.04 * curlK * peelEase;
       }
     }
-    flapGeo.attributes.position.needsUpdate = true;
-    flapGeo.computeVertexNormals();
+    if (!shapeSame) {
+      flapGeo.attributes.position.needsUpdate = true;
+      flapGeo.computeVertexNormals();
+    }
 
     // 3. Gummy emerges from inside the pocket into full, unobstructed visibility
     // When gProgress is supplied (0..1), it controls the gummy slide independently of packet tear

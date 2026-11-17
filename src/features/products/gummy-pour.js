@@ -146,14 +146,23 @@ function attachGummies(rootArg) {
     if (!ctl.mesh) return;
     for (let i = 0; i < GUMMY_COUNT; i++) { m4.compose(rest[i], restQ[i], sc.set(size[i], size[i], size[i])); ctl.mesh.setMatrixAt(i, m4); }
     ctl.mesh.instanceMatrix.needsUpdate = true; ctl.atRest = true;
+    if (ctl.fullMesh) ctl.fullMesh.count = 0;
   };
+  // Detail where it is seen: the packets that have left the jar (floating towards the camera) are drawn from the
+  // full-detail packet, in a second instanced mesh; the ones still in the jar keep the light packet, as the closed jar
+  // always shows them. (Drawing all 62 in full detail once the jar opened was ~8 million triangles a frame.)
+  const ZERO = new THREE.Matrix4().makeScale(0, 0, 0);
   // open: 0..1; time: seconds; targets: Float32Array(n*3) world positions the gummies float to. Call after the jar's matrices are current.
   ctl.update = (open, time, targets, ptr, heroHideK = 0) => {
     if (ctl.mesh && ctl.liteGeo) {
       const wantFull = open > 0.0005;
       if (wantFull && !ctl.fullGeo && !ctl.fullLoading) { ctl.fullLoading = true; loadGeo().then(({ geo }) => { ctl.fullGeo = geo; }).catch(() => {}); }
-      const g = wantFull && ctl.fullGeo ? ctl.fullGeo : ctl.liteGeo;
-      if (ctl.mesh.geometry !== g) ctl.mesh.geometry = g;
+      if (ctl.fullGeo && !ctl.fullMesh) {   // same material and the same space as the light packets (a child at the origin)
+        const fm = new THREE.InstancedMesh(ctl.fullGeo, ctl.mesh.material, POUR_COUNT);
+        fm.frustumCulled = false; fm.name = 'GummiesFull'; fm.renderOrder = ctl.mesh.renderOrder; fm.count = 0;
+        ctl.mesh.add(fm); ctl.fullMesh = fm;
+      }
+      if (ctl.mesh.geometry !== ctl.liteGeo) ctl.mesh.geometry = ctl.liteGeo;
     }   // ptr: { x, y, r } the pointer in world units and its reach, or null
     if (!ctl.mesh) return;
     if (open <= 0.0005) { if (!ctl.atRest) ctl.setIdle(); return; }
@@ -163,6 +172,7 @@ function attachGummies(rootArg) {
     const unit = ws.x * GS;                                       // a gummy's width in world units
     mouthW.set(AXIS.x, MOUTH_Y, AXIS.z).applyMatrix4(rm); ctrlW.set(AXIS.x, INSIDE_Y, AXIS.z).applyMatrix4(rm);
     upW.set(0, 1, 0);
+    const fullM = ctl.fullMesh; let nFull = 0;
     for (let i = 0; i < GUMMY_COUNT; i++) {
       const tau = rank[i] < 0 ? 0 : clamp((open - T0 - order[i] * SPAN) / DUR);   // (order has its own jitter)
       if (tau <= 0) {
@@ -208,9 +218,11 @@ function attachGummies(rootArg) {
       if (rank[i] === 0) { ctl.heroQ.copy(tmpQ).multiply(q); ctl.heroS = scale * ws.x; }   // this packet's world turn and width: the hero packet starts exactly here
       if (rank[i] === 0 && heroHideK > 0.002) scale = 0;   // the hero packet has taken its place (same pose, so no pop)
       m4.compose(pl, q, sc.set(scale, scale, scale));
-      ctl.mesh.setMatrixAt(i, m4);
+      if (fullM) { fullM.setMatrixAt(nFull++, m4); ctl.mesh.setMatrixAt(i, ZERO); }   // out of the jar: full detail
+      else ctl.mesh.setMatrixAt(i, m4);
     }
     ctl.mesh.instanceMatrix.needsUpdate = true;
+    if (fullM) { fullM.count = nFull; fullM.instanceMatrix.needsUpdate = true; }
   };
   ctl.setRoot = r => { if (r) { root = r; ctl.atRest = false; } };   // the HD swap (or back): re-parent the packets and use this model's world matrix
   ctl.restWorld = (i, out) => out.copy(rest[i]).applyMatrix4(root.matrixWorld);
@@ -228,6 +240,11 @@ function attachGummies(rootArg) {
   }).catch(() => { /* no packets if the file cannot load: the jar stays as it was */ });
   return ctl;
 }
+
+// The ingredient callouts are placed every frame, but while the gummy and the cards hold still their values repeat
+// exactly; writing an SVG attribute (even the same value) re-lays the SVG out, so values are written only when they change.
+const setA = (el, name, v) => { const c = el._a || (el._a = {}); if (c[name] !== v){ c[name] = v; el.setAttribute(name, v); } };
+const setS = (el, name, v) => { const c = el._s || (el._s = {}); if (c[name] !== v){ c[name] = v; el.style[name] = v; } };
 
 /* ------------------------------------------------------------------------------------------------ the director */
 let styled = false;
@@ -665,10 +682,10 @@ function createIngredientsDirector(L) {
         const a = (o.mobile ? clamp(1 - Math.abs(cur - k - 0.5) * 1.6) : clamp((cur - k) / 0.7)) * A;
         it.a = a;
         if (a <= 0.003) {
-          it.el.style.opacity = '0';
-          it.path.setAttribute('opacity', '0');
-          it.dotGlow.setAttribute('opacity', '0');
-          it.dot.setAttribute('opacity', '0');
+          setS(it.el, 'opacity', '0');
+          setA(it.path, 'opacity', '0');
+          setA(it.dotGlow, 'opacity', '0');
+          setA(it.dot, 'opacity', '0');
           return;
         }
 
@@ -702,9 +719,9 @@ function createIngredientsDirector(L) {
 
         // Slide card subtly inward as it fades in (spring entrance)
         const slideX = o.mobile ? 0 : (isLeft ? (1 - a) * -12 : (1 - a) * 12);
-        it.el.style.width = w + 'px';
-        it.el.style.transform = 'translate3d(' + (lx + slideX).toFixed(1) + 'px,' + ly.toFixed(1) + 'px,0)';
-        it.el.style.opacity = a.toFixed(3);
+        setS(it.el, 'width', w + 'px');
+        setS(it.el, 'transform', 'translate3d(' + (lx + slideX).toFixed(1) + 'px,' + ly.toFixed(1) + 'px,0)');
+        setS(it.el, 'opacity', a.toFixed(3));
 
         // Smooth Bezier Tendril:
         // P0 = (dotGx, dotGy) on gummy contour
@@ -730,26 +747,26 @@ function createIngredientsDirector(L) {
         const q2x = q1x + (p12x - q1x) * t;
         const q2y = q1y + (p12y - q1y) * t;
 
-        it.path.setAttribute('d', 'M ' + dotGx.toFixed(1) + ',' + dotGy.toFixed(1) + ' Q ' + q1x.toFixed(1) + ',' + q1y.toFixed(1) + ' ' + q2x.toFixed(1) + ',' + q2y.toFixed(1));
-        it.path.setAttribute('opacity', (a * 0.85).toFixed(3));
+        setA(it.path, 'd', 'M ' + dotGx.toFixed(1) + ',' + dotGy.toFixed(1) + ' Q ' + q1x.toFixed(1) + ',' + q1y.toFixed(1) + ' ' + q2x.toFixed(1) + ',' + q2y.toFixed(1));
+        setA(it.path, 'opacity', (a * 0.85).toFixed(3));
 
-        it.dotGlow.setAttribute('cx', dotGx.toFixed(1));
-        it.dotGlow.setAttribute('cy', dotGy.toFixed(1));
-        it.dotGlow.setAttribute('opacity', (a * 0.5).toFixed(3));
+        setA(it.dotGlow, 'cx', dotGx.toFixed(1));
+        setA(it.dotGlow, 'cy', dotGy.toFixed(1));
+        setA(it.dotGlow, 'opacity', (a * 0.5).toFixed(3));
 
-        it.dot.setAttribute('cx', dotGx.toFixed(1));
-        it.dot.setAttribute('cy', dotGy.toFixed(1));
-        it.dot.setAttribute('opacity', a.toFixed(3));
+        setA(it.dot, 'cx', dotGx.toFixed(1));
+        setA(it.dot, 'cy', dotGy.toFixed(1));
+        setA(it.dot, 'opacity', a.toFixed(3));
       });
     },
     hide() {
       if (!D.shown) return;
       layer.style.visibility = 'hidden'; D.shown = false;
       items.forEach(it => {
-        it.el.style.opacity = '0';
-        it.path.setAttribute('opacity', '0');
-        it.dotGlow.setAttribute('opacity', '0');
-        it.dot.setAttribute('opacity', '0');
+        setS(it.el, 'opacity', '0');
+        setA(it.path, 'opacity', '0');
+        setA(it.dotGlow, 'opacity', '0');
+        setA(it.dot, 'opacity', '0');
       });
     },
     // put everything back (overlay closed / another product)

@@ -485,7 +485,13 @@ function initProductJourney() {
     btn.addEventListener('click', closeOverlay);
     document.addEventListener('keydown', e => { if (e.key === 'Escape' && (ov.state === 'open' || ov.state === 'opening')) closeOverlay(); });
     // a safety net: reaching the end of the details hands over to the page (normally that happens a screen earlier)
-    el.addEventListener('scroll', () => { if (ov.state === 'open' && el.scrollTop >= el.scrollHeight - el.clientHeight - 2) handOff(ingOn() ? ingWarp(el.scrollTop + geo.fadeLen).sy : el.scrollTop + geo.fadeLen); }, { passive: true });
+    // (the position and the end come from the smooth scroll's cached values: reading scrollHeight / scrollTop on every
+    // scroll event forced a layout each time while the story's frame loop was writing styles)
+    el.addEventListener('scroll', () => {
+      if (ov.state !== 'open') return;
+      const L2 = ov.lenis, pos = L2 ? L2.scroll : el.scrollTop, end = L2 ? L2.limit : el.scrollHeight - el.clientHeight;
+      if (pos >= end - 2) handOff(ingOn() ? ingWarp(el.scrollTop + geo.fadeLen).sy : el.scrollTop + geo.fadeLen);
+    }, { passive: true });
     // the same smooth scroll as the page (same settings), so the display moves exactly like the page's showcase; its
     // frames are driven from our own frame loop. It is stopped while the display is closed.
     const lenis = reduce ? null : new Lenis({ wrapper: el, content: sec, lerp: 0.09, smoothWheel: true, wheelMultiplier: 1, touchMultiplier: 1.5, autoRaf: false });
@@ -538,7 +544,7 @@ function initProductJourney() {
     placeBadges(ov.sec);
     [ov.card, ov.lead].forEach(el => { if (el) { el.style.opacity = '0'; el.style.setProperty('--tin', '0'); } });   // words start from nothing
     ov.state = 'opening'; ov.t0 = ov.openedAt = performance.now();
-    swapToHd(flightJars[i], PRODUCTS[i]);
+    swapToHd(flightJars[i], PRODUCTS[i], L.renderer);   // (the renderer spreads the HD texture uploads over frames)
     flightCanvas.classList.add('active'); wasOn = true;
     ov.el.focus({ preventScroll: true });                  // arrow keys, Page keys and Space scroll it
   }
