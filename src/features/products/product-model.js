@@ -206,12 +206,27 @@ function revivaRollOn(){
   const hous = [V2(0,3.3),V2(.33,3.3),V2(.33,3.36),V2(.3,3.4),V2(.29,3.55),V2(.26,3.6),V2(.19,3.62),V2(0,3.62)];
   G.add(new THREE.Mesh(new THREE.LatheGeometry(hous, 64), new THREE.MeshPhysicalMaterial({ color:lin('#f4f4f2'), roughness:.35, clearcoat:.4 })));
   const ball = new THREE.Mesh(new THREE.SphereGeometry(.2, 40, 28), new THREE.MeshStandardMaterial({ color:lin('#d9dcdf'), metalness:1, roughness:.12, envMapIntensity:1.6 }));
+  ball.name = 'Roller_Ball';
   ball.position.y = 3.62; G.add(ball);
   // dark green label all round, printed front from the design
   const labelProf = [V2(.5,.27),V2(.5,2.5)];
   G.add(new THREE.Mesh(new THREE.LatheGeometry(band(labelProf, .27, 2.5, 1.008, 2), 96), new THREE.MeshStandardMaterial({ color:lin('#1d4527'), roughness:.55, envMapIntensity:.5 })));
   G.add(labelBand(labelProf, .27, 2.5, 2.24, 1.016, image(decalReviva)));
-  return { G, h:3.82 };
+
+  // Sleek black threaded cap on its own pivot for the unscrew animation
+  const capPivot = new THREE.Group();
+  capPivot.name = 'Jar_Cap_Pivot';
+  const capProf = [V2(0,2.98),V2(.48,2.98),V2(.485,3.02),V2(.485,4.0),V2(.46,4.08),V2(.4,4.12),V2(0,4.13)];
+  const capMesh = new THREE.Mesh(new THREE.LatheGeometry(capProf, 72), new THREE.MeshPhysicalMaterial({ color:lin('#141414'), roughness:.2, clearcoat:1, clearcoatRoughness:.1, envMapIntensity:1.2 }));
+  capMesh.name = 'Jar_Cap';
+  capPivot.add(capMesh);
+  G.add(capPivot);
+
+  G.userData.capPivot = capPivot;
+  G.userData.capRest = capPivot.position.clone();
+  G.userData.ball = ball;
+  G.userData.modelRoot = G;
+  return { G, h:4.13 };
 }
 
 function liverBottle(){
@@ -429,6 +444,35 @@ function bindModelHooks(m, holder) {
       }
     }
   }
+  // Roll-on products (cyclerelief / rollon): cap pivot and roller ball for rollon-director
+  const isRoller = !!m.getObjectByName('Roller_Body');
+  if (isRoller){
+    const ballMesh = m.getObjectByName('Roller_Ball');
+    if (ballMesh && ballMesh.geometry) {
+      ballMesh.geometry.computeBoundingBox();
+      const ballCenter = new THREE.Vector3();
+      ballMesh.geometry.boundingBox.getCenter(ballCenter);
+      ballMesh.geometry.center();
+      ballMesh.position.copy(ballCenter);
+      if (ballMesh.material) {
+        ballMesh.material.metalness = 1.0;
+        ballMesh.material.roughness = 0.10;
+        ballMesh.material.envMapIntensity = 1.8;
+        ballMesh.material.needsUpdate = true;
+      }
+    }
+    const setUd = target => {
+      if (!target) return;
+      if (pivot) {
+        target.userData.capPivot = pivot;
+        target.userData.capRest = pivot.position.clone();
+      }
+      if (ballMesh) target.userData.ball = ballMesh;
+      target.userData.modelRoot = m;
+    };
+    setUd(holder);
+    setUd(holder.parent);
+  }
   // the Liver Booster's cap is the separate node `Cap` (on the model's own axis); its neck thread is left-handed, so it turns clockwise
   const cap = m.getObjectByName('Cap');
   if (cap && !pivot && holder.parent){
@@ -534,6 +578,12 @@ function makeProduct(p, i, o = {}){
   G.position.y = -h/2;
   const g = new THREE.Group(); g.add(G);
   g.userData = { index:i, h };
+  if (G.userData.capPivot) {
+    g.userData.capPivot = G.userData.capPivot;
+    g.userData.capRest = G.userData.capRest;
+    g.userData.ball = G.userData.ball;
+    g.userData.modelRoot = G.userData.modelRoot;
+  }
   g.traverse(m => { m.userData.product = i; });
   return g;
 }

@@ -11,7 +11,7 @@ dist-single/
 .env.*.local
 
 # Tulsi anonymous insights (customer data stays on the server, never in git)
-data/
+/data/
 
 # tooling and OS noise
 scripts/_out/
@@ -30,6 +30,8 @@ __pycache__/
 *.crdownload
 meshy-model*.glb
 raw/
+reviva-rollon*.glb
+scratch/
 
 # client reference documents & assets
 brochures/

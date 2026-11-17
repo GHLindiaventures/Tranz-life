@@ -84,13 +84,12 @@ const DETAILS = {
       'Every woman’s journey is unique, and every menstrual cycle deserves care, comfort, and understanding. TranzLife CycleRelief reflects our commitment to convenient wellness solutions designed around the evolving needs of women.',
       'With a focus on menstrual wellness and everyday comfort, CycleRelief brings together nature-inspired thinking, scientific understanding, and consumer-focused product development to support practical self-care throughout your cycle.'
     ],
-    listTitle: 'Designed with Women in Mind',
-    listSubtitle: 'Menstruation is a natural part of the reproductive cycle. Access to practical self-care options and thoughtful innovation helps women make informed decisions about managing comfort.',
+    listTitle: 'Key Botanical Actives',
     list: [
-      ['A Focus on Comfort', 'Recognising the importance of comfort and well-being during menstruation, CycleRelief is positioned as a supportive women’s wellness solution.'],
-      ['Convenience for Everyday Life', 'Designed with modern lifestyles in mind, our approach emphasises practical solutions that seamlessly fit into women’s daily routines.'],
-      ['Inspired by Thoughtful Innovation', 'Combining scientific understanding, formulation expertise, and nature-inspired innovation in women’s wellness development.'],
-      ['Quality-Conscious Development', 'Committed to responsible formulation practices, appropriate product testing, and clear information for informed choices.']
+      ['Rosemary Essential Oil (Salvia rosmarinus)', 'Rich in 1,8-cineole and camphor to support healthy micro-circulation and gently ease localized muscular tension.'],
+      ['Damask Rose Extract (Rosa damascena)', 'Delicate floral essence containing geraniol and citronellol for soothing emotional balance and nervous system comfort.'],
+      ['Peppermint Cooling Oil (Mentha piperita)', 'Natural menthol triggers TRPM8 sensory cooling to provide instant, refreshing comfort for abdominal tightness.'],
+      ['100% Botanical Carrier Complex', 'Nourishing lightweight plant lipids providing effortless roller glide and fast absorption without greasy residue.']
     ],
     highlightsTitle: 'Our Commitment to Women’s Wellness',
     highlights: [
@@ -104,6 +103,31 @@ const DETAILS = {
     journeyTitle: 'Where Natural Intelligence Meets Scientific Innovation',
     journeyText: 'Committed to exploring innovative wellness solutions for a healthier, more confident future. TRANZLIFE BIOSCIENCES: Innovating Life Beyond Limits.',
     note: 'Use only as directed on the product label. Positioned around menstrual wellness, comfort, and everyday self-care. CycleRelief should not be presented as a medical treatment for clinical conditions. Consult a qualified healthcare professional if symptoms are severe, unusual, or persistent.'
+  },
+
+  reviva: {
+    eyebrow: 'Botanical Vitality · Targeted Roll-On Ritual',
+    title: 'Reviva™ Vitality & Comfort Roll-On',
+    tagline: 'Vitality in Every Touch. Botanical Care in Every Roll.',
+    intro: [
+      'TranzLife Reviva™ is formulated with pure Dill and Eucalyptus essential oils in the Spirit of Organics, crafted for daily vitality, micro-circulation, and nerve comfort.',
+      'Applied with a smooth, cooling massage roll-on around the navel to stimulate vitality reflex points as part of your morning wellness routine.'
+    ],
+    highlightsTitle: 'Why choose Reviva™ Roll-On?',
+    highlights: [
+      ['Convenient rollerball format', 'Mess-free, targeted topical application anytime, anywhere.'],
+      ['100% Pure Essential Oils', 'Carefully distilled Dill and Eucalyptus oils with zero synthetic fragrances.'],
+      ['Fast-absorbing & non-greasy', 'Penetrates quickly leaving skin nourished and comfortable.'],
+      ['Daily morning ritual', 'Effortlessly integrates into your everyday wellness lifestyle.']
+    ],
+    listTitle: 'Botanical Active Essentials',
+    list: [
+      ['Dill Essential Oil (E.O)', 'Pure botanical extract traditionally valued for micro-circulation and metabolic calm.'],
+      ['100% Plant-Based Carrier', 'Lightweight, nourishing plant lipids ensuring rapid skin absorption without greasy residue.'],
+      ['Eucalyptus Essential Oil', 'Provides a refreshing aromatic profile with a soothing, cooling sensory effect.'],
+      ['Targeted Reflex Ritual', 'Designed for gentle circular application around the navel to stimulate wellness pathways.']
+    ],
+    note: 'For external use only. Roll gently around the belly button every morning. This wellness product is not intended to treat, cure, or prevent disease. Consult a healthcare practitioner for personal medical conditions.'
   },
 
   liver: {

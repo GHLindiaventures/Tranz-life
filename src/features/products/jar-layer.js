@@ -22,8 +22,18 @@ function jarLayer(canvas){
   scene.add(new THREE.HemisphereLight(0xfff8e6, 0x4a5c30, .75));
   const key = new THREE.DirectionalLight(0xfff1d0, 1.1); key.position.set(-6, 9, 11); scene.add(key);
   const rim = new THREE.DirectionalLight(0xe2f3c4, .6); rim.position.set(9, 4, -7); scene.add(rim);
+  // the product display's hero lighting (off elsewhere): two strong white rim lights from behind on either side, a cool
+  // top light, so the product's edges catch a bright outline against the smoke, and a little more exposure
+  const heroRims = [[-10, 3, -9, 2.4], [10, 5, -8, 2.0], [0, 14, -2, 1.1]].map(([x, y, z]) => { const l = new THREE.DirectionalLight(0xffffff, 0); l.position.set(x, y, z); scene.add(l); return l; });
+  const HERO_I = [2.4, 2.0, 1.1];
+  let heroK = -1;
   const T = c => { const t = new THREE.CanvasTexture(c); t.encoding = THREE.sRGBEncoding; t.anisotropy = 4; return t; };
   const L = { renderer, scene, cam, T, W:1, H:1, halfH:1, halfW:1 };
+  L.setHeroLight = k => {
+    k = Math.round(Math.max(0, Math.min(1, k)) * 1000) / 1000; if (k === heroK) return; heroK = k;
+    heroRims.forEach((l, i) => { l.intensity = HERO_I[i] * k; });
+    key.intensity = 1.1 + 0.35 * k; renderer.toneMappingExposure = 1 + 0.12 * k;
+  };
   L.resize = () => { const r = canvas.getBoundingClientRect(); L.W = Math.max(1, r.width); L.H = Math.max(1, r.height); renderer.setSize(L.W, L.H, false); cam.aspect = L.W/L.H; cam.updateProjectionMatrix(); L.halfH = Math.tan(THREE.MathUtils.degToRad(15))*ZC; L.halfW = L.halfH*cam.aspect; };
   L.ppu = () => L.H/(2*L.halfH);
   L.place = (obj, x, y) => obj.position.set((x/L.W - .5)*2*L.halfW, -(y/L.H - .5)*2*L.halfH, obj.position.z);
