@@ -1,4 +1,4 @@
-// Pinned ritual story: turning jar, gliding cards, five-jar finale.
+// Pinned ritual story: turning jar, gliding cards, six-jar finale.
 import * as THREE from 'three';
 import { PRODUCTS } from '../../data/products.js';
 import { STORY } from '../../data/rituals.js';

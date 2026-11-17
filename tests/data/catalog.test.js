@@ -22,7 +22,7 @@ describe('catalogue data', () => {
     expect(HERBS.some(h => h.p != null)).toBe(true);
   });
   it('every product has a model and a product image', async () => {
-    const models = ['jar', 'inhaler', 'rollon', 'reviva', 'liver'];
+    const models = ['jar', 'inhaler', 'rollon', 'reviva', 'liver', 'energy'];
     PRODUCTS.forEach(p => expect(models).toContain(p.model));
   });
   it('the pipeline has one entry per stage', () => {

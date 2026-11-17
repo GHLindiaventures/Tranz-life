@@ -18,6 +18,7 @@ import { initLightbox } from './components/lightbox.js';
 import { initRootMap } from './features/story/root-map.js';
 import { initDay } from './features/story/day-story.js';
 import { initRitual } from './features/story/ritual-lineup.js';
+import { initChat } from './features/chat/chat-widget.js';
 import { initPremiumFx } from './features/ui/premium-fx.js';
 import { $ } from './utils/dom.js';
 
@@ -30,6 +31,7 @@ async function boot(){
   setLoad(36);
   try { state.hero = initFourWindows(); } catch(err){ console.warn('hero films unavailable', err); }
   Object.assign(thumbs, SHOTS); initLightbox();
+  try { initChat(); } catch(err){ console.warn('chat unavailable', err); }   // Tulsi wellness chat (features/chat)
   setLoad(88);
   try { state.roots = initRootMap(); } catch(err){ console.warn('roots unavailable', err); }
   try { state.day = initDay(); } catch(err){ console.warn('day story unavailable', err); }

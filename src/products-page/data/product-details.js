@@ -104,6 +104,32 @@ const DETAILS = {
     closingTitle: 'Making liver health a priority',
     closing: 'Liver health begins with everyday habits: a balanced diet, regular physical activity, limiting alcohol, maintaining a healthy weight and following medical advice about medicines.',
     note: 'Liver wellness products should not replace a balanced lifestyle, appropriate medical assessment or prescribed treatment. Consult a qualified healthcare professional if you have concerns about liver function.'
+  },
+  // Energy Booster (dhina-dev): wording from the supplied formulation artwork; no performance claims
+  energy: {
+    eyebrow: 'Herbal & Bioactive Wellness Formulation',
+    title: 'TranzLife Energy Booster™',
+    tagline: 'Energy. Stamina. Vitality. Every Day.',
+    intro: [
+      'TranzLife Energy Booster is a convenient, ready-to-use oral liquid designed to complement an active lifestyle and an everyday wellness routine.',
+      'It combines selected botanical and mineral-origin ingredients in a simple, measured daily format: 7.5 ml twice daily, or as advised by a healthcare professional.'
+    ],
+    listTitle: 'Key ingredients',
+    list: [
+      ['Ruta graveolens (Q)', 'A botanical ingredient listed in the supplied formulation artwork.'],
+      ['Hecla lava (3X)', 'A mineral-origin homeopathic preparation.'],
+      ['Symphytum officinale (Q)', 'A botanical ingredient listed in the supplied formulation artwork.'],
+      ['Calcarea phosphorica (8X)', 'A mineral-origin homeopathic preparation.'],
+      ['Echinacea angustifolia (Q)', 'A botanical ingredient listed in the supplied formulation artwork.']
+    ],
+    highlightsTitle: 'Why choose Energy Booster?',
+    highlights: [
+      ['Ready-to-use oral liquid', '500 ml, with a measuring device supplied in the pack.'],
+      ['Botanical-inspired formula', 'Selected botanical and mineral ingredients in one daily routine.'],
+      ['Made for active days', 'For adults who want to complement daily energy, activity and general well-being.'],
+      ['Quality-focused development', 'Refer to the approved product specification for the complete composition.']
+    ],
+    note: 'Use only as directed. Do not exceed the recommended serving. Consult a qualified healthcare professional before use if pregnant, breastfeeding, taking medication or managing a health condition. Keep out of reach of children.'
   }
 };
 

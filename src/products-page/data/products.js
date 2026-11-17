@@ -1,4 +1,4 @@
-// Product catalogue: the five TranzLife products with a 3D model from the client's design boards.
+// Product catalogue: the six TranzLife products from the client's design boards.
 // Names and short copy follow the client's product write-ups (full write-ups: product-details.js).
 // Ingredients follow the official composition sheet (src/data/ingredients.js); prices and sizes match src/data/products.js.
 const PRODUCTS = [
@@ -16,7 +16,10 @@ const PRODUCTS = [
     ing:['Dill essential oil','Eucalyptus essential oil','External use'], model:'reviva', fit:1.06 },
   { id:'liver', no:'05', short:'Liver Booster', name:'TranzLife Liver Booster', cat:'liquid', tag:'Liver wellness', price:649, size:'500 ml',
     desc:'A classical Ayurvedic liquid with eleven botanicals, led by Bhumyamalaki, Kalmegh and Kutki, for everyday liver wellness and a healthier lifestyle.',
-    ing:['Bhumyamalaki & Kalmegh','Kutki & Punarnava','11 botanicals'], model:'liver', fit:1.14 }
+    ing:['Bhumyamalaki & Kalmegh','Kutki & Punarnava','11 botanicals'], model:'liver', fit:1.14 },
+  { id:'energy', no:'06', short:'Energy Booster', name:'TranzLife Energy Booster', cat:'liquid', tag:'Energy & vitality', price:null, size:'500 ml oral liquid',
+    desc:'A herbal and bioactive oral liquid designed to complement an active lifestyle, daily energy and general well-being.',
+    ing:['Botanical & mineral','Oral liquid','Daily routine'], model:'energy', fit:1.12 }
 ];
 
 export { PRODUCTS };

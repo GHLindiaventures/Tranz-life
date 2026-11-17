@@ -1,5 +1,6 @@
-import { defineConfig } from 'vite';
+import { defineConfig, loadEnv } from 'vite';
 import { viteSingleFile } from 'vite-plugin-singlefile';
+import { createChatApi } from './server/chat-api.js';
 
 function staleServiceWorkerPlugin() {
   return {
@@ -23,13 +24,37 @@ function staleServiceWorkerPlugin() {
   };
 }
 
+// Runs the Tulsi chat API inside the Vite server, so `npm run dev` and `npm run preview` include the chat.
+function tulsiChat(env){
+  let api;
+  const mount = server => {
+    api ??= createChatApi(env);
+    server.middlewares.use((req, res, next) => api.handle(req, res, next));
+    server.httpServer?.once('listening', () => api.warmUp(server.config.logger));
+  };
+  return { name: 'tulsi-chat', configureServer: mount, configurePreviewServer: mount };
+}
+
 // `npm run build` makes a normal static site in dist/ for hosting.
 // `npm run build:single` makes one self-contained dist-single/index.html you can email or open from disk.
 export default defineConfig(({ mode }) => {
   const single = mode === 'single';
+  const env = loadEnv(mode, process.cwd(), '');
   return {
     base: './',
-    plugins: single ? [viteSingleFile()] : [staleServiceWorkerPlugin()],
+    server: {
+      host: true,
+      port: 5173,
+      strictPort: true,
+      allowedHosts: true
+    },
+    preview: {
+      host: true,
+      port: 5173,
+      strictPort: true,
+      allowedHosts: true
+    },
+    plugins: single ? [viteSingleFile()] : [staleServiceWorkerPlugin(), tulsiChat(env)],
     build: single
       ? { outDir: 'dist-single', assetsInlineLimit: Number.MAX_SAFE_INTEGER, cssCodeSplit: false }
       : {

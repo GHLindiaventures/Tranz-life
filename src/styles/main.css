@@ -12,6 +12,7 @@
 @import './components/transitions.css';
 @import './components/droplet.css';
 @import './components/shine.css';
+@import './components/chat.css';
 @import './sections/hero.css';
 @import './sections/lineup.css';
 @import './sections/explore.css';

@@ -15,8 +15,11 @@
   --sc-tint: #b6cba5;
   /* one standard background for every product: the soft mint of the Aroma Inhaler page (its STORY colour #38a58b at
      16% on the ground). The product's own colour still tints the icon, badges and title (--sc-tint). */
-  --sc-page: color-mix(in srgb, #38a58b 16%, var(--ground));
-  background: var(--sc-page);
+  --sc-page: var(--ov-b, color-mix(in srgb, #38a58b 16%, var(--ground)));
+  background:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .55 0'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='.16'/></svg>"),
+    linear-gradient(170deg, var(--ov-a, #e8efe4) 0%, var(--ov-b, #cfe0d4) 55%, var(--ov-c, #b3cdbd) 100%);
+  background-attachment: fixed;
   color: var(--forest);
 }
 
@@ -312,7 +315,10 @@
   overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior: contain;
-  background: color-mix(in srgb, #38a58b 16%, var(--ground));
+  /* matte finish: a soft per-product gradient under a fine grain, no gloss */
+  background:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .55 0'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='.16'/></svg>"),
+    linear-gradient(170deg, var(--ov-a, #e8efe4) 0%, var(--ov-b, #cfe0d4) 55%, var(--ov-c, #b3cdbd) 100%);
   opacity: 0;
   visibility: hidden;
   transition: opacity .4s ease, visibility 0s linear .4s;
@@ -360,7 +366,7 @@ body.sc-ov-open #statement.statement { z-index: 1 !important; }
 /* white ribbons behind the details (fixed to the screen, drawn in and away by showcase-scene.js) */
 .sc-bgpin { position: sticky; top: 0; height: 100vh; height: 100svh; margin-bottom: -100vh; margin-bottom: -100svh; z-index: 0; pointer-events: none; overflow: hidden; }
 .sc-ribbons { position: absolute; inset: 0; width: 100%; height: 100%; }
-.sc-ribbons path { fill: none; stroke: #fff; stroke-width: 34; stroke-linecap: round; stroke-dasharray: 0 9999; opacity: .9; }
+.sc-ribbons path { fill: none; stroke: rgba(255, 255, 255, .24); stroke-width: 34; stroke-linecap: round; stroke-dasharray: 0 9999; opacity: .85; }
 
 /* the ingredient badges beside the product (placed and moved by product-hand-off.js) */
 .sc-pbadges { position: absolute; inset: 0; pointer-events: none; }
@@ -516,8 +522,8 @@ body.sc-ov-open #statement.statement { z-index: 1 !important; }
 /* the falling details live in a viewport-sized layer; JS moves .sc-blocks by how far they have fallen */
 .sc-flow { inset: auto; position: sticky; top: 0; height: 100vh; height: 100svh; margin-top: -100vh; margin-top: -100svh; }
 .sc-blocks { inset: auto; left: 0; top: 0; width: 100%; height: 0; will-change: transform; }
-.showcase { height: 1000vh; height: 1000svh; }
-@media (max-width: 767px) { .showcase { height: 760vh; height: 760svh; } }
+.showcase { height: 1400vh; height: 1400svh; }   /* generous scroll runway: each detail frame holds stably and legibly */
+@media (max-width: 767px) { .showcase { height: 1050vh; height: 1050svh; } }
 
 /* big premium type for the held details: the display face for headings, the handwritten face for quotes, clean body text */
 .sc-slot--l { width: min(520px, calc(var(--co-l, 40vw) - var(--ch-gap, 72px) - 48px)); }
@@ -533,49 +539,71 @@ body.sc-ov-open #statement.statement { z-index: 1 !important; }
 .sc-slot .sc-size { font-size: 14px; letter-spacing: .18em; }
 .sc-c--fine p { font-size: clamp(15px, 1.2vw, 18px); }
 
-/* a different entrance for each kind of detail (toggled by .in, set by JS as the card fades in) */
-.sc-slot .dwi { transition: transform .9s cubic-bezier(.2, .8, .2, 1), opacity .7s ease, filter .8s ease, letter-spacing .9s ease; transition-delay: calc(var(--w) * 50ms); }
+/* a clean, responsive entrance for each kind of detail (toggled by .in as the card enters the stop) */
+.sc-slot .dwi { transition: transform .38s cubic-bezier(.16, 1, .3, 1), opacity .32s ease; transition-delay: calc(min(var(--w) * 12ms, 140ms)); }
 .sc-slot [data-split="rise"] .dw { overflow: hidden; padding-block: .08em; margin-block: -.08em; }
-.sc-slot .sc-c:not(.in) [data-split="rise"] .dwi { transform: translate3d(0, 110%, 0); }
-.sc-slot .sc-c:not(.in) [data-split="up"] .dwi { transform: translate3d(0, .7em, 0); opacity: 0; }
-.sc-slot .sc-c:not(.in) [data-split="blur"] .dwi { opacity: 0; filter: blur(10px); }
-.sc-slot .sc-c:not(.in) [data-split="spread"] .dwi { opacity: 0; letter-spacing: .6em; }
-.sc-slot .sc-c:not(.in) [data-split="slide"] .dwi { opacity: 0; transform: translate3d(-1em, 0, 0); }
-/* botanicals: each row's rule draws across, then its words slide in */
-.sc-slot .sc-list li { transform: translate3d(-26px, 0, 0); transition: opacity .6s ease, transform .9s cubic-bezier(.2, .8, .2, 1); transition-delay: calc(var(--i) * 130ms); }
+.sc-slot .sc-c:not(.in) [data-split="rise"] .dwi { transform: translate3d(0, 30%, 0); opacity: 0; }
+.sc-slot .sc-c:not(.in) [data-split="up"] .dwi { transform: translate3d(0, .35em, 0); opacity: 0; }
+.sc-slot .sc-c:not(.in) [data-split="blur"] .dwi { opacity: 0; filter: blur(4px); }
+.sc-slot .sc-c:not(.in) [data-split="spread"] .dwi { opacity: 0; letter-spacing: .15em; }
+.sc-slot .sc-c:not(.in) [data-split="slide"] .dwi { opacity: 0; transform: translate3d(-0.4em, 0, 0); }
+/* botanicals: each row smoothly fades in with a gentle slide */
+.sc-slot .sc-list li { transform: translate3d(-14px, 0, 0); opacity: 0; transition: opacity .35s ease, transform .4s cubic-bezier(.16, 1, .3, 1); transition-delay: calc(var(--i) * 40ms); }
 .sc-c.in .sc-list li { opacity: 1; transform: none; }
-/* ingredients: the badges pop in with a bounce, one after another */
-.sc-ing { transform: scale(.3) rotate(-18deg); transition: opacity .5s ease, transform .8s cubic-bezier(.34, 1.56, .64, 1); transition-delay: calc(var(--i) * 180ms); }
+/* ingredients: badges appear cleanly without harsh scale jumps */
+.sc-ing { transform: scale(.85); opacity: 0; transition: opacity .35s ease, transform .4s cubic-bezier(.16, 1, .3, 1); transition-delay: calc(var(--i) * 45ms); }
 .sc-c.in .sc-ing { opacity: 1; transform: none; }
-/* closing words: the heading rises from a mask, the paragraph is uncovered by a wipe */
-.sc-c--closing > p { clip-path: inset(0 100% 0 0); transition: clip-path 1.3s cubic-bezier(.6, .1, .2, 1) .35s; }
-.sc-c--closing.in > p { clip-path: inset(0 0 0 0); }
-/* price: counts up (JS), the button settles in last */
-.sc-c--buy .pill { opacity: 0; transform: translate3d(0, 16px, 0); transition: opacity .6s ease .9s, transform .8s cubic-bezier(.2, .8, .2, 1) .9s; }
+/* closing words: clean fade and rise with no clipped text or delayed wipe */
+.sc-c--closing > p { opacity: 0; transform: translate3d(0, 12px, 0); transition: opacity .38s ease, transform .4s cubic-bezier(.16, 1, .3, 1); }
+.sc-c--closing.in > p { opacity: 1; transform: none; }
+/* price and action button: immediate, ready for user interaction */
+.sc-c--buy .pill { opacity: 0; transform: translate3d(0, 10px, 0); transition: opacity .35s ease .05s, transform .4s cubic-bezier(.16, 1, .3, 1) .05s; }
 .sc-c--buy.in .pill { opacity: 1; transform: none; }
 
 /* keep the left column clear of the round dock button at the screen edge */
 .sc-slot--l { width: min(520px, calc(var(--co-l, 40vw) - var(--ch-gap, 72px) - 104px)); }
 .sc-slot--measure { width: min(360px, 24vw); }
 
-/* ---------- the details as one falling page: frames are part of the page, faint until the falling stops ---------- */
+/* ---------- the details as one falling page: frames are part of the page ---------- */
 .sc-blocks .sc-slot { position: absolute; }
 .sc-c { opacity: 1; will-change: auto; }
-/* before a card's stop its words are faint (so the falling page is never empty), and they take their own entrance at the stop */
-.sc-slot .sc-c:not(.in) [data-split="up"] .dwi, .sc-slot .sc-c:not(.in) [data-split="blur"] .dwi, .sc-slot .sc-c:not(.in) [data-split="spread"] .dwi, .sc-slot .sc-c:not(.in) [data-split="slide"] .dwi { opacity: .3; }
-.sc-slot .sc-c:not(.in) [data-split="rise"] .dwi { transform: translate3d(0, 55%, 0); opacity: .3; }
-.sc-slot .sc-list li { opacity: .3; }
-.sc-slot .sc-ing { opacity: .3; transform: scale(.7); }
-.sc-c--closing > p { clip-path: inset(0 70% 0 0); }
-.sc-c--buy .sc-price, .sc-c--buy .sc-size { opacity: .3; transition: opacity .8s ease; }
+/* inactive cards stay hidden off-screen to avoid ghost text or messy overlaps */
+.sc-slot .sc-c:not(.in) { opacity: 0; pointer-events: none; }
+.sc-slot .sc-c.in { opacity: 1; transition: opacity .32s ease; }
+.sc-c--buy .sc-price, .sc-c--buy .sc-size { opacity: 0; transition: opacity .35s ease; }
 .sc-c--buy.in .sc-price, .sc-c--buy.in .sc-size { opacity: 1; }
-.sc-c--buy .pill { opacity: .3; transform: none; }
-.sc-c--buy.in .pill { opacity: 1; }
 
-/* the section is shorter now that the stops are shorter */
-.showcase { height: 900vh; height: 900svh; }
-@media (max-width: 767px) { .showcase { height: 680vh; height: 680svh; } }
-
-/* the long paragraph moves as one piece (not word by word: about 25 animating layers made the stop stutter) */
-.sc-c--lede .sc-lede { opacity: .3; transform: translate3d(0, 22px, 0); transition: opacity 1s ease, transform 1.1s cubic-bezier(.2, .8, .2, 1); }
+/* the long paragraph moves smoothly as one piece */
+.sc-c--lede .sc-lede { opacity: 0; transform: translate3d(0, 14px, 0); transition: opacity .38s ease, transform .4s cubic-bezier(.16, 1, .3, 1); }
 .sc-c--lede.in .sc-lede { opacity: 1; transform: none; }
+
+/* the falling page fades out before it reaches the nav (top) and the "01 / 05" counter (bottom), so nothing is ever
+   written over anything else; the stops sit in the clear middle of the screen */
+.sc-flow {
+  -webkit-mask-image: linear-gradient(to bottom, transparent 5.5%, #000 11%, #000 87%, transparent 93%);
+  mask-image: linear-gradient(to bottom, transparent 5.5%, #000 11%, #000 87%, transparent 93%);
+}
+
+/* the tagline as a big handwritten quote on the empty side of a frame */
+.sc-slot .sc-c--tag .sc-tagline { font-size: clamp(38px, 3.6vw, 64px); line-height: 1.02; }
+
+/* room between the cards inside a frame (the list, the small print, ...) */
+.sc-slot { gap: clamp(44px, 7vh, 76px); }
+
+/* the big names are smaller, so the stretch they take (they are hidden over the product) stays short */
+.sc-big { font-size: min(10.5vw, 19vh); }
+@media (max-width: 767px) { .sc-big { font-size: 22vw; } }
+
+/* the product's name, big and centred behind the product while it spins in (display only, in the overlay) */
+.sc-heroname {
+  position: absolute; left: 0; right: 0; top: 11vh;
+  display: flex; flex-direction: column; align-items: center;
+  font-family: var(--f-display); font-stretch: 62%; font-weight: 850; text-transform: uppercase;
+  font-size: min(15vw, 26vh); line-height: .86; letter-spacing: -.005em; text-align: center; white-space: nowrap;
+  color: color-mix(in srgb, var(--sc-tint) 55%, #14301a);
+  opacity: 0; pointer-events: none; will-change: transform, opacity;
+}
+@media (max-width: 767px) { .sc-heroname { font-size: 24vw; top: 14vh; } }
+
+/* the product's own matte gradient (on .sc-overlay) shows through the page */
+.sc-overlay .showcase { --sc-page: var(--ov-b, #cfe0d4); background: transparent; }

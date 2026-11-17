@@ -10,7 +10,12 @@ dist-single/
 .env.local
 .env.*.local
 
+# Tulsi anonymous insights (customer data stays on the server, never in git)
+# (root folder only, so src/data stays tracked: server/insights.js writes data/insights.jsonl at the project root)
+/data/
+
 # tooling and OS noise
+.playwright-mcp/
 .vite/
 coverage/
 *.log
@@ -23,3 +28,11 @@ __pycache__/
 
 # raw hero video sources (28 MB); the web versions are in public/videos/hero
 scripts/source/videos/
+# temporary downloads and raw scan models
+*.crdownload
+meshy-model*.glb
+raw/
+
+# client reference documents & assets
+brochures/
+new resource/

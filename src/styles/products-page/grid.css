@@ -22,7 +22,7 @@
   /* same total height as before (so the cream hills below stay where they were), but the cards sit higher: less room
      above the heading and between heading and cards, the same amount added under the cards, so the hills that rise
      over this page's bottom never touch them */
-  padding: 0.5vw 0 14vw;
+  padding: clamp(96px, 12vh, 140px) 0 6vw;   /* clear of the nav on top; the showcase follows directly below */
   margin-top: 0;                    /* no longer tucked under the statement page, which cut off the heading */
 }
 /* no pin: the heading and cards scroll past normally (the reference does not pin them either) */
@@ -57,10 +57,10 @@
 .lu-sun { flex: none; width: 8vw; aspect-ratio: 1; color: var(--gold); will-change: transform; }
 .lu-sun svg { width: 100%; height: 100%; display: block; }
 
-/* five tall cards in one row */
+/* six tall cards in one row */
 .lineup-grid {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 1vw;
   align-items: start;
 }
@@ -176,18 +176,15 @@
   .lineup-wrap { padding-inline: 4vw; }
   .lineup-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 2vw; }
   .lineup-card { grid-column: span 2; padding: 1.2vw; }
-  .lineup-card:nth-child(4) { grid-column: 2 / span 2; }
-  .lineup-card:nth-child(5) { grid-column: 4 / span 2; }
   .lineup-name { padding: 1.6vw 6vw 1vw 1vw; }
   .lu-add { right: 2vw; bottom: 1.4vw; }
 }
-/* phones: heading stacked in two lines, 2 cards per row with the last one centred, no sunburst */
+/* phones: heading stacked in two lines, 2 cards per row, no sunburst */
 @media (max-width: 767px) {
   .lu-h { flex-direction: column; align-items: center; justify-content: center; gap: 0; font-size: 17.6vw; text-align: center; white-space: normal; }
   .lu-sun { display: none; }
   .lineup-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 3vw; }
-  .lineup-card, .lineup-card:nth-child(4), .lineup-card:nth-child(5) { grid-column: auto; padding: 2.5vw; }
-  .lineup-card:nth-child(5) { grid-column: 1 / -1; justify-self: center; width: calc(50% - 1.5vw); }
+  .lineup-card { grid-column: auto; padding: 2.5vw; }
   .lineup-name { font-size: 17px; padding: 2.4vw 8vw 1vw 1vw; }
   .lu-add { right: 3vw; bottom: 2vw; }
 }
@@ -195,3 +192,11 @@
   .lu-h .stw-i { transform: none; }
   .lu-ch { transition: none; }
 }
+
+/* the details are not on the page itself: they open (in the overlay) when a product is chosen, and the product returns to its card at the end. The sections stay in the DOM because the overlay is built from the showcase. */
+body:not(.scene-on) .pp-main > #showcase, body:not(.scene-on) .pp-main > #statement { display: none; }
+.lineup { min-height: 100vh; min-height: 100svh; }
+
+
+/* the shadow under each product is drawn in 3D now (jar-layer.js), so the flat one in the card is not needed */
+.lineup-shadow { display: none; }

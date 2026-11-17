@@ -1,4 +1,4 @@
-// Procedural 3D models of the six TranzLife products. Shapes follow the client's design boards and the
+// 3D models of the six TranzLife products (procedural, or scanned .glb files). Shapes follow the client's design boards and the
 // printed labels are the real artwork lifted from those boards (see scripts/make-product-assets.py).
 import * as THREE from 'three';
 import { seeded } from '../../utils/math.js';
@@ -8,6 +8,12 @@ import decalRollon from '../../assets/products/decal-rollon.webp';
 import decalReviva from '../../assets/products/decal-reviva.webp';
 import decalLiver from '../../assets/products/decal-liver.webp';
 import decalEnergy from '../../assets/products/decal-energy.webp';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { attachGummies } from './gummy-pour.js';
+import liverGlbUrl from '../../assets/products/liver-booster.glb?url';
+import cycleReliefGlbUrl from '../../assets/products/cyclerelief.glb?url';
+import lungBoosterGlbUrl from '../../assets/products/lungbooster.glb?url';
+import energyGlbUrl from '../../assets/products/energy-booster.glb?url';   // scripts/add_energy_threads.mjs
 
 const V2 = (x, y) => new THREE.Vector2(x, y);
 const lin = hex => new THREE.Color(hex).convertSRGBToLinear();
@@ -66,6 +72,36 @@ function slantCut(mat, y0, k){
     sh.fragmentShader = sh.fragmentShader.replace('void main() {', `varying vec3 vObjPos;\nvoid main() {\n  if (vObjPos.y < ${y0.toFixed(4)} + ${k.toFixed(4)}*vObjPos.x) discard;`);
   };
   mat.customProgramCacheKey = () => 'slant' + y0 + ':' + k;
+  return mat;
+}
+
+// Liquid inside an opaque frosted bottle, faked in the material: below a (gently sloshing) level the surface is tinted and
+// shaded darker toward the base, with a soft bright meniscus line on the level. `fill` is in the model's own units (y).
+function liquidFill(mat, { fill = .29, tint = [.62, .85, .22], amount = .75 } = {}){
+  const uTime = { value:0 }, uFill = { value:fill };   // uFill: the liquid level in the model's own units (the Liver Booster lowers it as it pours)
+  mat.onBeforeCompile = sh => {
+    sh.uniforms.uTime = uTime; sh.uniforms.uFill = uFill;
+    sh.vertexShader = sh.vertexShader.replace('void main() {', `varying vec3 vLiqPos;
+void main() {
+  vLiqPos = position;`);
+    sh.fragmentShader = sh.fragmentShader
+      .replace('void main() {', `varying vec3 vLiqPos;
+uniform float uTime;
+uniform float uFill;
+void main() {`)
+      .replace('#include <map_fragment>', `#include <map_fragment>
+      float liqLevel = uFill + .006*sin(uTime*1.7 + vLiqPos.x*10.) + .014*sin(uTime*.8)*vLiqPos.x + .005*sin(uTime*1.1 + vLiqPos.z*8.);
+      float liqD = vLiqPos.y - liqLevel;
+      float inLiq = 1. - smoothstep(-.003, .003, liqD);
+      float depthShade = smoothstep(0., .9, -liqD);
+      vec3 liqCol = vec3(${tint[0].toFixed(3)}, ${tint[1].toFixed(3)}, ${tint[2].toFixed(3)});
+      diffuseColor.rgb = mix(diffuseColor.rgb, diffuseColor.rgb*liqCol*1.25, inLiq*${amount.toFixed(3)});
+      diffuseColor.rgb *= 1. - .3*depthShade*inLiq;
+      diffuseColor.rgb = mix(diffuseColor.rgb*1.08 + .03, diffuseColor.rgb, inLiq);   // the air above the liquid is lighter
+      diffuseColor.rgb += vec3(.20, .26, .08)*exp(-liqD*liqD/.00006)*.9;`);
+  };
+  mat.customProgramCacheKey = () => 'liquid' + fill + ':' + amount;
+  mat.userData.uTime = uTime; mat.userData.uFill = uFill;
   return mat;
 }
 
@@ -183,16 +219,32 @@ function revivaRollOn(){
 
 function liverBottle(){
   const G = new THREE.Group();
-  const prof = [V2(0,0),V2(.4,0),V2(.47,.03),V2(.5,.12),V2(.5,2.9),V2(.48,2.98),V2(.44,3.04),V2(.42,3.06)];
+  const prof = [
+    V2(0,0), V2(.4,0), V2(.47,.03), V2(.5,.12), V2(.5,2.9), V2(.48,2.98), V2(.44,3.04),
+    V2(.38,3.12), V2(.34,3.20),
+    V2(.36,3.24), V2(.36,3.27), V2(.33,3.30),
+    V2(.33,3.75), V2(.34,3.78), V2(.33,3.82), V2(.27,3.82),
+    V2(.25,3.78), V2(.25,3.30), V2(0,3.30)
+  ];
   // frosted green glass
-  G.add(new THREE.Mesh(new THREE.LatheGeometry(prof, 80), new THREE.MeshPhysicalMaterial({ color:lin('#c7d585'), roughness:.5, metalness:0, clearcoat:.4, clearcoatRoughness:.35, envMapIntensity:.8, emissive:lin('#2e3a08'), emissiveIntensity:.25 })));
+  const glass = new THREE.MeshPhysicalMaterial({ color:lin('#c7d585'), roughness:.5, metalness:0, clearcoat:.4, clearcoatRoughness:.35, envMapIntensity:.8, emissive:lin('#2e3a08'), emissiveIntensity:.25 });
+  G.add(new THREE.Mesh(new THREE.LatheGeometry(prof, 80), glass));
   G.add(labelBand(prof, .61, 2.66, 2.24, 1.012, image(decalLiver), { roughness:.5 }));
+  // screw threads around neck
+  for (let k = 0; k < 3; k++){
+    const t = new THREE.Mesh(new THREE.TorusGeometry(.310, .004, 8, 48), glass);
+    t.rotation.x = Math.PI / 2 - 0.06;
+    t.position.y = 3.32 + k * .065;
+    G.add(t);
+  }
   // light oak cap with the angled top
   const cap = new THREE.CylinderGeometry(.43, .43, 1, 72, 1), pos = cap.attributes.position;
   for (let i = 0; i < pos.count; i++){ const y = pos.getY(i); if (y > 0) pos.setY(i, y + .13*pos.getX(i)/.43); }
   cap.computeVertexNormals(); cap.translate(0, 3.02 + .5, 0);
   const ot = oak();
-  G.add(new THREE.Mesh(cap, new THREE.MeshStandardMaterial({ color:0xffffff, map:ot, roughness:.62, metalness:0, envMapIntensity:.5 })));
+  const capMesh = new THREE.Mesh(cap, new THREE.MeshStandardMaterial({ color:0xffffff, map:ot, roughness:.62, metalness:0, envMapIntensity:.5 }));
+  capMesh.name = 'cap';
+  G.add(capMesh);
   return { G, h:4.16 };
 }
 
@@ -215,11 +267,222 @@ function energyBottle(){
   return { G, h:Y(127) };
 }
 
-const BUILDERS = { jar:gummiesJar, inhaler:breatheFreeInhaler, rollon:calmRollOn, reviva:revivaRollOn, liver:liverBottle, energy:energyBottle };
+// Some products are scanned models (.glb files). Each loads once for the page; until it arrives the drawn product
+// stands in (and stays if the file cannot be loaded). Every scene gets its own copy.
+const glbLoads = new Map();
+function loadGlb(url){
+  if (!glbLoads.has(url)) glbLoads.set(url, new Promise((res, rej) => new GLTFLoader().load(url, g => res(g.scene), undefined, rej)));
+  return glbLoads.get(url);
+}
+
+const HD_LOADERS = {
+  gummies: () => import('../../assets/products/lungbooster-hd.glb?url').then(m => m.default),
+  rollon: () => import('../../assets/products/cyclerelief-hd.glb?url').then(m => m.default),
+  liver: () => import('../../assets/products/liver-booster-hd.glb?url').then(m => m.default),
+  energy: () => import('../../assets/products/energy-booster-hd.glb?url').then(m => m.default),
+};
+
+function disposeObject(obj) {
+  if (!obj) return;
+  obj.traverse(n => {
+    if (n.isMesh) {
+      if (n.geometry) n.geometry.dispose();
+      if (n.material) {
+        const mats = Array.isArray(n.material) ? n.material : [n.material];
+        mats.forEach(mat => {
+          ['map', 'normalMap', 'roughnessMap', 'metalnessMap', 'alphaMap', 'bumpMap', 'emissiveMap'].forEach(k => {
+            if (mat[k] && mat[k].isTexture) mat[k].dispose();
+          });
+          mat.dispose();
+        });
+      }
+    }
+  });
+}
+
+function applyModelStyling(m, baseH, holder) {
+  const flags = []; m.traverse(n => { if (/^Flag/i.test(n.name)) flags.push(n); }); flags.forEach(n => n.parent && n.parent.remove(n));   // studio reflector cards that came with the file
+  const box = new THREE.Box3().setFromObject(m), size = box.getSize(new THREE.Vector3()), mid = box.getCenter(new THREE.Vector3());
+  const k = baseH / size.y;                     // same height as the drawn product, standing on y = 0
+  m.scale.setScalar(k); m.position.set(-mid.x * k, -box.min.y * k, -mid.z * k);
+  const wrap = new THREE.Group(); wrap.add(m);
+
+  // glass (KHR_materials_transmission) is not drawn by this version of three.js and comes out solid white: show it as
+  // clear, lightly tinted glass that lets the product behind it through
+  m.traverse(n => { if (n.isMesh && n.material && n.material.transmission > 0) { const gm = n.material = n.material.clone(); gm.transmission = 0; gm.transparent = true; gm.opacity = .5; gm.depthWrite = false; gm.envMapIntensity = 1.6; gm.roughness = Math.min(gm.roughness, .12); n.renderOrder = 2;
+    // the Lung Booster jar is glossier: a hard clear-coat on top and brighter reflections (the more reflective glass reads as thicker)
+    if (n.name === 'Jar_Glass'){ gm.color = new THREE.Color(0x24382d); gm.roughness = 0; gm.metalness = 0; gm.clearcoat = 1; gm.clearcoatRoughness = 0; gm.reflectivity = 1; gm.envMapIntensity = 0.9; gm.opacity = .24; }
+  } });
+
+  // the CycleRelief scan's texture atlas is a patchwork: its normal map and metal/roughness map carry the seams between the patches,
+  // which read as cracks and scratches on the cap and label. Drop those maps (the colour map is clean) and set plain values.
+  const isRoller = !!m.getObjectByName('Roller_Body');   // (the Lung Booster has a node called Jar_Cap too: leave that one alone)
+  m.traverse(n => { if (isRoller && n.isMesh && (n.name === 'Jar_Cap' || n.name === 'Roller_Body') && n.material){
+    const cm = n.material = n.material.clone(); cm.normalMap = null; cm.metalnessMap = null; cm.roughnessMap = null;
+    cm.metalness = 0; cm.roughness = n.name === 'Jar_Cap' ? .28 : .42; cm.envMapIntensity = .8;
+    if (n.name === 'Jar_Cap'){ cm.map = null; cm.color.set(0x070707); cm.roughness = .16; cm.envMapIntensity = 1.1; }   // the cap: one clean glossy black instead of the scan's patchy colour
+    cm.needsUpdate = true; } });
+
+  // the Liver Booster's bottle holds liquid (its cap shares the material, so the bottle gets its own copy)
+  m.traverse(n => { if (n.isMesh && n.name === 'Bottle' && n.material && n.material.map){ const lm = liquidFill(n.material = n.material.clone()); n.onBeforeRender = () => { lm.userData.uTime.value = performance.now()/1000; }; } });
+
+  // Anisotropy = 8 and mipmaps kept on for all textures on the model
+  wrap.traverse(n => {
+    if (n.isMesh) {
+      n.frustumCulled = false;
+      if (n.material) {
+        const mats = Array.isArray(n.material) ? n.material : [n.material];
+        mats.forEach(mat => {
+          ['map', 'normalMap', 'roughnessMap', 'metalnessMap', 'alphaMap', 'bumpMap', 'emissiveMap'].forEach(slot => {
+            const tex = mat[slot];
+            if (tex && tex.isTexture) {
+              tex.anisotropy = 8;
+              tex.generateMipmaps = true;
+              tex.minFilter = THREE.LinearMipmapLinearFilter;
+              tex.needsUpdate = true;
+            }
+          });
+        });
+      }
+      n.userData.product = holder.parent ? holder.parent.userData.index : undefined;
+    }
+  });
+
+  return { wrap, m };
+}
+
+function bindModelHooks(m, holder) {
+  const pivot = m.getObjectByName('Jar_Cap_Pivot');
+  if (pivot && holder.parent){
+    const y0 = pivot.position.y;
+    const turns = pivot.userData.turns || 2.5, lift = pivot.userData.lift || .36;   // per model (glTF extras on the pivot node)
+    holder.parent.userData.unscrew = u => { const k = Math.min(1, Math.max(0, u)), e = k*k*(3 - 2*k); pivot.rotation.y = k*turns*Math.PI*2; pivot.position.y = y0 + e*lift; };
+  }
+  // the Lung Booster (Jar_Label + Jar_Cap_Pivot): gummies packed in the jar; the pour moment (gummy-pour.js) drives the cap and the gummies
+  if (pivot && holder.parent && m.getObjectByName('Jar_Label')){
+    const ud = holder.parent.userData; ud.capPivot = pivot; ud.capRest = pivot.position.clone(); ud.modelRoot = m;
+    if (!ud.gummies) {
+      ud.gummies = attachGummies(m);
+    } else {
+      const gm = ud.gummies.mesh;
+      if (gm && gm.parent !== m) {
+        if (gm.parent) gm.parent.remove(gm);
+        m.add(gm);
+      }
+      if (ud.gummies.setRoot) ud.gummies.setRoot(m);   // the packets' matrices follow the model they now live in (HD or grid), not the first one
+    }
+  }
+  // the Liver Booster's cap is the separate node `Cap` (on the model's own axis); its neck thread is left-handed, so it turns clockwise
+  const cap = m.getObjectByName('Cap');
+  if (cap && !pivot && holder.parent){
+    const y0 = cap.position.y;
+    holder.parent.userData.unscrew = u => { const k = Math.min(1, Math.max(0, u)), e = k*k*(3 - 2*k); cap.rotation.y = -k*2.5*Math.PI*2; cap.position.y = y0 + e*.5; };
+  }
+  // the Liver Booster's ingredients moment (liver-pour.js) drives the cap and the liquid level in the bottle
+  if (cap && !pivot && holder.parent && m.getObjectByName('Bottle')){
+    const ud = holder.parent.userData, bm = m.getObjectByName('Bottle');
+    ud.liverCap = cap; ud.capRest = cap.position.clone(); ud.modelRoot = m; ud.liverFill = bm.material && bm.material.userData && bm.material.userData.uFill;
+  }
+}
+
+function withGlb(builder, url){
+  return (p, o) => {
+    const base = builder(p, o), holder = new THREE.Group();
+    holder.add(base.G);
+    holder._baseH = base.h;
+    loadGlb(url).then(src => {
+      const { wrap, m } = applyModelStyling(src.clone(true), base.h, holder);
+      holder.remove(base.G); holder.add(wrap);
+      holder._gridWrap = wrap;
+      holder._currentWrap = wrap;
+      bindModelHooks(m, holder);
+      window.dispatchEvent(new Event('tl:model-ready'));   // sizes taken from the stand-in are out of date now
+    }).catch(() => { /* keep the drawn product */ });
+    return { G: holder, h: base.h };
+  };
+}
+
+async function swapToHd(jar, p) {
+  if (!jar || !p || !HD_LOADERS[p.id]) return;
+  if (jar._isHd || jar._loadingHd) return;
+  jar._loadingHd = true;
+  try {
+    const url = await HD_LOADERS[p.id]();
+    if (!jar._loadingHd) return;
+    new GLTFLoader().load(url, gltf => {
+      if (!jar._loadingHd) {
+        disposeObject(gltf.scene);
+        return;
+      }
+      const holder = jar.b && jar.b.children && jar.b.children[0];
+      if (!holder) {
+        disposeObject(gltf.scene);
+        return;
+      }
+      const baseH = holder._baseH || jar.h || 4.0;
+      const { wrap: wrapHd, m: mHd } = applyModelStyling(gltf.scene, baseH, holder);
+      const oldWrap = holder._currentWrap;
+
+      if (oldWrap) {
+        holder.remove(oldWrap);
+      }
+      holder.add(wrapHd);
+      holder._currentWrap = wrapHd;
+      holder._hdWrap = wrapHd;
+      jar._isHd = true;
+      jar._loadingHd = false;
+
+      bindModelHooks(mHd, holder);
+      window.dispatchEvent(new Event('tl:model-ready'));
+    }, undefined, () => {
+      jar._loadingHd = false;
+    });
+  } catch (e) {
+    jar._loadingHd = false;
+  }
+}
+
+function restoreFromHd(jar) {
+  if (!jar) return;
+  jar._loadingHd = false;
+  if (!jar._isHd) return;
+  const holder = jar.b && jar.b.children && jar.b.children[0];
+  if (!holder || !holder._gridWrap) return;
+
+  const hdWrap = holder._hdWrap;
+  const gridWrap = holder._gridWrap;
+  const gridModel = gridWrap.children[0];
+
+  holder.remove(hdWrap);
+  holder.add(gridWrap);
+  holder._currentWrap = gridWrap;
+  holder._hdWrap = null;
+  jar._isHd = false;
+
+  if (gridModel) {
+    bindModelHooks(gridModel, holder);
+  }
+
+  if (hdWrap) {
+    disposeObject(hdWrap);
+  }
+}
+
+// Two sets of models. Drawn (default): the procedural products, light enough for every page (the home page's day
+// story and ritual use these). Scanned: the products page opts in (useScannedModels) to the scanned .glb files, with
+// the drawn product (or nothing) standing in until each loads, and the HD swap and gummy moment that go with them.
+const DRAWN = { jar:gummiesJar, inhaler:breatheFreeInhaler, rollon:calmRollOn, reviva:revivaRollOn, liver:liverBottle, energy:energyBottle };
+const SCANNED = { ...DRAWN,
+  jar:withGlb(() => ({ G: new THREE.Group(), h: 4.0 }), lungBoosterGlbUrl),
+  rollon:withGlb(calmRollOn, cycleReliefGlbUrl),
+  liver:withGlb(liverBottle, liverGlbUrl),
+  energy:withGlb(energyBottle, energyGlbUrl) };
+let scanned = false;
+function useScannedModels(on = true){ scanned = on; }
 
 // Builds a product, centred on its own middle. Returns a group with userData.h (its height).
 function makeProduct(p, i, o = {}){
-  const { G, h } = BUILDERS[p.model](p, o);
+  const { G, h } = (scanned ? SCANNED : DRAWN)[p.model](p, o);
   G.position.y = -h/2;
   const g = new THREE.Group(); g.add(G);
   g.userData = { index:i, h };
@@ -240,4 +503,4 @@ function studioLeaf(color){
   return new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ map:t, side:THREE.DoubleSide, roughness:.5, envMapIntensity:.5 }));
 }
 
-export { makeProduct, berryGeometry, gummyMaterial, studioLeaf };
+export { makeProduct, berryGeometry, gummyMaterial, studioLeaf, swapToHd, restoreFromHd, useScannedModels };

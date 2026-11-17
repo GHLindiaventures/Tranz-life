@@ -3,7 +3,7 @@
 // Scroll drives one progress value P (0..1) through the showcase: see journeyProgress() in showcase-scene.js.
 //   0.12 .. 0.70  pinned scene: spin, reveal, detail
 //   0.70 .. 1     the statement's scalloped curtain rises over the pin; the product drifts up and is covered
-// Below the curtain, #lineup shows five cards; each product stands on the panel of its card (measured from the DOM).
+// Below the curtain, #lineup shows six cards; each product stands on the panel of its card (measured from the DOM).
 //
 // Changes from dhina-dev for this page:
 //  - there is no hero here: the page opens where dhina-dev's journey has the product in the middle (P = ARRIVE),
@@ -17,13 +17,16 @@ import { ScrollTrigger } from '../lib/gsap.js';
 import { PRODUCTS } from './data/products.js';
 import { STORY } from './data/product-story.js';
 import { jarLayer } from '../features/products/jar-layer.js';
+import { swapToHd, restoreFromHd } from '../features/products/product-model.js';
+import { createIngredientsDirector } from '../features/products/gummy-pour.js';
+// DISABLED until liver-pour.js exists: import { createLiverDirector } from '../features/products/liver-pour.js';
 import Lenis from 'lenis';
 import { state } from '../app/state.js';
+import { entranceOrder, highlightIndex } from './grid-math.js';
 import { makeScheduler } from './frame-scheduler.js';
 import {
   calcIntroText, calcHlCallout, calcPinBadge, walkAt, chapterCardAlpha, calcProductFrame, calcFrameDraw, frameHalfPaths, leafOpen, FRAME_LEAVES, journeyProgress, calcHoldTransform, populateShowcaseDOM, updateShowcaseDOM, placeBadges, createShowcaseDecor
 } from './showcase-scene.js';
-import { entranceOrder, highlightIndex } from './grid-math.js';
 import { $, $$ } from '../utils/dom.js';
 import { clamp, ease } from '../utils/math.js';
 import { reduce } from '../utils/media.js';
@@ -44,6 +47,8 @@ function offsetWithin(el, anc) {
   return { x, y };
 }
 
+const FLIP_AXIS = new THREE.Vector3(), FLIP_Q = new THREE.Quaternion();
+
 function initProductJourney() {
   const flightCanvas = $('#flightCanvas');
   const lineupSec = $('#lineup');
@@ -57,13 +62,22 @@ function initProductJourney() {
   if (!flightCanvas || !lineupSec || !pinEl || !ScrollTrigger) return null;
 
   const L = jarLayer(flightCanvas);
-  const flightJars = PRODUCTS.map((p, i) => L.jar(p, i));
+  const flightJars = PRODUCTS.map((p, i) => L.jar(p, i)); window.__dbg = { flightJars, L };   // TEMP-DEBUG
   // each product's width / height from its 3D model (widest of x and z, so the frame fits it from every angle)
-  const ratios = flightJars.map(j => {
-    j.G.updateMatrixWorld(true);
-    const s = new THREE.Box3().setFromObject(j.b).getSize(new THREE.Vector3());
-    return Math.max(s.x, s.z) / Math.max(1e-6, s.y);
-  });
+  // (measured again when a scanned model finishes loading: until then the drawn stand-in, or nothing, is measured)
+  const MODEL_RATIOS = {
+    gummies: 0.552,
+    inhaler: 0.267,
+    rollon: 0.244,
+    reviva: 0.262,
+    liver: 0.318
+  };
+  let ratios = PRODUCTS.map(p => MODEL_RATIOS[p.id] || 0.45);
+  const measureRatios = () => {
+    ratios = PRODUCTS.map(p => MODEL_RATIOS[p.id] || 0.45);
+  };
+  measureRatios();
+  window.addEventListener('tl:model-ready', measureRatios);
   // the outline around the product, grown like a plant: two tendrils climb from the bottom centre up both sides and
   // meet at the top, leaves sprout along them as they pass, a bud in the product's colour opens at the top with a
   // ripple, and a fainter second line follows just outside. makeOutline builds it into a showcase layer's #scFrame and
@@ -283,16 +297,23 @@ function initProductJourney() {
       sc._e = w.e;
       sc._r = box ? r : 0;   // the scroll position, for the ribbons behind (they never stop)
       if (blocks && w.e !== lastE) { lastE = w.e; blocks.style.transform = 'translate3d(0,' + (-w.e).toFixed(1) + 'px,0)'; }
+      if (blocks) {
+        // the falling page appears as the falling starts, and dissolves as the highlights begin: the last frame stays
+        // parked at the top once the falling ends, so it must be gone while the highlights show (and until the curtain)
+        let o = b ? Math.max(0, Math.min(1, (r - b.r0 + 30) / 120)) : 1;
+        if (b) o *= 1 - Math.max(0, Math.min(1, (r - (b.hlFrom - 0.05 * geo.vh)) / (0.2 * geo.vh)));
+        const op = o.toFixed(2); if (blocks._op !== op) { blocks._op = op; blocks.style.opacity = op; }
+      }
       if (!b || !sc._frameCards) return;
       sc._frameCards.forEach((cards, f) => {
         const h = b.holds[f]; if (!h) return;
         const len = h.end - h.start;
         cards.forEach((el, j) => {
-          const on = !!box && k > 0 && r >= h.start + (0.05 + j * 0.28) * len;
+          const on = !!box && k > 0 && r >= h.start + (0.01 + j * 0.05) * len;
           if (el.classList.contains('in') !== on) el.classList.toggle('in', on);
         });
-        // while the page stands still the frame drifts slowly (15px down to 15px up), so a stop never looks frozen
-        const drift = 'translate3d(0,' + ((0.5 - (box ? clamp((r - h.start) / len, 0, 1) : 0)) * 30).toFixed(1) + 'px,0)';
+        // while the page stands still the frame drifts slowly (10px down to 10px up), so a stop never looks frozen
+        const drift = 'translate3d(0,' + ((0.5 - (box ? clamp((r - h.start) / len, 0, 1) : 0)) * 20).toFixed(1) + 'px,0)';
         (sc._frameSlots[f] || []).forEach(sl => { if (sl._dr !== drift) { sl._dr = drift; sl.style.transform = drift; } });
         const price = cards.map(c => c.querySelector('.sc-price[data-v]')).find(Boolean);   // the price counts up
         if (price) {
@@ -339,6 +360,7 @@ function initProductJourney() {
     geo.showcaseTop = geo.secTop + geo.fadeLen;
     geo.preRoll = geo.fadeLen;
     geo.secH = showcaseSec ? showcaseSec.offsetHeight : 0;
+    geo.hasScene = geo.secH > 0;                          // false when the page does not show the details inline: they open from a product's card instead
     geo.lineupTop = docTop(lineupSec); geo.lineupH = lineupSec.offsetHeight;
     geo.pinTop = docTop(pinEl); { let x = 0, n = pinEl; while (n) { x += n.offsetLeft; n = n.offsetParent; } geo.pinLeft = x; }
     // each panel's offset inside the lineup pin (scroll independent, so it stays right while the pin is stuck)
@@ -380,7 +402,8 @@ function initProductJourney() {
   let handStart = null;                                  // set when a product's display hands over to the page
 
   const restRot = i => (PRODUCTS[i].model === 'rollon' ? -0.32 : -0.38);
-  const idleRot = (i, t) => Math.sin(t * 0.85 + i * 1.2) * 0.06;
+  // the products in the list sway left and right through about 40 degrees (20 each way), each on its own beat
+  const idleRot = (i, t) => (reduce ? 0 : Math.sin(t * 0.9 + i * 1.3) * 0.35);
 
   // where the product holds still while the page scrolls past it: the middle of the screen
   function viewFor(i) {
@@ -396,8 +419,49 @@ function initProductJourney() {
   // flies from its card to the middle on open and back into its card on close (Close, Esc, or reaching the end).
   const ov = { el: null, sec: null, btn: null, card: null, lead: null, setFrame: null, idx: -1, state: 'closed', t0: 0,
     from: null, last: null, pending: null, returnFocus: null };
-  const OPEN_MS = reduce ? 1 : 800, CLOSE_MS = reduce ? 1 : 650;
+  const OPEN_MS = reduce ? 1 : 1400, CLOSE_MS = reduce ? 1 : 650;
   const easeIO = k => (k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2);
+  const sm = t => t * t * (3 - 2 * t);
+
+  /* ---------- the Lung Booster's ingredients moment (gummy-pour.js) ----------
+     Two stretches of extra scroll are spliced into the display for the Lung Booster only: ING_LEN screens right after the
+     product has settled (the cap unscrews, the bottle tilts to the bottom of the frame, the gummies pour out and the
+     ingredients are called out) and ING_CL screens just before the highlights moment (the gummies go back, the cap screws on).
+     While a stretch plays, the rest of the display is frozen: ingWarp maps the real scroll to the scroll the rest of the code
+     sees (sy). (The display's layers are all sticky and driven by sy, so nothing else needs shifting.) Scrolling back up runs it
+     all in reverse. */
+  const FLIP_LEN = 0.55;                             // screens the Lung Booster takes to finish its flip
+  const BORDER = { grow: 0.55, hold: 0.25, away: 0.40 }; // screens for outline draw, hold, and retract (tuned +0.2 for graceful pace)
+  const ING_CL = 1.1;                                // tuned +0.2 on screw-on return (ING_CL: 1.1 screens)
+  // one ingredients timeline for every product that has the moment: its length in screens, and where (in u, 0..1 of that length) the side letters
+  // leave, the bottle opens, and the outline fades. The Liver Booster runs longer (six callouts, one at a time) with the same screen counts for its early steps.
+  const ING_CFG = {
+    gummies: { len: 5.4, letters: 0.18, open0: 0.18, open1: 0.48, frame: 0.08, make: createIngredientsDirector },
+    // liver:   { len: 9.0, letters: 0.108, open0: 0.108, open1: 0.288, frame: 0.048, make: createLiverDirector },
+  };
+  const ingCfg = () => (ov.idx >= 0 && PRODUCTS[ov.idx] && ING_CFG[PRODUCTS[ov.idx].id]) || null;
+  // the run-up (flip, outline in, outline out) in screens. On a short section (small screens) the highlights moment comes sooner (it starts
+  // at H - 3 screens), so the run-up is squeezed to end before it: the gummy moment never starts under the highlights or the curtain
+  function ingT(vh, F, H) {
+    const room = (H - 3.5 * vh - F) / vh, tb = BORDER.grow + BORDER.hold + BORDER.away;
+    const k = clamp((room - FLIP_LEN - 0.05) / tb, 0.25, 1);
+    return { k, grow: BORDER.grow * k, hold: BORDER.hold * k, away: BORDER.away * k, flip: FLIP_LEN, A: FLIP_LEN + 0.05 + tb * k };
+  }
+  const ingDirs = {};                                // one director per product that has the moment (made when first opened)
+  const ingOn = () => !reduce && !!ingCfg();
+  function ingWarp(syRaw) {
+    const vh = geo.vh, F = geo.fadeLen, H0 = ov.sec.offsetHeight - (ov.sec._extra || 0);
+    const A = F + ingT(vh, F, H0).A * vh, LEN = ingCfg().len * vh, CL = ING_CL * vh;
+    const r0 = ov.sec._beats ? ov.sec._beats.r0 : F + 1.05 * vh;           // where the falling page (the details) starts
+    let sy = syRaw, u = 0, v = 0;
+    if (syRaw >= A) {
+      if (syRaw < A + LEN) { sy = A; u = (syRaw - A) / LEN; }                                  // letters leave, the cap unscrews, the gummies pour, callouts
+      else if (syRaw < A + LEN + CL) {                                                            // the very next scroll: the gummies go back in, the cap goes on
+        u = 1; v = (syRaw - A - LEN) / CL; const k = v * v * (3 - 2 * v); sy = A + (r0 - A) * k;  // (the display eases back to where the details begin)
+      } else { u = 1; v = 1; sy = r0 + (syRaw - A - LEN - CL); }                                  // then the details rise from the bottom, as they always did
+    }
+    return { sy, u, v, shift: syRaw - sy };
+  }
 
   function buildOverlay() {
     if (ov.el || !showcaseSec) return;
@@ -410,6 +474,10 @@ function initProductJourney() {
     sec.querySelectorAll('[style]').forEach(n => { if (!n.closest('.sc-badge') && !n.classList.contains('sc-blk') && !n.classList.contains('sc-big')) n.removeAttribute('style'); });
     sec.querySelectorAll('.sc-callout').forEach(n => n.remove());   // the overlay builds its own
     el.appendChild(sec); document.body.appendChild(el);
+    const spacer = document.createElement('div'); spacer.setAttribute('aria-hidden', 'true'); spacer.style.cssText = 'height:0;pointer-events:none'; el.appendChild(spacer); ov.spacer = spacer;   // the Lung Booster's extra scroll
+    // the product's name, big, behind the product while it spins in and settles; it gives way to the intro words
+    const pinHost = sec.querySelector('.showcase-pin');
+    if (pinHost) { const hn = document.createElement('div'); hn.className = 'sc-heroname'; hn.setAttribute('aria-hidden', 'true'); pinHost.appendChild(hn); ov.heroName = hn; }
     const btn = document.createElement('button');
     btn.type = 'button'; btn.className = 'sc-overlay__close'; btn.setAttribute('aria-label', 'Close');
     btn.innerHTML = '<span aria-hidden="true">×</span>';
@@ -417,7 +485,7 @@ function initProductJourney() {
     btn.addEventListener('click', closeOverlay);
     document.addEventListener('keydown', e => { if (e.key === 'Escape' && (ov.state === 'open' || ov.state === 'opening')) closeOverlay(); });
     // a safety net: reaching the end of the details hands over to the page (normally that happens a screen earlier)
-    el.addEventListener('scroll', () => { if (ov.state === 'open' && el.scrollTop >= el.scrollHeight - el.clientHeight - 2) handOff(el.scrollTop + geo.fadeLen); }, { passive: true });
+    el.addEventListener('scroll', () => { if (ov.state === 'open' && el.scrollTop >= el.scrollHeight - el.clientHeight - 2) handOff(ingOn() ? ingWarp(el.scrollTop + geo.fadeLen).sy : el.scrollTop + geo.fadeLen); }, { passive: true });
     // the same smooth scroll as the page (same settings), so the display moves exactly like the page's showcase; its
     // frames are driven from our own frame loop. It is stopped while the display is closed.
     const lenis = reduce ? null : new Lenis({ wrapper: el, content: sec, lerp: 0.09, smoothWheel: true, wheelMultiplier: 1, touchMultiplier: 1.5, autoRaf: false });
@@ -433,13 +501,22 @@ function initProductJourney() {
       rx: jar.G.rotation.x, ry: jar.G.rotation.y, rz: jar.G.rotation.z };
   }
 
+  // matte gradient behind each product: [top, middle, bottom]
+  const OV_BG = { gummies: ['#ebcba0', '#d99a68', '#b86b43'], inhaler: ['#b0dccd', '#72b8a2', '#418f7c'], rollon: ['#ecbcc5', '#d68b9e', '#ab5a76'], reviva: ['#cddca4', '#9fba66', '#6c903c'], liver: ['#e3d68c', '#bfb24f', '#8c8531'], energy: ['#f1dc95', '#ddb24a', '#a77a22'] };
   function openOverlay(i) {
     if (i == null || i < 0 || i >= N) return;
     if (ov.state === 'opening' || ov.state === 'closing') { ov.pending = i; return; }   // finish the current one first
     if (ov.state === 'open') { if (i !== ov.idx) { ov.pending = i; closeOverlay(); } return; }
     buildOverlay(); if (!ov.el) return;
     ov.idx = i; ov.returnFocus = itemEls[i];
+    { const g = OV_BG[PRODUCTS[i].id] || OV_BG.gummies; ov.el.style.setProperty('--ov-a', g[0]); ov.el.style.setProperty('--ov-b', g[1]); ov.el.style.setProperty('--ov-c', g[2]); [['--ov-a', g[0]], ['--ov-b', g[1]], ['--ov-c', g[2]]].forEach(([k, v]) => document.documentElement.style.setProperty(k, v)); ov.handed = null; }
     populateShowcaseDOM(ov.sec, i);
+    if (ov.heroName) {
+      const srEl = itemEls[i] && itemEls[i].querySelector('.sr'), nm = (srEl ? srEl.textContent : PRODUCTS[i].short || '').trim();
+      const parts = nm.split(/\s+/), l1 = parts.length > 1 ? parts[0] : nm, l2 = parts.length > 1 ? parts.slice(1).join(' ') : '';
+      ov.heroName.innerHTML = '<span>' + l1 + '</span>' + (l2 ? '<span>' + l2 + '</span>' : '');
+      ov.heroName.style.opacity = '0';
+    }
     ov.el.setAttribute('aria-label', PRODUCTS[i].name);
     ov.from = cardSpot(i);
     if (state.lenis) state.lenis.stop();
@@ -450,11 +527,18 @@ function initProductJourney() {
     // page) is cut off, so the display cannot be scrolled up into that empty space. Its scroll is section px - F.
     ov.sec.style.setProperty('margin-top', (-geo.fadeLen).toFixed(0) + 'px', 'important');
     ov.el.scrollTop = 0;
+    // the Lung Booster's extra scroll is part of the section itself (its pinned layers cannot leave the section): taller by ING_LEN + ING_CL
+    // screens, and `_extra` tells the layout (showcase-scene.js) and this file to plan the timeline on the original height
+    ov.sec.style.height = ''; ov.sec._extra = 0;
+    if (ingOn()) { const H0 = ov.sec.offsetHeight, Aq = geo.fadeLen + ingT(geo.vh, geo.fadeLen, H0).A * geo.vh, r0q = geo.fadeLen + 1.05 * geo.vh, extra = Math.round((ingCfg().len + ING_CL) * geo.vh + Math.max(0, Aq - r0q));   // (+ the stretch the display winds back, so the details still run to their real end)
+      ov.sec._extra = extra; ov.sec.style.height = (ov.sec.offsetHeight + extra) + 'px'; }
+    if (ingOn() && !ingDirs[i]) ingDirs[i] = ingCfg().make(L);
     if (ov.lenis) { ov.lenis.resize(); ov.lenis.start(); ov.lenis.scrollTo(0, { immediate: true, force: true }); }
     const flow = ov.sec.querySelector('.sc-flow'); if (flow) { flow.style.visibility = 'visible'; flow.style.opacity = '1'; }
     placeBadges(ov.sec);
     [ov.card, ov.lead].forEach(el => { if (el) { el.style.opacity = '0'; el.style.setProperty('--tin', '0'); } });   // words start from nothing
     ov.state = 'opening'; ov.t0 = ov.openedAt = performance.now();
+    swapToHd(flightJars[i], PRODUCTS[i]);
     flightCanvas.classList.add('active'); wasOn = true;
     ov.el.focus({ preventScroll: true });                  // arrow keys, Page keys and Space scroll it
   }
@@ -470,13 +554,31 @@ function initProductJourney() {
   // takes over. Its showcase is filled for this product and scrolled to exactly the same point (the display is a copy
   // of it, so nothing on screen changes), the display goes away, and the page's own scroll carries on with the scroll's
   // momentum: the statement rises over the product and the grid follows, exactly as from the home page.
+  // The page shows only the products. The scene (details + statement curtain) is part of the layout only while a
+  // display hands over to it, so the page's own scroll can carry the end of the details exactly as before: the
+  // statement rises over the product, then the products come up. Once the products are on screen it is taken away again.
+  function setScene(on) {
+    document.body.classList.toggle('scene-on', on);
+    measure();
+    if (state.lenis && state.lenis.resize) state.lenis.resize();
+  }
+  function hideScene(sy) {
+    PRODUCTS.forEach((p, idx) => restoreFromHd(flightJars[idx]));
+    ov.handed = null; showcaseSec._ppOff = 0;
+    const shift = geo.lineupTop;
+    setScene(false);
+    const y = Math.max(0, sy - shift);
+    if (state.lenis) state.lenis.scrollTo(y, { immediate: true, force: true }); else window.scrollTo(0, y);
+  }
   function handOff(sy) {
     const i = ov.idx;
+    setScene(true);
     const pageY = showcaseSec.getBoundingClientRect().top + scrollY + sy;
     const ahead = ov.lenis ? ov.lenis.targetScroll - ov.lenis.animatedScroll : 0;
     active = i;
     handStart = { ...viewFor(i), rotX: 0.04, rotY: restRot(i), rotZ: 0 };   // the same path the display used
-    if (lastIdx !== i) { lastIdx = i; populateShowcaseDOM(showcaseSec, i); placeBadges(showcaseSec); }
+    lastIdx = i; populateShowcaseDOM(showcaseSec, i); placeBadges(showcaseSec); measure();
+    ov.ppNeed = ov.sec._pp != null ? ov.sec._pp : null; ov.handed = i; ov.handY = null; ov.handT = performance.now();                                        // (scrolling back up re-opens the display: see reenter)
     lastIntro = ''; lastP = -1;                          // let the page redraw everything for its new position
     ov.el.classList.add('instant');
     ov.el.classList.remove('open'); ov.btn.classList.remove('open');
@@ -488,7 +590,28 @@ function initProductJourney() {
     } else window.scrollTo(0, pageY);
   }
 
+  // Scrolling back up from the page's ending: the page's own showcase has no ingredients moment, so the display (the full sequence)
+  // takes over again at exactly the same point of the details.
+  function reenter(sy) {
+    const vh = geo.vh, secDoc = showcaseSec.getBoundingClientRect().top + scrollY, pSy = sy - secDoc, H0 = showcaseSec.offsetHeight;
+    if (ov.handY == null || performance.now() - ov.handT < 700) { ov.handY = sy; return false; }   // settle first: the page is still taking the scroll over
+    ov.handY = Math.max(ov.handY, sy);                     // the furthest the page has been carried
+    if (sy > ov.handY - 0.3 * vh || pSy >= H0 - 1.5 * vh) return false;   // only when the reader really scrolls back up
+    const back = ov.handed;                                // (hideScene forgets it)
+    hideScene(sy);
+    openOverlay(back);
+    ov.state = 'open'; ov.el.classList.add('instant'); ov.t0 = performance.now();
+    let lo = 0, hi = ov.sec.offsetHeight;
+    for (let k = 0; k < 40; k++) { const mid = (lo + hi) / 2; if (ingWarp(mid).sy < pSy) lo = mid; else hi = mid; }
+    const top = Math.max(0, hi - geo.fadeLen);
+    ov.el.scrollTop = top;
+    if (ov.lenis) { ov.lenis.resize(); ov.lenis.scrollTo(top, { immediate: true, force: true }); }
+    return true;
+  }
+
   function finishClose() {
+    if (ingDirs[ov.idx]) ingDirs[ov.idx].reset(flightJars[ov.idx]);
+    if (ov.idx >= 0 && flightJars[ov.idx]) restoreFromHd(flightJars[ov.idx]);
     ov.state = 'closed';
     if (ov.lenis) ov.lenis.stop();
     document.body.classList.remove('sc-ov-open');
@@ -502,11 +625,28 @@ function initProductJourney() {
   // the overlay's own frame: its scroll drives the same scene the page's scroll does
   function renderOverlay(now, tTime) {
     const i = ov.idx, jar = flightJars[i], vh = geo.vh, F = geo.fadeLen;
-    const sy = (ov.lenis ? ov.lenis.animatedScroll : ov.el.scrollTop) + F, H = ov.sec.offsetHeight;   // section px
-    const P = journeyProgress(sy, { showcaseTop: F, pinEnd: H - vh, vh, preRoll: F });
+    const syRaw = (ov.lenis ? ov.lenis.animatedScroll : ov.el.scrollTop) + F, H = ov.sec.offsetHeight - (ov.sec._extra || 0);   // section px (the planned length)
+    const ing = ingOn() ? ingWarp(syRaw) : { sy: syRaw, u: 0, v: 0, shift: 0 }, sy = ing.sy;
+    const P = journeyProgress(ingOn() && ing.v < 1 ? Math.min(sy, H - 2 * vh - 1) : sy, { showcaseTop: F, pinEnd: H - vh, vh, preRoll: F });
+    // the counter and its bar only ever grow with the scroll: while the gummies pour and return the display's time stands still / winds back,
+    // so the counter runs straight from where the pour starts to where the details end instead of following that
+    ov.sec._pp = null;
+    if (ingOn()) {
+      const A0 = F + ingT(vh, F, H).A * vh, rawMax = ov.sec.offsetHeight - vh + F;
+      if (syRaw > A0 && rawMax > A0) {
+        const pj = s0 => journeyProgress(s0, { showcaseTop: F, pinEnd: H - vh, vh, preRoll: F });
+        const PA = pj(Math.min(A0, H - 2 * vh - 1)), PE = pj(ingWarp(rawMax).sy);
+        ov.sec._pp = PA + (PE - PA) * clamp((syRaw - A0) / (rawMax - A0), 0, 1);
+      }
+    }
     updateShowcaseDOM(ov.sec, P, tTime);
     const view = viewFor(i);
-    const hold = calcHoldTransform(P, { x: view.x, y: view.y, h: view.h, rotX: 0.04, rotY: restRot(i), rotZ: 0 }, view, mouse, tTime, geo.mobile);
+    const base = calcHoldTransform(P, { x: view.x, y: view.y, h: view.h, rotX: 0.04, rotY: restRot(i), rotZ: 0 }, view, mouse, tTime, geo.mobile);
+    // Opening: the product settles low on the screen, big, with its name above it. The first part of the scroll then
+    // lifts it to its hold in the middle (s: 0 at rest, 1 when it has arrived), and only then do the intro words come in.
+    const sc = Math.max(0, sy - F), s = reduce ? 1 : clamp(sc / (0.7 * vh), 0, 1), se = ease.io(s);
+    const hx = geo.vw * 0.5, hh = (geo.mobile ? Math.min(vh * 0.5, geo.vw * 1.0) : vh * 0.6) * (jar.fit || 1), hy = vh * (geo.mobile ? 0.84 : 0.88);
+    const hold = reduce ? base : { ...base, x: hx + (base.x - hx) * se, y: hy + (base.y - hy) * se, h: hh + (base.h - hh) * se };
     // a = 0 in the card, 1 in the middle: the fly on open and close
     let a = 1;
     if (ov.state === 'opening' || ov.state === 'closing') {
@@ -515,17 +655,52 @@ function initProductJourney() {
       if (k >= 1) { if (ov.state === 'opening') ov.state = 'open'; else { finishClose(); return; } }
     }
     // the statement page would now come into view: from here on it is the page's own ending
-    if (ov.state === 'open' && showcaseSec && (H - vh) - sy <= vh) { handOff(sy); return; }
+    if (ov.state === 'open' && showcaseSec && (H - vh) - sy <= vh && (!ingOn() || ing.v >= 1)) { handOff(sy); return; }
+    // the ingredients moment (Lung Booster): open 0 = closed .. 1 = poured. Its pose changes the hold before the product is placed.
+    let open = 0, calloutC = 0, calloutA = 0;
+    let letters = 0;                                  // 0..1: the side letters go up and away first, then the bottle opens
+    if (ingOn()) {
+      const postFlip = Math.max(0, (syRaw - F) - FLIP_LEN * vh);
+      hold.rotY += (postFlip / vh) * 0.75;
+      const cfg = ingCfg(), ingDir = ingDirs[i];
+      letters = sm(clamp(ing.u / cfg.letters, 0, 1));
+      open = ing.v > 0 ? 1 - clamp(ing.v / 0.88, 0, 1) : clamp((ing.u - cfg.open0) / (cfg.open1 - cfg.open0), 0, 1);   // cap starts only AFTER side letters cleanly exit (tuned +0.02 for 2-point slower unscrew)
+      calloutC = clamp((ing.u - 0.68) / 0.14, 0, 1);
+      calloutA = ing.v > 0 ? 0 : clamp((ing.u - 0.66) / 0.03, 0, 1) * (1 - clamp((ing.u - 0.82) / 0.04, 0, 1));
+      if (ov.state === 'closing') { open *= a; calloutA *= a; }
+      if (ingDir && open > 0) ingDir.pose(hold, open, { vw: geo.vw, vh, mobile: geo.mobile, front: restRot(i) });
+    }
+    if (ingOn()) { const fl = ov.sec.querySelector('.sc-flow'); if (fl) { const on = ing.v >= 1 ? '1' : '0.001'; if (fl._ing !== on) { fl._ing = on; fl.style.opacity = on; } } }   // the details (and the falling page behind) wait until the gummies are back in
     const f = ov.from, lerp = (p, q) => p + (q - p) * a;
     flightJars.forEach((j, k) => { j.G.visible = k === i; });
     L.place(jar.G, lerp(f.x, hold.x), lerp(f.y, hold.y));
     L.size(jar, Math.max(1, lerp(f.h, hold.h)));
-    jar.G.rotation.set(lerp(f.rx, hold.rotX), lerp(f.ry, hold.rotY), lerp(f.rz, hold.rotZ));
+    // opening: one full turn on the way (as before), then it settles. Scrolling from the name screen (1) to the details (2): one slow, light
+    // flip around an axis tilted 20 degrees (it plays over 1.2 screens of scroll, easing in and out)
+    jar.G.rotation.set(lerp(f.rx, hold.rotX), lerp(f.ry, hold.rotY) + (reduce ? 0 : (1 - a) * Math.PI * 2), lerp(f.rz, hold.rotZ));
+    if (!reduce) {
+      const fl = ease.io(clamp(sc / ((ingOn() ? FLIP_LEN : 1.2) * vh), 0, 1)), tilt = 20 * Math.PI / 180;
+      FLIP_AXIS.set(Math.cos(tilt), Math.sin(tilt), 0);
+      jar.G.quaternion.premultiply(FLIP_Q.setFromAxisAngle(FLIP_AXIS, fl * Math.PI * 2));
+    }
+    Object.keys(ingDirs).forEach(k => { if (+k !== i) ingDirs[k].hide(); });   // another product's display: its pieces stay hidden
+    {
+      const ingDir = ingDirs[i];
+      if (ingDir && ingOn()) {
+        try {
+          ingDir.update(jar, { u: ing.u, v: ing.v, open, c: calloutC, calloutA, vw: geo.vw, vh, mobile: geo.mobile, time: tTime, pointer: { x: mouse.x, y: mouse.y, on: canHover } });
+        } catch (e) {
+          console.error('ingDir.update error:', e);
+        }
+      } else if (ingDir) ingDir.hide();
+    }
     // the two side texts and the outline, as on the page (they fade with the fly)
-    const sc0 = calcIntroText(sy, F, vh), timed = reduce ? 1 : clamp((now - ov.openedAt - 200) / 1300, 0, 1);
+    const sc0 = calcIntroText(sy, F, vh), timed = reduce ? 1 : clamp((s - 0.4) / 0.6, 0, 1);
     // here the words come in on time alone, from nothing, in one go as the product flies in (no half-played start);
     // the scroll only moves them up with the details later
-    const tin = timed, it = { tin, lift: sc0.lift, o: (1 - Math.pow(1 - tin, 3)) * (sc0.lift > vh * 1.2 ? 0 : 1) };
+    const fall = ov.sec._e || 0, tin = timed;
+    const letterDrift = ingOn() ? letters * (geo.mobile ? 32 : 54) : letters * vh * 0.45;
+    const it = { tin, lift: (ingOn() ? 0 : fall) + letterDrift, o: (1 - Math.pow(1 - tin, 3)) * (!ingOn() && fall > vh * 1.2 ? 0 : 1) * (1 - letters) };
     const o = it.o * (ov.state === 'closing' ? a : 1);
     [ov.card, ov.lead].forEach((el, s) => {
       if (!el) return;
@@ -537,12 +712,25 @@ function initProductJourney() {
       chars.forEach((ch, k) => { const u = clamp((it.tin - (k / n) * 0.6) / 0.4, 0, 1), e = 1 - Math.pow(1 - u, 3); ch.style.opacity = (0.15 + 0.85 * e).toFixed(3); ch.style.transform = 'translate3d(' + ((1 - e) * -0.5).toFixed(3) + 'em,0,0)'; });
       ov.card.style.setProperty('--tin', it.tin.toFixed(3)); if (ov.lead) ov.lead.style.setProperty('--tin', it.tin.toFixed(3));
     }
+    if (ov.heroName) {                                   // the name: in while the product settles, out as the intro words come in
+      const tt = (now - ov.openedAt) / 1000, kin = reduce ? 0 : clamp((tt - 0.5) / 0.9, 0, 1), kout = clamp(s / 0.45, 0, 1);
+      const on = (1 - Math.pow(1 - kin, 3)) * (1 - kout) * (ov.state === 'closing' ? a : 1) * (fall > vh * 1.2 ? 0 : 1);
+      ov.heroName.style.opacity = on.toFixed(3);
+      ov.heroName.style.transform = 'translate3d(0,' + ((1 - Math.pow(1 - kin, 3)) * 0 + (1 - kin) * 46 - s * vh * 0.3 - fall).toFixed(1) + 'px,0)';
+    }
     const ovBox = calcProductFrame(hold.x, hold.y, hold.h, ratios[i]);
-    if (ov.setFrame) ov.setFrame(ovBox, calcFrameDraw(P) * (a > 0.999 ? 1 : 0));
-    const hlc = calcHlCallout(sy, H, vh, (ov.sec._beats ? ov.sec._beats.hlFrom : H - 2.9 * vh) + 0.25 * vh);
+    // the outline starts drawing once the flip has finished (Lung Booster), and is gone before the letters leave
+    let frameDraw;
+    if (ingOn()) {
+      const T = ingT(vh, F, H), scB = Math.max(0, Math.min(syRaw, F + T.A * vh) - F - T.flip * vh), sm3 = t => t * t * (3 - 2 * t);
+      frameDraw = sm3(clamp(scB / (T.grow * vh), 0, 1)) * (1 - sm3(clamp((scB - (T.grow + T.hold) * vh) / (T.away * vh), 0, 1)));
+    } else frameDraw = calcFrameDraw(P);
+    if (ov.setFrame) ov.setFrame(ovBox, frameDraw * (a > 0.999 && s > 0.999 ? 1 : 0) * (ingOn() ? (1 - clamp(ing.u / ingCfg().frame, 0, 1)) : 1) * (1 - clamp(open / 0.1, 0, 1)));
+    const hlc = calcHlCallout(sy, H, vh, (ov.sec._beats ? ov.sec._beats.hlFrom : H - 2.9 * vh) + 0.25 * vh);   // the highlights start once the last piece has left
     if (ov.setCallout) ov.setCallout(ovBox, hlc.o * a, hlc.draw, hlc.lines, 0, hlc.ex);
     decor.update(0, i, 0, 0, 1, tTime, true);
-    if (ov.setChapters) ov.setChapters(ovBox, sy, H, a);
+    if (ov.setChapters) ov.setChapters(ovBox, (ingOn() && ing.v < 1) ? Math.min(sy, ov.sec._beats ? ov.sec._beats.r0 : F + 1.05 * vh) : sy, H, a);   // (the falling words wait at their start until the gummies are back: no early, hidden run that would play twice)
+    if (ingOn() && ov.sec._beats) { const bt = ov.sec._beats, ex = ov.sec._extra || 0; ov.sec._r = bt.r0 + Math.max(0, syRaw - bt.r0) * (bt.hlFrom - bt.r0) / (bt.hlFrom + ex - bt.r0); }   // the ribbons never stop, not even while the display stands still
     L.renderer.render(L.scene, L.cam);
   }
 
@@ -574,17 +762,32 @@ function initProductJourney() {
     // the scroll position from Lenis (a plain number): reading window.scrollY here would force a layout whenever
     // anything has written a style earlier in this frame
     const sy = state.lenis ? state.lenis.scroll : scrollY, vh = geo.vh, tTime = now * 0.001;
-    if (ov.state !== 'closed') { if (ov.lenis) ov.lenis.raf(now); renderOverlay(now, tTime); rafId = schedule(frame); return; }   // a product's display is open over the grid
+    flightJars.forEach(j => { j.G.userData.shadowA = 0; });   // the ground shadow belongs to the list only: it is switched on there each frame
+    if (ov.state === 'closed' && ov.handed != null && ING_CFG[PRODUCTS[ov.handed].id] && !reduce && document.body.classList.contains('scene-on') && reenter(sy)) { rafId = schedule(frame); return; }
+    if (ov.state !== 'closed') {
+      if (ov.lenis) {
+        try { ov.lenis.raf(now); } catch (e) {}
+      }
+      try {
+        renderOverlay(now, tTime);
+      } catch (e) {
+        console.error('renderOverlay error:', e);
+      }
+      rafId = schedule(frame);
+      return;
+    }
     const lrTop = geo.lineupTop - sy, lrBottom = lrTop + geo.lineupH;
     const inLineup = lrBottom > 0 && lrTop < vh;
-    const P = reduce ? 1 : journeyProgress(sy, geo);
-    const inJourney = !reduce && P > 0 && P < 1;
+    if (geo.hasScene && ov.state === 'closed' && lrTop < -24) { hideScene(sy); rafId = schedule(frame); return; }   // the products are on screen: the scene is not needed any more
+    const P = (reduce || !geo.hasScene) ? 1 : journeyProgress(sy, geo);
+    if (ov.ppNeed != null) { showcaseSec._ppOff = ov.ppNeed - P; ov.ppNeed = null; }   // the page carries on counting from where the display stopped
+    const inJourney = !reduce && geo.hasScene && P > 0 && P < 1;
     const on = inJourney || inLineup;
     if (enterT0 < 0) enterT0 = now;
     const entering = now - enterT0 < ENTER_MS + 1700;     // the product's rise and the title's letters are still playing
 
     // updateShowcaseDOM reads its blocks' positions first, so it runs before anything below writes a style
-    if (showcaseSec && !reduce && (inJourney || P !== lastP)) { updateShowcaseDOM(showcaseSec, P, tTime); }
+    if (showcaseSec && geo.hasScene && !reduce && (inJourney || P !== lastP)) { updateShowcaseDOM(showcaseSec, P, tTime); }
     lastP = P;
 
     // showcase flow: always shown here (on dhina-dev it waited for the hero to turn flat mint)
@@ -596,7 +799,8 @@ function initProductJourney() {
       const sc0 = calcIntroText(sy - geo.secTop, geo.fadeLen, geo.vh);
       const timed = clamp((now - enterT0 - 200) / 1300, 0, 1);
       const tin = Math.max(sc0.tin, timed);
-      const it = { tin, lift: sc0.lift, o: (1 - Math.pow(1 - tin, 3)) * (sc0.lift > vh * 1.2 ? 0 : 1) };
+      const fall = showcaseSec._e || 0;   // the intro falls with the page: same distance as everything else
+      const it = { tin, lift: fall, o: (1 - Math.pow(1 - tin, 3)) * (fall > vh * 1.2 ? 0 : 1) };
       const key = it.o.toFixed(3) + '|' + it.tin.toFixed(3) + '|' + it.lift.toFixed(1);
       if (key !== lastIntro) {
         lastIntro = key;
@@ -679,7 +883,10 @@ function initProductJourney() {
       const jar = flightJars[i], s = geo.slots[i], card = cardEls[i];
       const order = entranceOrder(i, first, N);                              // the showcase product turns first
       const slotTop = pr.top + s.oy;
-      const e = reduce ? 1 : clamp((vh * 0.97 - slotTop - order * vh * 0.035) / (vh * 0.42), 0, 1);
+      // the products assemble one after another when the page opens (each rises, turns upright and settles), and again
+      // as a card scrolls up from below
+      const te = reduce ? 1 : clamp((now - enterT0 - 300 - i * 150) / 1150, 0, 1);
+      const e = reduce ? 1 : Math.min(te, clamp((vh * 0.97 - slotTop - order * vh * 0.035) / (vh * 0.42), 0, 1));
       const eb = ease.back(e);                                              // overshoot, then settle
       const target = hovered >= 0 ? (hovered === i ? 1 : 0) : (inView && cycleIdx === i ? 1 : 0);
       hlv[i] += (target - hlv[i]) * (1 - Math.exp(-dt * 6));
@@ -699,6 +906,7 @@ function initProductJourney() {
       const sx = pr.left + s.ox + s.w / 2;
       const syy = pr.top + s.oy + s.h * 0.5 + s.h * 0.02 - hl * s.h * 0.02;
       jar.G.visible = e > 0.01 && slotTop < vh * 1.05 && slotTop + s.h > -vh * 0.05;
+      jar.G.userData.shadowA = 0.5 * clamp(e * 1.3 - 0.3, 0, 1) * (1 - hl * 0.15);
       L.place(jar.G, sx, syy);
       L.size(jar, Math.max(1, s.h * 0.72 * (jar.fit || 1) * (0.7 + 0.3 * clamp(eb, 0, 1.1)) * (1 - hl * 0.04)));
       const hov = hovered === i;

@@ -10,10 +10,12 @@ import './features/navigation/dropdown.js';
 import './components/page-scrollbar.js';
 import { initGrain } from './products-page/grain.js';
 import { initProductJourney } from './products-page/journey.js';
+import { useScannedModels } from './features/products/product-model.js';
 import { initStatementPage } from './products-page/statement-page.js';
 import { $ } from './utils/dom.js';
 
 function initProductsPage() {
+  useScannedModels();   // this page shows the scanned 3D products (HD on close-up); other pages keep the light drawn ones
   // product photos for the menu card and the design lightbox
   Object.assign(thumbs, SHOTS);
 
