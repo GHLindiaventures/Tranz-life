@@ -25,6 +25,7 @@ const NECK_Y0 = 0.645, NECK_TOP = 0.840;
 const LID_IN = 0.184, LID_Y0 = 0.6605, LID_TOP = 0.935;   // added inner lid wall (gives the lid its thickness)
 const THREAD_Y0 = 0.676, THREAD_Y1 = 0.812, TURNS = 2.5, BUMP = 0.0105, RIDGE_H = 0.020;
 const SEG = 128, STEPS_PER_TURN = 128, ARC = 9;
+const BACK_LABEL = true, LABEL_TOP = 0.52;   // repaint the back of the label with the front artwork (below the shoulder)
 
 /* ---------- glb io ---------- */
 function readGlb(path){
@@ -133,6 +134,7 @@ for (let t = 0; t < I.length; t += 3){ const cy = (P[I[t]*3+1] + P[I[t+1]*3+1] +
   if (cy < RING_Y && cr < RING_R) continue;                       // the lid's flat bottom ring
   cap.push(I[t], I[t+1], I[t+2]); }
 console.log(`split at y=${CUT_Y}: body ${body.length/3} tris, cap ${cap.length/3} tris`);
+
 prim.indices = addAcc(Uint32Array.from(body), 'SCALAR', 5125, 34963);
 js.meshes[meshIndex].name = 'Mesh_Energy_Body'; node.name = 'Energy_Body';
 js.meshes.push({ name:'Mesh_Energy_Cap', primitives:[{ attributes:{ ...prim.attributes }, indices:addAcc(Uint32Array.from(cap), 'SCALAR', 5125, 34963), material:prim.material }] });
@@ -209,6 +211,89 @@ function shrink(buf){
   catch (e){ if (e.status !== 3) console.warn('texture not resized (needs Windows PowerShell):', e.message.split('\n')[0]); return buf; }
   finally { rmSync(dir, { recursive:true, force:true }); }
 }
+// 3b. same label on both sides: the scan's back (+Z) carries garbled text, its front (-Z) the real label. The back part of
+//     the colour and metal/roughness textures is repainted: each back texel takes the colour of the front point half a
+//     turn round the bottle (same height). Only texels of back-label triangles are written. The cut runs down both sides.
+function psRun(cmd){ execFileSync('powershell', ['-NoProfile', '-Command', 'Add-Type -AssemblyName System.Drawing; ' + cmd], { stdio:'pipe' }); }
+function decodeTo(jpg, size){                        // jpeg -> { w, h, d: RGB top-down } at size x size
+  const dir = mkdtempSync(join(tmpdir(), 'tex-')), a = join(dir, 'in.jpg'), b = join(dir, 'out.bmp');
+  try { writeFileSync(a, jpg);
+    psRun(`$s=[System.Drawing.Image]::FromFile('${a}'); $d=New-Object System.Drawing.Bitmap ${size},${size},([System.Drawing.Imaging.PixelFormat]::Format24bppRgb); $g=[System.Drawing.Graphics]::FromImage($d); $g.InterpolationMode='HighQualityBicubic'; $g.DrawImage($s,0,0,${size},${size}); $d.Save('${b}',[System.Drawing.Imaging.ImageFormat]::Bmp); $s.Dispose(); $d.Dispose()`);
+    const f = readFileSync(b), off = f.readUInt32LE(10), w = f.readInt32LE(18), hh = f.readInt32LE(22), h = Math.abs(hh), bpp = f.readUInt16LE(28) / 8, row = Math.ceil(w*bpp/4)*4, d = new Uint8Array(w*h*3);
+    for (let y = 0; y < h; y++){ const sy = hh > 0 ? h - 1 - y : y; for (let x = 0; x < w; x++){ const s = off + sy*row + x*bpp, t = (y*w + x)*3; d[t] = f[s+2]; d[t+1] = f[s+1]; d[t+2] = f[s]; } }
+    return { w, h, d };
+  } finally { rmSync(dir, { recursive:true, force:true }); }
+}
+function encodeJpg({ w, h, d }){
+  const row = Math.ceil(w*3/4)*4, f = Buffer.alloc(54 + row*h);
+  f.write('BM', 0); f.writeUInt32LE(f.length, 2); f.writeUInt32LE(54, 10); f.writeUInt32LE(40, 14); f.writeInt32LE(w, 18); f.writeInt32LE(h, 22); f.writeUInt16LE(1, 26); f.writeUInt16LE(24, 28); f.writeUInt32LE(row*h, 34);
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++){ const s = (y*w + x)*3, t = 54 + (h - 1 - y)*row + x*3; f[t] = d[s+2]; f[t+1] = d[s+1]; f[t+2] = d[s]; }
+  const dir = mkdtempSync(join(tmpdir(), 'tex-')), a = join(dir, 'in.bmp'), b = join(dir, 'out.jpg');
+  try { writeFileSync(a, f);
+    psRun(`$s=[System.Drawing.Image]::FromFile('${a}'); $c=[System.Drawing.Imaging.ImageCodecInfo]::GetImageEncoders()|?{$_.MimeType -eq 'image/jpeg'}; $p=New-Object System.Drawing.Imaging.EncoderParameters 1; $p.Param[0]=New-Object System.Drawing.Imaging.EncoderParameter ([System.Drawing.Imaging.Encoder]::Quality),([long]90); $s.Save('${b}',$c,$p); $s.Dispose()`);
+    return readFileSync(b);
+  } finally { rmSync(dir, { recursive:true, force:true }); }
+}
+const backBake = BACK_LABEL ? (() => {
+  const ax = circleFit(outerPoints(P, -.2, .2)), nv = P.length/3, TH = new Float32Array(nv);
+  let Y0 = Infinity; for (let i = 0; i < nv; i++){ TH[i] = Math.atan2(P[i*3+2] - ax.z, P[i*3] - ax.x); Y0 = Math.min(Y0, P[i*3+1]); }
+  const Y1 = LABEL_TOP + .03, GW = 1536, GH = 1536, gu = new Float32Array(GW*GH).fill(NaN), gv = new Float32Array(GW*GH);
+  const isBack = [], tris = [];
+  for (let t = 0; t < body.length; t += 3){ const k = [body[t], body[t+1], body[t+2]], cz = (P[k[0]*3+2] + P[k[1]*3+2] + P[k[2]*3+2])/3 - ax.z, cy = (P[k[0]*3+1] + P[k[1]*3+1] + P[k[2]*3+1])/3;
+    tris.push(k); isBack.push(cz > 0 && cy < LABEL_TOP); }
+  const unwrap = k => { const a = TH[k[0]]; return k.map(i => { let t = TH[i]; while (t - a > Math.PI) t -= 2*Math.PI; while (a - t > Math.PI) t += 2*Math.PI; return t; }); };
+  // generic triangle rasteriser: calls fn(x, y, w0, w1, w2) for pixel centres within `grow` px of the triangle
+  function raster(x0, y0, x1, y1, x2, y2, W, H, grow, fn){
+    const A = (x1 - x0)*(y2 - y0) - (x2 - x0)*(y1 - y0); if (Math.abs(A) < 1e-9) return;
+    const L = [Math.hypot(x2 - x1, y2 - y1), Math.hypot(x2 - x0, y2 - y0), Math.hypot(x1 - x0, y1 - y0)], hgt = L.map(l => Math.abs(A)/(l || 1));
+    const minx = Math.max(0, Math.floor(Math.min(x0, x1, x2) - grow)), maxx = Math.min(W - 1, Math.ceil(Math.max(x0, x1, x2) + grow));
+    const miny = Math.max(0, Math.floor(Math.min(y0, y1, y2) - grow)), maxy = Math.min(H - 1, Math.ceil(Math.max(y0, y1, y2) + grow));
+    for (let y = miny; y <= maxy; y++) for (let x = minx; x <= maxx; x++){ const px = x + .5, py = y + .5;
+      const w0 = ((x1 - px)*(y2 - py) - (x2 - px)*(y1 - py))/A, w1 = ((x2 - px)*(y0 - py) - (x0 - px)*(y2 - py))/A, w2 = 1 - w0 - w1;
+      if (w0*hgt[0] >= -grow && w1*hgt[1] >= -grow && w2*hgt[2] >= -grow) fn(x, y, w0, w1, w2); }
+  }
+  // front: (angle, height) -> uv lookup grid
+  const gx = t => (t + Math.PI)/Math.PI*GW, gy = y => (y - Y0)/(Y1 - Y0)*GH;
+  tris.forEach((k, n) => { if (isBack[n]) return; const th = unwrap(k), cy = (P[k[0]*3+1] + P[k[1]*3+1] + P[k[2]*3+1])/3;
+    if ((th[0] + th[1] + th[2])/3 > 0 || cy > Y1) return;
+    raster(gx(th[0]), gy(P[k[0]*3+1]), gx(th[1]), gy(P[k[1]*3+1]), gx(th[2]), gy(P[k[2]*3+1]), GW, GH, .5, (x, y, a, b, c) => {
+      gu[y*GW + x] = a*UV[k[0]*2] + b*UV[k[1]*2] + c*UV[k[2]*2]; gv[y*GW + x] = a*UV[k[0]*2+1] + b*UV[k[1]*2+1] + c*UV[k[2]*2+1]; }); });
+  for (let pass = 0; pass < 6; pass++) for (let i = 0; i < GW*GH; i++) if (isNaN(gu[i])){ const x = i % GW, y = (i/GW) | 0;
+    for (const [dx, dy] of [[1,0],[-1,0],[0,1],[0,-1]]){ const xx = x + dx, yy = y + dy; if (xx < 0 || yy < 0 || xx >= GW || yy >= GH) continue; const j = yy*GW + xx; if (!isNaN(gu[j])){ gu[i] = gu[j]; gv[i] = gv[j]; break; } } }
+  const look = (t, y) => { const i = Math.min(GH - 1, Math.max(0, gy(y) | 0))*GW + Math.min(GW - 1, Math.max(0, gx(t) | 0)); return isNaN(gu[i]) ? null : [gu[i], gv[i]]; };
+  return (img, flat = false) => {                       // img: { w, h, d } -> repainted copy (flat: a normal map, made flat there)
+    const { w, h, d } = img, out = new Uint8Array(d), keep = new Uint8Array(w*h);
+    // texels that belong to any other triangle (front, cap, shoulder) are never written
+    tris.forEach((k, n) => { if (!isBack[n]) raster(UV[k[0]*2]*w, UV[k[0]*2+1]*h, UV[k[1]*2]*w, UV[k[1]*2+1]*h, UV[k[2]*2]*w, UV[k[2]*2+1]*h, w, h, 0, (x, y) => { keep[y*w + x] = 1; }); });
+    for (let t = 0; t < cap.length; t += 3){ const k = [cap[t], cap[t+1], cap[t+2]]; raster(UV[k[0]*2]*w, UV[k[0]*2+1]*h, UV[k[1]*2]*w, UV[k[1]*2+1]*h, UV[k[2]*2]*w, UV[k[2]*2+1]*h, w, h, 0, (x, y) => { keep[y*w + x] = 1; }); }
+    // bilinear, but only from texels that belong to a real (non back-label) triangle, so chart padding never bleeds in
+    const sample = (u, v, o) => { const fx = Math.min(w - 1.001, Math.max(0, u*w - .5)), fy = Math.min(h - 1.001, Math.max(0, v*h - .5)), x = fx | 0, y = fy | 0, ax_ = fx - x, ay = fy - y;
+      const taps = [[y, x, (1 - ax_)*(1 - ay)], [y, x + 1, ax_*(1 - ay)], [y + 1, x, (1 - ax_)*ay], [y + 1, x + 1, ax_*ay]].filter(([yy, xx]) => keep[yy*w + xx]);
+      if (!taps.length) return false; const sw = taps.reduce((a, t) => a + t[2], 0) || 1;
+      for (let c = 0; c < 3; c++) out[o + c] = taps.reduce((a, [yy, xx, wt]) => a + d[(yy*w + xx)*3 + c]*wt, 0)/sw; return true; };
+    let n = 0; const own = new Uint8Array(w*h);         // 1 = front/other texel, 2 = repainted back texel
+    for (let i = 0; i < w*h; i++) if (keep[i]) own[i] = 1;
+    tris.forEach((k, ti) => { if (!isBack[ti]) return; const th = unwrap(k);
+      raster(UV[k[0]*2]*w, UV[k[0]*2+1]*h, UV[k[1]*2]*w, UV[k[1]*2+1]*h, UV[k[2]*2]*w, UV[k[2]*2+1]*h, w, h, 1.5, (x, y, a, b, c) => {
+        const i = y*w + x; if (keep[i]) return;
+        const t = a*th[0] + b*th[1] + c*th[2] - Math.PI, yy = a*P[k[0]*3+1] + b*P[k[1]*3+1] + c*P[k[2]*3+1];
+        const uv = look(((t + 3*Math.PI) % (2*Math.PI)) - Math.PI, yy); if (flat){ out[i*3] = 128; out[i*3+1] = 128; out[i*3+2] = 255; own[i] = 2; n++; return; }
+        if (uv && sample(uv[0], uv[1], i*3)){ own[i] = 2; n++; } }); });
+    // edge fill: the padding round each texture patch takes the colour of the nearest patch (front patches keep their own
+    // padding untouched, back patches spread their new colour), so smaller mip levels never mix in the old back text
+    for (let pass = 0; pass < 8; pass++){ const prev = own.slice();
+      for (let y = 1; y < h - 1; y++) for (let x = 1; x < w - 1; x++){ const i = y*w + x; if (prev[i]) continue;
+        let front = 0, bk = 0, r = 0, g = 0, b = 0;
+        for (const j of [i - 1, i + 1, i - w, i + w]){ if (prev[j] === 1) front++; else if (prev[j] === 2){ bk++; r += out[j*3]; g += out[j*3+1]; b += out[j*3+2]; } }
+        if (front >= bk && front) own[i] = 1; else if (bk){ own[i] = 2; out[i*3] = r/bk; out[i*3+1] = g/bk; out[i*3+2] = b/bk; } } }
+    console.log(`back label repainted: ${n} texels of ${w}x${h}`);
+    return { w, h, d:out };
+  };
+})() : null;
+const baseMat = js.materials[prim.material].pbrMetallicRoughness;
+const normalImage = js.materials[prim.material].normalTexture ? js.textures[js.materials[prim.material].normalTexture.index].source : -1;   // its back is flattened (old text relief)
+const repaintImages = new Set([baseMat.baseColorTexture, baseMat.metallicRoughnessTexture].filter(Boolean).map(t => js.textures[t.index].source));
+
 const used = new Set();
 js.meshes.forEach(m => m.primitives.forEach(p => { Object.values(p.attributes).forEach(a => used.add(a)); used.add(p.indices); }));
 const accMap = new Map(), bvs = [], accs = [], parts = []; let len = 0;
@@ -216,8 +301,9 @@ function put(buf, extra){ const pad = (4 - len % 4) % 4; if (pad){ parts.push(Bu
 js.accessors.forEach((a, i) => { if (!used.has(i)) return; const bv = js.bufferViews[a.bufferView];
   const nb = put(all.subarray(bv.byteOffset || 0, (bv.byteOffset || 0) + bv.byteLength), { ...(bv.byteStride ? { byteStride:bv.byteStride } : {}), ...(bv.target ? { target:bv.target } : {}) });
   accMap.set(i, accs.length); accs.push({ ...a, bufferView:nb }); });
-(js.images || []).forEach(im => { const bv = js.bufferViews[im.bufferView], src = all.subarray(bv.byteOffset || 0, (bv.byteOffset || 0) + bv.byteLength);
-  const img = im.mimeType === 'image/jpeg' ? shrink(src) : src; console.log(`texture ${(src.length/1e6).toFixed(1)} MB -> ${(img.length/1e6).toFixed(1)} MB`);
+(js.images || []).forEach((im, ii) => { const bv = js.bufferViews[im.bufferView], src = all.subarray(bv.byteOffset || 0, (bv.byteOffset || 0) + bv.byteLength);
+  const img = backBake && (repaintImages.has(ii) || ii === normalImage) && im.mimeType === 'image/jpeg' ? encodeJpg(backBake(decodeTo(src, MAX_TEX), ii === normalImage))
+    : im.mimeType === 'image/jpeg' ? shrink(src) : src; console.log(`texture ${(src.length/1e6).toFixed(1)} MB -> ${(img.length/1e6).toFixed(1)} MB`);
   im.bufferView = put(img, {}); });
 js.meshes.forEach(m => m.primitives.forEach(p => { for (const k in p.attributes) p.attributes[k] = accMap.get(p.attributes[k]); p.indices = accMap.get(p.indices); }));
 js.accessors = accs; js.bufferViews = bvs;

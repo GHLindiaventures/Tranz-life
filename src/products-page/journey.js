@@ -18,6 +18,8 @@ import { PRODUCTS } from './data/products.js';
 import { STORY } from './data/product-story.js';
 import { jarLayer } from '../features/products/jar-layer.js';
 import { createIngredientsDirector } from '../features/products/gummy-pour.js';
+import { createLiquidDirector } from '../features/products/liquid-drops.js';
+import { createRollonDirector } from '../features/products/rollon-director.js';
 import Lenis from 'lenis';
 import { state } from '../app/state.js';
 import { entranceOrder, highlightIndex } from './grid-math.js';
@@ -432,8 +434,11 @@ function initProductJourney() {
     const k = clamp((room - FLIP_LEN - 0.1) / tb, 0.25, 1);
     return { k, grow: BORDER.grow * k, hold: BORDER.hold * k, away: BORDER.away * k, flip: FLIP_LEN, A: FLIP_LEN + 0.1 + tb * k };
   }
-  let ingDir = null;
-  const ingOn = () => ov.idx === 0 && !reduce;
+  // which products have an ingredients moment, and who directs it (Lung Booster: gummies pour; Energy Booster: liquid drops; Reviva & CycleRelief: rollon oil trail)
+  const DIRECTORS = { gummies: createIngredientsDirector, energy: createLiquidDirector, reviva: createRollonDirector, rollon: createRollonDirector }, dirs = {};
+  const hasIng = i => i != null && i >= 0 && !!(PRODUCTS[i] && DIRECTORS[PRODUCTS[i].id]);
+  let ingDir = null;                                  // the open product's director (null for the others)
+  const ingOn = () => hasIng(ov.idx) && !reduce;
   function ingWarp(syRaw) {
     const vh = geo.vh, F = geo.fadeLen, H0 = ov.sec.offsetHeight - (ov.sec._extra || 0);
     const A = F + ingT(vh, F, H0).A * vh, LEN = ING_LEN * vh, CL = ING_CL * vh;
@@ -517,7 +522,7 @@ function initProductJourney() {
     ov.sec.style.height = ''; ov.sec._extra = 0;
     if (ingOn()) { const H0 = ov.sec.offsetHeight, Aq = geo.fadeLen + ingT(geo.vh, geo.fadeLen, H0).A * geo.vh, r0q = geo.fadeLen + 1.05 * geo.vh, extra = Math.round((ING_LEN + ING_CL) * geo.vh + Math.max(0, Aq - r0q));   // (+ the stretch the display winds back, so the details still run to their real end)
       ov.sec._extra = extra; ov.sec.style.height = (ov.sec.offsetHeight + extra) + 'px'; }
-    if (ingOn() && !ingDir) ingDir = createIngredientsDirector(L);
+    { const id = PRODUCTS[i].id; ingDir = ingOn() ? (dirs[id] || (dirs[id] = DIRECTORS[id](L))) : null; }
     if (ov.lenis) { ov.lenis.resize(); ov.lenis.start(); ov.lenis.scrollTo(0, { immediate: true, force: true }); }
     const flow = ov.sec.querySelector('.sc-flow'); if (flow) { flow.style.visibility = 'visible'; flow.style.opacity = '1'; }
     placeBadges(ov.sec);
@@ -580,8 +585,9 @@ function initProductJourney() {
     if (ov.handY == null || performance.now() - ov.handT < 700) { ov.handY = sy; return false; }   // settle first: the page is still taking the scroll over
     ov.handY = Math.max(ov.handY, sy);                     // the furthest the page has been carried
     if (sy > ov.handY - 0.3 * vh || pSy >= H0 - 1.5 * vh) return false;   // only when the reader really scrolls back up
+    const back = ov.handed;
     hideScene(sy);
-    openOverlay(0);
+    openOverlay(back);
     ov.state = 'open'; ov.el.classList.add('instant'); ov.t0 = performance.now();
     let lo = 0, hi = ov.sec.offsetHeight;
     for (let k = 0; k < 40; k++) { const mid = (lo + hi) / 2; if (ingWarp(mid).sy < pSy) lo = mid; else hi = mid; }
@@ -592,7 +598,7 @@ function initProductJourney() {
   }
 
   function finishClose() {
-    if (ingDir && ov.idx === 0) ingDir.reset(flightJars[0]);
+    if (ingDir && ov.idx >= 0) ingDir.reset(flightJars[ov.idx]);
     ov.state = 'closed';
     if (ov.lenis) ov.lenis.stop();
     document.body.classList.remove('sc-ov-open');
@@ -668,9 +674,7 @@ function initProductJourney() {
         } catch (e) {
           console.error('ingDir.update error:', e);
         }
-      } else if (i !== 0) {
-        ingDir.hide();
-      }
+      } else ingDir.hide();
     }
     // the two side texts and the outline, as on the page (they fade with the fly)
     const sc0 = calcIntroText(sy, F, vh), timed = reduce ? 1 : clamp((s - 0.4) / 0.6, 0, 1);
@@ -739,7 +743,7 @@ function initProductJourney() {
     // anything has written a style earlier in this frame
     const sy = state.lenis ? state.lenis.scroll : scrollY, vh = geo.vh, tTime = now * 0.001;
     flightJars.forEach(j => { j.G.userData.shadowA = 0; });   // the ground shadow belongs to the list only: it is switched on there each frame
-    if (ov.state === 'closed' && ov.handed === 0 && !reduce && document.body.classList.contains('scene-on') && reenter(sy)) { rafId = schedule(frame); return; }
+    if (ov.state === 'closed' && hasIng(ov.handed) && !reduce && document.body.classList.contains('scene-on') && reenter(sy)) { rafId = schedule(frame); return; }
     if (ov.state !== 'closed') {
       if (ov.lenis) {
         try { ov.lenis.raf(now); } catch (e) {}

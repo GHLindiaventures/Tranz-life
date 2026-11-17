@@ -86,6 +86,31 @@ const DETAILS = {
     note: 'Use as directed on the label. Please consult a healthcare professional if your symptoms are severe, unusual or persistent.'
   },
 
+  reviva: {
+    eyebrow: 'Botanical Vitality · Targeted Roll-On Ritual',
+    title: 'Reviva™ Vitality & Comfort Roll-On',
+    tagline: 'Vitality in Every Touch. Botanical Care in Every Roll.',
+    intro: [
+      'TranzLife Reviva™ is formulated with pure Dill and Eucalyptus essential oils in the Spirit of Organics, crafted for daily vitality, micro-circulation, and nerve comfort.',
+      'Applied with a smooth, cooling massage roll-on around the navel to stimulate vitality reflex points as part of your morning wellness routine.'
+    ],
+    highlightsTitle: 'Why choose Reviva™ Roll-On?',
+    highlights: [
+      ['Convenient rollerball format', 'Mess-free, targeted topical application anytime, anywhere.'],
+      ['100% Pure Essential Oils', 'Carefully distilled Dill and Eucalyptus oils with zero synthetic fragrances.'],
+      ['Fast-absorbing & non-greasy', 'Penetrates quickly leaving skin nourished and comfortable.'],
+      ['Daily morning ritual', 'Effortlessly integrates into your everyday wellness lifestyle.']
+    ],
+    listTitle: 'Botanical Active Essentials',
+    list: [
+      ['Dill Essential Oil (E.O)', 'Pure botanical extract traditionally valued for micro-circulation and metabolic calm.'],
+      ['100% Plant-Based Carrier', 'Lightweight, nourishing plant lipids ensuring rapid skin absorption without greasy residue.'],
+      ['Eucalyptus Essential Oil', 'Provides a refreshing aromatic profile with a soothing, cooling sensory effect.'],
+      ['Targeted Reflex Ritual', 'Designed for gentle circular application around the navel to stimulate wellness pathways.']
+    ],
+    note: 'For external use only. Roll gently around the belly button every morning. This wellness product is not intended to treat, cure, or prevent disease. Consult a healthcare practitioner for personal medical conditions.'
+  },
+
   liver: {
     eyebrow: 'Nature-Inspired Innovation for Liver Wellness',
     title: 'TranzLife Liver Booster',
