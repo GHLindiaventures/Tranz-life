@@ -84,66 +84,66 @@ function initProductJourney() {
   // ripple, and a fainter second line follows just outside. makeOutline builds it into a showcase layer's #scFrame and
   // returns its setter (one for the page's showcase, one for the overlay a card click opens).
   function makeOutline(frameSvg) {
-  const SVGNS = 'http://www.w3.org/2000/svg';
-  const LEAF_D = 'M0 0C5-7 15-8 22 0C15 8 5 7 0 0Z';
-  const svgEl = (tag, cls, parent) => { const e = document.createElementNS(SVGNS, tag); if (cls) e.setAttribute('class', cls); parent.appendChild(e); return e; };
-  let frameParts = null, frameKey = '', frameBoxKey = '';
-  if (frameSvg) {
-    frameSvg.textContent = '';
-    const outer = svgEl('g', 'sc-frame__outer', frameSvg), main = svgEl('g', 'sc-frame__main', frameSvg), leaves = svgEl('g', 'sc-frame__leaves', frameSvg);
-    const mk = (g) => [0, 1].map(() => { const p = svgEl('path', null, g); p.setAttribute('pathLength', '1'); return p; });
-    frameParts = {
-      outer: mk(outer), main: mk(main),
-      leaves: [0, 1].flatMap(side => FRAME_LEAVES.map((at, k) => {
-        const g = svgEl('g', 'sc-frame__leaf', leaves); const p = svgEl('path', null, g); p.setAttribute('d', LEAF_D);
-        const vein = svgEl('path', 'sc-frame__vein', g); vein.setAttribute('d', 'M1 0H19');
-        return { g, side, at, out: (k + side) % 2 === 0 };
-      })),
-      ring: svgEl('circle', 'sc-frame__ring', frameSvg), bud: svgEl('circle', 'sc-frame__bud', frameSvg),
-      top: { x: 0, y: 0 }
-    };
-  }
-  function setFrame(box, u) {
-    if (!frameParts) return;
-    if (!box || u <= 0.001) {
-      if (frameKey !== 'off') { frameKey = 'off'; frameSvg.style.visibility = 'hidden'; }
-      return;
+    const SVGNS = 'http://www.w3.org/2000/svg';
+    const LEAF_D = 'M0 0C5-7 15-8 22 0C15 8 5 7 0 0Z';
+    const svgEl = (tag, cls, parent) => { const e = document.createElementNS(SVGNS, tag); if (cls) e.setAttribute('class', cls); parent.appendChild(e); return e; };
+    let frameParts = null, frameKey = '', frameBoxKey = '';
+    if (frameSvg) {
+      frameSvg.textContent = '';
+      const outer = svgEl('g', 'sc-frame__outer', frameSvg), main = svgEl('g', 'sc-frame__main', frameSvg), leaves = svgEl('g', 'sc-frame__leaves', frameSvg);
+      const mk = (g) => [0, 1].map(() => { const p = svgEl('path', null, g); p.setAttribute('pathLength', '1'); return p; });
+      frameParts = {
+        outer: mk(outer), main: mk(main),
+        leaves: [0, 1].flatMap(side => FRAME_LEAVES.map((at, k) => {
+          const g = svgEl('g', 'sc-frame__leaf', leaves); const p = svgEl('path', null, g); p.setAttribute('d', LEAF_D);
+          const vein = svgEl('path', 'sc-frame__vein', g); vein.setAttribute('d', 'M1 0H19');
+          return { g, side, at, out: (k + side) % 2 === 0 };
+        })),
+        ring: svgEl('circle', 'sc-frame__ring', frameSvg), bud: svgEl('circle', 'sc-frame__bud', frameSvg),
+        top: { x: 0, y: 0 }
+      };
     }
-    const bk = [box.x, box.y, box.w, box.h].map(v => v.toFixed(1)).join('|');
-    if (bk !== frameBoxKey) {
-      // the shape changed (product, zoom or resize): new paths, and the leaves re-seated along them
-      frameBoxKey = bk;
-      const [l, r] = frameHalfPaths(box), [ol, or] = frameHalfPaths(box, 7);
-      frameParts.main[0].setAttribute('d', l); frameParts.main[1].setAttribute('d', r);
-      frameParts.outer[0].setAttribute('d', ol); frameParts.outer[1].setAttribute('d', or);
+    function setFrame(box, u) {
+      if (!frameParts) return;
+      if (!box || u <= 0.001) {
+        if (frameKey !== 'off') { frameKey = 'off'; frameSvg.style.visibility = 'hidden'; }
+        return;
+      }
+      const bk = [box.x, box.y, box.w, box.h].map(v => v.toFixed(1)).join('|');
+      if (bk !== frameBoxKey) {
+        // the shape changed (product, zoom or resize): new paths, and the leaves re-seated along them
+        frameBoxKey = bk;
+        const [l, r] = frameHalfPaths(box), [ol, or] = frameHalfPaths(box, 7);
+        frameParts.main[0].setAttribute('d', l); frameParts.main[1].setAttribute('d', r);
+        frameParts.outer[0].setAttribute('d', ol); frameParts.outer[1].setAttribute('d', or);
+        frameParts.leaves.forEach(lf => {
+          const path = frameParts.main[lf.side], len = path.getTotalLength(), at = len * lf.at;
+          const p = path.getPointAtLength(at), q = path.getPointAtLength(Math.min(len, at + 1));
+          let ang = Math.atan2(q.y - p.y, q.x - p.x) * 180 / Math.PI;
+          // lean the leaf off the line, alternately outwards and inwards, pointing the way the tendril grows
+          const outwards = lf.side === 0 ? -1 : 1;
+          lf.base = `translate(${p.x.toFixed(1)} ${p.y.toFixed(1)}) rotate(${(ang + (lf.out ? -38 : 38) * outwards).toFixed(1)})`;
+        });
+        frameParts.top = { x: box.x + box.w / 2, y: box.y };
+        frameParts.bud.setAttribute('cx', frameParts.top.x.toFixed(1)); frameParts.bud.setAttribute('cy', frameParts.top.y.toFixed(1));
+        frameParts.ring.setAttribute('cx', frameParts.top.x.toFixed(1)); frameParts.ring.setAttribute('cy', frameParts.top.y.toFixed(1));
+      }
+      const key = bk + '|' + u.toFixed(4);
+      if (key === frameKey) return; frameKey = key;
+      frameSvg.style.visibility = 'visible';
+      const u2 = clamp((u - 0.12) / 0.88, 0, 1);                    // the outer line follows a little behind
+      frameParts.main.forEach(p => { p.style.strokeDashoffset = (1 - u).toFixed(4); });
+      frameParts.outer.forEach(p => { p.style.strokeDashoffset = (1 - u2).toFixed(4); });
       frameParts.leaves.forEach(lf => {
-        const path = frameParts.main[lf.side], len = path.getTotalLength(), at = len * lf.at;
-        const p = path.getPointAtLength(at), q = path.getPointAtLength(Math.min(len, at + 1));
-        let ang = Math.atan2(q.y - p.y, q.x - p.x) * 180 / Math.PI;
-        // lean the leaf off the line, alternately outwards and inwards, pointing the way the tendril grows
-        const outwards = lf.side === 0 ? -1 : 1;
-        lf.base = `translate(${p.x.toFixed(1)} ${p.y.toFixed(1)}) rotate(${(ang + (lf.out ? -38 : 38) * outwards).toFixed(1)})`;
+        const s = leafOpen(u, lf.at);
+        lf.g.setAttribute('transform', `${lf.base} scale(${Math.max(0, s).toFixed(3)})`);
       });
-      frameParts.top = { x: box.x + box.w / 2, y: box.y };
-      frameParts.bud.setAttribute('cx', frameParts.top.x.toFixed(1)); frameParts.bud.setAttribute('cy', frameParts.top.y.toFixed(1));
-      frameParts.ring.setAttribute('cx', frameParts.top.x.toFixed(1)); frameParts.ring.setAttribute('cy', frameParts.top.y.toFixed(1));
+      // the bud opens when the tendrils meet, and one ripple spreads from it
+      const b = clamp((u - 0.94) / 0.06, 0, 1), rip = clamp((u - 0.9) / 0.1, 0, 1);
+      frameParts.bud.setAttribute('r', (6 * leafOpen(b, 0)).toFixed(2));
+      frameParts.ring.setAttribute('r', (6 + 26 * rip).toFixed(1));
+      frameParts.ring.style.opacity = (rip > 0 && rip < 1 ? (1 - rip) * 0.7 : 0).toFixed(3);
     }
-    const key = bk + '|' + u.toFixed(4);
-    if (key === frameKey) return; frameKey = key;
-    frameSvg.style.visibility = 'visible';
-    const u2 = clamp((u - 0.12) / 0.88, 0, 1);                    // the outer line follows a little behind
-    frameParts.main.forEach(p => { p.style.strokeDashoffset = (1 - u).toFixed(4); });
-    frameParts.outer.forEach(p => { p.style.strokeDashoffset = (1 - u2).toFixed(4); });
-    frameParts.leaves.forEach(lf => {
-      const s = leafOpen(u, lf.at);
-      lf.g.setAttribute('transform', `${lf.base} scale(${Math.max(0, s).toFixed(3)})`);
-    });
-    // the bud opens when the tendrils meet, and one ripple spreads from it
-    const b = clamp((u - 0.94) / 0.06, 0, 1), rip = clamp((u - 0.9) / 0.1, 0, 1);
-    frameParts.bud.setAttribute('r', (6 * leafOpen(b, 0)).toFixed(2));
-    frameParts.ring.setAttribute('r', (6 + 26 * rip).toFixed(1));
-    frameParts.ring.style.opacity = (rip > 0 && rip < 1 ? (1 - rip) * 0.7 : 0).toFixed(3);
-  }
     return setFrame;
   }
   const setFrame = makeOutline(showcaseSec ? showcaseSec.querySelector('#scFrame') : null);
@@ -155,7 +155,7 @@ function initProductJourney() {
   // it at any screen size; on phones they stack on the left of the product. One setter per showcase layer (the page's
   // and the copy a card click opens).
   function makeCallout(pin) {
-    if (!pin) return () => {};
+    if (!pin) return () => { };
     const hl = pin.querySelector('.sc-hl');
     const SVGNS = 'http://www.w3.org/2000/svg';
     const svg = document.createElementNS(SVGNS, 'svg');
@@ -240,8 +240,8 @@ function initProductJourney() {
   const BADGE_FROM = [0, 0.06, 0.5];   // when each comes in: the first two fill the first screens' empty corners
   function makeBadges(pin) {
     const layer = pin && pin.querySelector('.sc-pbadges'), sc = pin && pin.closest('.showcase');
-    return () => {};   // (the ingredient badges are gone: only the given details are shown)
-    if (!layer) return () => {};
+    return () => { };   // (the ingredient badges are gone: only the given details are shown)
+    if (!layer) return () => { };
     let shown = false, edges = '';
     return function setBadges(box, P, k) {
       if (box && sc) {
@@ -277,7 +277,7 @@ function initProductJourney() {
   // The product's frame is handed to CSS (--co-l / --co-r) so the frames' columns sit beside the product.
   function makeChapters(pin) {
     const sc = pin && pin.closest('.showcase');
-    if (!sc) return () => {};
+    if (!sc) return () => { };
     const blocks = sc.querySelector('.sc-blocks');
     let key = '', lastE = NaN;
     return function setChapters(box, r, H, k) {
@@ -418,8 +418,10 @@ function initProductJourney() {
   // The overlay holds a copy of the showcase (same layout, same blocks, same outline) filled for the clicked product,
   // and scrolls on its own; the page behind stays exactly where it was (Lenis is stopped while it is open). The product
   // flies from its card to the middle on open and back into its card on close (Close, Esc, or reaching the end).
-  const ov = { el: null, sec: null, btn: null, card: null, lead: null, setFrame: null, idx: -1, state: 'closed', t0: 0,
-    from: null, last: null, pending: null, returnFocus: null };
+  const ov = {
+    el: null, sec: null, btn: null, card: null, lead: null, setFrame: null, idx: -1, state: 'closed', t0: 0,
+    from: null, last: null, pending: null, returnFocus: null
+  };
   const OPEN_MS = reduce ? 1 : 1400, CLOSE_MS = reduce ? 1 : 650;
   const easeIO = k => (k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2);
   const sm = t => t * t * (3 - 2 * t);
@@ -438,7 +440,7 @@ function initProductJourney() {
   // leave, the bottle opens, and the outline fades. The Liver Booster runs longer (six callouts, one at a time) with the same screen counts for its early steps.
   const ING_CFG = {
     gummies: { len: 5.4, letters: 0.18, open0: 0.18, open1: 0.48, frame: 0.08, make: createIngredientsDirector },
-    liver:   { len: 4.4, letters: 0.18, open0: 0.18, open1: 0.48, frame: 0.08, make: createLiverDirector },
+    liver:   { len: 5.4, letters: 0.18, open0: 0.18, open1: 0.48, frame: 0.08, make: createLiverDirector },
   };
   const ingCfg = () => (ov.idx >= 0 && PRODUCTS[ov.idx] && ING_CFG[PRODUCTS[ov.idx].id]) || null;
   // the run-up (flip, outline in, outline out) in screens. On a short section (small screens) the highlights moment comes sooner (it starts
@@ -490,16 +492,20 @@ function initProductJourney() {
     // the same smooth scroll as the page (same settings), so the display moves exactly like the page's showcase; its
     // frames are driven from our own frame loop. It is stopped while the display is closed.
     const lenis = reduce ? null : new Lenis({ wrapper: el, content: sec, lerp: 0.09, smoothWheel: true, wheelMultiplier: 1, touchMultiplier: 1.5, autoRaf: false });
-    Object.assign(ov, { lenis, el, sec, btn, card: sec.querySelector('#scCard'), lead: sec.querySelector('#scLead'),
+    Object.assign(ov, {
+      lenis, el, sec, btn, card: sec.querySelector('#scCard'), lead: sec.querySelector('#scLead'),
       setFrame: makeOutline(sec.querySelector('#scFrame')), setCallout: makeCallout(sec.querySelector('.showcase-pin')),
-      setBadges: makeBadges(sec.querySelector('.showcase-pin')), setChapters: makeChapters(sec.querySelector('.showcase-pin')) });
+      setBadges: makeBadges(sec.querySelector('.showcase-pin')), setChapters: makeChapters(sec.querySelector('.showcase-pin'))
+    });
   }
 
   // where the product sits in its card right now (screen px), to fly from / back to
   function cardSpot(i) {
     const r = slotEls[i].getBoundingClientRect(), jar = flightJars[i];
-    return { x: r.left + r.width / 2, y: r.top + r.height * 0.52, h: r.height * 0.72 * (jar.fit || 1),
-      rx: jar.G.rotation.x, ry: jar.G.rotation.y, rz: jar.G.rotation.z };
+    return {
+      x: r.left + r.width / 2, y: r.top + r.height * 0.52, h: r.height * 0.72 * (jar.fit || 1),
+      rx: jar.G.rotation.x, ry: jar.G.rotation.y, rz: jar.G.rotation.z
+    };
   }
 
   // matte gradient behind each product: [top, middle, bottom]
@@ -510,7 +516,7 @@ function initProductJourney() {
     if (ov.state === 'open') { if (i !== ov.idx) { ov.pending = i; closeOverlay(); } return; }
     buildOverlay(); if (!ov.el) return;
     ov.idx = i; ov.returnFocus = itemEls[i];
-    { const g = OV_BG[PRODUCTS[i].id] || OV_BG.gummies; ov.el.style.setProperty('--ov-a', g[0]); ov.el.style.setProperty('--ov-b', g[1]); ov.el.style.setProperty('--ov-c', g[2]); [['--ov-a', g[0]], ['--ov-b', g[1]], ['--ov-c', g[2]]].forEach(([k, v]) => document.documentElement.style.setProperty(k, v)); ov.handed = null; }
+    { const g = OV_BG[PRODUCTS[i].id] || OV_BG.gummies; ov.el.style.setProperty('--ov-a', g[0]); ov.el.style.setProperty('--ov-b', g[1]); ov.el.style.setProperty('--ov-c', g[2]);[['--ov-a', g[0]], ['--ov-b', g[1]], ['--ov-c', g[2]]].forEach(([k, v]) => document.documentElement.style.setProperty(k, v)); ov.handed = null; }
     populateShowcaseDOM(ov.sec, i);
     if (ov.heroName) {
       const srEl = itemEls[i] && itemEls[i].querySelector('.sr'), nm = (srEl ? srEl.textContent : PRODUCTS[i].short || '').trim();
@@ -531,8 +537,10 @@ function initProductJourney() {
     // the Lung Booster's extra scroll is part of the section itself (its pinned layers cannot leave the section): taller by ING_LEN + ING_CL
     // screens, and `_extra` tells the layout (showcase-scene.js) and this file to plan the timeline on the original height
     ov.sec.style.height = ''; ov.sec._extra = 0;
-    if (ingOn()) { const H0 = ov.sec.offsetHeight, Aq = geo.fadeLen + ingT(geo.vh, geo.fadeLen, H0).A * geo.vh, r0q = geo.fadeLen + 1.05 * geo.vh, extra = Math.round((ingCfg().len + ING_CL) * geo.vh + Math.max(0, Aq - r0q));   // (+ the stretch the display winds back, so the details still run to their real end)
-      ov.sec._extra = extra; ov.sec.style.height = (ov.sec.offsetHeight + extra) + 'px'; }
+    if (ingOn()) {
+      const H0 = ov.sec.offsetHeight, Aq = geo.fadeLen + ingT(geo.vh, geo.fadeLen, H0).A * geo.vh, r0q = geo.fadeLen + 1.05 * geo.vh, extra = Math.round((ingCfg().len + ING_CL) * geo.vh + Math.max(0, Aq - r0q));   // (+ the stretch the display winds back, so the details still run to their real end)
+      ov.sec._extra = extra; ov.sec.style.height = (ov.sec.offsetHeight + extra) + 'px';
+    }
     if (ingOn() && !ingDirs[i]) ingDirs[i] = ingCfg().make(L);
     if (ov.lenis) { ov.lenis.resize(); ov.lenis.start(); ov.lenis.scrollTo(0, { immediate: true, force: true }); }
     const flow = ov.sec.querySelector('.sc-flow'); if (flow) { flow.style.visibility = 'visible'; flow.style.opacity = '1'; }
@@ -769,7 +777,7 @@ function initProductJourney() {
     if (ov.state === 'closed' && ov.handed != null && ING_CFG[PRODUCTS[ov.handed].id] && !reduce && document.body.classList.contains('scene-on') && reenter(sy)) { rafId = schedule(frame); return; }
     if (ov.state !== 'closed') {
       if (ov.lenis) {
-        try { ov.lenis.raf(now); } catch (e) {}
+        try { ov.lenis.raf(now); } catch (e) { }
       }
       try {
         renderOverlay(now, tTime);
