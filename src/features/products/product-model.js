@@ -10,6 +10,7 @@ import decalReviva from '../../assets/products/decal-reviva.webp';
 import decalLiver from '../../assets/products/decal-liver.webp';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { attachGummies } from './gummy-pour.js';
+import { applyJarGlass, disposeGlass } from './glass.js';
 import liverGlbUrl from '../../assets/products/liver-booster.glb?url';
 import cycleReliefGlbUrl from '../../assets/products/cyclerelief.glb?url';
 import lungBoosterGlbUrl from '../../assets/products/lungbooster.glb?url';
@@ -255,6 +256,7 @@ const HD_LOADERS = {
 
 function disposeObject(obj) {
   if (!obj) return;
+  disposeGlass(obj);
   obj.traverse(n => {
     if (n.isMesh) {
       if (n.geometry) n.geometry.dispose();
@@ -278,12 +280,24 @@ function applyModelStyling(m, baseH, holder) {
   m.scale.setScalar(k); m.position.set(-mid.x * k, -box.min.y * k, -mid.z * k);
   const wrap = new THREE.Group(); wrap.add(m);
 
-  // glass (KHR_materials_transmission) is not drawn by this version of three.js and comes out solid white: show it as
-  // clear, lightly tinted glass that lets the product behind it through
-  m.traverse(n => { if (n.isMesh && n.material && n.material.transmission > 0) { const gm = n.material = n.material.clone(); gm.transmission = 0; gm.transparent = true; gm.opacity = .5; gm.depthWrite = false; gm.envMapIntensity = 1.6; gm.roughness = Math.min(gm.roughness, .12); n.renderOrder = 2;
-    // the Lung Booster jar is glossier: a hard clear-coat on top and brighter reflections (the more reflective glass reads as thicker)
-    if (n.name === 'Jar_Glass'){ gm.color = new THREE.Color(0x24382d); gm.roughness = 0; gm.metalness = 0; gm.clearcoat = 1; gm.clearcoatRoughness = 0; gm.reflectivity = 1; gm.envMapIntensity = 0.9; gm.opacity = .24; }
-  } });
+  // Glass rendering: apply realistic cheap glass to the Lung Booster jar (Jar_Glass & Jar_Neck)
+  if (m.getObjectByName('Jar_Glass')) {
+    applyJarGlass(m);
+  } else {
+    // Other models with transmission materials (energy, cyclerelief) keep fallback styling
+    m.traverse(n => {
+      if (n.isMesh && n.material && n.material.transmission > 0) {
+        const gm = n.material = n.material.clone();
+        gm.transmission = 0;
+        gm.transparent = true;
+        gm.opacity = .5;
+        gm.depthWrite = false;
+        gm.envMapIntensity = 1.6;
+        gm.roughness = Math.min(gm.roughness, .12);
+        n.renderOrder = 2;
+      }
+    });
+  }
 
   // the CycleRelief scan's texture atlas is a patchwork: its normal map and metal/roughness map carry the seams between the patches,
   // which read as cracks and scratches on the cap and label. Drop those maps (the colour map is clean) and set plain values.
@@ -340,7 +354,6 @@ function bindModelHooks(m, holder) {
         if (gm.parent) gm.parent.remove(gm);
         m.add(gm);
       }
-      if (ud.gummies.setRoot) ud.gummies.setRoot(m);   // the packets' matrices follow the model they now live in (HD or grid), not the first one
     }
   }
   // the Liver Booster's cap is the separate node `Cap` (on the model's own axis); its neck thread is left-handed, so it turns clockwise

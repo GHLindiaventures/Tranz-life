@@ -18,6 +18,7 @@ import { PRODUCTS } from './data/products.js';
 import { STORY } from './data/product-story.js';
 import { jarLayer } from '../features/products/jar-layer.js';
 import { swapToHd, restoreFromHd } from '../features/products/product-model.js';
+import { glassPerf } from '../features/products/glass.js';
 import { createIngredientsDirector } from '../features/products/gummy-pour.js';
 // DISABLED until liver-pour.js exists: import { createLiverDirector } from '../features/products/liver-pour.js';
 import Lenis from 'lenis';
@@ -758,7 +759,9 @@ function initProductJourney() {
 
   function frame(now) {
     rafId = 0;
-    const dt = Math.min(0.1, (now - last) / 1000); last = now;
+    const dt = Math.min(0.1, (now - last) / 1000);
+    glassPerf.update(now - last);
+    last = now;
     // the scroll position from Lenis (a plain number): reading window.scrollY here would force a layout whenever
     // anything has written a style earlier in this frame
     const sy = state.lenis ? state.lenis.scroll : scrollY, vh = geo.vh, tTime = now * 0.001;
