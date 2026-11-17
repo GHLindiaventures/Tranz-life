@@ -28,6 +28,7 @@ __pycache__/
 # temporary downloads and raw scan models
 *.crdownload
 meshy-model*.glb
+raw/
 
 # client reference documents & assets
 brochures/

@@ -17,6 +17,7 @@ import { ScrollTrigger } from '../lib/gsap.js';
 import { PRODUCTS } from './data/products.js';
 import { STORY } from './data/product-story.js';
 import { jarLayer } from '../features/products/jar-layer.js';
+import { swapToHd, restoreFromHd } from '../features/products/product-model.js';
 import { createIngredientsDirector } from '../features/products/gummy-pour.js';
 // DISABLED until liver-pour.js exists: import { createLiverDirector } from '../features/products/liver-pour.js';
 import Lenis from 'lenis';
@@ -537,6 +538,7 @@ function initProductJourney() {
     placeBadges(ov.sec);
     [ov.card, ov.lead].forEach(el => { if (el) { el.style.opacity = '0'; el.style.setProperty('--tin', '0'); } });   // words start from nothing
     ov.state = 'opening'; ov.t0 = ov.openedAt = performance.now();
+    swapToHd(flightJars[i], PRODUCTS[i]);
     flightCanvas.classList.add('active'); wasOn = true;
     ov.el.focus({ preventScroll: true });                  // arrow keys, Page keys and Space scroll it
   }
@@ -561,6 +563,7 @@ function initProductJourney() {
     if (state.lenis && state.lenis.resize) state.lenis.resize();
   }
   function hideScene(sy) {
+    PRODUCTS.forEach((p, idx) => restoreFromHd(flightJars[idx]));
     ov.handed = null; showcaseSec._ppOff = 0;
     const shift = geo.lineupTop;
     setScene(false);
@@ -608,6 +611,7 @@ function initProductJourney() {
 
   function finishClose() {
     if (ingDirs[ov.idx]) ingDirs[ov.idx].reset(flightJars[ov.idx]);
+    if (ov.idx >= 0 && flightJars[ov.idx]) restoreFromHd(flightJars[ov.idx]);
     ov.state = 'closed';
     if (ov.lenis) ov.lenis.stop();
     document.body.classList.remove('sc-ov-open');

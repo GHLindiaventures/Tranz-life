@@ -14,7 +14,9 @@
     "test:chat": "node --env-file-if-exists=.env scripts/tulsi-eval.mjs docs/tulsi-test-results.md",
     "test:understand": "node --env-file-if-exists=.env scripts/understand-eval.mjs",
     "insights": "node --env-file-if-exists=.env scripts/insights-report.mjs",
-    "test:real": "node --env-file-if-exists=.env scripts/understand-eval.mjs --set real && node --env-file-if-exists=.env scripts/understand-eval.mjs --set real2"
+    "test:real": "node --env-file-if-exists=.env scripts/understand-eval.mjs --set real && node --env-file-if-exists=.env scripts/understand-eval.mjs --set real2",
+    "optimize:glb": "node scripts/optimize-glb.mjs",
+    "verify:glb": "node scripts/verify-models.mjs"
   },
   "dependencies": {
     "@google/genai": "^3.3.0",
@@ -23,6 +25,12 @@
     "three": "0.128.0"
   },
   "devDependencies": {
+    "@gltf-transform/cli": "^4.5.1",
+    "@gltf-transform/core": "^4.5.1",
+    "@gltf-transform/extensions": "^4.5.1",
+    "@gltf-transform/functions": "^4.5.1",
+    "meshoptimizer": "^1.3.0",
+    "sharp": "^0.35.5",
     "vite": "5.4.21",
     "vite-plugin-singlefile": "2.3.0",
     "vitest": "2.1.9"
