@@ -914,7 +914,7 @@ function initProductJourney() {
       L.size(jar, Math.max(1, s.h * 0.72 * (jar.fit || 1) * (0.7 + 0.3 * clamp(eb, 0, 1.1)) * (1 - hl * 0.04)));
       const hov = hovered === i;
       jar.G.rotation.set(
-        hl * 0.05 + (hov ? mouse.y * 0.15 : 0),
+        0.08 + hl * 0.05 + (hov ? mouse.y * 0.15 : 0),
         restRot(i) - (1 - eb) * Math.PI * 1.4 + idleRot(i, tTime) + hl * 0.25 + (hov ? mouse.x * 0.6 : 0),
         -0.61 * (1 - eb) - hl * 0.1                                         // about -35 degrees while arriving, -6 when highlighted
       );

@@ -126,17 +126,17 @@ export function makeGlassMaterial(base, opts = {}) {
   mat.depthWrite = false;
   mat.side = THREE.FrontSide;
 
-  mat.clearcoat = 1;
-  mat.clearcoatRoughness = 0.03;
-  mat.roughness = 0.04;
+  mat.clearcoat = 1.0;
+  mat.clearcoatRoughness = 0.02;
+  mat.roughness = 0.02;
   mat.metalness = 0.0;
   mat.reflectivity = 1.0;
-  mat.envMapIntensity = 1.4;
+  mat.envMapIntensity = 2.0;
 
-  const baseColor = opts.color !== undefined ? opts.color : 0x24382d;
+  const baseColor = opts.color !== undefined ? opts.color : 0xffffff;
   mat.color.copy(lin(baseColor));
 
-  const baseAlpha = opts.alpha !== undefined ? opts.alpha : 0.16;
+  const baseAlpha = opts.alpha !== undefined ? opts.alpha : 0.06;
   mat.opacity = baseAlpha;
 
   const uGlassAlpha = { value: baseAlpha };
@@ -163,21 +163,35 @@ export function makeGlassMaterial(base, opts = {}) {
     shader.fragmentShader = safeReplace(
       shader.fragmentShader,
       '#include <dithering_fragment>',
-      `// Glass Fresnel, Thickness Tint & Softbox Specular Highlights
-  float fresnel = pow(1.0 - clamp(dot(normalize(vNormal), normalize(vViewPosition)), 0.0, 1.0), 3.0);
+      `// Ultra-realistic clear flint glass reflections & caustics
+  vec3 viewDir = normalize(vViewPosition);
+  vec3 norm = normalize(vNormal);
+  float NdotV = clamp(dot(norm, viewDir), 0.0, 1.0);
+  float fresnel = pow(1.0 - NdotV, 3.0);
   float fBoost = clamp(uFresnelBoost, 0.0, 1.0);
-  float baseFactor = smoothstep(-0.60, -0.95, vGlassPos.y);
-  float rimFactor = smoothstep(0.18, 0.32, vGlassPos.y);
-  float thickness = clamp(fresnel * 0.75 * fBoost + baseFactor * 0.45 + rimFactor * 0.25, 0.0, 1.0);
-  gl_FragColor.a = clamp(mix(uGlassAlpha, 0.88, thickness), 0.0, 0.92);
 
-  // Subtle botanical green thickness tint
-  vec3 greenTint = vec3(0.08, 0.18, 0.12);
-  gl_FragColor.rgb = mix(gl_FragColor.rgb, gl_FragColor.rgb * vec3(0.70, 0.90, 0.75) + greenTint * 0.35, thickness * 0.35);
+  // Thickness factors
+  float baseFactor = smoothstep(-0.65, -0.95, vGlassPos.y); // Heavy glass base
+  float rimFactor = smoothstep(0.18, 0.32, vGlassPos.y);   // Rounded glass shoulder
+  float edgeThickness = clamp(fresnel * 0.70 * fBoost + baseFactor * 0.35 + rimFactor * 0.20, 0.0, 1.0);
 
-  // Extra environment reflection weighted by fresnel (softbox edge highlights)
-  vec3 rimGleam = vec3(0.85, 0.98, 0.90);
-  gl_FragColor.rgb += rimGleam * (pow(fresnel, 2.5) * 0.40 * fBoost);
+  // Clear see-through glass: low alpha in center, rising only at glancing rim
+  gl_FragColor.a = clamp(mix(uGlassAlpha, 0.70, edgeThickness), 0.0, 0.82);
+
+  // Pure flint glass tone
+  vec3 clearTone = vec3(0.97, 0.99, 0.98);
+  gl_FragColor.rgb = mix(gl_FragColor.rgb, gl_FragColor.rgb * clearTone, edgeThickness * 0.15);
+
+  // Studio lighting reflections (softbox strips, shoulder highlight, base refraction)
+  vec3 refl = reflect(-viewDir, norm);
+  float softboxL = smoothstep(0.40, 0.82, max(0.0, -refl.x * 0.85 + refl.z * 0.35));
+  float softboxR = smoothstep(0.45, 0.88, max(0.0, refl.x * 0.85 + refl.z * 0.30));
+  float shoulderHl = smoothstep(0.18, 0.28, vGlassPos.y) * (1.0 - smoothstep(0.28, 0.33, vGlassPos.y)) * pow(fresnel, 1.2);
+  float baseRing = smoothstep(-0.85, -0.95, vGlassPos.y) * (1.0 - smoothstep(-0.95, -0.96, vGlassPos.y));
+  float baseCurveHl = baseRing * (0.5 + 0.5 * pow(fresnel, 0.8));
+
+  vec3 studioHighlights = vec3(1.0, 1.0, 1.0) * (softboxL * 0.35 + softboxR * 0.40 + shoulderHl * 0.50 + baseCurveHl * 0.65 + pow(fresnel, 2.0) * 0.65) * fBoost;
+  gl_FragColor.rgb += studioHighlights;
 
   #include <dithering_fragment>`
     );
@@ -199,15 +213,15 @@ export function makeGlassBackMaterial(base, opts = {}) {
   mat.side = THREE.BackSide;
 
   mat.clearcoat = 0.8;
-  mat.clearcoatRoughness = 0.05;
-  mat.roughness = 0.08;
+  mat.clearcoatRoughness = 0.04;
+  mat.roughness = 0.04;
   mat.metalness = 0.0;
-  mat.envMapIntensity = 0.9;
+  mat.envMapIntensity = 1.2;
 
-  const backColor = opts.backColor !== undefined ? opts.backColor : 0x16241b;
+  const backColor = opts.backColor !== undefined ? opts.backColor : 0xffffff;
   mat.color.copy(lin(backColor));
 
-  const backAlpha = opts.alpha !== undefined ? opts.alpha : 0.12;
+  const backAlpha = opts.alpha !== undefined ? opts.alpha : 0.05;
   mat.opacity = backAlpha;
 
   const uGlassAlpha = { value: backAlpha };
@@ -235,14 +249,18 @@ export function makeGlassBackMaterial(base, opts = {}) {
       shader.fragmentShader,
       '#include <dithering_fragment>',
       `// Back-face inner glass wall
-  float fresnel = pow(1.0 - clamp(dot(normalize(vNormal), normalize(vViewPosition)), 0.0, 1.0), 3.0);
+  vec3 viewDir = normalize(vViewPosition);
+  vec3 norm = normalize(vNormal);
+  float NdotV = clamp(dot(norm, viewDir), 0.0, 1.0);
+  float fresnel = pow(1.0 - NdotV, 3.0);
   float fBoost = clamp(uFresnelBoost, 0.0, 1.0);
-  float baseFactor = smoothstep(-0.60, -0.95, vGlassPos.y);
-  float thickness = clamp(fresnel * 0.5 + baseFactor * 0.35, 0.0, 1.0);
-  gl_FragColor.a = clamp(mix(uGlassAlpha, 0.70, thickness), 0.0, 0.80);
 
-  vec3 backTint = vec3(0.05, 0.12, 0.08);
-  gl_FragColor.rgb = mix(gl_FragColor.rgb, gl_FragColor.rgb * vec3(0.60, 0.80, 0.65) + backTint * 0.4, thickness * 0.4);
+  float baseFactor = smoothstep(-0.75, -0.95, vGlassPos.y);
+  float thickness = clamp(fresnel * 0.45 + baseFactor * 0.30, 0.0, 1.0);
+  gl_FragColor.a = clamp(mix(uGlassAlpha, 0.45, thickness), 0.0, 0.55);
+
+  vec3 backTone = vec3(0.92, 0.95, 0.94);
+  gl_FragColor.rgb = mix(gl_FragColor.rgb, gl_FragColor.rgb * backTone, thickness * 0.25);
 
   #include <dithering_fragment>`
     );
@@ -287,7 +305,8 @@ export function applyJarGlass(m) {
   targets.forEach(node => {
     const isJarGlass = node.name === 'Jar_Glass';
     const frontMat = makeGlassMaterial(node.material, {
-      alpha: isJarGlass ? 0.16 : 0.22,
+      alpha: isJarGlass ? 0.06 : 0.08,
+      color: 0xffffff,
       variant: node.name
     });
     frontMats.push(frontMat);
@@ -299,7 +318,8 @@ export function applyJarGlass(m) {
     let backMesh = node.parent ? node.parent.getObjectByName(backName) : null;
     if (!backMesh) {
       const backMat = makeGlassBackMaterial(node.material, {
-        alpha: isJarGlass ? 0.12 : 0.16,
+        alpha: isJarGlass ? 0.05 : 0.06,
+        backColor: 0xffffff,
         variant: node.name
       });
       backMats.push(backMat);

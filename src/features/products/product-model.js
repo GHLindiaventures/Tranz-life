@@ -283,6 +283,58 @@ function applyModelStyling(m, baseH, holder) {
   // Glass rendering: apply realistic cheap glass to the Lung Booster jar (Jar_Glass & Jar_Neck)
   if (m.getObjectByName('Jar_Glass')) {
     applyJarGlass(m);
+
+    // Clean diagonal slant cut on Jar_Label to match brand design (removing jagged scan tear)
+    const label = m.getObjectByName('Jar_Label');
+    if (label && label.material) {
+      const lm = label.material = label.material.clone();
+      lm.roughness = 0.85;
+      lm.metalness = 0.0;
+      lm.envMapIntensity = 0.45;
+      lm.onBeforeCompile = sh => {
+        sh.vertexShader = sh.vertexShader.replace('void main() {', 'varying vec3 vObjPos;\nvoid main() {\n  vObjPos = position;');
+        sh.fragmentShader = sh.fragmentShader
+          .replace('void main() {', 'varying vec3 vObjPos;\nvoid main() {')
+          .replace('#include <map_fragment>', `#include <map_fragment>
+          float cutLine = -0.27 + 0.40 * vObjPos.x - 0.15 * vObjPos.x * vObjPos.x;
+          float distToCut = vObjPos.y - cutLine;
+          if (distToCut < 0.0) discard;
+          diffuseColor.rgb += vec3(0.14, 0.13, 0.11) * exp(-distToCut * distToCut / 0.00012);`);
+      };
+      lm.customProgramCacheKey = () => 'jar_label_slant_v2';
+      lm.needsUpdate = true;
+    }
+
+    // Kraft / eco pressed plant-fiber cap styling with top leaf engraving
+    const cap = m.getObjectByName('Jar_Cap');
+    if (cap && cap.material) {
+      const cm = cap.material = cap.material.clone();
+      const kt = kraft();
+      const leafTex = capLeaf();
+      cm.map = kt;
+      cm.roughness = 0.85;
+      cm.metalness = 0.0;
+      cm.envMapIntensity = 0.45;
+      cm.color.set(lin('#dfcbb4'));
+
+      cm.onBeforeCompile = sh => {
+        sh.uniforms.uLeafMap = { value: leafTex };
+        sh.vertexShader = sh.vertexShader.replace('void main() {', 'varying vec3 vObjPos;\nvoid main() {\n  vObjPos = position;');
+        sh.fragmentShader = sh.fragmentShader
+          .replace('void main() {', 'varying vec3 vObjPos;\nuniform sampler2D uLeafMap;\nvoid main() {')
+          .replace('#include <map_fragment>', `#include <map_fragment>
+          if (vObjPos.y > 0.94) {
+            vec2 leafUV = vec2(vObjPos.x, -vObjPos.z) / 0.74 + 0.5;
+            if (leafUV.x >= 0.0 && leafUV.x <= 1.0 && leafUV.y >= 0.0 && leafUV.y <= 1.0) {
+              float leafVal = texture2D(uLeafMap, leafUV).r;
+              float leafLine = smoothstep(0.40, 0.48, leafVal);
+              diffuseColor.rgb = mix(diffuseColor.rgb * 0.68, diffuseColor.rgb, leafLine);
+            }
+          }`);
+      };
+      cm.customProgramCacheKey = () => 'jar_cap_leaf_engrave';
+      cm.needsUpdate = true;
+    }
   } else {
     // Other models with transmission materials (energy, cyclerelief) keep fallback styling
     m.traverse(n => {
