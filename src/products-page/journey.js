@@ -487,13 +487,13 @@ function initProductJourney() {
       + '<i class="fx-smoke fx-s1"></i><i class="fx-smoke fx-s2"></i><i class="fx-vig"></i>'
       + '<span class="fx-line"><b></b></span>'
       + '<span class="fx-c fx-c--tl"></span><span class="fx-c fx-c--tr"></span><span class="fx-c fx-c--bl"></span><span class="fx-c fx-c--br"></span>'
-      + '<span class="fx-tick fx-tick--l"></span><span class="fx-tick fx-tick--r"></span><i class="fx-halo"></i>';
+      + '<span class="fx-tick fx-tick--l"></span><span class="fx-tick fx-tick--r"></span>';
     el.appendChild(fx); ov.fx = fx;
     try { ov.smoke = reduce ? null : createHeroSmoke(fx); } catch (e) { ov.smoke = null; }
     if (ov.smoke) fx.classList.add('has-gl');
 
-    // 3D Luxury Particles & Shockwave Engine
-    try { ov.particles = reduce ? null : createHeroParticles(L); } catch (e) { ov.particles = null; }
+    // Particles and round light removed per user request
+    ov.particles = null;
 
     const sec = showcaseSec.cloneNode(true);
     sec.id = 'showcaseOv'; sec.removeAttribute('data-dock'); sec.removeAttribute('data-theme');
@@ -505,9 +505,6 @@ function initProductJourney() {
     const pinHost = sec.querySelector('.showcase-pin');
     if (pinHost) {
       const hn = document.createElement('div'); hn.className = 'sc-heroname'; hn.setAttribute('aria-hidden', 'true'); pinHost.appendChild(hn); ov.heroName = hn;
-      // Drifting mist in front of the name (behind the 3D product bottle)
-      const mist = document.createElement('div'); mist.className = 'sc-heromist'; mist.setAttribute('aria-hidden', 'true');
-      mist.innerHTML = '<i></i><i></i><i></i>'; pinHost.appendChild(mist); ov.mist = mist;
     }
     const btn = document.createElement('button');
     btn.type = 'button'; btn.className = 'sc-overlay__close'; btn.setAttribute('aria-label', 'Close');
@@ -524,13 +521,6 @@ function initProductJourney() {
     });
     btn.addEventListener('pointerleave', () => {
       btn.style.transform = '';
-    });
-
-    // Tap/Click particle shockwave interaction on canvas
-    flightCanvas.addEventListener('pointerdown', () => {
-      if ((ov.state === 'open' || ov.state === 'opening') && ov.particles) {
-        ov.particles.trigger('click');
-      }
     });
 
     document.addEventListener('keydown', e => { if (e.key === 'Escape' && (ov.state === 'open' || ov.state === 'opening')) closeOverlay(); });
@@ -562,7 +552,7 @@ function initProductJourney() {
   }
 
   // matte gradient behind each product: [top, middle, bottom]
-  const OV_BG = { gummies: ['#ebcba0', '#d99a68', '#b86b43'], inhaler: ['#b0dccd', '#72b8a2', '#418f7c'], rollon: ['#ecbcc5', '#d68b9e', '#ab5a76'], reviva: ['#cddca4', '#9fba66', '#6c903c'], liver: ['#e3d68c', '#bfb24f', '#8c8531'], energy: ['#f1dc95', '#ddb24a', '#a77a22'] };
+  const OV_BG = { gummies: ['#a0cba8', '#4b8256', '#1d4826'], inhaler: ['#b0dccd', '#72b8a2', '#418f7c'], rollon: ['#ecbcc5', '#d68b9e', '#ab5a76'], reviva: ['#cddca4', '#9fba66', '#6c903c'], liver: ['#e3d68c', '#bfb24f', '#8c8531'], energy: ['#f1dc95', '#ddb24a', '#a77a22'] };
   function openOverlay(i) {
     if (i == null || i < 0 || i >= N) return;
     if (ov.state === 'opening' || ov.state === 'closing') { ov.pending = i; return; }   // finish the current one first
@@ -742,8 +732,8 @@ function initProductJourney() {
       const hv = hk.toFixed(3), pv = clamp(syRaw / Math.max(1, ov.sec.offsetHeight - vh + F), 0, 1).toFixed(4);
       if (ov.fx._h !== hv) { ov.fx._h = hv; ov.el.style.setProperty('--hero', hv); }
       if (ov.fx._p !== pv) { ov.fx._p = pv; ov.el.style.setProperty('--ovp', pv); }
-      // the smoke: drawn only while the hero is on screen; it comes up from dark as the display opens
-      if (ov.smoke && hk > 0.01) {
+      // the smoke: rendered smoothly throughout the flow while the display is open
+      if (ov.smoke && (ov.state === 'open' || ov.state === 'opening')) {
         const ik = clamp((now - ov.openedAt - 150) / 1100, 0, 1);
         ov.smoke.render(tTime, ik * ik * (3 - 2 * ik));
       }
@@ -755,10 +745,6 @@ function initProductJourney() {
     if (L.updateHeroLights) L.updateHeroLights(mouse, tTime, jar.G.rotation.y);
     // Grounding contact shadow
     jar.G.userData.shadowA = (0.42 * (1 - s) * a) * (ov.state === 'closing' ? a : 1);
-    // 3D Particles update
-    if (ov.particles) {
-      ov.particles.update(tTime, mouse, s, { x: jar.G.position.x, y: jar.G.position.y, z: jar.G.position.z });
-    }
     // the statement page would now come into view: from here on it is the page's own ending
     if (ov.state === 'open' && showcaseSec && (H - vh) - sy <= vh && (!ingOn() || ing.v >= 1)) { handOff(sy); return; }
     // the ingredients moment (Lung Booster): open 0 = closed .. 1 = poured. Its pose changes the hold before the product is placed.

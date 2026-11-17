@@ -58,12 +58,13 @@ void main(){
   vig *= 1. - .3 * pow(length((uv - .5) * vec2(1.1, .8)), 2.);
   vig *= 1. - .55 * exp(-m.x * m.x * 5.) * smoothstep(.02, .55, m.y) - .3 * exp(-m.x * m.x * 5.) * smoothstep(-.02, -.55, m.y);
   vec3 col = mix(uDeep, uBase, clamp(vig * (.85 + .3 * puffs), 0., 1.));
-  col = mix(col, uLight, clamp(light * 1.6, 0., .92) * vig);
-  col += vec3(1.) * pow(clamp(light * 1.15, 0., 1.), 2.) * .5 * vig;       // the white of the wisps
+  col = mix(col, uLight, clamp(light * 1.3, 0., .82) * vig);
+  col += vec3(1.) * pow(clamp(light * 1.1, 0., 1.), 2.) * .28 * vig;       // softer white wisps
   col *= 1. - .12 * textZone;
+  col *= 0.82;                                                              // gently dimmed for deep luxury contrast
   col *= .96 + .06 * noise(vec2(t * 1.7, 3.1));                             // a faint flicker
   col = mix(uDeep * .3, col, uIntro);                                       // in from dark
-  col += (hash(gl_FragCoord.xy + fract(t) * 91.) - .5) * .04;               // grain
+  col += (hash(gl_FragCoord.xy + fract(t) * 91.) - .5) * .03;               // subtle film grain
   gl_FragColor = vec4(col, 1.);
 }`;
 

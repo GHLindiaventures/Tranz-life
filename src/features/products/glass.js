@@ -317,7 +317,7 @@ export function makeGlassBackMaterial(base, opts = {}) {
 export function applyJarGlass(m) {
   if (!m) return;
 
-  const targetNames = ['Jar_Glass', 'Jar_Neck'];
+  const targetNames = ['Jar_Glass', 'Jar_Neck', 'Jar_Neck_Thread'];
   const targets = [];
   m.traverse(n => {
     if (n.isMesh && targetNames.includes(n.name)) {

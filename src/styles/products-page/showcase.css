@@ -681,13 +681,13 @@ body.sc-ov-open #statement.statement { z-index: 1 !important; }
 @keyframes fx-drift-c { from { transform: translate3d(-6vw, 0, 0) scale(1); } to { transform: translate3d(7vw, 8vh, 0) scale(1.2); } }
 @keyframes fx-swirl { from { transform: rotate(0deg) scale(1); } 50% { transform: rotate(180deg) scale(1.12); } to { transform: rotate(360deg) scale(1); } }
 @media (max-width: 767px) { .fx-tick, .fx-c--tl, .fx-c--tr { display: none; } }
-/* the live smoke (hero-smoke.js): replaces the CSS blobs, smoke and vignette when WebGL is there */
-.sc-ovfx .fx-gl { inset: 0; width: 100%; height: 100%; opacity: var(--hero); }
+/* the live smoke (hero-smoke.js): active throughout the entire flow */
+.sc-ovfx .fx-gl { inset: 0; width: 100%; height: 100%; opacity: 1; pointer-events: none; }
+.sc-ovfx::after { content: ''; position: absolute; inset: 0; background: rgba(12, 18, 14, 0.14); pointer-events: none; }
 .sc-ovfx.has-gl .fx-blob, .sc-ovfx.has-gl .fx-smoke, .sc-ovfx.has-gl .fx-vig { display: none; }
-/* a soft white light behind the product, breathing */
-.fx-halo { left: var(--pcx, 50%); top: var(--pcy, 54%); width: 64vh; height: 86vh; translate: -50% -50%; border-radius: 50%;
-  background: radial-gradient(closest-side, rgba(255, 255, 255, .5), rgba(255, 255, 255, .14) 50%, transparent);
-  mix-blend-mode: soft-light; opacity: calc(.9 * var(--hero)); animation: fx-breathe 5s ease-in-out infinite alternate; }
+/* round halo light removed per user request */
+.fx-halo { display: none !important; }
+.sc-heromist { display: none !important; }
 @keyframes fx-breathe { from { transform: scale(.92); } to { transform: scale(1.08); } }
 @media (prefers-reduced-motion: reduce) { .fx-blob, .fx-smoke { animation: none; } }
 
