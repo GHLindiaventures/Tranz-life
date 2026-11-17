@@ -20,7 +20,7 @@ import { jarLayer } from '../features/products/jar-layer.js';
 import { swapToHd, restoreFromHd } from '../features/products/product-model.js';
 import { glassPerf } from '../features/products/glass.js';
 import { createIngredientsDirector } from '../features/products/gummy-pour.js';
-// DISABLED until liver-pour.js exists: import { createLiverDirector } from '../features/products/liver-pour.js';
+import { createLiverDirector } from '../features/products/liver-pour.js';
 import Lenis from 'lenis';
 import { state } from '../app/state.js';
 import { entranceOrder, highlightIndex } from './grid-math.js';
@@ -438,7 +438,7 @@ function initProductJourney() {
   // leave, the bottle opens, and the outline fades. The Liver Booster runs longer (six callouts, one at a time) with the same screen counts for its early steps.
   const ING_CFG = {
     gummies: { len: 5.4, letters: 0.18, open0: 0.18, open1: 0.48, frame: 0.08, make: createIngredientsDirector },
-    // liver:   { len: 9.0, letters: 0.108, open0: 0.108, open1: 0.288, frame: 0.048, make: createLiverDirector },
+    liver:   { len: 4.4, letters: 0.18, open0: 0.18, open1: 0.48, frame: 0.08, make: createLiverDirector },
   };
   const ingCfg = () => (ov.idx >= 0 && PRODUCTS[ov.idx] && ING_CFG[PRODUCTS[ov.idx].id]) || null;
   // the run-up (flip, outline in, outline out) in screens. On a short section (small screens) the highlights moment comes sooner (it starts

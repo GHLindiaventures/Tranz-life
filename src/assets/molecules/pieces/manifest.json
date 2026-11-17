@@ -1,0 +1,122 @@
+[
+  {
+    "file": "sphere-01.png",
+    "w": 75,
+    "h": 129,
+    "kind": "sphere",
+    "radiusPx": 34.4,
+    "weight": 0.22
+  },
+  {
+    "file": "sphere-02.png",
+    "w": 118,
+    "h": 106,
+    "kind": "sphere",
+    "radiusPx": 31.3,
+    "weight": 0.22
+  },
+  {
+    "file": "sphere-03.png",
+    "w": 125,
+    "h": 107,
+    "kind": "sphere",
+    "radiusPx": 22.1,
+    "weight": 0.55
+  },
+  {
+    "file": "sphere-04.png",
+    "w": 49,
+    "h": 76,
+    "kind": "sphere",
+    "radiusPx": 19.7,
+    "weight": 0.55
+  },
+  {
+    "file": "sphere-05.png",
+    "w": 84,
+    "h": 62,
+    "kind": "sphere",
+    "radiusPx": 19,
+    "weight": 0.55
+  },
+  {
+    "file": "sphere-06.png",
+    "w": 70,
+    "h": 63,
+    "kind": "sphere",
+    "radiusPx": 18,
+    "weight": 1
+  },
+  {
+    "file": "sphere-07.png",
+    "w": 53,
+    "h": 81,
+    "kind": "sphere",
+    "radiusPx": 17.7,
+    "weight": 1
+  },
+  {
+    "file": "sphere-08.png",
+    "w": 64,
+    "h": 59,
+    "kind": "sphere",
+    "radiusPx": 16.3,
+    "weight": 1
+  },
+  {
+    "file": "sphere-09.png",
+    "w": 44,
+    "h": 28,
+    "kind": "sphere",
+    "radiusPx": 14.2,
+    "weight": 1
+  },
+  {
+    "file": "sphere-10.png",
+    "w": 36,
+    "h": 54,
+    "kind": "sphere",
+    "radiusPx": 6.3,
+    "weight": 1
+  },
+  {
+    "file": "sphere-11.png",
+    "w": 39,
+    "h": 40,
+    "kind": "sphere",
+    "radiusPx": 5.7,
+    "weight": 1
+  },
+  {
+    "file": "pair-01.png",
+    "w": 68,
+    "h": 54,
+    "kind": "pair",
+    "radiusPx": 10.3,
+    "weight": 0.45
+  },
+  {
+    "file": "pair-02.png",
+    "w": 78,
+    "h": 106,
+    "kind": "pair",
+    "radiusPx": 12.7,
+    "weight": 0.45
+  },
+  {
+    "file": "pair-03.png",
+    "w": 144,
+    "h": 151,
+    "kind": "pair",
+    "radiusPx": 20.5,
+    "weight": 0.45
+  },
+  {
+    "file": "pair-04.png",
+    "w": 178,
+    "h": 158,
+    "kind": "pair",
+    "radiusPx": 19.2,
+    "weight": 0.45
+  }
+]
