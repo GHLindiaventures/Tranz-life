@@ -139,6 +139,12 @@ export function makeGlassMaterial(base, opts = {}) {
   const baseAlpha = opts.alpha !== undefined ? opts.alpha : 0.06;
   mat.opacity = baseAlpha;
 
+  if (opts.polygonOffset) {
+    mat.polygonOffset = true;
+    mat.polygonOffsetFactor = opts.polygonOffsetFactor !== undefined ? opts.polygonOffsetFactor : -1.0;
+    mat.polygonOffsetUnits = opts.polygonOffsetUnits !== undefined ? opts.polygonOffsetUnits : -1.0;
+  }
+
   const uGlassAlpha = { value: baseAlpha };
   const uFresnelBoost = { value: glassQualityState.isHigh ? 1.0 : 0.45 };
   mat.userData.uGlassAlpha = uGlassAlpha;
@@ -160,10 +166,31 @@ export function makeGlassMaterial(base, opts = {}) {
       'varying vec3 vGlassPos;\nuniform float uGlassAlpha;\nuniform float uFresnelBoost;\nvoid main() {'
     );
 
-    shader.fragmentShader = safeReplace(
-      shader.fragmentShader,
-      '#include <dithering_fragment>',
-      `// Ultra-realistic clear flint glass reflections & caustics
+    const fragShaderBody = opts.isBottleShell
+      ? `// Bottle glass shell: rim fresnel, moving specular streak, faint inner glow
+  vec3 viewDir = normalize(vViewPosition);
+  vec3 norm = normalize(vNormal);
+  float NdotV = clamp(dot(norm, viewDir), 0.0, 1.0);
+  float fresnel = pow(1.0 - NdotV, 3.0);
+  float fBoost = clamp(uFresnelBoost, 0.0, 1.0);
+
+  // Glancing rim factor and soft shoulder curve
+  float shoulderCurve = smoothstep(0.20, 0.45, vGlassPos.y) * (1.0 - smoothstep(0.45, 0.75, vGlassPos.y));
+  float rim = clamp(fresnel * 0.75 + shoulderCurve * 0.15, 0.0, 1.0);
+
+  // Very low center alpha so frosted green body, label, and liquid shader remain crisp underneath
+  gl_FragColor.a = clamp(mix(uGlassAlpha, 0.58, rim), 0.0, 0.70);
+
+  // Soft moving specular streak from studio lighting
+  vec3 refl = reflect(-viewDir, norm);
+  float streak = smoothstep(0.35, 0.85, max(0.0, refl.x * 0.75 + refl.z * 0.35)) * 0.45;
+  float rimLight = pow(fresnel, 2.2) * 0.55;
+  vec3 innerGlow = vec3(0.88, 1.0, 0.92) * (pow(fresnel, 3.0) * 0.20 + shoulderCurve * 0.10);
+
+  gl_FragColor.rgb += (vec3(1.0) * (streak + rimLight) + innerGlow) * fBoost;
+
+  #include <dithering_fragment>`
+      : `// Ultra-realistic clear flint glass reflections & caustics
   vec3 viewDir = normalize(vViewPosition);
   vec3 norm = normalize(vNormal);
   float NdotV = clamp(dot(norm, viewDir), 0.0, 1.0);
@@ -193,7 +220,12 @@ export function makeGlassMaterial(base, opts = {}) {
   vec3 studioHighlights = vec3(1.0, 1.0, 1.0) * (softboxL * 0.35 + softboxR * 0.40 + shoulderHl * 0.50 + baseCurveHl * 0.65 + pow(fresnel, 2.0) * 0.65) * fBoost;
   gl_FragColor.rgb += studioHighlights;
 
-  #include <dithering_fragment>`
+  #include <dithering_fragment>`;
+
+    shader.fragmentShader = safeReplace(
+      shader.fragmentShader,
+      '#include <dithering_fragment>',
+      fragShaderBody
     );
   };
 
@@ -354,10 +386,123 @@ export function applyJarGlass(m) {
     root: m,
     frontMats,
     backMeshes,
-    backMats
+    backMats,
+    shells: []
   };
   trackedInstances.add(inst);
   m.userData._glassInstance = inst;
+}
+
+/**
+ * Applies a realistic glass shell over the LiverDetox bottle model.
+ * Samples the Bottle's silhouette at 48 heights and generates a thin LatheGeometry shell (+0.8%).
+ * Added as a sibling of Bottle under the same parent with identical transform.
+ *
+ * @param {THREE.Object3D} m - The product model hierarchy
+ */
+export function applyBottleGlass(m) {
+  if (!m) return;
+  const bottle = m.getObjectByName('Bottle');
+  const cap = m.getObjectByName('Cap');
+  if (!bottle || !cap || !bottle.geometry) return;
+
+  // Prevent duplicate shell
+  if (bottle.parent && bottle.parent.getObjectByName('Bottle_Glass_Shell')) {
+    return;
+  }
+
+  // Subtle improvement to the Cap only: keep its material, just envMapIntensity ~0.8
+  if (cap.material) {
+    cap.material = cap.material.clone();
+    cap.material.envMapIntensity = 0.8;
+    cap.material.needsUpdate = true;
+  }
+
+  // Compute silhouette profile from Bottle's local vertices
+  bottle.geometry.computeBoundingBox();
+  const bb = bottle.geometry.boundingBox;
+  const pos = bottle.geometry.attributes.position;
+  if (!bb || !pos) return;
+
+  const N = 48;
+  const radii = new Float32Array(N);
+  const minY = bb.min.y;
+  const maxY = bb.max.y;
+  const spanY = Math.max(1e-4, maxY - minY);
+
+  for (let i = 0; i < pos.count; i++) {
+    const y = pos.getY(i);
+    const bin = Math.min(N - 1, Math.max(0, Math.round(((y - minY) / spanY) * (N - 1))));
+    const x = pos.getX(i);
+    const z = pos.getZ(i);
+    const r = Math.sqrt(x * x + z * z);
+    if (r > radii[bin]) radii[bin] = r;
+  }
+
+  // Smooth interpolation for any missing bins
+  for (let i = 0; i < N; i++) {
+    if (radii[i] === 0) {
+      let prev = i - 1; while (prev >= 0 && radii[prev] === 0) prev--;
+      let next = i + 1; while (next < N && radii[next] === 0) next++;
+      const v0 = prev >= 0 ? radii[prev] : 0.3;
+      const v1 = next < N ? radii[next] : v0;
+      radii[i] = (v0 + v1) * 0.5;
+    }
+  }
+
+  // Build lathe profile points (+0.8% larger, in Bottle's own local space)
+  const points = [];
+  points.push(new THREE.Vector2(0, minY));
+  for (let i = 0; i < N; i++) {
+    const y = minY + (spanY * i) / (N - 1);
+    points.push(new THREE.Vector2(radii[i] * 1.008, y));
+  }
+
+  const latheGeo = new THREE.LatheGeometry(points, 48);
+  latheGeo.computeVertexNormals();
+
+  const shellMat = makeGlassMaterial(null, {
+    alpha: 0.02,
+    color: 0xffffff,
+    variant: 'liver_bottle_shell',
+    isBottleShell: true,
+    polygonOffset: true,
+    polygonOffsetFactor: -1.0,
+    polygonOffsetUnits: -1.0
+  });
+
+  const shell = new THREE.Mesh(latheGeo, shellMat);
+  shell.name = 'Bottle_Glass_Shell';
+  shell.position.copy(bottle.position);
+  shell.rotation.copy(bottle.rotation);
+  shell.quaternion.copy(bottle.quaternion);
+  shell.scale.copy(bottle.scale);
+  shell.renderOrder = 3;
+  shell.depthWrite = false;
+  shell.frustumCulled = false;
+  shell.raycast = () => {};
+  shell.userData.isGlassShell = true;
+
+  if (bottle.parent) {
+    bottle.parent.add(shell);
+  }
+
+  // Track in instance for disposal and quality toggles
+  let inst = m.userData && m.userData._glassInstance;
+  if (!inst) {
+    inst = {
+      root: m,
+      frontMats: [],
+      backMeshes: [],
+      backMats: [],
+      shells: []
+    };
+    trackedInstances.add(inst);
+    m.userData._glassInstance = inst;
+  }
+  if (!inst.shells) inst.shells = [];
+  inst.shells.push(shell);
+  inst.frontMats.push(shellMat);
 }
 
 /**
@@ -377,21 +522,34 @@ export function disposeGlass(root) {
         mats.forEach(mat => mat.dispose());
       }
     });
+    if (inst.shells) {
+      inst.shells.forEach(shell => {
+        if (shell.parent) shell.parent.remove(shell);
+        if (shell.geometry) shell.geometry.dispose();
+        if (shell.material) {
+          const mats = Array.isArray(shell.material) ? shell.material : [shell.material];
+          mats.forEach(mat => mat.dispose());
+        }
+      });
+    }
     inst.frontMats.forEach(fm => fm.dispose());
     root.userData._glassInstance = null;
   }
 
-  // Remove any leftover back meshes without disposing geometry
-  const backs = [];
+  // Remove and dispose any leftover shells or back meshes
+  const toRemove = [];
   root.traverse(n => {
-    if (n.isMesh && (n.userData.isGlassBack || (n.name && n.name.endsWith('_Back')))) {
-      backs.push(n);
+    if (n.isMesh && (n.userData.isGlassBack || n.userData.isGlassShell || n.name === 'Bottle_Glass_Shell' || (n.name && n.name.endsWith('_Back')))) {
+      toRemove.push(n);
     }
   });
-  backs.forEach(bm => {
-    if (bm.parent) bm.parent.remove(bm);
-    if (bm.material) {
-      const mats = Array.isArray(bm.material) ? bm.material : [bm.material];
+  toRemove.forEach(n => {
+    if (n.parent) n.parent.remove(n);
+    if (n.userData.isGlassShell || n.name === 'Bottle_Glass_Shell') {
+      if (n.geometry) n.geometry.dispose();
+    }
+    if (n.material) {
+      const mats = Array.isArray(n.material) ? n.material : [n.material];
       mats.forEach(mat => mat.dispose());
     }
   });

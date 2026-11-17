@@ -10,7 +10,7 @@ import decalReviva from '../../assets/products/decal-reviva.webp';
 import decalLiver from '../../assets/products/decal-liver.webp';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { attachGummies } from './gummy-pour.js';
-import { applyJarGlass, disposeGlass } from './glass.js';
+import { applyJarGlass, applyBottleGlass, disposeGlass } from './glass.js';
 import liverGlbUrl from '../../assets/products/liver-booster.glb?url';
 import cycleReliefGlbUrl from '../../assets/products/cyclerelief.glb?url';
 import lungBoosterGlbUrl from '../../assets/products/lungbooster.glb?url';
@@ -362,6 +362,11 @@ function applyModelStyling(m, baseH, holder) {
 
   // the Liver Booster's bottle holds liquid (its cap shares the material, so the bottle gets its own copy)
   m.traverse(n => { if (n.isMesh && n.name === 'Bottle' && n.material && n.material.map){ const lm = liquidFill(n.material = n.material.clone()); n.onBeforeRender = () => { lm.userData.uTime.value = performance.now()/1000; }; } });
+
+  // Glass shell: apply realistic glass sheen to the Liver Booster bottle
+  if (m.getObjectByName('Bottle') && m.getObjectByName('Cap')) {
+    applyBottleGlass(m);
+  }
 
   // Anisotropy = 8 and mipmaps kept on for all textures on the model
   wrap.traverse(n => {
