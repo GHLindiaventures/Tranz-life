@@ -3,11 +3,11 @@
 // Scroll Timeline & Staging:
 // 1. Cap unscrews and lifts away; camera dollies in macro-close to roller tip (u: 0.00 .. 0.16).
 // 2. Clear gap / hold on the glistening tip (u: 0.16 .. 0.22).
-// 3. Amber-gold liquid bubbles emerge couple-by-couple in 6 waves, floating up into an
+// 3. Liquid bubbles emerge couple-by-couple in 6 waves, floating up into an
 //    organic, non-overlapping cloud matching the user's sketch (u: 0.22 .. 0.50).
 // 4. Text cards reveal ONE BY ONE as you scroll (u: 0.50 .. 0.77), then hold (u: 0.77 .. 0.86).
 // 5. Text cards GRADUALLY disappear / fade out (u: 0.86 .. 0.92).
-// 6. "ONLY BUBBLES" MOMENT: Text is gone, all 18 amber bubbles float suspended in 3D (u: 0.92 .. 1.00).
+// 6. "ONLY BUBBLES" MOMENT: Text is gone, all 18 bubbles float suspended in 3D (u: 0.92 .. 1.00).
 // 7. BUBBLES RETRACT: WHILE STILL IN CLOSE-UP ZOOM, bubbles gradually float down and absorb
 //    into the rollerball socket wave-by-wave over a full scroll stretch (vVal: 0.00 .. 0.55).
 // 8. ONLY THEN: Camera dollies smoothly back out to wide, bottle straightens, and cap screws shut (vVal: 0.55 .. 0.88).
@@ -27,20 +27,39 @@ function addStyle() {
   styled = true;
   const s = document.createElement('style');
   s.textContent = `
-  #rollonLayer { position: fixed; inset: 0; z-index: 47; pointer-events: none !important; visibility: hidden; }
-  #rollonLayer svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none !important; }
-  #rollonLayer line { stroke: #c8861f; stroke-width: 1.6; stroke-linecap: round; pointer-events: none !important; }
-  #rollonLayer circle { fill: #fff8e6; stroke: #c8861f; stroke-width: 2.2; pointer-events: none !important; }
+  .rollon-director-layer { position: fixed; inset: 0; z-index: 47; pointer-events: none !important; visibility: hidden; }
+  .rollon-director-layer svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none !important; }
+  .rollon-director-layer line { stroke-width: 1.6; stroke-linecap: round; pointer-events: none !important; }
+  .rollon-director-layer circle { stroke-width: 2.2; pointer-events: none !important; }
   .rollon-label {
     position: absolute; box-sizing: border-box; padding: 11px 15px 12px; border-radius: 14px;
-    background: rgba(252, 250, 242, 0.93);
     -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
-    color: #1d4527; box-shadow: 0 8px 26px rgba(40, 75, 30, 0.14);
     will-change: opacity, transform; pointer-events: none !important;
   }
-  .rollon-label b { display: block; font-size: 15px; line-height: 1.2; font-weight: 700; letter-spacing: .01em; color: #163e20; }
-  .rollon-label span { display: block; margin-top: 4px; font-size: 12.5px; line-height: 1.35; opacity: .86; color: #2c4c32; }
-  .rollon-label i { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 7px; vertical-align: baseline; background: #c8861f; box-shadow: 0 0 0 2.5px rgba(200, 134, 31, 0.25); }
+  .rollon-label b { display: block; font-size: 15px; line-height: 1.2; font-weight: 700; letter-spacing: .01em; }
+  .rollon-label span { display: block; margin-top: 4px; font-size: 12.5px; line-height: 1.35; opacity: .88; }
+  .rollon-label i { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 7px; vertical-align: baseline; }
+
+  /* Reviva Vitality Theme (amber / deep botanical green) */
+  .rollon-theme-reviva .rollon-label {
+    background: rgba(252, 250, 242, 0.94);
+    color: #1d4527;
+    box-shadow: 0 8px 26px rgba(40, 75, 30, 0.14);
+  }
+  .rollon-theme-reviva .rollon-label b { color: #163e20; }
+  .rollon-theme-reviva .rollon-label span { color: #2c4c32; }
+  .rollon-theme-reviva .rollon-label i { background: #c8861f; box-shadow: 0 0 0 2.5px rgba(200, 134, 31, 0.25); }
+
+  /* CycleRelief Menstrual Comfort Theme (rose-gold nectar / berry rose) */
+  .rollon-theme-cycle .rollon-label {
+    background: rgba(255, 248, 250, 0.94);
+    color: #541929;
+    box-shadow: 0 8px 26px rgba(110, 27, 48, 0.14);
+  }
+  .rollon-theme-cycle .rollon-label b { color: #441421; }
+  .rollon-theme-cycle .rollon-label span { color: #682538; }
+  .rollon-theme-cycle .rollon-label i { background: #c4687d; box-shadow: 0 0 0 2.5px rgba(196, 104, 125, 0.25); }
+
   @media (max-width: 720px) {
     .rollon-label { padding: 9px 12px 10px; }
     .rollon-label b { font-size: 14px; }
@@ -50,7 +69,7 @@ function addStyle() {
   document.head.appendChild(s);
 }
 
-// 18 non-overlapping amber bubble positions based directly on user's sketch:
+// 18 non-overlapping bubble positions based directly on user's sketch:
 // Grouped into 6 waves for couple-by-couple emergence and reverse wave retraction.
 const BUBBLE_DEFS = [
   // Wave 0: First couple emerging close above the ball tip
@@ -58,19 +77,19 @@ const BUBBLE_DEFS = [
   { dx: 0.28, dy: 0.42, dz: 0.05, r: 0.072, wave: 0 },
 
   // Wave 1: Floating up to left & upper-left
-  { dx: -0.05, dy: 0.68, dz: 0.18, r: 0.095, wave: 1, targetCard: 0 }, // Hero Bubble for Dill E.O
+  { dx: -0.05, dy: 0.68, dz: 0.18, r: 0.095, wave: 1, targetCard: 0 }, // Hero Bubble for Card 0
   { dx: 0.10, dy: 0.85, dz: -0.08, r: 0.052, wave: 1 },
   { dx: 0.22, dy: 0.62, dz: 0.12, r: 0.058, wave: 1 },
 
   // Wave 2: Mid-left & center
-  { dx: 0.36, dy: 0.26, dz: 0.15, r: 0.085, wave: 2, targetCard: 1 }, // Hero Bubble for 100% Plant-Based
+  { dx: 0.36, dy: 0.26, dz: 0.15, r: 0.085, wave: 2, targetCard: 1 }, // Hero Bubble for Card 1
   { dx: 0.48, dy: 0.52, dz: -0.04, r: 0.075, wave: 2 },
   { dx: 0.52, dy: 0.80, dz: 0.10, r: 0.050, wave: 2 },
 
   // Wave 3: Upper center
   { dx: 0.68, dy: 1.05, dz: 0.06, r: 0.082, wave: 3 },
   { dx: 0.82, dy: 0.68, dz: -0.10, r: 0.054, wave: 3 },
-  { dx: 1.05, dy: 1.15, dz: 0.14, r: 0.105, wave: 3, targetCard: 2 }, // Hero Bubble for Eucalyptus E.O
+  { dx: 1.05, dy: 1.15, dz: 0.14, r: 0.105, wave: 3, targetCard: 2 }, // Hero Bubble for Card 2
 
   // Wave 4: Mid-right
   { dx: 0.98, dy: 0.45, dz: 0.08, r: 0.052, wave: 4 },
@@ -78,34 +97,89 @@ const BUBBLE_DEFS = [
   { dx: 1.38, dy: 1.25, dz: 0.12, r: 0.058, wave: 4 },
 
   // Wave 5: Far-right arc
-  { dx: 1.45, dy: 0.55, dz: 0.16, r: 0.090, wave: 5, targetCard: 3 }, // Hero Bubble for Navel Reflex Ritual
+  { dx: 1.45, dy: 0.55, dz: 0.16, r: 0.090, wave: 5, targetCard: 3 }, // Hero Bubble for Card 3
   { dx: 1.62, dy: 0.92, dz: -0.06, r: 0.072, wave: 5 },
   { dx: 1.75, dy: 0.68, dz: 0.08, r: 0.054, wave: 5 },
   { dx: 1.88, dy: 1.10, dz: 0.04, r: 0.060, wave: 5 }
 ];
 
-export function createRollonDirector(L) {
+const CONFIGS = {
+  rollon: {
+    layerId: 'rollonLayer_rollon',
+    hostName: 'RollonBubbleHost_rollon',
+    themeClass: 'rollon-theme-cycle',
+    bubbleMat: {
+      color: 0xeb8da3,           // soft luminous rose-gold nectar
+      emissive: 0x6e1b30,        // deep rose inner glow
+      emissiveIntensity: 0.38,
+      roughness: 0.03,
+      metalness: 0.08,
+      clearcoat: 1.0,
+      clearcoatRoughness: 0.02,
+      transparent: true,
+      opacity: 0.88,
+      depthWrite: false,
+      envMapIntensity: 2.2
+    },
+    lineColor: '#c4687d',
+    dotStroke: '#541929',
+    dotFill: '#f29bb0',
+    calloutDefs: [
+      { name: 'Rosemary Essential Oil', text: 'Rich in 1,8-cineole to support soothing micro-circulation and relieve muscular period tension.', side: 0, bubbleIdx: 2 },
+      { name: '100% Botanical Carrier', text: 'Light, silky natural plant lipids for effortless smooth glide and rapid non-greasy absorption.', side: 0, bubbleIdx: 5 },
+      { name: 'Damask Rose Extract', text: 'Pure steam-distilled essence providing calming aromatic comfort and menstrual cycle easing.', side: 1, bubbleIdx: 10 },
+      { name: 'Peppermint Cooling Oil', text: 'Natural menthol triggers cooling sensory comfort to ease localized abdominal tightness.', side: 1, bubbleIdx: 14 }
+    ]
+  },
+  reviva: {
+    layerId: 'rollonLayer_reviva',
+    hostName: 'RollonBubbleHost_reviva',
+    themeClass: 'rollon-theme-reviva',
+    bubbleMat: {
+      color: 0xf2a622,            // warm rich amber gold
+      emissive: 0x622f04,         // golden honey inner glow
+      emissiveIntensity: 0.38,
+      roughness: 0.03,
+      metalness: 0.08,
+      clearcoat: 1.0,
+      clearcoatRoughness: 0.02,
+      transparent: true,
+      opacity: 0.88,
+      depthWrite: false,
+      envMapIntensity: 2.2
+    },
+    lineColor: '#c8861f',
+    dotStroke: '#1d4527',
+    dotFill: '#f5b232',
+    calloutDefs: [
+      { name: 'Dill Essential Oil (E.O)', text: 'Pure botanical extract traditionally valued for micro-circulation and vitality.', side: 0, bubbleIdx: 2 },
+      { name: '100% Plant-Based Carrier', text: 'Lightweight, nourishing plant lipids ensuring fast skin absorption without greasy residue.', side: 0, bubbleIdx: 5 },
+      { name: 'Eucalyptus Essential Oil', text: 'Provides a refreshing aromatic profile with a soothing, cooling sensory effect.', side: 1, bubbleIdx: 10 },
+      { name: 'Targeted Reflex Ritual', text: 'Designed for gentle circular massage around the navel to stimulate wellness pathways.', side: 1, bubbleIdx: 14 }
+    ]
+  }
+};
+
+export function createRollonDirector(L, productId = 'reviva') {
   addStyle();
+
+  const cfg = CONFIGS[productId] || CONFIGS.reviva;
 
   // 1. DOM Overlay for SVG Leader Lines & Callout Cards
   const layer = document.createElement('div');
-  layer.id = 'rollonLayer';
+  layer.id = cfg.layerId;
+  layer.className = `rollon-director-layer ${cfg.themeClass}`;
   layer.setAttribute('aria-hidden', 'true');
   const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
   layer.appendChild(svg);
 
-  // 4 Curated ingredients: side 0 = Left, side 1 = Right
-  const calloutDefs = [
-    { name: 'Dill Essential Oil (E.O)', text: 'Pure botanical extract traditionally valued for micro-circulation and vitality.', side: 0, bubbleIdx: 2 },
-    { name: '100% Plant-Based Carrier', text: 'Lightweight, nourishing plant lipids ensuring fast skin absorption without greasy residue.', side: 0, bubbleIdx: 5 },
-    { name: 'Eucalyptus Essential Oil', text: 'Provides a refreshing aromatic profile with a soothing, cooling sensory effect.', side: 1, bubbleIdx: 10 },
-    { name: 'Targeted Reflex Ritual', text: 'Designed for gentle circular massage around the navel to stimulate wellness pathways.', side: 1, bubbleIdx: 14 }
-  ];
-
-  const items = calloutDefs.map(({ name, text, side, bubbleIdx }) => {
+  const items = cfg.calloutDefs.map(({ name, text, side, bubbleIdx }) => {
     const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+    line.setAttribute('stroke', cfg.lineColor);
     const dot = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
     dot.setAttribute('r', '4.5');
+    dot.setAttribute('stroke', cfg.dotStroke);
+    dot.setAttribute('fill', cfg.dotFill);
     svg.appendChild(line);
     svg.appendChild(dot);
     const el = document.createElement('div');
@@ -135,31 +209,18 @@ export function createRollonDirector(L) {
     L.cam.updateMatrixWorld(true);
   };
 
-  // 3. 3D Amber-Gold Spherical Liquid Bubbles
+  // 3. 3D Spherical Liquid Bubbles (Product-Themed Material)
   const bubbleHost = new THREE.Group();
-  bubbleHost.name = 'RollonAmberBubbleHost';
+  bubbleHost.name = cfg.hostName;
   bubbleHost.visible = false;
   L.scene.add(bubbleHost);
 
   const sphereGeo = new THREE.SphereGeometry(1, 24, 18);
-
-  const amberMat = new THREE.MeshPhysicalMaterial({
-    color: 0xf2a622,            // warm rich amber gold
-    emissive: 0x622f04,         // golden honey inner glow
-    emissiveIntensity: 0.38,
-    roughness: 0.03,
-    metalness: 0.08,
-    clearcoat: 1.0,
-    clearcoatRoughness: 0.02,
-    transparent: true,
-    opacity: 0.88,
-    depthWrite: false,
-    envMapIntensity: 2.2
-  });
+  const bubbleMat = new THREE.MeshPhysicalMaterial(cfg.bubbleMat);
 
   const bubbleMeshes = BUBBLE_DEFS.map((def, i) => {
-    const mesh = new THREE.Mesh(sphereGeo, amberMat);
-    mesh.name = 'AmberBubble_' + i;
+    const mesh = new THREE.Mesh(sphereGeo, bubbleMat);
+    mesh.name = `${cfg.hostName}_Bubble_${i}`;
     mesh.renderOrder = 15;
     mesh.visible = false;
     bubbleHost.add(mesh);
@@ -227,6 +288,11 @@ export function createRollonDirector(L) {
         resetCamera();
         bubbleHost.visible = false;
         bubbleMeshes.forEach(b => { b.mesh.visible = false; });
+        if (ball) ball.rotation.set(0, 0, 0);
+        if (pivot && ud.capRest) {
+          pivot.rotation.set(0, 0, 0);
+          pivot.position.copy(ud.capRest);
+        }
         this.hide();
         return;
       }
@@ -261,7 +327,7 @@ export function createRollonDirector(L) {
         }
       } else {
         root.getWorldPosition(ballW);
-        ballW.y += 1.4;
+        ballW.y += 1.55;
       }
 
       // --- CAMERA ZOOM TO TIP & BUBBLE CLOUD AREA ---
@@ -472,13 +538,13 @@ export function createRollonDirector(L) {
         it.line.setAttribute('x2', ex.toFixed(1));
         it.line.setAttribute('y2', ey.toFixed(1));
         it.line.setAttribute('opacity', a.toFixed(3));
-        it.line.setAttribute('stroke', '#c8861f');
+        it.line.setAttribute('stroke', cfg.lineColor);
 
         it.dot.setAttribute('cx', dx.toFixed(1));
         it.dot.setAttribute('cy', dy.toFixed(1));
         it.dot.setAttribute('opacity', a.toFixed(3));
-        it.dot.setAttribute('stroke', '#1d4527');
-        it.dot.setAttribute('fill', '#f5b232');
+        it.dot.setAttribute('stroke', cfg.dotStroke);
+        it.dot.setAttribute('fill', cfg.dotFill);
       });
     },
 
@@ -498,8 +564,11 @@ export function createRollonDirector(L) {
       const ud = jar && jar.b && jar.b.userData;
       if (!ud) return;
       if (ud.capPivot && ud.capRest) {
-        ud.capPivot.rotation.y = 0;
+        ud.capPivot.rotation.set(0, 0, 0);
         ud.capPivot.position.copy(ud.capRest);
+      }
+      if (ud.ball) {
+        ud.ball.rotation.set(0, 0, 0);
       }
     }
   };

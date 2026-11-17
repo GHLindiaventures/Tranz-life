@@ -76,12 +76,12 @@ const DETAILS = {
       ['Thoughtful innovation', 'Scientific understanding, formulation expertise and nature-inspired innovation combined.'],
       ['Quality-conscious development', 'Responsible formulation, appropriate testing and clear information for informed choices.']
     ],
-    listTitle: 'Our commitment to women’s wellness',
+    listTitle: 'Key Botanical Actives',
     list: [
-      ['Awareness', 'Promoting awareness of menstrual health and self-care.'],
-      ['Informed choices', 'Supporting informed decisions about period-related discomfort.'],
-      ['Quality', 'Prioritising product quality and responsible innovation.'],
-      ['Professional guidance', 'Encouraging medical advice when symptoms are severe, unusual or persistent.']
+      ['Rosemary Essential Oil (Salvia rosmarinus)', 'Rich in 1,8-cineole and camphor to support healthy micro-circulation and gently ease localized muscular tension.'],
+      ['Damask Rose Extract (Rosa damascena)', 'Delicate floral essence containing geraniol and citronellol for soothing emotional balance and nervous system comfort.'],
+      ['Peppermint Cooling Oil (Mentha piperita)', 'Natural menthol triggers TRPM8 sensory cooling to provide instant, refreshing comfort for abdominal tightness.'],
+      ['100% Botanical Carrier Complex', 'Nourishing lightweight plant lipids providing effortless roller glide and fast absorption without greasy residue.']
     ],
     note: 'Use as directed on the label. Please consult a healthcare professional if your symptoms are severe, unusual or persistent.'
   },

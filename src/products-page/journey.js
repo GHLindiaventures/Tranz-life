@@ -522,7 +522,7 @@ function initProductJourney() {
     ov.sec.style.height = ''; ov.sec._extra = 0;
     if (ingOn()) { const H0 = ov.sec.offsetHeight, Aq = geo.fadeLen + ingT(geo.vh, geo.fadeLen, H0).A * geo.vh, r0q = geo.fadeLen + 1.05 * geo.vh, extra = Math.round((ING_LEN + ING_CL) * geo.vh + Math.max(0, Aq - r0q));   // (+ the stretch the display winds back, so the details still run to their real end)
       ov.sec._extra = extra; ov.sec.style.height = (ov.sec.offsetHeight + extra) + 'px'; }
-    { const id = PRODUCTS[i].id; ingDir = ingOn() ? (dirs[id] || (dirs[id] = DIRECTORS[id](L))) : null; }
+    { const id = PRODUCTS[i].id; ingDir = ingOn() ? (dirs[id] || (dirs[id] = DIRECTORS[id](L, id))) : null; }
     if (ov.lenis) { ov.lenis.resize(); ov.lenis.start(); ov.lenis.scrollTo(0, { immediate: true, force: true }); }
     const flow = ov.sec.querySelector('.sc-flow'); if (flow) { flow.style.visibility = 'visible'; flow.style.opacity = '1'; }
     placeBadges(ov.sec);

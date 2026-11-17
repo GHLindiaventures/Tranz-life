@@ -301,12 +301,34 @@ function withGlb(builder, url){
         const ud = holder.parent.userData; ud.capPivot = pivot; ud.capRest = pivot.position.clone(); ud.modelRoot = m; ud.gummies = attachGummies(m);
       }
       // Roll-on products (cyclerelief / rollon): cap pivot and roller ball for rollon-director
-      if (isRoller && pivot && holder.parent){
-        const ud = holder.parent.userData;
-        ud.capPivot = pivot;
-        ud.capRest = pivot.position.clone();
-        ud.ball = m.getObjectByName('Roller_Ball');
-        ud.modelRoot = m;
+      if (isRoller){
+        const ballMesh = m.getObjectByName('Roller_Ball');
+        if (ballMesh && ballMesh.geometry) {
+          ballMesh.geometry.computeBoundingBox();
+          const ballCenter = new THREE.Vector3();
+          ballMesh.geometry.boundingBox.getCenter(ballCenter);
+          // Center the ball geometry vertices around (0,0,0) and set mesh position to the center.
+          // This prevents the ball from swinging outward like a pendulum when rotated.
+          ballMesh.geometry.center();
+          ballMesh.position.copy(ballCenter);
+          if (ballMesh.material) {
+            ballMesh.material.metalness = 1.0;
+            ballMesh.material.roughness = 0.10;
+            ballMesh.material.envMapIntensity = 1.8;
+            ballMesh.material.needsUpdate = true;
+          }
+        }
+        const setUd = target => {
+          if (!target) return;
+          if (pivot) {
+            target.userData.capPivot = pivot;
+            target.userData.capRest = pivot.position.clone();
+          }
+          if (ballMesh) target.userData.ball = ballMesh;
+          target.userData.modelRoot = m;
+        };
+        setUd(holder);
+        setUd(holder.parent);
       }
       // the Liver Booster's cap is the separate node `Cap` (on the model's own axis); its neck thread is left-handed, so it turns clockwise
       const cap = m.getObjectByName('Cap');
