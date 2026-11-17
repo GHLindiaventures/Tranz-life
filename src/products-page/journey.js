@@ -23,11 +23,12 @@ import { createIngredientsDirector } from '../features/products/gummy-pour.js';
 import { createLiverDirector } from '../features/products/liver-pour.js';
 import { createLiquidDirector } from '../features/products/liquid-drops.js';
 import { createRollonDirector } from '../features/products/rollon-director.js';
+import { createHeroSmoke } from './hero-smoke.js';
+import { createHeroParticles } from '../features/products/hero-particles.js';
 import Lenis from 'lenis';
 import { state } from '../app/state.js';
 import { entranceOrder, highlightIndex } from './grid-math.js';
 import { makeScheduler } from './frame-scheduler.js';
-import { createHeroSmoke } from './hero-smoke.js';
 import {
   calcIntroText, calcHlCallout, calcPinBadge, walkAt, chapterCardAlpha, calcProductFrame, calcFrameDraw, frameHalfPaths, leafOpen, FRAME_LEAVES, journeyProgress, calcHoldTransform, populateShowcaseDOM, updateShowcaseDOM, placeBadges, createShowcaseDecor
 } from './showcase-scene.js';
@@ -443,7 +444,7 @@ function initProductJourney() {
   // leave, the bottle opens, and the outline fades. The Liver Booster runs longer (six callouts, one at a time) with the same screen counts for its early steps.
   const ING_CFG = {
     gummies: { len: 5.4, letters: 0.18, open0: 0.18, open1: 0.48, frame: 0.08, make: createIngredientsDirector },
-    liver:   { len: 5.4, letters: 0.18, open0: 0.18, open1: 0.48, frame: 0.08, make: createLiverDirector },
+    liver: { len: 5.4, letters: 0.18, open0: 0.18, open1: 0.48, frame: 0.08, make: createLiverDirector },
     energy:  { len: 5.4, letters: 0.18, open0: 0.18, open1: 0.48, frame: 0.08, make: (L, id) => createLiquidDirector(L, id) },
     reviva:  { len: 5.4, letters: 0.18, open0: 0.18, open1: 0.48, frame: 0.08, make: (L, id) => createRollonDirector(L, id) },
     rollon:  { len: 5.4, letters: 0.18, open0: 0.18, open1: 0.48, frame: 0.08, make: (L, id) => createRollonDirector(L, id) },
@@ -478,9 +479,8 @@ function initProductJourney() {
     el.className = 'sc-overlay'; el.id = 'showcaseOverlay'; el.tabIndex = -1;
     el.setAttribute('role', 'dialog'); el.setAttribute('aria-modal', 'true');
     el.setAttribute('data-lenis-prevent', '');                 // Lenis leaves this scroller alone
-    // the hero's atmosphere (as on the reference): drifting smoky light in the product's colour, a dark vignette top and
-    // bottom, a thin glowing progress line along the top and corner marks. It fades back to the plain gradient as the
-    // first scroll lifts the product into the details (--hero, set each frame in renderOverlay).
+
+    // Atmospheric hero environment: real-time WebGL smoke, light streaks, glowing progress line, corner framing
     const fx = document.createElement('div');
     fx.className = 'sc-ovfx'; fx.setAttribute('aria-hidden', 'true');
     fx.innerHTML = '<i class="fx-blob fx-b1"></i><i class="fx-blob fx-b2"></i><i class="fx-blob fx-b3"></i><i class="fx-blob fx-b4"></i>'
@@ -491,6 +491,10 @@ function initProductJourney() {
     el.appendChild(fx); ov.fx = fx;
     try { ov.smoke = reduce ? null : createHeroSmoke(fx); } catch (e) { ov.smoke = null; }
     if (ov.smoke) fx.classList.add('has-gl');
+
+    // 3D Luxury Particles & Shockwave Engine
+    try { ov.particles = reduce ? null : createHeroParticles(L); } catch (e) { ov.particles = null; }
+
     const sec = showcaseSec.cloneNode(true);
     sec.id = 'showcaseOv'; sec.removeAttribute('data-dock'); sec.removeAttribute('data-theme');
     sec.querySelectorAll('[style]').forEach(n => { if (!n.closest('.sc-badge') && !n.classList.contains('sc-blk') && !n.classList.contains('sc-big')) n.removeAttribute('style'); });
@@ -501,7 +505,7 @@ function initProductJourney() {
     const pinHost = sec.querySelector('.showcase-pin');
     if (pinHost) {
       const hn = document.createElement('div'); hn.className = 'sc-heroname'; hn.setAttribute('aria-hidden', 'true'); pinHost.appendChild(hn); ov.heroName = hn;
-      // drifting mist in front of the name (behind the product, which is on the 3D layer above)
+      // Drifting mist in front of the name (behind the 3D product bottle)
       const mist = document.createElement('div'); mist.className = 'sc-heromist'; mist.setAttribute('aria-hidden', 'true');
       mist.innerHTML = '<i></i><i></i><i></i>'; pinHost.appendChild(mist); ov.mist = mist;
     }
@@ -510,6 +514,25 @@ function initProductJourney() {
     btn.innerHTML = '<span aria-hidden="true">×</span>';
     document.body.appendChild(btn);
     btn.addEventListener('click', closeOverlay);
+
+    // Magnetic interaction on close button
+    btn.addEventListener('pointermove', e => {
+      const r = btn.getBoundingClientRect();
+      const dx = e.clientX - (r.left + r.width / 2);
+      const dy = e.clientY - (r.top + r.height / 2);
+      btn.style.transform = `translate3d(${dx * 0.35}px, ${dy * 0.35}px, 0) scale(1.08)`;
+    });
+    btn.addEventListener('pointerleave', () => {
+      btn.style.transform = '';
+    });
+
+    // Tap/Click particle shockwave interaction on canvas
+    flightCanvas.addEventListener('pointerdown', () => {
+      if ((ov.state === 'open' || ov.state === 'opening') && ov.particles) {
+        ov.particles.trigger('click');
+      }
+    });
+
     document.addEventListener('keydown', e => { if (e.key === 'Escape' && (ov.state === 'open' || ov.state === 'opening')) closeOverlay(); });
     // a safety net: reaching the end of the details hands over to the page (normally that happens a screen earlier)
     el.addEventListener('scroll', () => { if (ov.state === 'open' && el.scrollTop >= el.scrollHeight - el.clientHeight - 2) handOff(ingOn() ? ingWarp(el.scrollTop + geo.fadeLen).sy : el.scrollTop + geo.fadeLen); }, { passive: true });
@@ -545,20 +568,17 @@ function initProductJourney() {
     if (ov.heroName) {
       const srEl = itemEls[i] && itemEls[i].querySelector('.sr'), nm = (srEl ? srEl.textContent : PRODUCTS[i].short || '').trim();
       const parts = nm.split(/\s+/), l1 = parts.length > 1 ? parts[0] : nm, l2 = parts.length > 1 ? parts.slice(1).join(' ') : '';
-      // each letter in two spans: the inner one plays the entrance (CSS, on .hn-in), the outer one the scroll-away (--out)
       const lines = l2 ? [l1, l2] : [l1];
       const total = lines.reduce((n, l) => n + l.length, 0); let k = 0;
       ov.heroName.innerHTML = lines.map(line => '<span class="hn-line">' + [...line].map((ch, j) => {
-        const off = j - (line.length - 1) / 2, d = Math.abs(off) * 70 + (k++ / total) * 120;   // from the middle outwards
-        return '<span class="hn-ch" style="--o:' + off.toFixed(2) + '"><span class="hn-ci" style="--d:' + d.toFixed(0) + 'ms">' + ch + '</span></span>';
+        const off = j - (line.length - 1) / 2, d = Math.abs(off) * 60 + (k++ / total) * 110;
+        return '<span class="hn-ch" style="--o:' + off.toFixed(2) + '"><span class="hn-ci" style="--d:' + d.toFixed(0) + 'ms">' + (ch === ' ' ? '&nbsp;' : ch) + '</span></span>';
       }).join('') + '</span>').join('');
-      ov.heroName.classList.remove('hn-in'); ov.hnIn = false;
-      ov.heroName.style.opacity = '0';
-      // as big as the screen allows: the longest line fills at most 94% of the width
-      ov.heroName.style.fontSize = '';
-      const fs = parseFloat(getComputedStyle(ov.heroName).fontSize) || 100;
-      const wide = Math.max(...[...ov.heroName.children].map(c => c.scrollWidth), 1);
-      if (wide > innerWidth * 0.94) ov.heroName.style.fontSize = (fs * innerWidth * 0.94 / wide).toFixed(1) + 'px';
+      ov.heroName.style.opacity = '0'; ov.heroName.classList.remove('hn-in'); ov.hnIn = false;
+    }
+    if (ov.particles) {
+      ov.particles.setVisible(true);
+      ov.particles.trigger('intro');
     }
     ov.el.setAttribute('aria-label', PRODUCTS[i].name);
     ov.from = cardSpot(i);
@@ -655,6 +675,8 @@ function initProductJourney() {
   }
 
   function finishClose() {
+    if (ov.particles) ov.particles.setVisible(false);
+    L.setHeroLight(0);
     if (ingDirs[ov.idx]) ingDirs[ov.idx].reset(flightJars[ov.idx]);
     if (ov.idx >= 0 && flightJars[ov.idx]) restoreFromHd(flightJars[ov.idx]);
     ov.state = 'closed';
@@ -690,14 +712,26 @@ function initProductJourney() {
     // Opening: the product settles low on the screen, big, with its name above it. The first part of the scroll then
     // lifts it to its hold in the middle (s: 0 at rest, 1 when it has arrived), and only then do the intro words come in.
     const sc = Math.max(0, sy - F), s = reduce ? 1 : clamp(sc / (0.7 * vh), 0, 1), se = ease.io(s);
-    // the hero (as on the reference): the product in the middle of the screen over its big name, leaning a little and
-    // floating (a slow bob, a slight rock and sway) until the first scroll lifts it into the details
-    const hx = geo.vw * 0.5, hh = Math.min((geo.mobile ? Math.min(vh * 0.5, geo.vw * 1.0) : vh * 0.64) * (jar.fit || 1), geo.vw * (geo.mobile ? 0.6 : 0.4) / Math.max(0.3, ratios[i] || 0.5)), hy = vh * (geo.mobile ? 0.56 : 0.54);
-    const hk = 1 - se, fy = Math.sin(tTime * 1.15) * vh * 0.014, rz = -0.15 + Math.sin(tTime * 0.8) * 0.035, ry = Math.sin(tTime * 0.5) * 0.22;
-    // when it lands from the fly it settles with a little springy rock (damped), and it leans towards the pointer
-    const tw = Math.max(0, (now - ov.openedAt - OPEN_MS * 0.8) / 1000), wob = reduce ? 0 : Math.exp(-3.2 * tw) * Math.sin(7.5 * tw);
-    const hold = reduce ? base : { ...base, x: hx + (base.x - hx) * se, y: hy + (base.y - hy) * se + (fy - wob * vh * 0.025) * hk, h: hh + (base.h - hh) * se,
-      rotZ: base.rotZ + (rz + wob * 0.16) * hk, rotY: base.rotY + (ry + mouse.x * 0.35) * hk, rotX: base.rotX + mouse.y * 0.14 * hk };
+    const hx = geo.vw * 0.5, hh = (geo.mobile ? Math.min(vh * 0.5, geo.vw * 1.0) : vh * 0.6) * (jar.fit || 1), hy = vh * (geo.mobile ? 0.84 : 0.88);
+    let a = 1;
+    if (ov.state === 'opening' || ov.state === 'closing') {
+      const k = clamp((now - ov.t0) / (ov.state === 'opening' ? OPEN_MS : CLOSE_MS), 0, 1), e = easeIO(k);
+      a = ov.state === 'opening' ? e : 1 - e;
+      if (k >= 1) { if (ov.state === 'opening') ov.state = 'open'; else { finishClose(); return; } }
+    }
+    const hk = (1 - s) * (ov.state === 'closing' ? a : 1);
+    const tw = Math.max(0, (now - ov.openedAt - OPEN_MS * 0.8) / 1000);
+    const wob = reduce ? 0 : Math.exp(-3.2 * tw) * Math.sin(7.5 * tw);
+    const fy = Math.sin(tTime * 0.9) * vh * 0.015, rz = Math.sin(tTime * 0.8) * 0.035, ry = Math.sin(tTime * 0.5) * 0.22;
+    const hold = reduce ? base : {
+      ...base,
+      x: hx + (base.x - hx) * se,
+      y: hy + (base.y - hy) * se + (fy - wob * vh * 0.025) * hk,
+      h: hh + (base.h - hh) * se,
+      rotZ: base.rotZ + (rz + wob * 0.16) * hk,
+      rotY: base.rotY + (ry + mouse.x * 0.38) * hk,
+      rotX: base.rotX + mouse.y * 0.16 * hk
+    };
     if (ov.fx) {
       const hv = hk.toFixed(3), pv = clamp(syRaw / Math.max(1, ov.sec.offsetHeight - vh + F), 0, 1).toFixed(4);
       if (ov.fx._h !== hv) { ov.fx._h = hv; ov.el.style.setProperty('--hero', hv); }
@@ -710,16 +744,15 @@ function initProductJourney() {
       const cx = (hold.x / geo.vw * 100).toFixed(1) + '%', cy = (hold.y / vh * 100).toFixed(1) + '%';
       if (ov.fx._c !== cx + cy) { ov.fx._c = cx + cy; ov.el.style.setProperty('--pcx', cx); ov.el.style.setProperty('--pcy', cy); }
     }
-    mouse.x += (mouse.tx - mouse.x) * 0.06; mouse.y += (mouse.ty - mouse.y) * 0.06;
-    // a = 0 in the card, 1 in the middle: the fly on open and close
-    let a = 1;
-    if (ov.state === 'opening' || ov.state === 'closing') {
-      const k = clamp((now - ov.t0) / (ov.state === 'opening' ? OPEN_MS : CLOSE_MS), 0, 1), e = easeIO(k);
-      a = ov.state === 'opening' ? e : 1 - e;
-      if (k >= 1) { if (ov.state === 'opening') ov.state = 'open'; else { finishClose(); return; } }
-    }
-    // studio lighting for the hero: strong white rim lights from behind, brighter exposure; back to normal in the details
+    // Studio lighting for the hero: multi-source additive rig, highlights moving with pointer
     L.setHeroLight(reduce ? 0 : hk * (ov.state === 'closing' ? a : 1));
+    if (L.updateHeroLights) L.updateHeroLights(mouse, tTime, jar.G.rotation.y);
+    // Grounding contact shadow
+    jar.G.userData.shadowA = (0.42 * (1 - s) * a) * (ov.state === 'closing' ? a : 1);
+    // 3D Particles update
+    if (ov.particles) {
+      ov.particles.update(tTime, mouse, s, { x: jar.G.position.x, y: jar.G.position.y, z: jar.G.position.z });
+    }
     // the statement page would now come into view: from here on it is the page's own ending
     if (ov.state === 'open' && showcaseSec && (H - vh) - sy <= vh && (!ingOn() || ing.v >= 1)) { handOff(sy); return; }
     // the ingredients moment (Lung Booster): open 0 = closed .. 1 = poured. Its pose changes the hold before the product is placed.
@@ -779,14 +812,11 @@ function initProductJourney() {
       ov.card.style.setProperty('--tin', it.tin.toFixed(3)); if (ov.lead) ov.lead.style.setProperty('--tin', it.tin.toFixed(3));
     }
     if (ov.heroName) {                                   // the name: in while the product settles, out as the intro words come in
-      // in: the letters burst out of the fog from the middle outwards (CSS, .hn-in) as the product lands;
-      // out: with the first scroll they fly apart and blur away upwards (--out), and the whole name drifts up
       const tt = (now - ov.openedAt) / 1000, kout = clamp(s / 0.5, 0, 1);
-      if (!ov.hnIn && (reduce || tt > 0.45)) { ov.hnIn = true; ov.heroName.classList.add('hn-in'); }
+      if (!ov.hnIn && (reduce || tt > 0.35)) { ov.hnIn = true; ov.heroName.classList.add('hn-in'); }
       const on = (1 - kout * kout) * (ov.state === 'closing' ? a : 1) * (fall > vh * 1.2 ? 0 : 1);
       ov.heroName.style.opacity = on.toFixed(3);
       ov.heroName.style.setProperty('--out', kout.toFixed(3));
-      // a slow breathing zoom while it holds (as the name in the reference's smoke), and a little pointer parallax
       const br = reduce ? 1 : 1 + Math.sin(tTime * 0.6) * 0.012;
       ov.heroName.style.transform = 'translate3d(' + (-mouse.x * 26).toFixed(1) + 'px,' + (-mouse.y * 16 - s * vh * 0.22 - fall).toFixed(1) + 'px,0) scale(' + (br + s * 0.08).toFixed(4) + ')';
       if (ov.mist) ov.mist.style.opacity = ((1 - kout) * (ov.state === 'closing' ? a : 1)).toFixed(3);
@@ -838,6 +868,7 @@ function initProductJourney() {
     // anything has written a style earlier in this frame
     const sy = state.lenis ? state.lenis.scroll : scrollY, vh = geo.vh, tTime = now * 0.001;
     flightJars.forEach(j => { j.G.userData.shadowA = 0; });   // the ground shadow belongs to the list only: it is switched on there each frame
+    if (ov.state === 'closed') { L.setHeroLight(0); }
     if (ov.state === 'closed' && ov.handed != null && ING_CFG[PRODUCTS[ov.handed].id] && !reduce && document.body.classList.contains('scene-on') && reenter(sy)) { rafId = schedule(frame); return; }
     if (ov.state !== 'closed') {
       if (ov.lenis) {
@@ -851,7 +882,6 @@ function initProductJourney() {
       rafId = schedule(frame);
       return;
     }
-    L.setHeroLight(0);                                     // the hero's studio lights belong to the display only
     const lrTop = geo.lineupTop - sy, lrBottom = lrTop + geo.lineupH;
     const inLineup = lrBottom > 0 && lrTop < vh;
     if (geo.hasScene && ov.state === 'closed' && lrTop < -24) { hideScene(sy); rafId = schedule(frame); return; }   // the products are on screen: the scene is not needed any more

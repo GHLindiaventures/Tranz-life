@@ -20,19 +20,50 @@ function jarLayer(canvas){
   const scene = new THREE.Scene(); scene.environment = envCube();
   const ZC = 24, cam = new THREE.PerspectiveCamera(30, 1, .5, 120); cam.position.set(0, 0, ZC);
   scene.add(new THREE.HemisphereLight(0xfff8e6, 0x4a5c30, .75));
-  const key = new THREE.DirectionalLight(0xfff1d0, 1.1); key.position.set(-6, 9, 11); scene.add(key);
-  const rim = new THREE.DirectionalLight(0xe2f3c4, .6); rim.position.set(9, 4, -7); scene.add(rim);
-  // the product display's hero lighting (off elsewhere): two strong white rim lights from behind on either side, a cool
-  // top light, so the product's edges catch a bright outline against the smoke, and a little more exposure
-  const heroRims = [[-10, 3, -9, 2.4], [10, 5, -8, 2.0], [0, 14, -2, 1.1]].map(([x, y, z]) => { const l = new THREE.DirectionalLight(0xffffff, 0); l.position.set(x, y, z); scene.add(l); return l; });
-  const HERO_I = [2.4, 2.0, 1.1];
+  // 1. Key Light: Softbox style warm sunlight illumination
+  const key = new THREE.DirectionalLight(0xfff8e8, 1.15); key.position.set(-6, 9, 11); scene.add(key);
+  // 2. Fill Light: Soft botanical sage fill, keeps label text and brand logo crisp
+  const fill = new THREE.DirectionalLight(0xb4cca0, 0.45); fill.position.set(7, -1, 9); scene.add(fill);
+  // 3. Multi-source Additive Hero Lighting Rig:
+  //    [0] Left Golden Rim (warm amber/gold edge separation)
+  //    [1] Right Warm-White Rim (balances edge silhouette)
+  //    [2] Top Light (cool overhead highlight)
+  //    [3] Backlight / Atmospheric Depth (radiant glow separating bottle from smoke)
+  //    [4] Wooden Cap Accent (directed at chamfered wood grain)
+  //    [5] Frosted Glass Base Accent (caustic fresh emerald rim)
+  const heroRims = [
+    { pos: [-11, 4, -8], col: 0xffd866, i: 2.7 },
+    { pos: [11, 5, -7], col: 0xfff3d6, i: 2.1 },
+    { pos: [0, 14, -2], col: 0xffffff, i: 1.1 },
+    { pos: [0, -4, -12], col: 0xd4ea80, i: 1.35 },
+    { pos: [1.5, 14, 4], col: 0xffdfa8, i: 1.2 },
+    { pos: [-3, -7, 6], col: 0x9ef0b8, i: 0.85 }
+  ].map(spec => {
+    const l = new THREE.DirectionalLight(spec.col, 0);
+    l.position.set(...spec.pos);
+    scene.add(l);
+    return { light: l, maxI: spec.i, basePos: [...spec.pos] };
+  });
   let heroK = -1;
   const T = c => { const t = new THREE.CanvasTexture(c); t.encoding = THREE.sRGBEncoding; t.anisotropy = 4; return t; };
   const L = { renderer, scene, cam, T, W:1, H:1, halfH:1, halfW:1 };
   L.setHeroLight = k => {
     k = Math.round(Math.max(0, Math.min(1, k)) * 1000) / 1000; if (k === heroK) return; heroK = k;
-    heroRims.forEach((l, i) => { l.intensity = HERO_I[i] * k; });
-    key.intensity = 1.1 + 0.35 * k; renderer.toneMappingExposure = 1 + 0.12 * k;
+    heroRims.forEach(({ light, maxI }) => { light.intensity = maxI * k; });
+    key.intensity = 1.15 + 0.5 * k;
+    fill.intensity = 0.45 + 0.2 * k;
+    renderer.toneMappingExposure = 1 + 0.12 * k;
+  };
+  L.updateHeroLights = (pointer, time, rotY = 0) => {
+    if (heroK <= 0.01) return;
+    const px = (pointer && pointer.x) || 0, py = (pointer && pointer.y) || 0;
+    // Traveling softbox highlight moving across bottle curvature
+    key.position.set(-6 + px * 2.8, 9 + py * 1.8, 11);
+    // Subtle breathing rim shimmer coordinated with rotation
+    if (heroRims[0]) heroRims[0].light.intensity = heroRims[0].maxI * heroK * (1 + 0.12 * Math.sin(time * 0.8 + rotY));
+    if (heroRims[1]) heroRims[1].light.intensity = heroRims[1].maxI * heroK * (1 + 0.12 * Math.cos(time * 1.0 + rotY));
+    // Dynamic cap highlight tracking light drift
+    if (heroRims[4]) heroRims[4].light.position.set(1.5 + px * 1.5, 14, 4 + py * 1.2);
   };
   L.resize = () => { const r = canvas.getBoundingClientRect(); L.W = Math.max(1, r.width); L.H = Math.max(1, r.height); renderer.setSize(L.W, L.H, false); cam.aspect = L.W/L.H; cam.updateProjectionMatrix(); L.halfH = Math.tan(THREE.MathUtils.degToRad(15))*ZC; L.halfW = L.halfH*cam.aspect; };
   L.ppu = () => L.H/(2*L.halfH);
