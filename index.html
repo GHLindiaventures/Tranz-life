@@ -212,50 +212,147 @@
       </div>
     </nav>
     <div class="nav-act">
-      <a class="pill" href="products.html"><i aria-hidden="true">↗</i><b>Our products</b></a>
     </div>
   </header>
 
   <canvas id="flightCanvas" aria-hidden="true"></canvas>
 
   <main>
-    <!-- HERO, "Four Windows, One Story": four vertical films side by side (Root, Lab, Formula, You). Three headlines
-         take turns; their letters are windows onto the films behind, sharp where the panels are soft
-         (features/hero/four-windows.js). On phones the films play one after another, full screen. -->
-    <section class="page fw" id="home" data-theme="green">
-      <div class="fw-panels" id="fwPanels">
-        <figure class="fw-panel" style="--i:0">
-          <video muted loop playsinline preload="none" disablepictureinpicture poster="/videos/hero/root.webp" data-src="/videos/hero/root.mp4" width="720" height="1280"></video>
-          <figcaption><b>01</b> Root<small>Pulled from living soil</small></figcaption>
-        </figure>
-        <figure class="fw-panel" style="--i:1">
-          <video muted loop playsinline preload="none" disablepictureinpicture poster="/videos/hero/lab.webp" data-src="/videos/hero/lab.mp4" width="720" height="1280"></video>
-          <figcaption><b>02</b> Lab<small>Studied in the lab</small></figcaption>
-        </figure>
-        <figure class="fw-panel" style="--i:2">
-          <video muted loop playsinline preload="none" disablepictureinpicture poster="/videos/hero/formula.webp" data-src="/videos/hero/formula.mp4" width="720" height="1280"></video>
-          <figcaption><b>03</b> Formula<small>Blended into a formula</small></figcaption>
-        </figure>
-        <figure class="fw-panel" style="--i:3">
-          <video muted loop playsinline preload="none" disablepictureinpicture poster="/videos/hero/you.webp" data-src="/videos/hero/you.mp4" width="720" height="1280"></video>
-          <figcaption><b>04</b> You<small>Part of your day</small></figcaption>
-        </figure>
-      </div>
-      <div class="fw-shade" aria-hidden="true"></div>
-      <canvas class="fw-type" id="fwType" aria-hidden="true"></canvas>
-      <div class="fw-bars" id="fwBars" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+    <!-- ======================================================================
+         THE ONE-SHOT PLUNGE: Hollywood-Style Continuous Cinematic Experience
+         Act I: Primordial Roots -> Act II: Dewdrop/DNA -> Act III: Product Altar
+         ====================================================================== -->
+    <section class="page plunge-cinema" id="home" data-theme="green">
+      <div class="plunge-stage">
 
-      <div class="fw-copy">
-        <p class="fw-tag">Innovating life beyond limits</p>
-        <h1 class="fw-head" id="fwHead">
-          <span class="fw-line">Where nature meets science</span>
-          <span class="fw-line">Rooted in nature. Backed by science.</span>
-          <span class="fw-line">From root to ritual.</span>
-        </h1>
-      </div>
-      <div class="fw-ctas">
-        <a class="btn-amber" href="products.html">Explore our products <i aria-hidden="true">→</i></a>
-        <a class="btn-ghost" href="#ritual">Find your ritual <i aria-hidden="true">↓</i></a>
+        <!-- Act I: The Primordial Forest & Ancient Banyan Roots -->
+        <div class="plunge-layer plunge-act-1">
+          <img class="plunge-img" src="/assets/homepage-concept/act1-primordial-roots.jpg" alt="Ancient sacred banyan tree in misty dawn forest with golden bio-pulse" loading="eager" decoding="async">
+          <div class="plunge-crepuscular-rays" aria-hidden="true"></div>
+          <div class="plunge-bio-pulse" aria-hidden="true"></div>
+        </div>
+
+        <!-- Act II: The Cellular Dive (Dewdrop to Golden DNA) -->
+        <div class="plunge-portal" aria-hidden="true">
+          <div class="plunge-layer plunge-act-2">
+            <img class="plunge-img" src="/assets/homepage-concept/act2-dewdrop-dna.jpg" alt="Macro dive inside dewdrop revealing glowing 3D golden DNA helix and phytosomes" loading="eager" decoding="async">
+            <canvas class="plunge-dna-particles" id="plungeDnaCanvas"></canvas>
+          </div>
+        </div>
+
+        <!-- Act III: The Product Sanctuary Altar -->
+        <div class="plunge-layer plunge-act-3">
+          <img class="plunge-img" src="/assets/homepage-concept/act3-product-sanctuary.jpg" alt="TranzLife luxury botanical formulations on dark monolithic altar" loading="eager" decoding="async">
+          <div class="plunge-vapor-mist" aria-hidden="true"></div>
+
+          <!-- Interactive Product Hotspots on Altar -->
+          <div class="plunge-hotspots" aria-label="Explore Formulations">
+            <!-- PulmoClear Gummies -->
+            <button class="plunge-spot" style="left: 34%; top: 56%;" type="button" aria-label="PulmoClear Gummies"
+              data-name="PulmoClear™ Gummies" data-active="Standardized Vasicine 98.4% & Kalmegh" data-bio="+320% Enhanced Bioavailability via Phytosome Complex" data-link="product-details.html?id=gummies">
+              <span class="plunge-spot-ring" aria-hidden="true"></span>
+              <span class="plunge-spot-core" aria-hidden="true"></span>
+            </button>
+            <!-- Ritual Tincture Drops -->
+            <button class="plunge-spot" style="left: 48%; top: 52%;" type="button" aria-label="HepatoShield Drops"
+              data-name="HepatoShield™ Drops" data-active="Kutki (Picroside I & II) & Milk Thistle" data-bio="Targeted Hepatic Cellular Clearance & Protection" data-link="product-details.html?id=liver">
+              <span class="plunge-spot-ring" aria-hidden="true"></span>
+              <span class="plunge-spot-core" aria-hidden="true"></span>
+            </button>
+            <!-- Essence Roll-On -->
+            <button class="plunge-spot" style="left: 58%; top: 54%;" type="button" aria-label="Reviva Relief Roll-on"
+              data-name="Reviva™ Relief Roll-On" data-active="Wintergreen, Peppermint & Camphor Micro-Emulsion" data-bio="Rapid Transdermal Absorption via Cooling Phytosols" data-link="product-details.html?id=reviva">
+              <span class="plunge-spot-ring" aria-hidden="true"></span>
+              <span class="plunge-spot-core" aria-hidden="true"></span>
+            </button>
+            <!-- Aroma Inhaler -->
+            <button class="plunge-spot" style="left: 67%; top: 56%;" type="button" aria-label="TranzLife Aroma Inhaler"
+              data-name="Aroma Inhaler" data-active="Menthol, Eucalyptus & Therapeutic Terpenes" data-bio="Sub-second Olfactory & Bronchial Receptor Activation" data-link="product-details.html?id=inhaler">
+              <span class="plunge-spot-ring" aria-hidden="true"></span>
+              <span class="plunge-spot-core" aria-hidden="true"></span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Floating Product Preview Card -->
+        <aside class="plunge-preview-card" id="plungePreviewCard" aria-live="polite">
+          <p class="pp-label">Featured Formulation</p>
+          <h3 class="pp-title">PulmoClear™ Gummies</h3>
+          <p class="pp-active">Standardized Vasicine 98.4%</p>
+          <p class="pp-bio">+320% Enhanced Bioavailability via Phytosome Complex</p>
+          <a class="pp-link" href="products.html">Explore Formulation <i aria-hidden="true">→</i></a>
+        </aside>
+
+        <!-- Narrative Typography Stages (Synchronized with scroll progress) -->
+        <div class="plunge-narrative">
+          <!-- Act I Narrative -->
+          <div class="plunge-copy plunge-copy-1">
+            <span class="plunge-eyebrow"><i></i> The Origin · Ancient Botanical Wisdom</span>
+            <h1 class="plunge-head">Where Nature Meets <em>Precision Molecular Science</em></h1>
+            <p class="plunge-sub">
+              5,000 years of Ayurvedic intelligence decoded through cryogenic extraction and analytical chromatography.
+            </p>
+            <div class="plunge-scroll-cue">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <polyline points="19 12 12 19 5 12"></polyline>
+              </svg>
+              <span>Scroll to enter the plunge</span>
+            </div>
+          </div>
+
+          <!-- Act II Narrative -->
+          <div class="plunge-copy plunge-copy-2" style="opacity: 0; pointer-events: none;">
+            <span class="plunge-eyebrow"><i></i> Molecular Biotechnology</span>
+            <h2 class="plunge-head">The Cellular Dive: <em>+320% Bioavailability</em></h2>
+            <p class="plunge-sub">
+              Cryogenic phytosome micro-encapsulation delivers standardized active phyto-compounds directly to cellular receptor sites.
+            </p>
+            <div class="plunge-badges-row">
+              <span class="plunge-badge-pill"><strong>Vasicine</strong> 98.4% Standardized</span>
+              <span class="plunge-badge-pill"><strong>Andrographolide</strong> HPLC Pure</span>
+              <span class="plunge-badge-pill"><strong>Zero</strong> Synthetic Solvents</span>
+              <span class="plunge-badge-pill"><strong>NABL</strong> Tested</span>
+            </div>
+          </div>
+
+          <!-- Act III Narrative -->
+          <div class="plunge-copy plunge-copy-3" style="opacity: 0; pointer-events: none;">
+            <span class="plunge-eyebrow"><i></i> The Product Sanctuary</span>
+            <h2 class="plunge-head">Sculpted by Nature. <em>Engineered for Life.</em></h2>
+            <p class="plunge-sub">
+              Hover over any formulation to inspect active phytocompounds, or begin your daily wellness journey.
+            </p>
+            <div class="plunge-ctas">
+              <a class="btn-amber" href="products.html">Explore All Formulations <i aria-hidden="true">→</i></a>
+              <a class="btn-ghost" href="#roots">Discover Your Ritual <i aria-hidden="true">↓</i></a>
+            </div>
+          </div>
+        </div>
+
+        <!-- HUD: Timeline Scrubber -->
+        <nav class="plunge-timeline" aria-label="Cinematic Acts">
+          <button class="plunge-timeline-step is-active" data-step="0" type="button">
+            <span class="step-num">01</span> <span class="step-label">Roots of Origin</span>
+          </button>
+          <div class="step-line" aria-hidden="true"><i class="step-fill"></i></div>
+          <button class="plunge-timeline-step" data-step="1" type="button">
+            <span class="step-num">02</span> <span class="step-label">Molecular Dive</span>
+          </button>
+          <div class="step-line" aria-hidden="true"><i class="step-fill"></i></div>
+          <button class="plunge-timeline-step" data-step="2" type="button">
+            <span class="step-num">03</span> <span class="step-label">Product Sanctuary</span>
+          </button>
+        </nav>
+
+        <!-- HUD: Ambient Cinematic Audio Toggle -->
+        <button class="plunge-audio-btn" id="plungeAudioBtn" type="button" aria-label="Toggle cinematic audio soundscape">
+          <div class="audio-eq" aria-hidden="true">
+            <span></span><span></span><span></span>
+          </div>
+          <span class="audio-label">Atmosphere: <strong id="audioState">Off</strong></span>
+        </button>
+
       </div>
     </section>
 
