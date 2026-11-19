@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <script src="/page-loader.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Details | TranzLife Biosciences</title>
+  <meta name="description"
+    content="Clinical formulation details, active botanical ingredients, usage directions, and biological mechanisms of action for TranzLife Biosciences wellness solutions.">
+  <meta property="og:title" content="Product Details | TranzLife Biosciences">
+  <meta property="og:description"
+    content="From the roots of nature to the infinity of science. Explore science-backed plant formulations.">
+  <meta property="og:type" content="product">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,400..900;1,62..125,400..900&family=Caveat:wght@600&display=swap"
+    rel="stylesheet">
+  <link rel="icon" type="image/webp" href="/assets/logo-emblem.webp">
+  <link rel="stylesheet" href="/src/styles/main.css">
+  <style id="tl-critical">/* hide the full-screen menu from the very first frame (same as components/menu.css) */.menu{position:fixed;visibility:hidden}</style>
+</head>
+
+<body>
+  <!-- Full-Screen Navigation Menu -->
+  <div class="menu" id="menu" aria-hidden="true">
+    <div class="menu-bg" aria-hidden="true">
+      <svg viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" fill="none" stroke="none">
+        <path d="M-60 700C200 520 520 560 620 700s-40 300-260 260S80 640 420 470s700-260 900-80 260 360 200 520" />
+      </svg>
+      <span class="logo-em menu-mark"></span>
+    </div>
+    <div class="menu-in">
+      <div class="menu-top">
+        <a class="brand" href="index.html#home">
+          <span class="logo-em" aria-hidden="true"></span>
+          <span class="logo-word" role="img" aria-label="TranzLife Biosciences"></span>
+        </a>
+        <button class="menu-x" id="menuX" type="button">Close <i aria-hidden="true">×</i></button>
+      </div>
+      <ol class="menu-list" id="menuList">
+        <li style="--i:0"><a href="index.html#home"><span class="mi-no">01</span><span class="mi-name">Home</span><span class="mi-sub">Nature meets science</span></a></li>
+        <li style="--i:1"><a href="about.html"><span class="mi-no">02</span><span class="mi-name">About Us</span><span class="mi-sub">Our mission & innovation</span></a></li>
+        <li style="--i:2"><a href="products.html" class="active"><span class="mi-no">03</span><span class="mi-name">Our Products</span><span class="mi-sub">All six formulations</span></a></li>
+        <li style="--i:3"><a href="science.html"><span class="mi-no">04</span><span class="mi-name">Science & Innovation</span><span class="mi-sub">Molecular delivery & 3D lab</span></a></li>
+        <li style="--i:4"><a href="ingredients.html"><span class="mi-no">05</span><span class="mi-name">Our Ingredients</span><span class="mi-sub">Botanical pharmacopeia</span></a></li>
+        <li style="--i:5"><a href="quality.html"><span class="mi-no">06</span><span class="mi-name">Quality & Manufacturing</span><span class="mi-sub">Cleanrooms & batch audit</span></a></li>
+        <li style="--i:6"><a href="sustainability.html"><span class="mi-no">07</span><span class="mi-name">Sustainability</span><span class="mi-sub">Regeneration & zero-plastic</span></a></li>
+        <li style="--i:7"><a href="certifications.html"><span class="mi-no">08</span><span class="mi-name">Certifications & Compliance</span><span class="mi-sub">Regulatory accreditations</span></a></li>
+        <li style="--i:8"><a href="contact.html"><span class="mi-no">09</span><span class="mi-name">Contact</span><span class="mi-sub">Say hello</span></a></li>
+      </ol>
+      <aside class="menu-side">
+        <div class="menu-note">
+          <p class="hand">Innovating life<br>beyond limits</p>
+          <a href="contact.html" class="menu-contact">Say hello →</a>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <!-- Header Sticky Navigation Bar -->
+  <header class="nav" id="nav">
+    <a class="brand" href="index.html#home" aria-label="TranzLife Biosciences home">
+      <span class="logo-em" aria-hidden="true"></span>
+      <span class="logo-word" aria-hidden="true"></span>
+    </a>
+    <nav class="nav-pills" aria-label="Main">
+      <a href="index.html#home">Home</a>
+
+      <!-- Company Dropdown -->
+      <div class="nav-drop">
+        <button class="nav-drop-btn" type="button" aria-expanded="false">
+          Company <svg class="nav-caret" viewBox="0 0 12 12"><path d="M2.5 4.5L6 8L9.5 4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="nav-drop-menu" role="menu">
+          <a href="about.html" class="nav-drop-item">
+            <strong>About Us</strong>
+            <small>Mission &amp; Innovation</small>
+          </a>
+          <a href="contact.html" class="nav-drop-item">
+            <strong>Contact Us</strong>
+            <small>Chennai HQ &amp; Support</small>
+          </a>
+        </div>
+      </div>
+
+      <!-- Products Dropdown -->
+      <div class="nav-drop">
+        <button class="nav-drop-btn on" type="button" aria-expanded="false">
+          Products <svg class="nav-caret" viewBox="0 0 12 12"><path d="M2.5 4.5L6 8L9.5 4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="nav-drop-menu" role="menu">
+          <a href="products.html" class="nav-drop-item featured">
+            <strong>All six products</strong>
+            <small>Explore the range</small>
+          </a>
+          <div class="nav-drop-divider"></div>
+          <a href="product-details.html?id=gummies" class="nav-drop-item">
+            <strong>Lung Booster Gummies</strong>
+            <small>Respiratory Wellness</small>
+          </a>
+          <a href="product-details.html?id=inhaler" class="nav-drop-item">
+            <strong>Aroma Inhaler</strong>
+            <small>Aromatherapy &amp; Relaxation</small>
+          </a>
+          <a href="product-details.html?id=rollon" class="nav-drop-item">
+            <strong>CycleRelief Roll-On</strong>
+            <small>Menstrual Comfort</small>
+          </a>
+          <a href="product-details.html?id=reviva" class="nav-drop-item">
+            <strong>Reviva Roll-On</strong>
+            <small>Botanical Massage Roll-On</small>
+          </a>
+          <a href="product-details.html?id=liver" class="nav-drop-item">
+            <strong>Liver Booster</strong>
+            <small>100% Ayurvedic Liver Wellness</small>
+          </a>
+          <a href="product-details.html?id=energy" class="nav-drop-item">
+            <strong>Energy Booster</strong>
+            <small>Energy &amp; Vitality Support</small>
+          </a>
+        </div>
+      </div>
+
+      <!-- Science Dropdown -->
+      <div class="nav-drop">
+        <button class="nav-drop-btn" type="button" aria-expanded="false">
+          Science <svg class="nav-caret" viewBox="0 0 12 12"><path d="M2.5 4.5L6 8L9.5 4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="nav-drop-menu" role="menu">
+          <a href="science.html" class="nav-drop-item">
+            <strong>Science &amp; Innovation</strong>
+            <small>3D Compound Lab &amp; Delivery</small>
+          </a>
+          <a href="ingredients.html" class="nav-drop-item">
+            <strong>Our Ingredients</strong>
+            <small>Botanical Pharmacopeia</small>
+          </a>
+        </div>
+      </div>
+
+      <!-- Standards Dropdown -->
+      <div class="nav-drop">
+        <button class="nav-drop-btn" type="button" aria-expanded="false">
+          Standards <svg class="nav-caret" viewBox="0 0 12 12"><path d="M2.5 4.5L6 8L9.5 4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="nav-drop-menu" role="menu">
+          <a href="quality.html" class="nav-drop-item">
+            <strong>Quality &amp; Manufacturing</strong>
+            <small>ISO 7 Cleanrooms &amp; Batch COA</small>
+          </a>
+          <a href="certifications.html" class="nav-drop-item">
+            <strong>Certifications &amp; Compliance</strong>
+            <small>AYUSH GMP &amp; NABL Testing</small>
+          </a>
+          <a href="sustainability.html" class="nav-drop-item">
+            <strong>Sustainability</strong>
+            <small>Regenerative Ecosystems</small>
+          </a>
+        </div>
+      </div>
+    </nav>
+    <div class="nav-act">
+      <button class="menu-btn" id="dockMenu" type="button" aria-expanded="false" aria-label="Open menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="4" y1="7" x2="20" y2="7"/>
+          <line x1="4" y1="12" x2="20" y2="12"/>
+          <line x1="4" y1="17" x2="20" y2="17"/>
+        </svg>
+      </button>
+      <a class="pill" href="products.html"><i aria-hidden="true">←</i><b>All products</b></a>
+    </div>
+  </header>
+
+  <main class="pdp-page">
+    <div class="wrap">
+
+      <!-- Breadcrumbs -->
+      <nav class="pdp-breadcrumb" id="pdpBreadcrumb" aria-label="Breadcrumb"></nav>
+
+      <!-- Main PDP Hero Grid -->
+      <div class="pdp-grid">
+
+        <!-- Left Gallery -->
+        <div class="pdp-gallery">
+          <div class="pdp-main-img-box" id="pdpImgBox">
+            <!-- Dynamically populated -->
+          </div>
+          <div class="pdp-gallery-tabs">
+            <button class="pdp-tab-btn on" data-view="studio" type="button">Studio Shot</button>
+            <button class="pdp-tab-btn" data-view="design" type="button">Pack Design</button>
+          </div>
+          <div class="pdp-guarantee-pills">
+            <span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              </svg>
+              GMP Certified
+            </span>
+            <span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>
+                <path d="M11 3c2 2 4.5 4 8 4"/>
+              </svg>
+              100% Plant-Derived
+            </span>
+            <span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="m9 12 2 2 4-4"/>
+              </svg>
+              Clean Label
+            </span>
+          </div>
+        </div>
+
+        <!-- Right Product Summary & Actions -->
+        <div class="pdp-info" id="pdpInfo">
+          <!-- Dynamically populated from CLINICAL_DETAILS in src/product-details.js -->
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Before / after comparison (only for products that have one: src/data/compare.js) -->
+    <section class="bac-band" id="pdpCompare" aria-label="Before and after comparison" hidden></section>
+
+    <!-- Targeted Biochemical Mechanisms -->
+    <section class="pdp-science-band">
+      <div class="wrap">
+        <div class="pdp-science-head">
+          <p class="eyebrow drawn">Biochemical Synergy</p>
+          <h2 class="h2">Targeted <em>Cellular Mechanisms</em></h2>
+          <p class="sub">
+            How active phytocompounds interact with human physiology to produce noticeable, clinical-grade results.
+          </p>
+        </div>
+        <div class="pdp-science-grid" id="pdpScienceGrid">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Cross-Sell Formulations -->
+    <section class="pdp-cross-band">
+      <div class="wrap">
+        <div class="pdp-cross-head">
+          <p class="eyebrow drawn">More from TranzLife</p>
+          <h2 class="h2">Explore Other <em>Formulations</em></h2>
+        </div>
+        <div class="pdp-cross-grid" id="pdpCrossGrid">
+          <!-- filled by product-details.js with the other products -->
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Global Footer -->
+  <footer class="night-foot" id="siteFooter">
+    <!-- "After Dark": the last page of the day (features/footer/night-footer.js, sections/footer.css) -->
+    <div class="nf-sky" aria-hidden="true"><span class="nf-stars"></span><span class="nf-moon"></span><span class="nf-sun"></span></div>
+    <div class="wrap nf-in">
+      <div class="nf-top">
+        <a class="nf-brand" href="index.html" aria-label="TranzLife Biosciences home"><span class="logo-em" aria-hidden="true"></span><span class="logo-word light" aria-hidden="true"></span></a>
+        <button class="nf-dawn" type="button" id="nfDawn"><span>Back to dawn</span><i aria-hidden="true">↑</i></button>
+      </div>
+      <nav class="nf-links" aria-label="Footer"><a href="products.html"><span>Products</span></a><a href="science.html"><span>Science</span></a><a href="ingredients.html"><span>Ingredients</span></a><a href="about.html"><span>About</span></a><a href="quality.html"><span>Quality</span></a><a href="certifications.html"><span>Certifications</span></a><a href="sustainability.html"><span>Sustainability</span></a><a href="contact.html"><span>Contact</span></a></nav>
+      <div class="nf-meta">
+        <p class="nf-where">Egmore, Chennai, Tamil Nadu, India</p>
+        <a class="nf-mail" href="mailto:care@tranzlife.in">care@tranzlife.in</a>
+        <span class="nf-store" id="nfStore">Online store · coming soon</span>
+      </div>
+      <div class="nf-legal">
+        <p class="nf-care"><b>We don’t cure. We care.</b> TranzLife products support everyday well-being and are not intended to treat or cure any disease.</p>
+        <p class="nf-fine"><span>© 2026 TranzLife Biosciences</span><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a></p>
+      </div>
+    </div>
+    <p class="nf-word" aria-hidden="true"><span>T</span><span>R</span><span>A</span><span>N</span><span>Z</span><span>L</span><span>I</span><span>F</span><span>E</span></p>
+  </footer>
+
+  <div class="toast" id="toast" role="status"></div>
+
+  <script type="module" src="/src/product-details.js"></script>
+</body>
+
+</html>
+

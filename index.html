@@ -69,13 +69,13 @@
     <div class="fact" style="--a:66deg;--am:118deg"><b>6</b><span>stage testing</span></div>
   </div>
   <p class="st-note hand" aria-hidden="true">Real herbs,<br>honest care<svg viewBox="0 0 44 40"><path d="M6 4c-2 14 6 26 30 30m0 0l-9-7m9 7l-10 4"/></svg></p>
-  <a class="pill st-buy" href="#shop"><i aria-hidden="true">↗</i><b>Buy now</b></a>
   <div class="st-copy">
     <h1 class="st-h" aria-label="Innovating life beyond limits"><span class="ln"><span class="wl"><span class="w">Innovating</span></span></span><span class="ln"><span class="wl"><span class="w">life</span></span> <span class="wl"><span class="w">beyond</span></span></span><span class="ln"><span class="wl"><span class="w">limits</span></span></span></h1>
-    <p class="st-lede">Plant-based care in gummies, a calming inhaler, soothing roll-ons and a liver tonic <u>you'll actually reach for.</u></p>
+    <p class="st-lede">Plant-based care in lung booster gummies, a calming inhaler, soothing roll-ons and a liver tonic <u>you'll actually reach for.</u></p>
+    <a class="pill st-buy" href="#shop"><i aria-hidden="true">↗</i><b>Buy now</b></a>
   </div>
   <div class="stage-space" aria-hidden="true"></div>
-  <div class="mq" aria-hidden="true"><div class="mq-track" id="mq"></div></div>
+  <div class="curve-band" id="curveBand"></div>
 </section>
 
 <section class="page insider" id="insider" data-theme="cream"><div class="band">
@@ -143,16 +143,55 @@
 <section class="page sci-bg" id="science" data-theme="cream"><div class="band">
   <div class="wrap sci">
     <div>
-      <p class="eyebrow reveal">The science inside</p>
+      <div class="sci-eyebrow-row">
+        <p class="eyebrow reveal">The science inside</p>
+        <span class="sci-lab-tag">PHYTOTHERAPY ARCHIVE</span>
+      </div>
       <h2 class="h2 rv-words">Rooted. Tested. <span class="lt">Trusted.</span></h2>
       <p class="sub reveal" style="margin-top:18px">Rosemary, rose and peppermint from our Calm Roll-On, plus five more from our R&amp;D library. Each has a key compound we standardise and test. Pick one to see it up close.</p>
       <div class="herbs reveal" id="herbs" role="group" aria-label="Botanicals"></div>
-      <div class="herb-info" id="herbInfo" aria-live="polite"></div>
+      <div class="sci-standards reveal" aria-label="Phytotherapy quality standards">
+        <div class="sci-standard-item">
+          <b>100%</b>
+          <small>Plant-based actives</small>
+        </div>
+        <div class="sci-standard-div" aria-hidden="true"></div>
+        <div class="sci-standard-item">
+          <b>8</b>
+          <small>Standardized herbs</small>
+        </div>
+        <div class="sci-standard-div" aria-hidden="true"></div>
+        <div class="sci-standard-item">
+          <b>0%</b>
+          <small>Synthetics or fillers</small>
+        </div>
+      </div>
     </div>
     <div class="sci-art reveal">
-      <img class="dna" id="sciDna" src="./src/assets/images/dna-helix.webp" alt="" width="992" height="1004" decoding="async">
-      <div class="sci-ring"><canvas id="molCanvas" aria-label="Rotating 3D model of the selected botanical's key compound"></canvas></div>
-      <p class="sci-cap"><b id="molName">Eugenol</b><small>Stylised model · drag to rotate</small></p>
+      <div class="sci-vitrine-frame">
+        <div class="sci-specimen-header">
+          <div>
+            <span class="sci-specimen-badge" id="sciHerbIndex">SPECIMEN 01</span>
+            <h3 class="sci-herb-title" id="sciHerbTitle">Peppermint</h3>
+          </div>
+          <span class="sci-herb-latin" id="sciHerbLatin">Mentha × piperita</span>
+        </div>
+        <div class="sci-stage" id="sciStage">
+          <div class="sci-herb-halo" id="sciHerbHalo"></div>
+          <img class="sci-herb-photo" id="sciHerbPhoto" src="" alt="Botanical specimen">
+          <!-- Decorative botanical styling arrows: curve FROM near ingredient TO name without touching the product image -->
+          <svg class="sci-arrow-overlay" id="sciArrowOverlay" viewBox="0 0 600 440" preserveAspectRatio="none" aria-hidden="true">
+            <path class="sci-arrow-path" id="arrowPart" d="M 215 140 C 188 132 162 114 138 90 m 0 0 l 12 3 m -12 -3 l 4 12" />
+            <path class="sci-arrow-path" id="arrowCmp" d="M 395 230 C 418 220 436 206 452 188 m 0 0 l -12 2 m 12 -2 l -4 12" />
+            <path class="sci-arrow-path" id="arrowFound" d="M 235 285 C 202 300 172 322 145 348 m 0 0 l 4 -12 m -4 12 l 12 -4" />
+          </svg>
+          <!-- Interactive botanical handwritten notes -->
+          <div class="herb-callouts" id="sciHerbFacts"></div>
+        </div>
+        <div class="sci-specimen-dossier" id="herbInfo" aria-live="polite">
+          <p class="sci-herb-desc" id="sciHerbDesc">Peppermint oil is rich in menthol, the compound behind its cool, fresh feel on the skin. It is one of the three botanicals in the Calm Roll-On.</p>
+        </div>
+      </div>
     </div>
   </div>
 </div></section>

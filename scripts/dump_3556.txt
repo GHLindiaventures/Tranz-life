@@ -1,0 +1,20 @@
+Created At: 2026-11-18T17:32:46+05:30
+Completed At: 2026-11-18T17:32:47+05:30
+Created At: 2026-11-18T17:32:46+05:30
+Completed At: 2026-11-18T17:32:47+05:30
+Showing lines 165-179 of 179
+165:   const halo = $('#sciHerbHalo');
+166:   if (halo) {
+167:     halo.style.background = `radial-gradient(circle, #${col}22 0%, transparent 68%)`;
+168:   }
+169: 
+170:   if (!first && hasGsap) {
+171:     gsap.from('#sciHerbTitle, #sciHerbLatin, #sciHerbIndex', { opacity: 0, y: -6, duration: .3, stagger: .04, ease: 'power2.out' });
+172:     gsap.from('#sciHerbDesc, #sciHerbFacts > *', { opacity: 0, y: 10, duration: .35, stagger: .04, ease: 'power2.out' });
+173:     gsap.fromTo('.herb-style-arrow path', { strokeDasharray: 180, strokeDashoffset: 180 }, { strokeDashoffset: 0, duration: .85, ease: 'power2.out' });
+174:   }
+175: 
+176:   if (state.mol) state.mol.show(h);
+177: }
+178: 
+179: export { buildHerbs };

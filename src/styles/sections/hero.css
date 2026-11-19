@@ -1,31 +1,47 @@
 /* ---------- hero stage ---------- */
-.stage{position:relative;height:100vh;height:100svh;min-height:700px;max-height:1100px;background:radial-gradient(70% 60% at 30% 40%,#c6d8b6,transparent 70%),var(--stage);overflow:hidden}
-.st-arc{position:absolute;left:38%;top:calc(100% - 53vh);width:106vh;height:106vh;transform:translateX(-50%);pointer-events:none;z-index:0}
+/* the first screen is the product standing in the white arc with the facts on its left and the headline, lede and "Buy now" on the right; the curved band sits just below it and comes up on the next scroll. Everything is placed from --h, the first screen's height. */
+.stage{--h:clamp(680px,100vh,1000px);--cx:36%;--cy:calc(var(--h)*1.05);--r:calc(var(--h)*.56);--bw:min(62vw,calc(var(--h)*1.2));position:relative;height:calc(var(--h)*1.12);background:radial-gradient(70% 40% at 35% 30%,#c6d8b6,transparent 70%),var(--stage);overflow-x:clip;overflow-y:visible}
+.st-arc{position:absolute;left:var(--cx);top:calc(var(--cy) - var(--r));width:calc(var(--r)*2);height:calc(var(--r)*2);transform:translateX(-50%);pointer-events:none;z-index:0}
 .st-arc svg{width:100%;height:100%;overflow:visible}
-.st-arc circle{fill:none;stroke:#fff;stroke-width:1.5%;stroke-linecap:round}
-.st-hill{position:absolute;left:38%;bottom:-24vh;width:clamp(740px,64vw,1120px);height:40vh;transform:translateX(-50%);border-radius:50%;background:radial-gradient(60% 60% at 50% 30%,#3a7334,#1f4a26);z-index:1}
-/* all five real products, cut out of the client's designs; they rise in with a natural stagger */
+.st-arc circle{fill:none;stroke:#fff;stroke-width:2.4%;stroke-linecap:round}
+.st-hill{position:absolute;left:37%;bottom:-25vh;width:64vh;height:40vh;transform:translateX(-50%);border-radius:50%;background:radial-gradient(60% 60% at 50% 30%,#3a7334,#1f4a26);z-index:1}
+/* the real gummies jar, cut out of the client's design; it rises in once with the intro */
 .st-prod{position:absolute;inset:0;z-index:2;pointer-events:none}
-.st-prod img{position:absolute;width:auto;transform:translate(-50%,-50%) translateY(20%) scale(.92);opacity:0;filter:blur(10px) drop-shadow(0 32px 28px rgba(20,52,24,.35));transition:opacity 1s var(--ease, ease),transform 1.4s var(--ease, ease),filter 1.2s var(--ease, ease);transition-delay:var(--del, 0s)}
-.st-prod.in img{opacity:1;transform:translate(-50%,-50%) translateY(0) scale(1);filter:blur(0) drop-shadow(0 28px 24px rgba(20,52,24,.32))}
-.facts{position:absolute;left:38%;top:100%;width:0;height:0;z-index:3}
-.fact{position:absolute;left:0;top:0;width:clamp(92px,10.5vh,120px);aspect-ratio:1;margin:calc(clamp(92px,10.5vh,120px)/-2) 0 0 calc(clamp(92px,10.5vh,120px)/-2);border-radius:50%;background:#e6ecdc;display:grid;place-content:center;text-align:center;color:var(--forest);transform:rotate(var(--a)) translateX(-52vh) rotate(calc(var(--a)*-1));box-shadow:0 10px 30px -14px rgba(31,70,35,.35)}
+/* a real 3D model of the gummies jar, drawn on a see-through canvas over the hero (features/hero/hero-jar.js) */
+.hp3d{position:absolute;inset:0;width:100%;height:100%;display:block}
+.hp3-shadow{position:absolute;left:0;top:0;border-radius:50%;background:radial-gradient(closest-side,rgba(15,40,18,.55),rgba(15,40,18,0));opacity:0;z-index:-1}
+/* the Lung Booster Gummies tub, cut out of the client's pack photo (features/hero/hero-jar.js) */
+.hp-photo{position:absolute;width:auto;max-width:none;will-change:transform;transform:translate(-50%,-50%);filter:drop-shadow(0 30px 26px rgba(20,52,24,.32))}
+.hp-photo{backface-visibility:hidden}
+/* the fixed layer that carries the tub while it flies down the page: over the sections, under the nav */
+#flight{position:fixed;inset:0;z-index:40;pointer-events:none;overflow:hidden}
+.st-pop{position:absolute;left:0;top:0;width:240px;height:70px;margin:-35px 0 0 -120px;border-radius:50%;border:2px solid rgba(255,255,255,.9);box-shadow:0 0 24px rgba(255,255,255,.6);opacity:0;pointer-events:none}
+/* the curved band hanging from the foot of the hero: green behind the arc and hill, ribbon and light page in front */
+/* the product floats free over the band, so there is no hill and no ground shadow */
+.st-hill,.hp3-shadow{display:none}
+.curve-band{position:absolute;left:0;right:0;top:100%;pointer-events:none;line-height:0}
+.curve-band svg{position:absolute;left:50%;top:0;width:max(100%,900px);height:auto;transform:translateX(-50%);overflow:visible}
+.cb-back{z-index:-1}.cb-back rect{fill:var(--stage)}
+.cb-front{z-index:5}
+.cb-fill{fill:var(--ground)}
+.cb-ribbon{fill:none;stroke:#1f4a26;stroke-width:168}
+.cb-text{font-family:var(--f-display);font-stretch:66%;font-weight:700;font-size:176px;letter-spacing:-.01em;fill:#b5cea0}
+.facts{position:absolute;left:var(--cx);top:var(--cy);width:0;height:0;z-index:3}
+.fact{position:absolute;left:0;top:0;width:clamp(92px,10.5vh,120px);aspect-ratio:1;margin:calc(clamp(92px,10.5vh,120px)/-2) 0 0 calc(clamp(92px,10.5vh,120px)/-2);border-radius:50%;background:#e6ecdc;display:grid;place-content:center;text-align:center;color:var(--forest);transform:rotate(var(--a)) translateX(calc(var(--r)*-1)) rotate(calc(var(--a)*-1));box-shadow:0 10px 30px -14px rgba(31,70,35,.35)}
 .fact b{font-family:var(--f-display);font-stretch:68%;font-weight:850;font-size:clamp(30px,3.6vh,40px);line-height:.9}
 .fact b small{font-size:.5em;font-weight:800}
 .fact span{font-size:12px;font-weight:600;line-height:1.1;margin-top:3px;padding-inline:8px}
-.st-note{position:absolute;z-index:3;left:max(112px,calc(38% - 52vh - 10px));top:calc(100% - 52vh - 150px);font-size:23px;transform:rotate(-6deg)}
+.st-note{position:absolute;z-index:3;left:max(112px,calc(var(--cx) - var(--r) - 40px));top:calc(var(--cy) - var(--r) - 40px);font-size:25px;transform:rotate(-6deg)}
 .st-note svg{display:block;width:44px;height:40px;margin:2px 0 0 14px;fill:none;stroke:var(--forest);stroke-width:2;stroke-linecap:round}
-.st-buy{position:absolute;left:38%;top:calc(38% - 54px);margin-left:-62px;z-index:6}
-.st-copy{position:absolute;z-index:4;right:max(48px,6vw);top:50%;transform:translateY(-34%);width:min(560px,40vw);text-align:center}
+.st-buy{position:relative;margin-top:26px}
+.st-copy{position:absolute;z-index:4;right:max(48px,6vw);top:calc(var(--h)*.2);width:min(600px,40vw);text-align:center}
 .st-tag{display:inline-flex;align-items:center;gap:12px;margin-bottom:16px;font-weight:800;font-stretch:90%;font-size:13px;letter-spacing:.22em;text-transform:uppercase;color:var(--forest)}
 .st-tag::before,.st-tag::after{content:"";width:34px;height:2px;border-radius:2px;background:var(--gold)}
-.st-h{font-size:clamp(4rem,10.5vh,8.6rem);font-stretch:64%;font-weight:850;text-transform:uppercase;line-height:.84;letter-spacing:-.01em;color:var(--forest)}
+.st-h{font-size:clamp(4rem,calc(var(--h)*.125),9.6rem);font-stretch:64%;font-weight:850;text-transform:uppercase;line-height:.84;letter-spacing:-.01em;color:var(--forest)}
 .st-h .ln{display:block}
 .st-h .ln:first-child{color:#fff}
 .st-lede{margin:22px auto 0;max-width:34ch;font-size:clamp(17px,2.2vh,20px);font-weight:600;color:var(--forest);line-height:1.3}
+.st-squig{display:block;width:170px;height:20px;margin:6px auto 0;transform:translateX(70px);fill:none;stroke:#fff;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
 .st-lede u{text-decoration:none;background:linear-gradient(transparent 82%,rgba(255,255,255,.9) 82%)}
-.mq{position:absolute;left:0;right:0;bottom:-3vh;z-index:1;overflow:hidden;pointer-events:none}
-.mq-track{display:flex;width:max-content;animation:mq 38s linear infinite}
-.mq-track span{font-family:var(--f-display);font-stretch:62%;font-weight:850;text-transform:uppercase;font-size:clamp(90px,19vh,210px);line-height:.85;color:rgba(255,255,255,.9);padding-right:.35em;white-space:nowrap;display:flex;align-items:center;gap:.35em}
-.mq-track span::after{content:"";width:.22em;height:.22em;border-radius:50%;background:rgba(255,255,255,.9)}
-@keyframes mq{to{transform:translateX(-50%)}}
+
+#flight .flight-shadow{position:absolute;left:0;top:0;border-radius:50%;background:radial-gradient(closest-side,rgba(20,52,24,.7),rgba(20,52,24,.3) 55%,rgba(20,52,24,0) 100%);filter:blur(7px);opacity:0;pointer-events:none;will-change:transform,opacity}

@@ -1,0 +1,26 @@
+{
+  "01_sourcing": {
+    "name": "preview-1",
+    "url": "https://m.invideo.io/stocks/b566d926-bb33-4bf6-9537-5f82d3c2ec5c/vendor/preview?Expires=1795070899&Signature=drqXO1~9qYNR3jsoIkQgRnhtnPrvdFbKb-qm73bjmCKroaJFNMBkaXJXtFVaUcSGnN2HNgJ6HMzqzZT3nurfQYuK04f6pe~-6KWT6a8Ja0qYnkC15WIcNrY1PPI30M1ta-5kELJi2jjXQtnliJ1U5EOQaTduHDgEenJpike-NGE4xvakbRLDdps5h7UKOjOj5JlpjvUnqx1o3O7oIBe~UEdsaKJ8gO1YJLgYYlDWpa0MMa1I24zziQRF-EFKZzjE-YkAAiPna-Z5pGbF6BY8HjRjLqGaT3z2xT4rKO1FMGs2TPoA1v1sNFPXw-NDOu2jIMzs1EMYN8d18fiMvno4jA__&Key-Pair-Id=KX9I6OACHF5M3"
+  },
+  "02_extraction": {
+    "name": "preview-1",
+    "url": "https://m.invideo.io/stocks/88386ae3-a580-452f-a1b2-d20c2293d8c3/88386ae3-a580-452f-a1b2-d20c2293d8c3_watermarked/output?Expires=1795070936&Signature=VpOnMtt807Ie4ztOv0FMdOuu3euj0fs0Y2zreDQJpRQLaC8Wv6rt4gXkhnqS16QdiRblnS1p1Az0UvrEWAyASgY7iV831XCGD83lbc1ZdrhpnnXdbWyhHBZ9on8Bn~kLjHf4OBkoGTAuH34iWGcKqgrSFb3bpKPzqhkGrxl6eIstOYKHS7zneZVUJaHyR~MAv-bJYutMxCntknfRl2w~jcvCQCtFFroLfILXlph0rQ~vGNjedOZUybBtPWBfcl8yVykxmQQcLLA238JyqS59~0-LIeN0lFw53eOMfDjfypIxadYdT-PX6Q-agahYX8DgFyBgYqCflrnGCB7vEhkDog__&Key-Pair-Id=KX9I6OACHF5M3"
+  },
+  "03_formulation": {
+    "name": "preview-1",
+    "url": "https://m.invideo.io/stocks/ecd62a76-d2fa-43c8-9287-cb7cc016f2d6/ecd62a76-d2fa-43c8-9287-cb7cc016f2d6_watermarked/output?Expires=1795070954&Signature=pIJoSGQUbDUt2MNoZdAvzTlUNHIhpjtMVHhT04wZuZm-89qx5CaLX-tczktb5H2pTvgM4iWaV0nj5BMXpbdeikYHTkQ0HEsadPLvrQ9jeIO0IHNekugTuqyNClOuWO0nF-P5DYxuyEQpN-DXFKLdOPdwXcHCDqdnW17D91hmPbyA7slg2TOVjvV1OaJB4p2cmmsAW2sqbp1DcUlMEF91PWSaw9ODosn7PzsgGk5ockuGI3UfJOCr-YjtZZX7VZlk1rSOnGu7eukKBMeCyVsC4zqj-AfIELoPGP~24VINkyfQXp3tNzSCxK8bRrWajNaXtv6vbG3fws3rqLMYFnBVFw__&Key-Pair-Id=KX9I6OACHF5M3"
+  },
+  "04_testing": {
+    "name": "preview-1",
+    "url": "https://m.invideo.io/stocks/57011be8-85f9-451b-99d9-ab425780e654/vendor/preview?Expires=1795070958&Signature=PRLnBAe8tfYNP678oRehVQMErWVbjvUODH8a1igmkcHYAjF4H5uY0aKiv0v6LMka4qrqHeRi~xI3ygdZfjDFtgYsuINwoH1eYqaIuMn2pADVNk-hqlptlZF~6XR-h7tDjd874tNtjEAVT0Q0Ldwk1i28ZVe372N4f4FPslsk7~DGVG~o5YeoPo2QrTsICP~RHmmLYevhffcfu0msHzpFPFORYcRDL0XCk0wha0a8r93VjY7JGZSlmYs-jsYfDIKbkNj53YWaZNBo6AKmi3K8nAAHZzQnyI1anf4vxw6xGlZzDup3ui9Pg9WO-uWCNXRYoh5J3pe46B8YB1WaHSJZAQ__&Key-Pair-Id=KX9I6OACHF5M3"
+  },
+  "05_sensory": {
+    "name": "preview-1",
+    "url": "https://m.invideo.io/stocks/f286335f-db1a-49a3-812b-a5d423ff1d31/f286335f-db1a-49a3-812b-a5d423ff1d31_watermarked/output?Expires=1795070970&Signature=LEquRno3EhPJh89fv0Lg2XD1LLeFADkqitw2VjH~Bn9ko4PljCcTjgUZ77wXM46cPBirq2BsmtPkptU2Q4SmZEVZq4bOfiLp-1QcPZOn2ltPkPNkMwBLo-4o5t4FqamC7xC7g~Q0ph3oRWcKI27Ysny5aJWDP2mbAshBT~ga7NLplYov7eWGLagMLVPOaWXWswCpLZI2-tQh7Rvi2efT2TontU2cEI6NBH7Oq5w7hx3V5yNVqNT7-gKYo54QCxU75c2o1xp9WZu2p33TiS9N4eIjSomErSnD8N8sFtmfe08puFfgNfC4yOKsTDnNh-bXJf5JYoYWmOPjajUPel4WzA__&Key-Pair-Id=KX9I6OACHF5M3"
+  },
+  "06_packaging": {
+    "name": "preview-1",
+    "url": "https://m.invideo.io/stocks/1bcbd651-acba-403e-a3b3-4efeef270a0b/vendor/preview?Expires=1795070986&Signature=wihi4COkz8Ehte79kXYtdk5t32J815~s1YnLl8eVd~Q2cZV3vuLkpNjNJk6JgZIh5kRrt6pvnCGTBaeadZcrCGIsL37OUZqZBmi3-z6PmbL8i64LwEEIddzB-kKiRFnn2BX5mczARFtE25FyZ5-aKLxndehSrUDU4la06aPzRTi8eSYsEC2Seifv8ZotyTQIKy-cM31spL~X-n0eA994XN1yoTeNMTZKKfnpo4IVXmbwQ-4xxYrPEBbTy3lXSYR01Nj9MeSPcCHJxm~sk~utJcXsPeROdwuwtcF9x5EZd8YVc8WQqLrmMChj9MOLb7pcW4auISoYQSie9AlVU~wgQg__&Key-Pair-Id=KX9I6OACHF5M3"
+  }
+}

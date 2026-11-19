@@ -1,0 +1,37 @@
+Created At: 2026-11-18T18:00:01+05:30
+Completed At: 2026-11-18T18:00:02+05:30
+Created At: 2026-11-18T18:00:01+05:30
+Completed At: 2026-11-18T18:00:02+05:30
+Showing lines 95-126 of 179
+95:     factsEl.innerHTML = `
+96:       <div class="herb-callout-note note-part" role="button" tabindex="0" data-arrow="arrowPart" aria-label="Part used: ${h.part}">
+97:         <div class="herb-fact-head">
+98:           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 20A7 7 0 0 1 4 13C4 8 11 3 11 3s7 5 7 10a7 7 0 0 1-7 7Z"/><path d="M11 13a3 3 0 0 0 3-3"/></svg>
+99:           <span class="herb-fact-label">Part used</span>
+100:         </div>
+101:         <b class="herb-fact-val">${h.part}</b>
+102:       </div>
+103:       <div class="herb-callout-note note-cmp" role="button" tabindex="0" data-arrow="arrowCmp" aria-label="Key compound: ${h.cmp}">
+104:         <div class="herb-fact-head">
+105:           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><circle cx="19" cy="6" r="2"/><circle cx="5" cy="18" r="2"/><path d="M14 10l3.5-2.5M6.5 16.5L10 14"/></svg>
+106:           <span class="herb-fact-label">Key compound</span>
+107:         </div>
+108:         <b class="herb-fact-val">${h.cmp}</b>
+109:       </div>
+110:       <div class="herb-callout-note note-found" role="button" tabindex="0" data-arrow="arrowFound" aria-label="Standardized in: ${found}">
+111:         <div class="herb-fact-head">
+112:           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+113:           <span class="herb-fact-label">Standardized in</span>
+114:         </div>
+115:         <b class="herb-fact-val">${found}</b>
+116:       </div>`;
+117: 
+118:     // Interactive hover focus on each note and linked arrow highlight
+119:     factsEl.querySelectorAll('.herb-callout-note').forEach(card => {
+120:       const arrowId = card.dataset.arrow;
+121:       const arrowEl = arrowId ? $(`#${arrowId}`) : null;
+122:       card.addEventListener('pointerenter', () => {
+123:         card.classList.add('active-focus');
+124:         if (arrowEl) arrowEl.classList.add('highlighted');
+125:         const halo = $('#sciHerbHalo');
+126:         if (halo) halo.style.transform = 'scale(1.18)';

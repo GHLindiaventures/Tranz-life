@@ -1,0 +1,591 @@
+/* ==========================================================================
+   TranzLife Biosciences - Product Details Page (PDP) Styles
+   Strictly aligned with tokens.css, global.css, and existing design language
+   ========================================================================== */
+
+.pdp-page {
+  position: relative;
+  isolation: isolate;
+  background: var(--ground);
+  color: var(--ink);
+  overflow-x: clip;
+  padding-top: clamp(100px, 14vh, 140px);
+}
+
+/* --------------------------------------------------------------------------
+   BREADCRUMBS
+   -------------------------------------------------------------------------- */
+.pdp-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--faint);
+  margin-bottom: clamp(24px, 4vw, 36px);
+}
+
+.pdp-breadcrumb a {
+  color: var(--muted);
+  transition: color 0.2s;
+}
+
+.pdp-breadcrumb a:hover {
+  color: var(--forest);
+}
+
+.pdp-breadcrumb span {
+  color: var(--forest);
+  font-weight: 700;
+}
+
+/* --------------------------------------------------------------------------
+   PDP HERO GRID
+   -------------------------------------------------------------------------- */
+.pdp-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1.2fr);
+  gap: clamp(36px, 5.5vw, 76px);
+  align-items: start;
+}
+
+/* --- Left Gallery Column --- */
+.pdp-gallery {
+  position: sticky;
+  top: 96px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.pdp-main-img-box {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  border-radius: 32px;
+  background: #ffffff;
+  border: 1px solid var(--line);
+  box-shadow: 0 24px 50px -25px rgba(31, 70, 35, 0.16);
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+}
+
+.pdp-main-img-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s var(--ease-expo);
+}
+
+.pdp-main-img-box:hover img {
+  transform: scale(1.04);
+}
+
+.pdp-badge-tag {
+  position: absolute;
+  top: 18px;
+  left: 18px;
+  padding: 6px 16px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--forest);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+.pdp-gallery-tabs {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.pdp-tab-btn {
+  padding: 8px 18px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid var(--line);
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--forest);
+  transition: all 0.25s ease;
+}
+
+.pdp-tab-btn:hover {
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.pdp-tab-btn.on {
+  background: var(--cream);
+  color: var(--on-cream);
+  border-color: var(--cream);
+  box-shadow: 0 4px 12px rgba(31, 70, 35, 0.16);
+}
+
+.pdp-guarantee-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+.pdp-guarantee-pills span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--forest);
+  background: rgba(255, 255, 255, 0.5);
+  border: 1px solid var(--line);
+  padding: 6px 14px;
+  border-radius: 999px;
+}
+
+.pdp-guarantee-pills svg {
+  width: 14px;
+  height: 14px;
+  color: var(--sage-ink);
+}
+
+/* --- Right Product Info Column --- */
+.pdp-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.pdp-info .eyebrow {
+  margin-bottom: 12px;
+}
+
+.pdp-title {
+  font-family: var(--f-display);
+  font-size: clamp(2.4rem, 4.5vw, 3.8rem);
+  font-weight: 850;
+  font-stretch: 70%;
+  line-height: 1.0;
+  letter-spacing: -0.015em;
+  color: var(--forest);
+  margin-bottom: 14px;
+}
+
+.pdp-rating-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 22px;
+}
+
+.pdp-stars {
+  display: flex;
+  gap: 2px;
+  color: var(--gold);
+  font-size: 15px;
+}
+
+.pdp-rating-text {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.pdp-badge-clinical {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--sage-ink);
+  background: var(--ground-2);
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+}
+
+.pdp-price-box {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  padding-block: 16px;
+  border-block: 1px solid var(--line);
+  margin-bottom: 22px;
+}
+
+.pdp-price {
+  font-family: var(--f-display);
+  font-size: 38px;
+  font-weight: 850;
+  font-stretch: 70%;
+  color: var(--forest);
+  line-height: 1;
+}
+
+.pdp-size {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--faint);
+}
+
+.pdp-tax-note {
+  font-size: 12.5px;
+  color: var(--sage-ink);
+  font-weight: 600;
+  margin-left: auto;
+}
+
+.pdp-desc {
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: var(--muted);
+  margin-bottom: 24px;
+}
+
+.pdp-highlights {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 28px;
+}
+
+.pdp-highlight-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--forest);
+}
+
+.pdp-highlight-item svg {
+  width: 18px;
+  height: 18px;
+  color: var(--sage-ink);
+  flex-shrink: 0;
+}
+
+/* Purchase Actions */
+.pdp-actions-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 32px;
+}
+
+.pdp-qty-control {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: #ffffff;
+  padding: 2px 4px;
+  height: 52px;
+}
+
+/* 44px tap targets */
+.pdp-qty-control button {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--forest);
+  transition: background 0.2s;
+}
+
+.pdp-qty-control button:hover {
+  background: var(--ground);
+}
+
+.pdp-qty-val {
+  min-width: 32px;
+  text-align: center;
+  font-weight: 800;
+  font-size: 16px;
+  color: var(--forest);
+}
+
+.pdp-btn-add {
+  flex-grow: 1;
+  height: 48px;
+  font-size: 16px;
+  justify-content: center;
+}
+
+/* Accordions */
+.pdp-accordions {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--line);
+}
+
+.pdp-acc-item {
+  border-bottom: 1px solid var(--line);
+}
+
+.pdp-acc-header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 0;
+  text-align: left;
+  font-family: var(--f-display);
+  font-size: 17px;
+  font-weight: 800;
+  font-stretch: 75%;
+  color: var(--forest);
+  transition: color 0.2s;
+}
+
+.pdp-acc-header:hover {
+  color: var(--leafy);
+}
+
+.pdp-acc-icon {
+  font-size: 20px;
+  font-weight: 300;
+  transition: transform 0.3s ease;
+}
+
+.pdp-acc-item.open .pdp-acc-icon {
+  transform: rotate(45deg);
+}
+
+.pdp-acc-body {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.35s ease, padding 0.35s ease;
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--muted);
+}
+
+.pdp-acc-item.open .pdp-acc-body {
+  max-height: 320px;
+  padding-bottom: 20px;
+}
+
+/* --------------------------------------------------------------------------
+   MECHANISM OF ACTION SECTION
+   -------------------------------------------------------------------------- */
+.pdp-science-band {
+  margin-top: clamp(60px, 8vw, 110px);
+  padding-block: clamp(60px, 8vw, 100px);
+  background: var(--ground-2);
+  border-top: 1px solid var(--line);
+}
+
+.pdp-science-head {
+  text-align: center;
+  max-width: 680px;
+  margin-inline: auto;
+  margin-bottom: clamp(36px, 5vw, 60px);
+}
+
+.pdp-science-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(20px, 2.5vw, 32px);
+}
+
+.pdp-science-card {
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  padding: 30px;
+  box-shadow: 0 16px 36px -20px rgba(31, 70, 35, 0.1);
+  display: flex;
+  flex-direction: column;
+}
+
+.pdp-science-card .icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--panel-2);
+  display: grid;
+  place-items: center;
+  color: var(--forest);
+  margin-bottom: 18px;
+  border: 1px solid var(--line);
+}
+
+.pdp-science-card .icon svg {
+  width: 22px;
+  height: 22px;
+}
+
+.pdp-science-card h4 {
+  font-size: 1.25rem;
+  font-weight: 800;
+  font-stretch: 70%;
+  color: var(--forest);
+  margin-bottom: 8px;
+}
+
+.pdp-science-card p {
+  font-size: 0.94rem;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+/* --------------------------------------------------------------------------
+   CROSS-SELL FORMULATIONS
+   -------------------------------------------------------------------------- */
+.pdp-cross-band {
+  padding-block: clamp(60px, 8vw, 110px);
+  background: var(--ground);
+}
+
+.pdp-cross-head {
+  text-align: center;
+  margin-bottom: 44px;
+}
+
+.pdp-cross-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.pdp-mini-card {
+  background: #ffffff;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s var(--ease-expo), box-shadow 0.3s ease;
+  box-shadow: 0 12px 28px -14px rgba(31, 70, 35, 0.08);
+}
+
+.pdp-mini-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 24px 48px -20px rgba(31, 70, 35, 0.16);
+}
+
+.pdp-mini-media {
+  aspect-ratio: 1 / 1;
+  background: var(--ground-2);
+  overflow: hidden;
+}
+
+.pdp-mini-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s var(--ease-expo);
+}
+
+.pdp-mini-card:hover .pdp-mini-media img {
+  transform: scale(1.05);
+}
+
+.pdp-mini-body {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  gap: 6px;
+}
+
+.pdp-mini-body h4 {
+  font-size: 1.1rem;
+  font-weight: 800;
+  font-stretch: 75%;
+  color: var(--forest);
+}
+
+.pdp-mini-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+}
+
+.pdp-mini-foot .price {
+  font-family: var(--f-display);
+  font-weight: 850;
+  font-size: 18px;
+  color: var(--forest);
+}
+
+.pdp-mini-foot a {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--sage-ink);
+}
+
+.pdp-mini-foot a:hover {
+  color: var(--forest);
+}
+
+/* --------------------------------------------------------------------------
+   RESPONSIVE LAYOUT
+   -------------------------------------------------------------------------- */
+@media (max-width: 980px) {
+  .pdp-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .pdp-gallery {
+    position: static;
+    max-width: 520px;
+    margin-inline: auto;
+  }
+  .pdp-science-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .pdp-cross-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .pdp-actions-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .pdp-qty-control {
+    justify-content: center;
+  }
+  .pdp-cross-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+
+/* Products without a photo yet (e.g. Energy Booster): a branded placeholder in the gallery frame */
+.pdp-img-soon {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 10px;
+  padding: 24px;
+  text-align: center;
+  background:
+    radial-gradient(circle at 50% 42%, rgba(231, 198, 128, .35), transparent 55%),
+    linear-gradient(160deg, #f4f8ef 0%, #dfe8d5 100%);
+  color: var(--forest);
+}
+.pdp-img-soon__mark {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: url('/assets/logo-emblem.webp') center / 74% no-repeat, #fff;
+  box-shadow: 0 12px 30px -14px rgba(20, 52, 26, .35);
+  margin-bottom: 6px;
+}
+.pdp-img-soon b { font-family: var(--f-display); font-stretch: 75%; font-weight: 850; font-size: clamp(1.8rem, 3.4vw, 2.6rem); line-height: 1; text-transform: uppercase; }
+.pdp-img-soon small { font-size: 13px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--sage-ink); }
+.pdp-img-soon em { font-style: normal; font-size: 12.5px; color: var(--faint); }
+.pdp-price--tba { font-size: clamp(1.3rem, 2.2vw, 1.7rem) !important; }
