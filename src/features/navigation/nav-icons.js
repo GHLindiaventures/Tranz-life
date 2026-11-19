@@ -1,5 +1,8 @@
 // Line icons for the section dock.
 const SEC_IC = {
+  xp:'<path d="M4 11l8-7 8 7v9h-5v-6h-6v6H4z"/>',
+  collide:'<circle cx="6" cy="7" r="2.2"/><circle cx="18" cy="9" r="2.2"/><circle cx="11" cy="17.5" r="2.2"/><path d="M8.1 7.4l7.7 1.2M7.1 9l2.9 6.5M16.6 10.8l-4.1 4.9"/>',
+  genesis:'<path d="M12 21v-7"/><path d="M12 14c-4 0-7-2.5-7-6.5 0-1 .3-2 .8-2.5C7 7 9 8 12 8s5-1 6.2-3c.5.5.8 1.5.8 2.5 0 4-3 6.5-7 6.5z"/><path d="M9 21h6"/>',
   home:'<path d="M4 11l8-7 8 7v9h-5v-6h-6v6H4z"/>',
   roots:'<path d="M8 3c0 5 8 5 8 9s-8 4-8 9"/><path d="M16 3c0 5-8 5-8 9s8 4 8 9"/><path d="M9.5 6.5h5M9.5 17.5h5"/>',
   day:'<circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.5M12 19v2.5M4.6 4.6l1.8 1.8M17.6 17.6l1.8 1.8M2.5 12H5M19 12h2.5M4.6 19.4l1.8-1.8M17.6 6.4l1.8-1.8"/>',

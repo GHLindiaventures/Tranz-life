@@ -1,0 +1,146 @@
+/* ==========================================================================
+   "The Living Banyan" (banyan.html, features/banyan/): the light homepage prototype.
+   A fixed stage of layers moved by stage.js; the page itself is only as tall as the journey (.bn-space).
+   Palette: dawn cream, sage, leaf green, warm bark, pale soil, one gold. No dark backgrounds.
+   ========================================================================== */
+:root {
+  --bn-cream: #fbf4e6; --bn-paper: #fdf9f0; --bn-ink: #24402a; --bn-ink-2: #4c6550; --bn-gold: #d6a144; --bn-gold-ink: #94641a;
+  --bn-leaf: #8cb86a; --bn-display: 'Cormorant Garamond', Georgia, serif; --bn-sans: 'Archivo', system-ui, sans-serif;
+}
+html { background: var(--bn-cream); }
+body.bn { margin: 0; background: var(--bn-cream); color: var(--bn-ink); font: 400 16px/1.6 var(--bn-sans); -webkit-font-smoothing: antialiased; }
+.bn *, .bn *::before, .bn *::after { box-sizing: border-box; }
+.bn a { color: inherit; }
+
+/* ---------- the stage ---------- */
+.bn-stage { position: fixed; inset: 0; overflow: hidden; --sky: 0; }
+.bn-sky { position: absolute; inset: 0; z-index: 0;
+  background: linear-gradient(180deg, #fdf3df 0%, #fbf0dc 38%, #f3efe0 70%, #eef1e3 100%); }
+.bn-sky::after { content: ""; position: absolute; inset: 0; opacity: var(--sky);
+  background: linear-gradient(180deg, #f6f3e6 0%, #eef1e4 60%, #e9eedf 100%); }
+.bn-sun { position: absolute; z-index: 0; left: 8%; top: -18vh; width: 70vmax; height: 70vmax; margin-left: -35vmax; pointer-events: none;
+  background: radial-gradient(closest-side, rgba(255, 246, 214, .95), rgba(255, 233, 180, .5) 35%, rgba(255, 233, 180, 0) 100%);
+  opacity: calc(1 - var(--sky) * 1.4); }
+.bn-layer { position: absolute; left: 0; top: 0; width: 100%; will-change: transform; pointer-events: none; }
+.bn-layer svg { display: block; }
+.bn-canvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.bn-space { width: 1px; }
+
+/* the canopy rises into place on arrival */
+.bn-intro { opacity: 0; transform: translateY(6vh) scale(.985); transform-origin: 50% 100%;
+  transition: opacity 1.8s ease, transform 2.4s cubic-bezier(.16, 1, .3, 1); }
+.bn-ready .bn-intro { opacity: 1; transform: none; }
+
+/* light falling through the leaves */
+#bnShafts i { position: absolute; transform: rotate(-17deg); transform-origin: 50% 0;
+  background: linear-gradient(180deg, rgba(255, 249, 228, 0), rgba(255, 249, 228, .8) 22%, rgba(255, 249, 228, .25) 70%, rgba(255, 249, 228, 0)); }
+
+/* the nearest leaves sway a little */
+.bn-leaf { position: absolute; display: block; animation: bnSway var(--d, 7s) ease-in-out infinite alternate; }
+.bn-leaf svg { width: 100%; height: 100%; filter: blur(var(--b, 3px)); }
+@keyframes bnSway { from { transform: rotate(calc(var(--r) * -1)); } to { transform: rotate(var(--r)) translateX(6px); } }
+
+/* Ayurveda: herbs on the trunk */
+.bn-herb { position: absolute; margin: 0; text-align: center; opacity: 0; transform: translateY(18px) scale(.94);
+  transition: opacity 1.1s ease, transform 1.4s cubic-bezier(.16, 1, .3, 1); }
+.bn-herb.in { opacity: 1; transform: none; }
+.bn-herb img { display: block; width: 100%; height: auto; filter: drop-shadow(0 14px 18px rgba(80, 64, 34, .22)); }
+.bn-herb figcaption { margin-top: 4px; display: grid; gap: 0; }
+.bn-herb b { font: 600 12px/1.4 var(--bn-sans); letter-spacing: .14em; text-transform: uppercase; color: var(--bn-ink); }
+.bn-herb i { font: italic 500 15px/1.3 var(--bn-display); color: var(--bn-ink-2); }
+
+/* ---------- the words ---------- */
+.bn-content { height: 0; }
+.bn-block { position: absolute; left: 50%; width: min(600px, 88vw); transform: translate(-50%, -50%); text-align: center; pointer-events: auto;
+  opacity: 0; transition: opacity .9s ease; }
+.bn-block.in { opacity: 1; }
+.bn-block > * { opacity: 0; transform: translateY(26px); transition: opacity 1.1s ease, transform 1.3s cubic-bezier(.16, 1, .3, 1); }
+.bn-block > :nth-child(2) { transition-delay: .12s; } .bn-block > :nth-child(3) { transition-delay: .24s; } .bn-block > :nth-child(4) { transition-delay: .36s; }
+.bn-block.in > * { opacity: 1; transform: none; }
+.bn-kicker { margin: 0 0 12px; font: 600 12.5px/1.4 var(--bn-sans); letter-spacing: .3em; text-transform: uppercase; color: var(--bn-gold-ink); }
+.bn h1, .bn h2 { margin: 0; font-family: var(--bn-display); font-weight: 600; color: var(--bn-ink); letter-spacing: -.01em; }
+.bn h1 { font-size: clamp(44px, 7.4vw, 104px); line-height: .98; }
+.bn h2 { font-size: clamp(34px, 4.4vw, 60px); line-height: 1.04; }
+.bn h1 em, .bn h2 em { font-style: italic; font-weight: 500; color: #6f8f3f; }
+.bn-block p { margin: 16px auto 0; max-width: 46ch; color: var(--bn-ink-2); font-size: clamp(15px, 1.15vw, 17px); }
+.bn-hero { width: min(980px, 92vw); }
+.bn-hero .bn-lede { font: italic 500 clamp(19px, 1.8vw, 25px)/1.4 var(--bn-display); color: var(--bn-ink-2); }
+.bn-hero > * { transition-delay: .5s; } .bn-hero > :nth-child(2) { transition-delay: .7s; } .bn-hero > :nth-child(3) { transition-delay: 1s; }
+.bn-cue { display: flex; flex-direction: column; align-items: center; gap: 10px; font: 600 11.5px/1 var(--bn-sans); letter-spacing: .28em; text-transform: uppercase; color: #f8f3e4; text-shadow: 0 1px 8px rgba(60, 80, 40, .45); }
+.bn-cue > * { transition-delay: 1.6s; }
+.bn-cue i { width: 1px; height: 54px; background: linear-gradient(#f8f3e4, rgba(248, 243, 228, 0)); transform-origin: top; animation: bnCue 2.2s ease-in-out infinite; }
+@keyframes bnCue { 0% { transform: scaleY(0); } 50% { transform: scaleY(1); } 100% { transform: scaleY(1); opacity: 0; } }
+/* a paper card where the words sit over the leaves or the bark */
+.bn-card { padding: clamp(26px, 3vw, 42px) clamp(24px, 3.4vw, 48px); border-radius: 28px; width: min(560px, 88vw);
+  background: rgba(253, 249, 240, .9); box-shadow: 0 30px 60px -30px rgba(70, 72, 40, .35), 0 0 0 1px rgba(214, 161, 68, .18); }
+@media (min-width: 900px){
+  .bn-side { left: max(5vw, 40px); transform: translateY(-50%); width: min(30vw, 440px); text-align: left; }
+  .bn-side p { margin-left: 0; }
+}
+
+/* the six products, where six roots meet the ground */
+.bn-products { list-style: none; margin: 0; padding: 0; position: absolute; left: 0; top: 0; width: 100%; height: 0; pointer-events: none; }
+.bn-products li { position: absolute; text-align: center; pointer-events: auto; opacity: 0; transform: translateY(24px);
+  transition: opacity 1s ease, transform 1.2s cubic-bezier(.16, 1, .3, 1); }
+.bn-products li.in { opacity: 1; transform: none; }
+.bn-products li:nth-child(2) { transition-delay: .08s; } .bn-products li:nth-child(3) { transition-delay: .16s; }
+.bn-products li:nth-child(4) { transition-delay: .24s; } .bn-products li:nth-child(5) { transition-delay: .32s; } .bn-products li:nth-child(6) { transition-delay: .4s; }
+.bn-products a { display: block; text-decoration: none; }
+.bn-pod { display: block; aspect-ratio: 1; border-radius: 50%; overflow: hidden; background: #fff;
+  box-shadow: 0 0 0 3px #fdf9f0, 0 0 0 4.5px var(--bn-gold), 0 22px 40px -18px rgba(80, 64, 34, .45);
+  transition: transform .5s cubic-bezier(.16, 1, .3, 1), box-shadow .5s ease; }
+.bn-pod img { width: 100%; height: 100%; object-fit: cover; transform: scale(1.12); }
+.bn-products a:hover .bn-pod, .bn-products a:focus-visible .bn-pod { transform: translateY(-6px) scale(1.04); box-shadow: 0 0 0 3px #fdf9f0, 0 0 0 4.5px var(--bn-gold), 0 30px 50px -18px rgba(80, 64, 34, .5); }
+.bn-products b { display: block; margin: 12px -40px 0; font: 600 12.5px/1.35 var(--bn-sans); letter-spacing: .04em; color: var(--bn-ink); }
+
+/* the earth: the call to action, and the footer */
+.bn-ctas { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 26px; }
+.bn-btn { display: inline-flex; align-items: center; gap: 10px; padding: 15px 26px; border-radius: 999px; text-decoration: none;
+  font: 600 14.5px/1 var(--bn-sans); background: var(--bn-ink); color: #fbf4e6 !important; transition: transform .3s ease, background .3s ease; }
+.bn-btn:hover { transform: translateY(-2px); background: #2f5536; }
+.bn-ghost { background: transparent; color: var(--bn-ink) !important; box-shadow: inset 0 0 0 1.5px rgba(36, 64, 42, .45); }
+.bn-ghost:hover { background: rgba(36, 64, 42, .06); }
+.bn-foot { width: min(760px, 92vw); }
+.bn-foot img { height: 38px; width: auto; }
+.bn-foot .bn-care { font-size: 14px; }
+.bn-foot nav { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 22px; margin-top: 20px; font-size: 14px; }
+.bn-foot nav a { text-decoration: none; color: var(--bn-ink-2); } .bn-foot nav a:hover { color: var(--bn-ink); }
+.bn-foot small { display: block; margin-top: 18px; color: #8a9a85; font-size: 12.5px; }
+
+/* ---------- the header, the chapter rail, the prototype tag ---------- */
+.bn-nav { position: fixed; z-index: 50; left: 0; right: 0; top: 0; display: flex; align-items: center; justify-content: space-between;
+  padding: 18px clamp(16px, 3vw, 40px); transition: background .4s ease, box-shadow .4s ease, padding .4s ease; }
+.bn-nav.scrolled { background: rgba(251, 246, 234, .86); box-shadow: 0 1px 0 rgba(214, 161, 68, .25); padding-top: 10px; padding-bottom: 10px; }
+.bn-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+.bn-logo img { height: 34px; width: auto; display: block; }
+.bn-logo .bn-word { height: 26px; }
+.bn-nav nav { display: flex; align-items: center; gap: clamp(12px, 2vw, 30px); font: 600 14px/1 var(--bn-sans); }
+.bn-nav nav a { text-decoration: none; color: var(--bn-ink); }
+.bn-nav nav a:hover { color: #6f8f3f; }
+.bn-pill { padding: 11px 18px; border-radius: 999px; box-shadow: inset 0 0 0 1.5px rgba(36, 64, 42, .4); }
+.bn-rail { position: fixed; z-index: 40; right: clamp(14px, 2vw, 30px); top: 50%; transform: translateY(-50%); display: grid; gap: 14px; }
+.bn-rail a { display: flex; align-items: center; justify-content: flex-end; gap: 10px; text-decoration: none; font: 600 11px/1 var(--bn-sans);
+  letter-spacing: .2em; text-transform: uppercase; color: rgba(36, 64, 42, .55); }
+.bn-rail span { opacity: 0; transform: translateX(6px); transition: opacity .35s ease, transform .35s ease; }
+.bn-rail a:hover span, .bn-rail a.on span { opacity: 1; transform: none; }
+.bn-rail a.on { color: var(--bn-ink); }
+.bn-rail i { order: 2; width: 8px; height: 8px; border-radius: 50%; box-shadow: inset 0 0 0 1.5px rgba(36, 64, 42, .45); transition: background .35s ease, transform .35s ease; }
+.bn-rail a.on i { background: var(--bn-gold); box-shadow: none; transform: scale(1.35); }
+.bn-proto { position: fixed; z-index: 60; left: 16px; bottom: 14px; margin: 0; padding: 7px 12px; border-radius: 999px;
+  font: 600 11px/1 var(--bn-sans); letter-spacing: .08em; color: var(--bn-ink-2); background: rgba(253, 249, 240, .88); box-shadow: 0 0 0 1px rgba(214, 161, 68, .3); }
+
+@media (max-width: 899px){
+  .bn-rail, .bn-hide-s { display: none; }
+  .bn-logo .bn-word { height: 20px; }
+  .bn-logo img { height: 28px; }
+  .bn-products b { margin: 8px -30px 0; font-size: 11.5px; }
+  .bn-herb figcaption { margin: 4px -24px 0; }
+  .bn-herb i { font-size: 13px; }
+  .bn-herb b { letter-spacing: .06em; font-size: 11px; }
+}
+
+/* reduced motion: no arrivals, no sway */
+@media (prefers-reduced-motion: reduce){
+  .bn-intro, .bn-block > *, .bn-herb, .bn-products li { transition: none; }
+  .bn-leaf, .bn-cue i { animation: none; }
+}

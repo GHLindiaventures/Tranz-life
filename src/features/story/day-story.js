@@ -136,7 +136,7 @@ function buildPinned(sec){
     L = jarLayer($('#dayProduct'));
     jars = MOMENTS.map(m => { const p = byId[m.productId]; return L.jar(p, ALL.indexOf(p)); });
     jars.forEach(j => { j.G.visible = false; });
-    L.warm();
+    L.warm({ eager: true });     // before the hero film starts (genesis.js waits for it)
   } catch (e) { console.warn('day story 3D unavailable', e); sec.classList.add('no-3d'); }
   const mouse = { x: 0, y: 0, tx: 0, ty: 0, px: -1e4, py: -1e4 };
   stage.addEventListener('pointermove', e => {

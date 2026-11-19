@@ -13,7 +13,6 @@
 @import './components/droplet.css';
 @import './components/shine.css';
 @import './sections/hero.css';
-@import './sections/one-shot-plunge.css';
 @import './sections/lineup.css';
 @import './sections/explore.css';
 @import './sections/home-story.css';
@@ -39,7 +38,7 @@
 @import './sections/certifications-page.css';
 @import './sections/legal-page.css';
 @import './sections/footer.css';
-@import './sections/genesis.css';
+@import './sections/experience.css';   /* the home page film and its bottom bar */
 @import './responsive.css';
 @import './golden.css';   /* the Golden Ratio system, last so it sets the proportions */
 @import './golden-snap.css';   /* every remaining size and section spacing, snapped to the golden scale (generated) */

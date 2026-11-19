@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TranzLife Biosciences | The Living Banyan</title>
+  <meta name="description" content="TranzLife Biosciences: from the roots of nature to the frontiers of science.">
+  <meta name="theme-color" content="#fbf4e6">
+  <link rel="icon" href="/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,300..900&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&display=swap">
+</head>
+<!-- "The Living Banyan": a prototype of the new, light homepage (src/banyan.js). One journey down a single banyan
+     while the day passes; every layer moves at its own depth. The artwork is drawn in code as stand-ins for the AI
+     plates (src/features/banyan/art.js); the words and products are real. -->
+<body class="bn">
+  <header class="bn-nav" id="bnNav">
+    <a class="bn-logo" href="banyan.html" aria-label="TranzLife Biosciences, home">
+      <img src="/src/assets/logo/logo-emblem.webp" alt="" width="64" height="38">
+      <img class="bn-word" src="/src/assets/logo/logo-word.webp" alt="TranzLife Biosciences" width="150" height="31">
+    </a>
+    <nav aria-label="Main">
+      <a href="products.html">Products</a>
+      <a class="bn-hide-s" href="science.html">Science</a>
+      <a class="bn-hide-s" href="ingredients.html">Ingredients</a>
+      <a class="bn-hide-s" href="about.html">About</a>
+      <a class="bn-pill" href="contact.html">Contact</a>
+    </nav>
+  </header>
+
+  <nav class="bn-rail" id="bnRail" aria-label="Chapters">
+    <a href="#bnHero" data-ch="dawn" class="on"><i></i><span>Dawn</span></a>
+    <a href="#bnOne" data-ch="canopy"><i></i><span>Canopy</span></a>
+    <a href="#bnWisdom" data-ch="wisdom"><i></i><span>Wisdom</span></a>
+    <a href="#bnScience" data-ch="science"><i></i><span>Science</span></a>
+    <a href="#bnSix" data-ch="roots"><i></i><span>Roots</span></a>
+    <a href="#bnEarth" data-ch="earth"><i></i><span>Earth</span></a>
+  </nav>
+
+  <div class="bn-stage" id="bnStage">
+    <div class="bn-sky" aria-hidden="true"></div>
+    <div class="bn-sun" aria-hidden="true"></div>
+
+    <main class="bn-layer bn-content" id="bnContent" data-k="1">
+      <section class="bn-block bn-hero" id="bnHero">
+        <p class="bn-kicker">TranzLife Biosciences</p>
+        <h1>Innovating life <em>beyond limits</em></h1>
+        <p class="bn-lede">From the roots of nature to the frontiers of science.</p>
+      </section>
+      <p class="bn-block bn-cue" id="bnCue" aria-hidden="true"><span>Scroll to descend the tree</span><i></i></p>
+
+      <section class="bn-block bn-card" id="bnOne">
+        <p class="bn-kicker">The banyan</p>
+        <h2>One tree. <em>Many roots.</em></h2>
+        <p>A banyan lets roots down from its branches. Each one finds the earth and becomes a new trunk, until one tree becomes a forest. That is how we grow.</p>
+      </section>
+
+      <section class="bn-block bn-card bn-side" id="bnWisdom">
+        <p class="bn-kicker">Rooted in Ayurveda</p>
+        <h2>Generations of <em>plant wisdom</em></h2>
+        <p>Tulsi, ginger, turmeric, amla, guduchi, long pepper: plants Ayurveda has known for centuries. Everything we make starts where that knowledge lives.</p>
+      </section>
+
+      <section class="bn-block bn-card bn-side" id="bnScience">
+        <p class="bn-kicker">Reaching into science</p>
+        <h2>From root <em>to formula</em></h2>
+        <p>Like the banyan's roots reaching down, the knowledge reaches into the lab: each plant is studied, its extract measured, then blended into a formula.</p>
+      </section>
+
+      <section class="bn-block bn-card" id="bnSix">
+        <p class="bn-kicker">Six roots, six rituals</p>
+        <h2>Where the roots <em>meet the ground</em></h2>
+      </section>
+      <ul class="bn-products" id="bnProducts" aria-label="Our products"></ul>
+
+      <section class="bn-block bn-earth" id="bnEarth">
+        <p class="bn-kicker">Everything is connected</p>
+        <h2>Find your <em>ritual</em></h2>
+        <p>Not a cure. A daily ritual of care.</p>
+        <div class="bn-ctas">
+          <a class="bn-btn" href="products.html">Explore our products <span aria-hidden="true">→</span></a>
+          <a class="bn-btn bn-ghost" href="about.html">Our story</a>
+        </div>
+      </section>
+
+      <footer class="bn-block bn-foot" id="bnFoot">
+        <img src="/src/assets/logo/logo-word.webp" alt="TranzLife Biosciences" width="190" height="40" loading="lazy">
+        <p class="bn-care"><b>We don’t cure. We care.</b> TranzLife products support everyday well-being and are not intended to treat or cure any disease.</p>
+        <nav aria-label="Footer"><a href="products.html">Products</a><a href="science.html">Science</a><a href="about.html">About</a><a href="contact.html">Contact</a><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a></nav>
+        <small>© 2026 TranzLife Biosciences</small>
+      </footer>
+    </main>
+  </div>
+  <div class="bn-space" id="bnSpace" aria-hidden="true"></div>
+  <p class="bn-proto">Prototype · stand-in artwork</p>
+
+  <script type="module" src="/src/banyan.js"></script>
+</body>
+</html>

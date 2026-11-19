@@ -1,0 +1,64 @@
+/* ==========================================================================
+   Golden Ratio system (φ = 1.618), loaded last on every page (main.css, products-page.css).
+   One proportional system for type, spacing and layout, applied over the existing components:
+   - Spacing: φ steps            8 · 13 · 21 · 34 · 55 · 89 · 144 px
+   - Display headings: φ steps   27.5 · 44.5 · 72 · 116.5 px (each heading level is φ times the one below)
+   - Text: ¼-φ steps (φ^¼ ≈ 1.128, so every 4 steps is one φ)   13.4 · 15.1 · 17 · 19.1 · 21.6 px
+   - Line-height 1.618 for reading text; ~66 characters per line
+   - Two-column layouts that have a lead side: 61.8 % / 38.2 %
+   Full-screen cinematic sections (home hero, Root Map, A Day, About chapters) keep their layouts; their headings join
+   the scale. Display sizes shrink fluidly on small screens (clamp), so phones are not overwhelmed.
+   ========================================================================== */
+:root{
+  --phi:1.618;
+  --g1:8px;--g2:13px;--g3:21px;--g4:34px;--g5:55px;--g6:89px;--g7:144px;
+  --t-xs:13.4px;--t-sm:15.1px;--t-md:17px;--t-lg:19.1px;--t-xl:21.6px;
+  --d-1:clamp(23px,1.91vw,27.5px);
+  --d-2:clamp(34px,3.09vw,44.5px);
+  --d-3:clamp(44.5px,5vw,72px);
+  --d-4:clamp(72px,8.09vw,116.5px);
+  --lh-text:1.618;--lh-lead:1.5;--lh-head:1.06;
+  --measure:66ch;
+  --sec:clamp(89px,10vw,144px);   /* section rhythm: 89 px on phones, 144 px on large screens */
+}
+
+/* ---------- 1. Display headings ---------- */
+/* page heroes: d-3 (72) */
+.science-hero h1,.q-hero h1,.cert-hero h1,.sus-hero h1,.cp-hero h1,.leg-hero h1,.ix-title,.pdp-title{font-size:var(--d-3);line-height:var(--lh-head)}
+/* the homepage's statements and big moments: d-3 */
+.dc-title,.ritual-title,.proof-title,.roots-line,.ab-epilogue .ast-h,.h2{font-size:var(--d-3);line-height:var(--lh-head)}
+/* section titles: d-2 (44.5), one φ below the page title */
+.sci-sec-title,.sci-cta-sec h2,.cp-split-sec h2,.cp-faq-sec h2,.ast-h,.heal-q,.bac-head .h2,.pdp-science-band .h2,.pdp-cross-band .h2,.st-title{font-size:var(--d-2);line-height:var(--lh-head)}
+/* featured card titles and legal section headings: d-1 (27.5) */
+.ix-name,.leg-body-sec h2{font-size:var(--d-1);line-height:1.2}
+/* card titles: the top of the text scale (21.6) */
+.sci-bio-sec h3,.sci-explorer-sec h3,.sci-pipe-sec h3,.sci-frontiers-sec h3,.sci-standards-sec h3,.q-pillars-sec h3,.q-coa-sec h3,.q-flow-sec h3,.cert-grid-sec h3,.cert-report-sec h3,.sus-commit-sec h3,.sus-calc-sec h3,.sus-road-sec h3,.cp-channels-sec h3,.cp-split-sec h3,.cp-faq-sec h3{font-size:var(--t-xl);line-height:1.3}
+/* the products page statement: d-4 (116.5) on wide screens (phones keep their own fit) */
+@media (min-width:981px){ .lu-h{font-size:var(--d-4)} }
+
+/* ---------- 2. Reading text ---------- */
+/* intros under page titles: 21.6 (lead) */
+.science-hero-sub,.q-hero-sub,.cert-hero-sub,.sus-hero-sub,.cp-hero-sub,.leg-hero-sub,.about-hero-sub,.sci-cta-text{font-size:var(--t-xl);line-height:var(--lh-lead)}
+/* section intros: 17 (body), φ² below their 44.5 title, and a comfortable line length */
+.sci-sec-desc{font-size:var(--t-md);line-height:var(--lh-text);max-width:var(--measure);margin-inline:auto}
+/* body copy */
+.pdp-desc,.dc-text{font-size:var(--t-md);line-height:var(--lh-text)}
+.leg-body-sec p,.leg-body-sec li{font-size:var(--t-md);line-height:var(--lh-text);max-width:var(--measure)}
+/* card copy: 15.1 */
+.band p:not([class]),.ix-desc{font-size:var(--t-sm);line-height:var(--lh-text)}
+/* fine print: 13.4 */
+.nf-care,.bac-note{font-size:var(--t-xs)}
+
+/* ---------- 3. Spacing rhythm ---------- */
+.band,.bac-band,.pdp-cross-band,.leg-body-sec{padding-block:var(--sec)}
+.sci-cta-sec.band{padding-block:var(--g6)}                     /* closing call to action: one step tighter (89) */
+.sci-sec-header{margin-bottom:var(--g5)}                        /* title block to its content: 55 */
+.sci-sec-title{margin-bottom:var(--g3)}                         /* title to intro: 21 */
+.science-hero,.q-hero,.cert-hero,.sus-hero,.cp-hero,.leg-hero{padding-bottom:var(--g5)}   /* hero to first section: 55 (top keeps the nav's clearance) */
+
+/* ---------- 4. Golden splits: the lead side gets 61.8 % ---------- */
+@media (min-width:981px){ .pdp-grid{grid-template-columns:minmax(0,1.618fr) minmax(0,1fr)} }            /* product image leads */
+@media (min-width:1025px){
+  .cp-split-box{grid-template-columns:minmax(0,1.618fr) minmax(0,1fr)}                               /* the form leads */
+  .sci-explorer-wrap{grid-template-columns:minmax(0,1.618fr) minmax(0,1fr)}                          /* the explorer leads */
+}

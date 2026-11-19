@@ -44,26 +44,69 @@ function jarLayer(canvas){
   L.size = (jar, pxH) => jar.G.scale.setScalar(Math.max(.0001, pxH/L.ppu()/jar.h));
   // Compile every shader and upload every texture ahead of time, while the browser is idle.
   // Otherwise the first frame a product becomes visible stalls for 100-250 ms mid-scroll.
-  L.warm = () => warmUp(renderer, scene, cam);
+  L.warm = opts => warmUp(renderer, scene, cam, opts);
   L.resize();
   return L;
 }
 
-// three.js only compiles visible objects, so show everything for the duration of the compile, then restore.
-function warmUp(renderer, scene, cam){
-  const run = () => {
-    try {
-      const hidden = [];
-      scene.traverse(o => { if (!o.visible){ hidden.push(o); o.visible = true; } });
-      renderer.compile(scene, cam);
-      if (renderer.initTexture) scene.traverse(o => {
-        const mats = o.material ? (Array.isArray(o.material) ? o.material : [o.material]) : [];
-        mats.forEach(m => ['map', 'normalMap', 'roughnessMap', 'alphaMap', 'bumpMap', 'envMap'].forEach(k => { if (m[k] && m[k].isTexture && !m[k].isCubeTexture) renderer.initTexture(m[k]); }));
-      });
-      hidden.forEach(o => { o.visible = false; });
-    } catch (e) { /* warming is best-effort */ }
+// Warm-up, in small pieces: compiling every shader and uploading every texture at once blocks the page for over a
+// second (measured: 1.25 s, then 0.4 s for the second layer), which froze the home page's hero. three.js 0.128 cannot
+// compile in the background, so each mesh is warmed on its own (one material's shaders, then its textures), one piece
+// per idle moment, never while the visitor is scrolling. three.js only compiles visible objects, so a mesh is shown
+// for its own compile, then hidden again.
+let lastScroll = 0;
+addEventListener('scroll', () => { lastScroll = performance.now(); }, { passive: true });
+const QUIET = 450;                         // ms without scrolling before a piece may run
+// Shader compiling also busies the graphics process, which makes a playing film drop frames (measured on the home page:
+// 10 dropped frames of the hero film). So no piece runs while a film is playing on screen.
+const filmOnScreen = () => [...document.querySelectorAll('video')].some(v => {
+  if (v.paused || v.ended || v.readyState < 2) return false;
+  const r = v.getBoundingClientRect(); return r.bottom > 0 && r.top < innerHeight && r.width > 0;
+});
+const START = 3500;                        // ms after the page has loaded (the hero's title has settled) before the first piece
+
+// eager: the home page warms its 3D before its hero film starts (see warmAll), piece by piece with frames in between,
+// so compiling never overlaps the playing film or a scroll; elsewhere the pieces wait for idle, quiet moments.
+const eagerWarm = [];
+function warmAll(){ return Promise.all(eagerWarm); }
+
+function warmUp(renderer, scene, cam, { eager = false } = {}){
+  const mats = o => o.material ? (Array.isArray(o.material) ? o.material : [o.material]) : [];
+  // one piece per mesh: shown on its own (with its parents), compiled, hidden again; lights stay on. Meshes whose
+  // materials are already compiled cost almost nothing, so they run back to back in the same idle moment.
+  const meshes = []; scene.traverse(o => { if (o.isMesh || o.isPoints || o.isLine) meshes.push(o); });
+  const done = m => mats(m).every(x => renderer.properties.get(x).program);
+  const compileOne = m => {
+    if (done(m)) return false;
+    const vis = []; scene.traverse(o => { vis.push([o, o.visible]); if (o !== scene && !o.isLight) o.visible = false; });
+    for (let o = m; o && o !== scene; o = o.parent) o.visible = true;
+    try { renderer.compile(scene, cam); } finally { vis.forEach(([o, v]) => { o.visible = v; }); }
+    return true;
   };
-  if ('requestIdleCallback' in window) requestIdleCallback(run, { timeout: 2500 }); else setTimeout(run, 300);
+  const textures = m => { if (renderer.initTexture) mats(m).forEach(x =>
+    ['map', 'normalMap', 'roughnessMap', 'alphaMap', 'bumpMap', 'envMap'].forEach(k => { if (x[k] && x[k].isTexture && !x[k].isCubeTexture) renderer.initTexture(x[k]); })); };
+  const piece = () => {
+    const t0 = performance.now();
+    while (meshes.length && performance.now() - t0 < 6){
+      const m = meshes.shift();
+      try { const heavy = compileOne(m); textures(m); if (heavy) break; } catch (e) { /* warming is best-effort */ }
+    }
+  };
+  if (eager){
+    eagerWarm.push(new Promise(resolve => {
+      const next = () => { piece(); if (meshes.length) requestAnimationFrame(() => setTimeout(next, 0)); else resolve(); };
+      requestAnimationFrame(() => setTimeout(next, 0));
+    }));
+    return;
+  }
+  const later = () => ('requestIdleCallback' in window) ? requestIdleCallback(step, { timeout: 6000 }) : setTimeout(step, 250);
+  function step(){
+    if (performance.now() - lastScroll < QUIET || filmOnScreen()){ setTimeout(later, QUIET); return; }
+    piece();
+    if (meshes.length) later();
+  }
+  const begin = () => setTimeout(later, START);
+  if (document.readyState === 'complete') begin(); else addEventListener('load', begin, { once: true });
 }
 
-export { jarLayer, warmUp };
+export { jarLayer, warmUp, warmAll };

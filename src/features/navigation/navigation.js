@@ -69,7 +69,7 @@ function initNav(){
   window.addEventListener('keydown', e => { if (e.key === 'Escape') setOpen(false); });
 
   // the dock follows the page: a sliding dot marks the current section, its label peeks out
-  let cur = 'home', peekT = 0;
+  let cur = SECTIONS[0].id, peekT = 0;
   const place = () => { const a = links.find(x => x.dataset.sec === cur); if (a) ind.style.transform = `translateY(${a.parentElement.offsetTop}px)`; };
   const setOn = id => {
     const changed = id !== cur; cur = id;
@@ -81,7 +81,7 @@ function initNav(){
     place();
     if (changed && !menu.classList.contains('open')){ dock.classList.add('peek'); clearTimeout(peekT); peekT = setTimeout(() => dock.classList.remove('peek'), 1600); }
   };
-  setOn('home'); window.addEventListener('resize', place);
+  setOn(SECTIONS[0].id); window.addEventListener('resize', place);
   initNavDropdowns();
   window.addEventListener('scroll', () => {
     const y = window.scrollY;

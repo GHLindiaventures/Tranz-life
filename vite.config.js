@@ -46,7 +46,9 @@ export default defineConfig(({ mode }) => {
       host: true,
       port: 5173,
       strictPort: true,
-      allowedHosts: true
+      allowedHosts: true,
+      // big films are copied in while the server runs: watching them half-written crashed it (EBUSY)
+      watch: { ignored: ['**/public/videos/**', '**/scripts/source/**'] }
     },
     preview: {
       host: true,
@@ -63,6 +65,7 @@ export default defineConfig(({ mode }) => {
           rollupOptions: {
             input: {
               main: 'index.html',
+              banyan: 'banyan.html',
               about: 'about.html',
               products: 'products.html',
               productDetails: 'product-details.html',

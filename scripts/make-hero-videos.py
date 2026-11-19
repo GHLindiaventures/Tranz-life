@@ -7,6 +7,13 @@ Source clips live in scripts/source/videos/ (gitignored). For each one this:
   - drops the audio and encodes a small H.264 MP4 (fast start) plus a WebP poster of its first frame.
 Output: <out>/<name>.mp4 and <name>.webp (public/videos/hero/ or public/assets/about/)
 
+Also the home page's hero film, Genesis (genesis(): `python scripts/make-hero-videos.py genesis`): the user's final AI
+film "genesis-final.mp4" (1280x720, 10 s, with sound), shown on the home page for good, looping. Only the
+generator's watermark is painted out; everything else is kept: the whole film, its full frame, frame rate, speed and
+its original audio (copied, not re-encoded). Video encoded near-losslessly (CRF 17), fast start. Plus a poster of the
+first frame. (Earlier takes: genesis.mp4, cut at 7.6 s; genesis-2.mp4.)
+Output: public/videos/genesis/
+
 Needs ffmpeg: either on PATH or from `pip install imageio-ffmpeg`.
 Usage: python scripts/make-hero-videos.py [name ...]   (no names: all of them)
 """
@@ -43,10 +50,32 @@ def duration(ff, src):
     return int(h) * 3600 + int(m) * 60 + float(s)
 
 
+GENESIS = ROOT / "public" / "videos" / "genesis"
+GN_DELOGO = "delogo=x=1131:y=571:w=58:h=58"
+
+
+def genesis(ff):
+    GENESIS.mkdir(parents=True, exist_ok=True)
+    src = SRC / "genesis-final.mp4"
+    mp4 = GENESIS / "genesis.mp4"
+    subprocess.run([ff, "-v", "error", "-y", "-i", str(src),
+                    "-vf", f"{GN_DELOGO},format=yuv420p", "-c:a", "copy",
+                    "-c:v", "libx264", "-preset", "slow", "-crf", "17", "-profile:v", "high", "-g", "48",
+                    "-movflags", "+faststart", str(mp4)], check=True)
+    subprocess.run([ff, "-v", "error", "-y", "-i", str(mp4), "-frames:v", "1", "-c:v", "libwebp", "-quality", "72",
+                    str(GENESIS / "genesis-start.webp")], check=True)
+    print("genesis", round(duration(ff, mp4), 2), "s", mp4.stat().st_size // 1024, "KB")
+
+
 def main():
     import sys
     only = set(sys.argv[1:])
     ff = ffmpeg()
+    if "genesis" in only or not only:
+        genesis(ff)
+        only.discard("genesis")
+        if not only and len(sys.argv) > 1:
+            return
     for name, file, grade, out, mark in CLIPS:
         if only and name not in only:
             continue

@@ -6,6 +6,10 @@
   background: #0b1f13; color: #eef3e8; --fs: 120px; --cy: 50%; --sp: 0;
 }
 
+/* the warm light the Genesis film above turns into: the panels open from their slits on it as the visitor scrolls down
+   (genesis.js sets --dawn and the panels' clip-paths), then it fades to the night between the windows */
+.fw-dawn { position: absolute; z-index: 0; inset: 0; pointer-events: none; background: #f3dfaa; opacity: var(--dawn, 0); }
+
 /* the four windows */
 .fw-panels { position: absolute; z-index: 0; inset: 0; display: flex; gap: 6px; padding: 0; }   /* own layer: a panel's z-index stays inside it */
 .fw-panel {
@@ -16,6 +20,12 @@
   transform: translate3d(calc((var(--i) - 1.5) * var(--sp) * 11vw), calc(var(--sp) * 6vh), 0) scale(calc(1 - var(--sp) * .08));
 }
 .fw.is-open .fw-panel { clip-path: inset(0); }
+/* under the Genesis film the scroll opens the panels (genesis.js): they follow it directly, without the timed opening */
+.fw.is-scrubbed .fw-panel { transition: flex-grow .9s cubic-bezier(.6, 0, .2, 1); }
+/* (scrolling back up, the headline, its line and the buttons fade with the returning light) */
+.fw.is-scrubbed .fw-type, .fw.is-scrubbed .fw-copy { opacity: calc((1 - var(--sp) * 1.8) * (1 - var(--dawn, 0))); }
+.fw.is-scrubbed.is-open .fw-ctas { opacity: calc((1 - var(--sp) * 3) * (1 - var(--dawn, 0))); }
+.fw.is-scrubbed.is-open .fw-panel:not(:hover) figcaption { opacity: calc(.82 * (1 - var(--dawn, 0))); }
 .fw-panel::before {   /* the slit's glow, gone once the panel is open */
   content: ""; position: absolute; z-index: 2; left: 50%; top: 0; bottom: 0; width: 2px; margin-left: -1px; pointer-events: none;
   background: linear-gradient(180deg, transparent, #f6e3b0 30%, #fff6dc 50%, #f6e3b0 70%, transparent);
@@ -97,6 +107,7 @@
   .fw-panels { display: block; }
   .fw-panel { position: absolute; inset: 0; clip-path: inset(0 calc(50% - 1px)); opacity: 0; transition: clip-path 1.3s cubic-bezier(.75, 0, .2, 1) .1s, opacity 1s ease; transform: scale(calc(1 - var(--sp) * .06)); }
   .fw-panel.is-on { opacity: 1; z-index: 1; }
+  .fw.is-scrubbed .fw-panel { transition: opacity 1s ease; }
   .fw-panel::before { display: none; }
   .fw-panel video, .fw-film { filter: blur(3px) brightness(.72); }
   .fw-panel figcaption { left: 0; right: 0; bottom: auto; top: calc(var(--cy) + var(--fs) * 1.05 + 22px); justify-items: center; text-align: center; }
@@ -110,7 +121,7 @@
   .fw-bars i::after { content: ""; position: absolute; inset: 0; background: #f3ecd8; transform-origin: left; transform: scaleX(var(--p, 0)); }
   .fw-tag { font-size: 11px; letter-spacing: .18em; gap: 8px; }
   .fw-tag::before, .fw-tag::after { width: 18px; }
-  .fw-ctas { bottom: 54px; }
+  .fw-ctas { bottom: 84px; }   /* clear of the chat button (Ask Tulsi) in the corner */
 }
 
 /* reduced motion: posters only, the first headline as plain text */

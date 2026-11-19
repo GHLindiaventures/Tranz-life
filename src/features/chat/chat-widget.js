@@ -165,11 +165,21 @@ function scheduleTease(){
     if (els.root.classList.contains('open')) return;   // already chatting: no need
     const loader = document.getElementById('loader');
     const busy = document.hidden || performance.now() - moved < 1500 || document.documentElement.classList.contains('pt-show')
-      || (loader && !loader.classList.contains('done')) || document.querySelector('.menu.open') || document.body.classList.contains('sc-ov-open');
+      || (loader && !loader.classList.contains('done')) || document.querySelector('.menu.open') || document.body.classList.contains('sc-ov-open')
+      || document.body.classList.contains('gn-playing')
+      || /(gate-on|lens-on|seal-on)/.test(document.documentElement.className)   // the Gate, Under the lens, the ritual card
+      || genesisCueOnPhone();
     if (busy){ setTimeout(check, 700); return; }
     showTease();
   };
   setTimeout(check, TEASE_AFTER);
+}
+
+// on phones the home hero's "Follow the roots" cue sits where the welcome bubble would: wait until it has scrolled away
+function genesisCueOnPhone(){
+  if (innerWidth >= 768) return false;
+  const g = document.getElementById('genesis');
+  return !!g && g.getBoundingClientRect().bottom > innerHeight * .5;
 }
 
 function initChat(){

@@ -23,3 +23,5 @@
 @import './products-page/finish.css';
 @import './sections/footer.css';
 @import './responsive.css';
+@import './golden.css';   /* the Golden Ratio system, last so it sets the proportions */
+@import './golden-snap.css';   /* every remaining size and section spacing, snapped to the golden scale (generated) */

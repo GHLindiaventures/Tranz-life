@@ -7,375 +7,190 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>TranzLife Biosciences</title>
   <meta name="description"
-    content="TranzLife Biosciences: nature meets science. Six plant-based products: Lung Booster Gummies, the Aroma Inhaler, CycleRelief and Reviva roll-ons, Liver Booster and Energy Booster.">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    content="TranzLife Biosciences: where Ayurveda meets the lab. Rooted in nature, backed by science. Six plant-based products for a daily ritual of care.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet"
-    href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Caveat:wght@500;600&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap">
-  <!-- just the letters of दिनचर्या (Our Roots, at dawn), in a typeface made for Sanskrit -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tiro+Devanagari+Sanskrit&amp;text=%E0%A4%A6%E0%A4%BF%E0%A4%A8%E0%A4%9A%E0%A4%B0%E0%A5%8D%E0%A4%AF%E0%A4%BE&amp;display=swap">
+    href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=Caveat:wght@500;600&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+  <!-- only the letters the film's Sanskrit words need, in a typeface made for Sanskrit -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Tiro+Devanagari+Sanskrit&amp;text=%E0%A4%86%E0%A4%8B%E0%A4%93%E0%A4%95%E0%A4%98%E0%A4%9A%E0%A4%9C%E0%A4%9F%E0%A4%A0%E0%A4%A3%E0%A4%A4%E0%A4%A6%E0%A4%A8%E0%A4%AA%E0%A4%AE%E0%A4%AF%E0%A4%B0%E0%A4%B2%E0%A4%B5%E0%A4%B6%E0%A4%B8%E0%A4%BE%E0%A4%BF%E0%A5%80%E0%A5%81%E0%A5%87%E0%A5%8D&amp;display=swap">
   <link rel="icon" type="image/png" href="/favicon.png">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-  <meta name="theme-color" content="#b6cba5">
-  <script>
-    // Show the loading screen only on the first visit to Home in this browser tab (src/app/intro.js sets the flag).
-    try { if (sessionStorage.getItem('tl-intro-seen')) document.documentElement.classList.add('intro-seen'); } catch (e) {}
-  </script>
+  <meta name="theme-color" content="#1c4839">
   <script>
     // Unregister any stale Service Worker or PWA cache registered on localhost:5173 from previous projects
     if ('serviceWorker' in navigator && (location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
-      navigator.serviceWorker.getRegistrations().then(function(regs) {
-        for (var i = 0; i < regs.length; i++) regs[i].unregister();
-      });
-      if ('caches' in window) {
-        caches.keys().then(function(keys) {
-          for (var i = 0; i < keys.length; i++) caches.delete(keys[i]);
-        });
-      }
+      navigator.serviceWorker.getRegistrations().then(function(regs) { for (var i = 0; i < regs.length; i++) regs[i].unregister(); });
+      if ('caches' in window) caches.keys().then(function(keys) { for (var i = 0; i < keys.length; i++) caches.delete(keys[i]); });
     }
+    // the film is over the page from the very first frame (src/home/experience.js)
+    document.documentElement.classList.add('xp-on');
   </script>
   <link rel="stylesheet" href="/src/styles/main.css">
-  <style id="tl-critical">/* hide the full-screen menu from the very first frame (same as components/menu.css) */.menu{position:fixed;visibility:hidden}</style>
 </head>
 
 <body>
-  <div class="loader" id="loader" aria-hidden="true">
-    <div class="loader-in">
-      <span class="logo-em" role="img" aria-label="TranzLife Biosciences"></span>
-      <span class="logo-word" aria-hidden="true"></span>
-      <p class="loader-tag">Innovating life beyond limits</p>
-      <!-- the banyan's roots draw in as the page loads (loader.js sets --lp) -->
-      <svg class="loader-roots" viewBox="0 0 240 70" aria-hidden="true">
-        <path pathLength="1" d="M120 2C120 20 118 34 104 46S70 60 46 66"/>
-        <path pathLength="1" d="M120 2C121 22 124 36 138 47S172 60 196 66"/>
-        <path pathLength="1" d="M120 2C119 26 112 44 92 56S60 66 34 69"/>
-        <path pathLength="1" d="M120 2C121 26 128 44 148 56S182 66 208 69"/>
-        <path pathLength="1" d="M120 2V68"/>
+  <!-- ======================================================================================================
+       THE FILM (src/home/experience.js, styles/sections/experience.css). One full-screen stage, played through:
+       0 Begin (draw the sun) · 1 Seed · 2 Leaf · 3 Lab · 4 Formula · then 5 You = A Day with TranzLife below.
+       ====================================================================================================== -->
+  <div class="xp" id="xp" data-stage="begin" data-theme="dark" role="region" aria-label="The TranzLife story">
+    <canvas class="xp-bg" id="xpBg" aria-hidden="true"></canvas>
+
+    <!-- 0 · BEGIN: water light, a counter, then draw the sun -->
+    <section class="xs xs-0" aria-label="Begin">
+      <!-- loading: a tulsi sprig grows, leaf by leaf, as the page loads (--lp) -->
+      <svg class="ld-sprig" id="ldSprig" viewBox="0 0 200 260" aria-hidden="true">
+        <path class="sp-stem" pathLength="1" d="M100 250C98 214 104 186 99 150S94 92 100 60S103 30 100 14"/>
+        <g class="sp-leaf" style="--k:.12"><path d="M99 214C84 210 70 198 64 182C80 182 94 194 99 214Z"/></g>
+        <g class="sp-leaf" style="--k:.22"><path d="M101 196C116 190 128 176 132 160C116 162 104 176 101 196Z"/></g>
+        <g class="sp-leaf" style="--k:.34"><path d="M99 168C82 166 66 154 58 136C76 136 92 150 99 168Z"/></g>
+        <g class="sp-leaf" style="--k:.46"><path d="M100 146C118 140 132 124 136 106C118 110 104 126 100 146Z"/></g>
+        <g class="sp-leaf" style="--k:.58"><path d="M98 116C82 112 70 98 66 82C82 84 94 98 98 116Z"/></g>
+        <g class="sp-leaf" style="--k:.7"><path d="M101 94C116 88 126 74 128 60C114 62 104 76 101 94Z"/></g>
+        <g class="sp-leaf" style="--k:.82"><path d="M99 66C88 62 80 52 78 40C90 42 98 52 99 66Z"/></g>
+        <g class="sp-bud" style="--k:.94"><circle cx="100" cy="14" r="7"/><circle cx="100" cy="14" r="13"/></g>
       </svg>
-    </div>
-  </div>
-
-  <nav class="dock" id="dock" aria-label="Sections">
-    <button class="dock-menu" id="dockMenu" type="button" aria-label="Open menu" aria-expanded="false"
-      aria-controls="menu"><svg class="dm-ring" viewBox="0 0 40 40" aria-hidden="true">
-        <circle cx="20" cy="20" r="18.5" pathLength="100" />
-        <circle cx="20" cy="20" r="18.5" pathLength="100" />
-      </svg><span class="dm-ic" aria-hidden="true"><i></i><i></i></span></button>
-    <div class="dock-cur" aria-hidden="true"><span id="dockCur" data-no="01">Home</span></div>
-    <div class="dock-more">
-      <div>
-        <span class="dock-sep" aria-hidden="true"></span>
-        <div class="dock-track"><span class="dock-ind" id="dockInd" aria-hidden="true"></span>
-          <ol class="dock-list" id="dockList"></ol>
-        </div>
+      <p class="ld-grow" aria-hidden="true">Taking root</p>
+      <span class="logo-em ld-emblem" role="img" aria-label="TranzLife Biosciences"></span>
+      <!-- then: draw the infinity (the TranzLife loop of nature and science) -->
+      <div class="ld-ring" id="ldRing" aria-hidden="true">
+        <svg viewBox="-160 -80 320 160"><path class="ld-track" id="ldTrack" d=""/><path class="ld-arc" id="ldArc" d="" pathLength="1"/><circle class="ld-tip" id="ldTip" r="5"/></svg>
+        <span class="ld-say">Draw infinity</span>
       </div>
-    </div>
-  </nav>
-  <div class="menu" id="menu" aria-hidden="true">
-    <div class="menu-bg" aria-hidden="true">
-      <svg viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" fill="none" stroke="none">
-        <path d="M-60 700C200 520 520 560 620 700s-40 300-260 260S80 640 420 470s700-260 900-80 260 360 200 520" />
-      </svg>
-      <span class="logo-em menu-mark"></span>
-    </div>
-    <div class="menu-in">
-      <div class="menu-top"><a class="brand" href="#home"><span class="logo-em" aria-hidden="true"></span><span
-            class="logo-word" role="img" aria-label="TranzLife Biosciences"></span></a><button class="menu-x" id="menuX"
-          type="button">Close <i aria-hidden="true">×</i></button></div>
-      <ol class="menu-list" id="menuList">
-        <li style="--i:0"><a href="index.html#home"><span class="mi-no">01</span><span class="mi-name">Home</span><span class="mi-sub">Nature meets science</span></a></li>
-        <li style="--i:1"><a href="about.html"><span class="mi-no">02</span><span class="mi-name">About Us</span><span class="mi-sub">Our mission & innovation</span></a></li>
-        <li style="--i:2"><a href="products.html"><span class="mi-no">03</span><span class="mi-name">Our Products</span><span class="mi-sub">All six formulations</span></a></li>
-        <li style="--i:3"><a href="science.html"><span class="mi-no">04</span><span class="mi-name">Science & Innovation</span><span class="mi-sub">Molecular delivery & 3D lab</span></a></li>
-        <li style="--i:4"><a href="ingredients.html"><span class="mi-no">05</span><span class="mi-name">Our Ingredients</span><span class="mi-sub">Botanical pharmacopeia</span></a></li>
-        <li style="--i:5"><a href="quality.html"><span class="mi-no">06</span><span class="mi-name">Quality & Manufacturing</span><span class="mi-sub">Cleanrooms & batch audit</span></a></li>
-        <li style="--i:6"><a href="sustainability.html"><span class="mi-no">07</span><span class="mi-name">Sustainability</span><span class="mi-sub">Regeneration & zero-plastic</span></a></li>
-        <li style="--i:7"><a href="certifications.html"><span class="mi-no">08</span><span class="mi-name">Certifications & Compliance</span><span class="mi-sub">Regulatory accreditations</span></a></li>
-        <li style="--i:8"><a href="contact.html"><span class="mi-no">09</span><span class="mi-name">Contact</span><span class="mi-sub">Say hello</span></a></li>
-      </ol>
-      <aside class="menu-side">
-        <div class="mf">
-          <div class="mf-img" id="mfImg"></div>
-          <div class="mf-row">
-            <div>
-              <p class="k" id="mfNo">Featured product</p>
-              <h3 id="mfName">TranzLife Aromatherapy Inhaler</h3>
-            </div><a class="pill" id="mfAdd" href="product-details.html?id=inhaler"><i aria-hidden="true">↗</i>View product</a>
-          </div>
-        </div>
-        <div class="menu-note">
-          <p class="hand">Innovating life<br>beyond limits</p><a href="contact.html" class="menu-contact">Say hello →</a>
-        </div>
-      </aside>
-    </div>
-  </div>
+      <p class="ld-hint">Trace the infinity to begin</p>
+      <button class="ld-begin" id="ldBegin" type="button">or tap here to begin</button>
+      <i class="ld-sun" id="ldSun" aria-hidden="true"></i>
+    </section>
 
-  <header class="nav" id="nav">
-    <a class="brand" href="#home" aria-label="TranzLife Biosciences home"><span class="logo-em"
-        aria-hidden="true"></span><span class="logo-word" aria-hidden="true"></span></a>
-    <nav class="nav-pills" aria-label="Main">
-      <a href="index.html#home" class="on" data-sec="home">Home</a>
-
-      <!-- Company Dropdown -->
-      <div class="nav-drop">
-        <button class="nav-drop-btn" type="button" aria-expanded="false">
-          Company <svg class="nav-caret" viewBox="0 0 12 12"><path d="M2.5 4.5L6 8L9.5 4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </button>
-        <div class="nav-drop-menu" role="menu">
-          <a href="about.html" class="nav-drop-item">
-            <strong>About Us</strong>
-            <small>Mission &amp; Innovation</small>
-          </a>
-          <a href="contact.html" class="nav-drop-item">
-            <strong>Contact Us</strong>
-            <small>Chennai HQ &amp; Support</small>
-          </a>
-        </div>
+    <!-- 1 · SEED -->
+    <section class="xs xs-1" aria-label="Seed">
+      <div class="s1-garden" aria-hidden="true"><img src="/assets/homepage-concept/act1-primordial-roots.jpg" alt="" decoding="async"><i class="rays"></i><i class="haze"></i></div>
+      <div class="s1-chips" aria-hidden="true">
+        <i class="chip" data-x="14" data-y="-30" data-z="1.0"><img src="/assets/ingredients/cutout/vasaka.webp" alt="" width="140" height="140" decoding="async"><b>Vasaka</b></i>
+        <i class="chip" data-x="30" data-y="-20" data-z="1.15"><img src="/assets/ingredients/cutout/ginger.webp" alt="" width="140" height="140" decoding="async"><b>Dry ginger</b></i>
+        <i class="chip" data-x="42" data-y="-34" data-z="0.8"><img src="/assets/ingredients/cutout/licorice.webp" alt="" width="140" height="140" decoding="async"><b>Licorice root</b></i>
+        <i class="chip" data-x="24" data-y="-4" data-z="0.9"><img src="/assets/ingredients/cutout/amla.webp" alt="" width="140" height="140" decoding="async"><b>Amla</b></i>
+        <i class="chip" data-x="44" data-y="2" data-z="1.05"><img src="/assets/ingredients/cutout/kalmegh.webp" alt="" width="140" height="140" decoding="async"><b>Kalmegh</b></i>
+        <i class="chip" data-x="6" data-y="4" data-z="0.75"><img src="/assets/ingredients/cutout/punarnava.webp" alt="" width="140" height="140" decoding="async"><b>Punarnava</b></i>
+        <i class="chip" data-x="-10" data-y="14" data-z="0.85"><img src="/assets/ingredients/cutout/daruharidra.webp" alt="" width="140" height="140" decoding="async"><b>Daruharidra</b></i>
+        <i class="chip" data-x="38" data-y="18" data-z="0.8"><img src="/assets/ingredients/cutout/echinacea.webp" alt="" width="140" height="140" decoding="async"><b>Echinacea</b></i>
+        <i class="chip" data-x="-40" data-y="6" data-z="1.0"><img src="/assets/ingredients/cutout/peppermint.webp" alt="" width="140" height="140" decoding="async"><b>Peppermint</b></i>
+        <i class="chip" data-x="-26" data-y="22" data-z="1.15"><img src="/assets/ingredients/cutout/lavender.webp" alt="" width="140" height="140" decoding="async"><b>Lavender</b></i>
+        <i class="chip" data-x="-42" data-y="30" data-z="0.85"><img src="/assets/ingredients/cutout/eucalyptus.webp" alt="" width="140" height="140" decoding="async"><b>Eucalyptus</b></i>
+        <i class="chip" data-x="-14" data-y="34" data-z="0.95"><img src="/assets/ingredients/cutout/lemon.webp" alt="" width="140" height="140" decoding="async"><b>Lemon</b></i>
+        <i class="chip" data-x="18" data-y="30" data-z="0.75"><img src="/assets/ingredients/cutout/wintergreen.webp" alt="" width="140" height="140" decoding="async"><b>Wintergreen</b></i>
+        <i class="chip" data-x="-2" data-y="-18" data-z="0.7"><img src="/assets/ingredients/cutout/dill.webp" alt="" width="140" height="140" decoding="async"><b>Dill</b></i>
+        <i class="chip" data-x="2" data-y="38" data-z="0.8"><img src="/assets/ingredients/cutout/ruta.webp" alt="" width="140" height="140" decoding="async"><b>Ruta</b></i>
+        <i class="chip" data-x="-30" data-y="-4" data-z="0.7"><img src="/assets/ingredients/cutout/symphytum.webp" alt="" width="140" height="140" decoding="async"><b>Symphytum</b></i>
       </div>
+      <div class="bt bt-c" data-a="-.02" data-b=".22"><p class="ln xl"><em>Long ago,</em></p><p class="ln xl">we knew.</p></div>
+      <div class="bt bt-split" data-a=".2" data-b=".46"><p class="ln tl"><em class="xl">Nature</em> <small>was our</small></p><p class="ln br"><small>first</small> <em class="xl">teacher.</em></p></div>
+      <div class="bt bt-c bt-glow" data-a=".5" data-b="1.2"><p class="ln sm">the wisdom of</p><p class="ln xxl"><em>Ayurveda</em></p></div>
+    </section>
 
-      <!-- Products Dropdown -->
-      <div class="nav-drop">
-        <button class="nav-drop-btn" type="button" aria-expanded="false">
-          Products <svg class="nav-caret" viewBox="0 0 12 12"><path d="M2.5 4.5L6 8L9.5 4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </button>
-        <div class="nav-drop-menu" role="menu">
-          <a href="products.html" class="nav-drop-item featured">
-            <strong>All six products</strong>
-            <small>Explore the range</small>
-          </a>
-          <div class="nav-drop-divider"></div>
-          <a href="product-details.html?id=gummies" class="nav-drop-item">
-            <strong>Lung Booster Gummies</strong>
-            <small>Respiratory Wellness</small>
-          </a>
-          <a href="product-details.html?id=inhaler" class="nav-drop-item">
-            <strong>Aroma Inhaler</strong>
-            <small>Aromatherapy &amp; Relaxation</small>
-          </a>
-          <a href="product-details.html?id=rollon" class="nav-drop-item">
-            <strong>CycleRelief Roll-On</strong>
-            <small>Menstrual Comfort</small>
-          </a>
-          <a href="product-details.html?id=reviva" class="nav-drop-item">
-            <strong>Reviva Roll-On</strong>
-            <small>Botanical Massage Roll-On</small>
-          </a>
-          <a href="product-details.html?id=liver" class="nav-drop-item">
-            <strong>Liver Booster</strong>
-            <small>100% Ayurvedic Liver Wellness</small>
-          </a>
-          <a href="product-details.html?id=energy" class="nav-drop-item">
-            <strong>Energy Booster</strong>
-            <small>Energy &amp; Vitality Support</small>
-          </a>
-        </div>
+    <!-- 2 · LEAF -->
+    <section class="xs xs-2" aria-label="Leaf">
+      <div class="bt bt-c bt-white" data-a="-.12" data-b=".14"><p class="ln sm"><em>Then life got busy,</em></p><p class="ln xxl">and we forgot.</p></div>
+      <div class="s2-shards">
+          <div class="shard" data-x="-16" data-y="-12" data-r="-8"><p>Breathing, taken for granted.</p></div>
+          <div class="shard" data-x="16" data-y="8" data-r="6"><p>Energy, running on empty.</p></div>
+          <div class="shard" data-x="-16" data-y="10" data-r="4"><p>The liver, an afterthought.</p></div>
+          <div class="shard" data-x="16" data-y="-12" data-r="-5"><p>Comfort, put on hold.</p></div>
+          <div class="shard" data-x="-16" data-y="0" data-r="5"><p>No pause in a crowded day.</p></div>
+          <div class="shard" data-x="16" data-y="10" data-r="-4"><p>No time to unwind at night.</p></div>
       </div>
-
-      <!-- Science Dropdown -->
-      <div class="nav-drop">
-        <button class="nav-drop-btn" type="button" aria-expanded="false">
-          Science <svg class="nav-caret" viewBox="0 0 12 12"><path d="M2.5 4.5L6 8L9.5 4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </button>
-        <div class="nav-drop-menu" role="menu">
-          <a href="science.html" class="nav-drop-item">
-            <strong>Science &amp; Innovation</strong>
-            <small>3D Compound Lab &amp; Delivery</small>
-          </a>
-          <a href="ingredients.html" class="nav-drop-item">
-            <strong>Our Ingredients</strong>
-            <small>Botanical Pharmacopeia</small>
-          </a>
-        </div>
+      <div class="bt bt-c bt-cream" data-a=".53" data-b=".76"><p class="ln xl"><em>Tulsi. Vasaka. Kalmegh.</em></p><p class="ln md">Written on palm leaves, nearly forgotten.</p></div>
+      <div class="s2-scraps" aria-hidden="true">
+        <svg class="s2-threads" viewBox="0 0 100 100" preserveAspectRatio="none"><path pathLength="1" d="M50 50L30 26"/><path pathLength="1" d="M50 50L70 24"/><path pathLength="1" d="M50 50L26 74"/><path pathLength="1" d="M50 50L74 76"/></svg>
+        <i class="s2-pulse"></i>
+          <span class="scrap" lang="sa" style="left:30%;top:26%" data-r="0">दिनचर्या<small lang="en">Dinacharya · the daily routine</small></span>
+          <span class="scrap" lang="sa" style="left:70%;top:24%" data-r="0">प्राण<small lang="en">Prana · breath</small></span>
+          <span class="scrap" lang="sa" style="left:26%;top:74%" data-r="0">ऋतुचर्या<small lang="en">Ritucharya · living with the seasons</small></span>
+          <span class="scrap" lang="sa" style="left:74%;top:76%" data-r="0">ओजस्<small lang="en">Ojas · vitality</small></span>
       </div>
+      <div class="bt bt-c bt-cream" data-a=".76" data-b="1.2"><p class="ln md">but your body</p><p class="ln xl"><em>still remembers.</em></p></div>
+    </section>
 
-      <!-- Standards Dropdown -->
-      <div class="nav-drop">
-        <button class="nav-drop-btn" type="button" aria-expanded="false">
-          Standards <svg class="nav-caret" viewBox="0 0 12 12"><path d="M2.5 4.5L6 8L9.5 4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </button>
-        <div class="nav-drop-menu" role="menu">
-          <a href="quality.html" class="nav-drop-item">
-            <strong>Quality &amp; Manufacturing</strong>
-            <small>ISO 7 Cleanrooms &amp; Batch COA</small>
-          </a>
-          <a href="certifications.html" class="nav-drop-item">
-            <strong>Certifications &amp; Compliance</strong>
-            <small>AYUSH GMP &amp; NABL Testing</small>
-          </a>
-          <a href="sustainability.html" class="nav-drop-item">
-            <strong>Sustainability</strong>
-            <small>Regenerative Ecosystems</small>
-          </a>
-        </div>
+    <!-- 3 · LAB -->
+    <section class="xs xs-3" aria-label="Lab">
+      <div class="bt bt-c bt-cream" data-a="-.05" data-b=".3"><p class="ln xxl"><em>Balance.</em></p><p class="ln sub"><span>Ancient Knowledge.</span><i></i><span>Modern Science.</span><i></i><span>One Daily Ritual.</span></p></div>
+      <div class="s3-portal" aria-hidden="true">
+        <div class="pt-core anchor"><img src="/assets/homepage-concept/act2-dewdrop-dna.jpg" alt="" decoding="async"></div>
+        <svg class="pt-rings" viewBox="0 0 400 400">
+          <circle class="r1" cx="200" cy="200" r="120"/><circle class="r2" cx="200" cy="200" r="150"/>
+          <circle class="r3" cx="200" cy="200" r="178"/><circle class="r4" cx="200" cy="200" r="196"/>
+        </svg>
       </div>
-    </nav>
-    <div class="nav-act">
-    </div>
-  </header>
+      <div class="bt bt-top bt-cream" data-a=".42" data-b="1.2"><p class="ln sm">where Ayurveda</p><p class="ln xl"><em>meets the lab</em></p></div>
+    </section>
 
-  <canvas id="flightCanvas" aria-hidden="true"></canvas>
-
-  <main>
-    <!-- ======================================================================
-         THE ONE-SHOT PLUNGE: Hollywood-Style Continuous Cinematic Experience
-         Act I: Primordial Roots -> Act II: Dewdrop/DNA -> Act III: Product Altar
-         ====================================================================== -->
-    <section class="page plunge-cinema" id="home" data-theme="green">
-      <div class="plunge-stage">
-
-        <!-- Act I: The Primordial Forest & Ancient Banyan Roots -->
-        <div class="plunge-layer plunge-act-1">
-          <img class="plunge-img" src="/assets/homepage-concept/act1-primordial-roots.jpg" alt="Ancient sacred banyan tree in misty dawn forest with golden bio-pulse" loading="eager" decoding="async">
-          <div class="plunge-crepuscular-rays" aria-hidden="true"></div>
-          <div class="plunge-bio-pulse" aria-hidden="true"></div>
-        </div>
-
-        <!-- Act II: The Cellular Dive (Dewdrop to Golden DNA) -->
-        <div class="plunge-portal" aria-hidden="true">
-          <div class="plunge-layer plunge-act-2">
-            <img class="plunge-img" src="/assets/homepage-concept/act2-dewdrop-dna.jpg" alt="Macro dive inside dewdrop revealing glowing 3D golden DNA helix and phytosomes" loading="eager" decoding="async">
-            <canvas class="plunge-dna-particles" id="plungeDnaCanvas"></canvas>
-          </div>
-        </div>
-
-        <!-- Act III: The Product Sanctuary Altar -->
-        <div class="plunge-layer plunge-act-3">
-          <img class="plunge-img" src="/assets/homepage-concept/act3-product-sanctuary.jpg" alt="TranzLife luxury botanical formulations on dark monolithic altar" loading="eager" decoding="async">
-          <div class="plunge-vapor-mist" aria-hidden="true"></div>
-
-          <!-- Interactive Product Hotspots on Altar -->
-          <div class="plunge-hotspots" aria-label="Explore Formulations">
-            <!-- PulmoClear Gummies -->
-            <button class="plunge-spot" style="left: 34%; top: 56%;" type="button" aria-label="PulmoClear Gummies"
-              data-name="PulmoClear™ Gummies" data-active="Standardized Vasicine 98.4% & Kalmegh" data-bio="+320% Enhanced Bioavailability via Phytosome Complex" data-link="product-details.html?id=gummies">
-              <span class="plunge-spot-ring" aria-hidden="true"></span>
-              <span class="plunge-spot-core" aria-hidden="true"></span>
-            </button>
-            <!-- Ritual Tincture Drops -->
-            <button class="plunge-spot" style="left: 48%; top: 52%;" type="button" aria-label="HepatoShield Drops"
-              data-name="HepatoShield™ Drops" data-active="Kutki (Picroside I & II) & Milk Thistle" data-bio="Targeted Hepatic Cellular Clearance & Protection" data-link="product-details.html?id=liver">
-              <span class="plunge-spot-ring" aria-hidden="true"></span>
-              <span class="plunge-spot-core" aria-hidden="true"></span>
-            </button>
-            <!-- Essence Roll-On -->
-            <button class="plunge-spot" style="left: 58%; top: 54%;" type="button" aria-label="Reviva Relief Roll-on"
-              data-name="Reviva™ Relief Roll-On" data-active="Wintergreen, Peppermint & Camphor Micro-Emulsion" data-bio="Rapid Transdermal Absorption via Cooling Phytosols" data-link="product-details.html?id=reviva">
-              <span class="plunge-spot-ring" aria-hidden="true"></span>
-              <span class="plunge-spot-core" aria-hidden="true"></span>
-            </button>
-            <!-- Aroma Inhaler -->
-            <button class="plunge-spot" style="left: 67%; top: 56%;" type="button" aria-label="TranzLife Aroma Inhaler"
-              data-name="Aroma Inhaler" data-active="Menthol, Eucalyptus & Therapeutic Terpenes" data-bio="Sub-second Olfactory & Bronchial Receptor Activation" data-link="product-details.html?id=inhaler">
-              <span class="plunge-spot-ring" aria-hidden="true"></span>
-              <span class="plunge-spot-core" aria-hidden="true"></span>
-            </button>
-          </div>
-        </div>
-
-        <!-- Floating Product Preview Card -->
-        <aside class="plunge-preview-card" id="plungePreviewCard" aria-live="polite">
-          <p class="pp-label">Featured Formulation</p>
-          <h3 class="pp-title">PulmoClear™ Gummies</h3>
-          <p class="pp-active">Standardized Vasicine 98.4%</p>
-          <p class="pp-bio">+320% Enhanced Bioavailability via Phytosome Complex</p>
-          <a class="pp-link" href="products.html">Explore Formulation <i aria-hidden="true">→</i></a>
-        </aside>
-
-        <!-- Narrative Typography Stages (Synchronized with scroll progress) -->
-        <div class="plunge-narrative">
-          <!-- Act I Narrative -->
-          <div class="plunge-copy plunge-copy-1">
-            <span class="plunge-eyebrow"><i></i> The Origin · Ancient Botanical Wisdom</span>
-            <h1 class="plunge-head">Where Nature Meets <em>Precision Molecular Science</em></h1>
-            <p class="plunge-sub">
-              5,000 years of Ayurvedic intelligence decoded through cryogenic extraction and analytical chromatography.
-            </p>
-            <div class="plunge-scroll-cue">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="12" y1="5" x2="12" y2="19"></line>
-                <polyline points="19 12 12 19 5 12"></polyline>
-              </svg>
-              <span>Scroll to enter the plunge</span>
-            </div>
-          </div>
-
-          <!-- Act II Narrative -->
-          <div class="plunge-copy plunge-copy-2" style="opacity: 0; pointer-events: none;">
-            <span class="plunge-eyebrow"><i></i> Molecular Biotechnology</span>
-            <h2 class="plunge-head">The Cellular Dive: <em>+320% Bioavailability</em></h2>
-            <p class="plunge-sub">
-              Cryogenic phytosome micro-encapsulation delivers standardized active phyto-compounds directly to cellular receptor sites.
-            </p>
-            <div class="plunge-badges-row">
-              <span class="plunge-badge-pill"><strong>Vasicine</strong> 98.4% Standardized</span>
-              <span class="plunge-badge-pill"><strong>Andrographolide</strong> HPLC Pure</span>
-              <span class="plunge-badge-pill"><strong>Zero</strong> Synthetic Solvents</span>
-              <span class="plunge-badge-pill"><strong>NABL</strong> Tested</span>
-            </div>
-          </div>
-
-          <!-- Act III Narrative -->
-          <div class="plunge-copy plunge-copy-3" style="opacity: 0; pointer-events: none;">
-            <span class="plunge-eyebrow"><i></i> The Product Sanctuary</span>
-            <h2 class="plunge-head">Sculpted by Nature. <em>Engineered for Life.</em></h2>
-            <p class="plunge-sub">
-              Hover over any formulation to inspect active phytocompounds, or begin your daily wellness journey.
-            </p>
-            <div class="plunge-ctas">
-              <a class="btn-amber" href="products.html">Explore All Formulations <i aria-hidden="true">→</i></a>
-              <a class="btn-ghost" href="#roots">Discover Your Ritual <i aria-hidden="true">↓</i></a>
-            </div>
-          </div>
-        </div>
-
-        <!-- HUD: Timeline Scrubber -->
-        <nav class="plunge-timeline" aria-label="Cinematic Acts">
-          <button class="plunge-timeline-step is-active" data-step="0" type="button">
-            <span class="step-num">01</span> <span class="step-label">Roots of Origin</span>
-          </button>
-          <div class="step-line" aria-hidden="true"><i class="step-fill"></i></div>
-          <button class="plunge-timeline-step" data-step="1" type="button">
-            <span class="step-num">02</span> <span class="step-label">Molecular Dive</span>
-          </button>
-          <div class="step-line" aria-hidden="true"><i class="step-fill"></i></div>
-          <button class="plunge-timeline-step" data-step="2" type="button">
-            <span class="step-num">03</span> <span class="step-label">Product Sanctuary</span>
-          </button>
-        </nav>
-
-        <!-- HUD: Ambient Cinematic Audio Toggle -->
-        <button class="plunge-audio-btn" id="plungeAudioBtn" type="button" aria-label="Toggle cinematic audio soundscape">
-          <div class="audio-eq" aria-hidden="true">
-            <span></span><span></span><span></span>
-          </div>
-          <span class="audio-label">Atmosphere: <strong id="audioState">Off</strong></span>
-        </button>
-
+    <!-- 4 · FORMULA -->
+    <section class="xs xs-4" aria-label="Formula">
+      <div class="s4-world" aria-hidden="true"><img src="/assets/about/about-hero-roots-to-infinity.webp" alt="" decoding="async"></div>
+      <canvas class="s4-jars" id="s4Jars" aria-hidden="true"></canvas>
+      <div class="s4-names" aria-hidden="true"></div>
+      <div class="s4-clouds" aria-hidden="true">
+        <img class="cloud" data-side="0" data-d="1" src="/fog/fog-2.webp" alt="">
+        <img class="cloud" data-side="-1" data-d="1" src="/fog/fog-1.webp" alt="">
+        <img class="cloud" data-side="1" data-d="1" src="/fog/fog-3.webp" alt="">
+        <img class="cloud" data-side="-1" data-d=".55" src="/fog/fog-3.webp" alt="">
+        <img class="cloud" data-side="1" data-d=".55" src="/fog/fog-1.webp" alt="">
+      </div>
+      <div class="bt bt-c" data-a="-.05" data-b=".15"><p class="ln xxl"><em>Introducing</em></p></div>
+      <div class="bt bt-c" data-a=".16" data-b=".37"><p class="ln"><span class="s4-word" role="img" aria-label="TranzLife"></span></p></div>
+      <div class="bt bt-split" data-a=".38" data-b=".58"><p class="ln tl"><em class="xl">Rooted</em> <small>in nature.</small></p><p class="ln br"><em class="xl">Backed</em> <small>by science.</small></p></div>
+      <div class="bt bt-top" data-a=".6" data-b="1.2"><p class="ln sm">Six products.</p><p class="ln xl"><em>One daily ritual.</em></p></div>
+      <div class="s4-beacon" aria-hidden="true">
+        <i class="bc-glow"></i><i class="bc-beam"></i>
+        <svg class="bc-text" viewBox="0 0 200 200"><defs><path id="bcPath" d="M100 100m-74 0a74 74 0 1 1 148 0a74 74 0 1 1-148 0"/></defs>
+          <text><textPath href="#bcPath">FIND YOUR RITUAL · FIND YOUR RITUAL · FIND YOUR RITUAL ·</textPath></text></svg>
+        <i class="bc-disc anchor"></i>
       </div>
     </section>
 
-    <!-- OUR ROOTS, "Root Map": six roots grow down from the hero's films, one for each moment of the day below. Hover or
-         tap a root and its real ingredients rise up it; click to jump to that moment. Scrolling on, the roots draw
-         together into one golden thread while the night turns to dawn, ending on the exact colour "A Day" starts with
-         (features/story/root-map.js; the six roots are built from data/day.js). -->
-    <section class="page roots" id="roots" data-theme="green" aria-labelledby="rootsTitle">
-      <div class="roots-pin" id="rootsPin">
-        <canvas class="roots-canvas" id="rootsCanvas" aria-hidden="true"></canvas>
-        <ol class="rm-roots" id="rmRoots" aria-label="Six moments of the day"></ol>
-        <div class="roots-copy" id="rootsCopy">
-          <p class="roots-kicker">Our roots</p>
-          <h2 class="roots-line" id="rootsTitle"><span>Six roots.</span> <span class="rl-em">One for every part of your day.</span></h2>
-          <p class="roots-hint" id="rootsHint"><span class="rh-fine">Hover a root to see what grows from it</span><span class="rh-touch">Tap a root to see what grows from it</span></p>
+    <canvas class="xp-fx" id="xpFx" aria-hidden="true"></canvas>
+    <div class="xp-flash" id="xpFlash" aria-hidden="true"></div>
+    <p class="xp-but" id="xpBut" aria-hidden="true"><em>But.</em></p>
+
+    <!-- HUD -->
+    <button class="hud-snd snd" id="sndToggle" type="button" aria-pressed="true" aria-label="Sound on. Turn sound off" data-no-tap>
+      <span class="snd-bars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
+    </button>
+    <button class="hud-ruler" id="hudRuler" type="button" aria-expanded="false" aria-controls="hudMenu" aria-label="Chapters">
+      <span class="hr-win"><span class="hr-track" id="hrTrack"></span></span><i class="hr-mark"></i><span class="hr-label" id="hrLabel">01 · Seed</span>
+    </button>
+    <div class="hud-menu" id="hudMenu" role="menu"></div>
+    <div class="hud-leaves" aria-label="Leaves collected"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19C5 10 11 5 20 4c0 9-5 15-14 15Z"/><path d="M5 19 13 11"/></svg><b id="hudLeaves">0</b><small>leaves</small></div>
+    <p class="hud-scroll" id="hudScroll" aria-hidden="true"><i></i>Scroll</p>
+    <div class="hold" id="hold">
+      <button class="hold-btn" id="holdBtn" type="button" aria-label="Press and hold to continue" data-no-tap>
+        <svg viewBox="0 0 100 100" aria-hidden="true"><circle class="hd-track" cx="50" cy="50" r="44"/><circle class="hd-ring" cx="50" cy="50" r="44" pathLength="1"/></svg>
+        <i class="hd-dot" aria-hidden="true"></i>
+      </button>
+      <span class="hold-label" aria-hidden="true">Tap<br>hold</span>
+    </div>
+  </div>
+
+  <!-- ======================================================================================================
+       5 · YOU: the page beneath the film
+       ====================================================================================================== -->
+  <main class="after" id="after">
+    <!-- THE FOUR FILMS (src/home/collide.js): right after the film ends. Root, Lab, Formula and You fly in from the four
+         corners, collide in a burst of light, then settle side by side: one story. Pinned, scrubbed by the scroll. -->
+    <section class="cl" id="collide" data-score="windows" aria-labelledby="clTitle">
+      <div class="cl-pin">
+        <div class="cl-stage">
+          <figure class="cl-v" style="--i:0"><video muted loop playsinline preload="none" disablepictureinpicture poster="/videos/hero/root.webp" data-src="/videos/hero/root.mp4" width="720" height="1280"></video><figcaption><b>01</b> Root<small>Pulled from living soil</small></figcaption></figure>
+          <figure class="cl-v" style="--i:1"><video muted loop playsinline preload="none" disablepictureinpicture poster="/videos/hero/lab.webp" data-src="/videos/hero/lab.mp4" width="720" height="1280"></video><figcaption><b>02</b> Lab<small>Studied in the lab</small></figcaption></figure>
+          <figure class="cl-v" style="--i:2"><video muted loop playsinline preload="none" disablepictureinpicture poster="/videos/hero/formula.webp" data-src="/videos/hero/formula.mp4" width="720" height="1280"></video><figcaption><b>03</b> Formula<small>Blended into a formula</small></figcaption></figure>
+          <figure class="cl-v" style="--i:3"><video muted loop playsinline preload="none" disablepictureinpicture poster="/videos/hero/you.webp" data-src="/videos/hero/you.mp4" width="720" height="1280"></video><figcaption><b>04</b> You<small>Part of your day</small></figcaption></figure>
         </div>
-        <!-- at dawn: the idea behind "A Day" below, and a greeting for the visitor's own time of day (root-map.js) -->
-        <div class="roots-dawn" id="rootsDawn">
-          <p class="rd-word" style="--k:0" lang="sa">दिनचर्या</p>
-          <p class="rd-say" style="--k:1"><span>di·na·char·ya</span> <i>(n.)</i> <b>Sanskrit</b></p>
-          <p class="rd-def" style="--k:2">The Ayurvedic art of the daily routine: small rituals, from sunrise to night.</p>
-          <p class="rd-hello" style="--k:3" id="rootsHello">Your day begins here.</p>
-        </div>
+        <canvas class="cl-fx" id="clFx" aria-hidden="true"></canvas>
+        <i class="cl-flash" aria-hidden="true"></i>
+        <div class="cl-intro"><p class="cl-k">The story in four films</p><h2 class="cl-t" id="clTitle"><em>Four films.</em> One story.</h2></div>
+        <div class="cl-out"><p class="cl-k">Root · Lab · Formula · You</p><p class="cl-head"><em>From root</em> to ritual.</p></div>
+        <i class="cl-dawn" aria-hidden="true"></i>
       </div>
     </section>
 
@@ -388,8 +203,8 @@
           <p class="day-kicker">A day with TranzLife</p>
           <div class="day-clock" aria-hidden="true">
             <svg class="day-arc" viewBox="0 0 1000 60">
-              <path class="day-arc-track" d="M10 56C260 -4 740 -4 990 56"/>
-              <path class="day-arc-fill" id="dayArcFill" d="M10 56C260 -4 740 -4 990 56"/>
+              <path class="day-arc-track" d="M10 56C260 -4 740 -4 990 56" />
+              <path class="day-arc-fill" id="dayArcFill" d="M10 56C260 -4 740 -4 990 56" />
             </svg>
             <span class="day-sun" id="daySun"></span>
           </div>
@@ -408,62 +223,59 @@
       <ol class="day-cards" id="dayCards"></ol>
     </section>
 
-    <!-- YOUR RITUAL: all six products at night, filtered by what your day needs (features/story/ritual-lineup.js) -->
-    <section class="page ritual t-green" id="ritual" data-theme="green">
-      <div class="wrap ritual-wrap">
-        <div class="ritual-head">
-          <p class="eyebrow">Your ritual</p>
-          <h2 class="ritual-title">Six products. <span>One daily ritual.</span></h2>
-          <p class="ritual-care">Not a cure. A daily ritual of care.</p>
-          <div class="ritual-needs" id="ritualNeeds" role="group" aria-label="What does your day need?">
-            <span class="rn-q">What does your day need?</span>
-          </div>
-        </div>
-        <ul class="ritual-grid" id="ritualGrid"></ul>
-      </div>
-    </section>
-
-    <!-- PROOF: government recognition and certifications (the links to the rest of the site are in the footer) -->
-    <section class="page proof t-green" id="proof" data-theme="green">
-      <div class="wrap proof-wrap">
-        <p class="eyebrow">Recognised &amp; certified</p>
-        <h2 class="proof-title">Made in India. <span>Recognised and certified.</span></h2>
-        <ul class="proof-badges">
-          <li><img src="/assets/badges/fssai.png" alt="FSSAI" loading="lazy"><span>Nutraceutical safety</span></li>
-          <li><img src="/assets/badges/ayush.png" alt="Ministry of AYUSH, Government of India" loading="lazy"><span>AYUSH licensed</span></li>
-          <li><img src="/assets/badges/make-in-india.png" alt="Make in India" loading="lazy"><span>100% indigenous</span></li>
-          <li><img src="/assets/badges/dpiit-startup-india.png" alt="DPIIT Startup India" loading="lazy"><span>DPIIT recognised</span></li>
-          <li><img src="/assets/badges/msme.png" alt="MSME, Government of India" loading="lazy"><span>MSME registered</span></li>
-          <li><img src="/assets/badges/gem-gov.png" alt="GeM Government e-Marketplace" loading="lazy"><span>GeM registered</span></li>
-        </ul>
-      </div>
-    </section>
   </main>
 
   <footer class="night-foot" id="siteFooter">
     <!-- "After Dark": the last page of the day (features/footer/night-footer.js, sections/footer.css) -->
-    <div class="nf-sky" aria-hidden="true"><span class="nf-stars"></span><span class="nf-moon"></span><span class="nf-sun"></span></div>
+    <div class="nf-sky" aria-hidden="true"><span class="nf-stars"></span><span class="nf-moon"></span><span
+        class="nf-sun"></span></div>
     <div class="wrap nf-in">
       <div class="nf-top">
-        <a class="nf-brand" href="index.html" aria-label="TranzLife Biosciences home"><span class="logo-em" aria-hidden="true"></span><span class="logo-word light" aria-hidden="true"></span></a>
+        <a class="nf-brand" href="index.html" aria-label="TranzLife Biosciences home"><span class="logo-em"
+            aria-hidden="true"></span><span class="logo-word light" aria-hidden="true"></span></a>
         <button class="nf-dawn" type="button" id="nfDawn"><span>Back to dawn</span><i aria-hidden="true">↑</i></button>
       </div>
-      <nav class="nf-links" aria-label="Footer"><a href="products.html"><span>Products</span></a><a href="science.html"><span>Science</span></a><a href="ingredients.html"><span>Ingredients</span></a><a href="about.html"><span>About</span></a><a href="quality.html"><span>Quality</span></a><a href="certifications.html"><span>Certifications</span></a><a href="sustainability.html"><span>Sustainability</span></a><a href="contact.html"><span>Contact</span></a></nav>
+      <nav class="nf-links" aria-label="Footer"><a href="products.html"><span>Products</span></a><a
+          href="science.html"><span>Science</span></a><a href="ingredients.html"><span>Ingredients</span></a><a
+          href="about.html"><span>About</span></a><a href="quality.html"><span>Quality</span></a><a
+          href="certifications.html"><span>Certifications</span></a><a
+          href="sustainability.html"><span>Sustainability</span></a><a href="contact.html"><span>Contact</span></a>
+      </nav>
       <div class="nf-meta">
         <p class="nf-where">Egmore, Chennai, Tamil Nadu, India</p>
         <a class="nf-mail" href="mailto:care@tranzlife.in">care@tranzlife.in</a>
         <span class="nf-store" id="nfStore">Online store · coming soon</span>
       </div>
       <div class="nf-legal">
-        <p class="nf-care"><b>We don’t cure. We care.</b> TranzLife products support everyday well-being and are not intended to treat or cure any disease.</p>
-        <p class="nf-fine"><span>© 2026 TranzLife Biosciences</span><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a></p>
+        <p class="nf-care"><b>We don’t cure. We care.</b> TranzLife products support everyday well-being and are not
+          intended to treat or cure any disease.</p>
+        <p class="nf-fine"><span>© 2026 TranzLife Biosciences</span><a href="privacy.html">Privacy</a><a
+            href="terms.html">Terms</a></p>
       </div>
     </div>
-    <p class="nf-word" aria-hidden="true"><span>T</span><span>R</span><span>A</span><span>N</span><span>Z</span><span>L</span><span>I</span><span>F</span><span>E</span></p>
+    <p class="nf-word" aria-hidden="true">
+      <span>T</span><span>R</span><span>A</span><span>N</span><span>Z</span><span>L</span><span>I</span><span>F</span><span>E</span>
+    </p>
   </footer>
 
-  <div class="toast" id="toast" role="status"></div>
+  <!-- the bottom bar (src/home/bar.js): the emblem, "Find your ritual" (to A Day), the menu -->
+  <p class="note" id="note">Six plant-based products. <a href="products.html">Explore</a></p>
+  <nav class="bar" id="bar" data-theme="dark" aria-label="Site">
+    <div class="bar-menu" id="barMenu">
+      <a href="about.html"><span>About us</span></a><a href="products.html"><span>Our products</span></a>
+      <a href="science.html"><span>Science &amp; innovation</span></a><a href="ingredients.html"><span>Our ingredients</span></a>
+      <a href="quality.html"><span>Quality</span></a><a href="sustainability.html"><span>Sustainability</span></a>
+      <a href="certifications.html"><span>Certifications</span></a><a href="contact.html"><span>Contact</span></a>
+      <button type="button" id="barReplay" hidden><span>Watch the story again</span></button>
+    </div>
+    <div class="bar-row">
+      <a class="bar-logo" href="index.html" aria-label="TranzLife Biosciences home"><span class="logo-em" aria-hidden="true"></span></a>
+      <button class="bar-pill" id="barRitual" type="button">Find your ritual</button>
+      <button class="bar-burger" id="barBurger" type="button" aria-expanded="false" aria-controls="barMenu" aria-label="Open menu"><i></i><i></i></button>
+    </div>
+  </nav>
 
+  <div class="toast" id="toast" role="status"></div>
   <script type="module" src="/src/main.js"></script>
 </body>
 
