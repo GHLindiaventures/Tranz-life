@@ -210,7 +210,19 @@
   <div class="diff-leaf-bg diff-leaf-br" aria-hidden="true">
     <svg viewBox="0 0 220 220" fill="none"><path d="M240 240 C160 210 100 150 80 60 C120 90 170 120 240 240Z" fill="#7ba864" opacity="0.4"/><path d="M230 180 C150 160 110 110 100 30 C140 70 180 100 230 180Z" fill="#588544" opacity="0.3"/></svg>
   </div>
-  <div class="diff-luminous-streak" aria-hidden="true"></div>
+  <div class="diff-luminous-streak" aria-hidden="true">
+    <svg class="diff-wave-svg" viewBox="0 0 1440 120" fill="none" preserveAspectRatio="none">
+      <path d="M0 45 C340 45 680 82 1040 68 C1240 58 1360 40 1440 28" stroke="url(#diffWaveGlow)" stroke-width="2.5"/>
+      <defs>
+        <linearGradient id="diffWaveGlow" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#ffffff" stop-opacity="0.1"/>
+          <stop offset="25%" stop-color="#ffffff" stop-opacity="0.5"/>
+          <stop offset="65%" stop-color="#ffffff" stop-opacity="0.95"/>
+          <stop offset="100%" stop-color="#ffffff" stop-opacity="0.25"/>
+        </linearGradient>
+      </defs>
+    </svg>
+  </div>
 
   <div class="band">
     <div class="wrap diff-wrap">
@@ -274,8 +286,7 @@
             <div class="diff-card-body">
               <span class="diff-card-icon" aria-hidden="true">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M4.5 8.5 C4.5 5.5 7.5 4.5 11.5 4.5 C16.5 4.5 20 7 20 11 C20 15 16.5 19.5 12 19.5 C8 19.5 5 17 4.5 13.5 Z"/>
-                  <path d="M13 5 C13.5 8 13.8 11.5 11.5 15.5"/>
+                  <path d="M5.5 8.5 C5.5 5.5 8.5 4.5 12 4.5 C16.5 4.5 19.5 7 19.5 11 C19.5 15 16 19.5 11.5 19.5 C7 19.5 4.5 16 4.5 12.5 C4.5 10.5 4.8 9.5 5.5 8.5 Z"/>
                 </svg>
               </span>
               <h3 class="diff-card-title">Liver Support</h3>
