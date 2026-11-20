@@ -108,35 +108,8 @@
   font-size: clamp(15px, 1.15vw, 17px);
   line-height: 1.5;
   color: #2c4d29;
-  margin: 22px 0 28px;
+  margin: 22px 0 0;
   font-weight: 500;
-}
-.diff-explore-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  padding: 13px 28px;
-  background: #19401e;
-  color: #ffffff;
-  border-radius: 999px;
-  font-size: 15px;
-  font-weight: 600;
-  text-decoration: none;
-  box-shadow: 0 8px 24px -6px rgba(23, 56, 25, 0.4);
-  transition: transform 0.25s ease, background 0.25s ease, box-shadow 0.25s ease;
-}
-.diff-explore-btn:hover {
-  background: #112d15;
-  transform: translateY(-2px);
-  box-shadow: 0 12px 28px -6px rgba(23, 56, 25, 0.55);
-}
-.diff-explore-btn i {
-  font-style: normal;
-  font-size: 16px;
-  transition: transform 0.2s ease;
-}
-.diff-explore-btn:hover i {
-  transform: translate(2px, -2px);
 }
 
 /* Right cards container: 4 glossy floating cards */
@@ -244,15 +217,15 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center 25%;
+  object-position: center center;
   display: block;
-  transform: skewX(15deg) scale(1.36);
+  transform: skewX(15deg) scale(1.12);
   transform-origin: center center;
   transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .diff-glass-card:hover .diff-card-media img {
-  transform: skewX(15deg) scale(1.44);
+  transform: skewX(15deg) scale(1.18);
 }
 
 /* Gradient overlay across the full card: transparent at top, soft frosted green at bottom over image */
