@@ -44,8 +44,7 @@ function initHeroJar(){
   // ---- the flight layer: a fixed layer over the page that carries the tub while it travels ----
   const hf = state.heroFlight = { active:false, landed:false };
   let layer = null, shadow = null, path = null, cur = 0, last = performance.now();
-  // Sticky fixed-screen flight disabled so the hero jar scrolls naturally with the stage instead of sticking to the screen
-  const canFly = () => false;
+  const canFly = () => !reduce && !!arc && !!seq && stage.clientWidth >= 760;
   function setFlight(on){
     if (on === hf.active) return;
     hf.active = on; hf.landed = false;
