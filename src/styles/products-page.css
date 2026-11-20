@@ -1,0 +1,24 @@
+/* Products page stylesheet (loaded only by products.html, via src/products.js).
+   The shared base, header, menu, bag and footer are the same files every page uses; the page itself is the
+   product journey from dhina-dev (showcase, statement curtain, "Which one is yours?" grid).
+   It deliberately does not load main.css: the other pages' section styles are not needed here, and fewer rules
+   make every style recalculation on this page cheaper. Nothing here is loaded by any other page. */
+@import './base/tokens.css';
+@import './base/global.css';
+@import './components/logo.css';
+@import './components/loader.css';
+@import './components/nav.css';
+@import './components/dock.css';
+@import './components/menu.css';
+@import './components/drawer.css';
+@import './components/lightbox.css';
+@import './components/transitions.css';
+@import './components/droplet.css';
+@import './components/shine.css';
+@import './products-page/shell.css';
+@import './products-page/grid.css';
+@import './products-page/showcase.css';
+@import './products-page/statement.css';
+@import './products-page/finish.css';
+@import './sections/footer.css';
+@import './responsive.css';

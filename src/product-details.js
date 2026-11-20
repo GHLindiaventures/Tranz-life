@@ -4,19 +4,20 @@ import { thumbs } from './app/state.js';
 import { storeCta } from './app/store.js';
 import { PRODUCTS, EXTRA_PRODUCTS } from './data/products.js';
 import { SHOTS, DESIGNS } from './features/products/product-images.js';
+import { jarLayer } from './features/products/jar-layer.js';
+import { DETAILS } from './products-page/data/product-details.js';
+import { STORY } from './products-page/data/product-story.js';
 import './features/navigation/dropdown.js';
 import './components/page-scrollbar.js';
 import './components/chat-loader.js';
 import { $, $$ } from './utils/dom.js';
 import { initBeforeAfter } from './features/compare/before-after.js';
 
-// Product page content per product. Ingredients follow the official composition sheet (src/data/ingredients.js);
-// wording follows the client brief: relaxation, comfort and wellness positioning, no treatment claims.
-// rating: null (no verified reviews yet). mechanism: null and scienceCards: [] hide those parts of the page.
+// Product page content per product. Ingredients follow official composition sheet
 const CLINICAL_DETAILS = {
   gummies: {
     category: 'Respiratory Wellness Gummies',
-    eyebrow: 'BOTANICAL GUMMIES · VITAMINS & MINERALS · BERRY FLAVOUR',
+    eyebrow: 'Respiratory Wellness · PulmoClear™ formulation',
     rating: null,
     highlights: [
       'Traditional botanicals for everyday respiratory wellness',
@@ -24,7 +25,7 @@ const CLINICAL_DETAILS = {
       'With Vitamin C, Vitamin D3 and Zinc',
       'Convenient, berry-flavoured gummy format'
     ],
-    botanicals: 'Tulsi (Ocimum tenuiflorum), Vasaka (Justicia adhatoda), Dry Ginger / Sukku (Zingiber officinale), Long Pepper / Thippili (Piper longum), Black Pepper (Piper nigrum), Black Turmeric / Karumanjal (Curcuma caesia), Cumin / Jeera (Cuminum cyminum), Licorice Root (Glycyrrhiza glabra), Small Onion Extract (Allium cepa), Vitamin C, Vitamin D3 and Zinc. See the product label for quantities.',
+    botanicals: 'Tulsi (Ocimum tenuiflorum), Vasaka (Justicia adhatoda), Dry Ginger / Sukku (Zingiber officinale), Long Pepper / Thippili (Piper longum), Black Pepper (Piper nigrum), Black Turmeric / Karumanjal (Curcuma caesia), Cumin / Jeera (Cuminum cyminum), Licorice Root (Glycyrrhiza glabra), Small Onion Extract (Allium cepa), Vitamin C, Vitamin D3 and Zinc.',
     usage: 'Adults: 2 gummies twice daily after meals, or as directed on the label. Chew well before swallowing. Do not exceed the recommended daily usage. Not recommended for pregnant or lactating women. Consult a healthcare professional if you have a respiratory condition or take regular medication.',
     mechanism: null,
     packaging: 'Tamper-evident container. 60 gummies. Barcode: 8 906132 540147.',
@@ -41,7 +42,7 @@ const CLINICAL_DETAILS = {
       'Fits easily in a pocket or bag'
     ],
     botanicals: 'Peppermint Oil, Lavender Oil, Eucalyptus Oil, Lemon Oil, Black Pepper Oil and Tulsi Oil.',
-    usage: 'Remove the cap and inhale gently through each nostril 2–3 times whenever you want a moment to pause. Pair with slow, deep breathing. For inhalation only; do not apply to skin. Aromatherapy is a complementary wellness practice, not a replacement for professional healthcare.',
+    usage: 'Remove the cap and inhale gently through each nostril 2–3 times whenever you want a moment to pause. Pair with slow, deep breathing. For inhalation only; do not apply to skin.',
     mechanism: null,
     packaging: 'Airtight 10 ml pocket inhaler with a secure cap.',
     scienceCards: []
@@ -57,20 +58,18 @@ const CLINICAL_DETAILS = {
       'Convenient 50 ml roll-on and 8 ml pocket size'
     ],
     botanicals: 'Wintergreen Oil (Gaultheria procumbens), Peppermint Oil (Mentha × piperita), Ginger (Zingiber officinale), Lavender Oil (Lavandula angustifolia) and Eucalyptus Oil (Eucalyptus globulus) in a Sesame Oil (Sesamum indicum) base.',
-    usage: 'Roll gently around the belly button every morning on an empty stomach, as directed on the label. For external use only. Avoid eyes and broken skin. Consult a healthcare professional if your symptoms are severe, unusual or persistent.',
+    usage: 'Roll gently around the belly button every morning on an empty stomach, as directed on the label. For external use only. Avoid eyes and broken skin.',
     mechanism: null,
     packaging: '50 ml roll-on bottle (and 8 ml travel size) with stainless steel rollerball. Barcode: 8 906132 540154.',
     scienceCards: []
   },
-  // From the Reviva brochure only. It positions Reviva as a topical massage / personal-care product and rules out
-  // any blood-glucose or diabetes claim, so none is made; no rating, mechanism or science cards (none given).
   reviva: {
     category: 'Botanical Massage Roll-On',
     eyebrow: 'BOTANICAL MASSAGE ROLL-ON · EVERYDAY WELLNESS & VITALITY RITUAL',
     rating: null,
     pills: false,
     activesTitle: 'Ingredients',
-    packagingTitle: 'Pack &amp; Precautions',
+    packagingTitle: 'Pack & Precautions',
     highlights: [
       'Convenient 50 ml massage roll-on format',
       'Designed for external application and gentle massage',
@@ -78,9 +77,9 @@ const CLINICAL_DETAILS = {
       'Botanical-inspired positioning for everyday personal care'
     ],
     botanicals: 'Dill essential oil and Eucalyptus essential oil. See the product label for the full ingredient declaration.',
-    usage: 'Apply a small amount to intact skin and massage gently, as directed on the label. Do not apply to wounds or irritated skin. Wash hands after use. Patch test before first use and discontinue if irritation occurs.',
+    usage: 'Apply a small amount to intact skin and massage gently, as directed on the label. Do not apply to wounds or irritated skin. Wash hands after use.',
     mechanism: null,
-    packaging: 'Massage roll-on, 50 ml. External use only. Avoid eyes and mucous membranes. Keep out of reach of children. Do not use as a replacement for diabetes medication, glucose monitoring or medical advice.',
+    packaging: 'Massage roll-on, 50 ml. External use only. Avoid eyes and mucous membranes. Keep out of reach of children.',
     scienceCards: []
   },
   liver: {
@@ -94,48 +93,173 @@ const CLINICAL_DETAILS = {
       'Simple routine: 10 ml twice daily after meals'
     ],
     botanicals: 'Each 10 ml contains: Bhumyamalaki (Phyllanthus niruri) 500mg, Kalmegh (Andrographis paniculata) 400mg, Kutki (Picrorhiza kurroa) 400mg, Punarnava (Boerhavia diffusa) 300mg, Bhringraj (Eclipta alba) 300mg, Daruharidra (Berberis aristata) 200mg, Guduchi (Tinospora cordifolia) 200mg, Amla (Emblica officinalis) 200mg, Haritaki (Terminalia chebula) 200mg, Turmeric (Curcuma longa) 150mg, Black Pepper (Piper nigrum) 50mg.',
-    usage: 'Adults: 10 ml (2 teaspoons) twice daily after meals. Shake well before use. Refrigerate after opening. Store away from direct sunlight. Not a replacement for medical assessment or prescribed treatment; consult a healthcare professional if you have concerns about liver function.',
+    usage: 'Adults: 10 ml (2 teaspoons) twice daily after meals. Shake well before use. Refrigerate after opening. Store away from direct sunlight.',
     mechanism: null,
     packaging: '500 ml amber bottle with calibrated dosing cap. Barcode: 8 906132 540130.',
     scienceCards: []
   },
-  // From the draft brochure only. No rating, price, mechanism or science claims are given there, so none are shown
-  // (the page leaves those parts out when they are missing), and no "plant-derived / GMP" pills (not stated).
   energy: {
     category: 'Energy & Everyday Vitality',
     eyebrow: 'HERBAL & BIOACTIVE WELLNESS FORMULATION · ORAL LIQUID',
     rating: null,
     pills: false,
     activesTitle: 'Key Ingredients',
-    packagingTitle: 'Pack &amp; Storage',
+    packagingTitle: 'Pack & Storage',
     highlights: [
       'Designed to complement daily energy, activity and general well-being',
       'Selected botanical and mineral-origin ingredients in a ready-to-use liquid',
       'A simple, measured routine: 7.5 ml twice daily',
       '500 ml pack with measuring device'
     ],
-    botanicals: 'Ruta graveolens (Q), Hecla lava (3X), Symphytum officinale (Q), Calcarea phosphorica (8X), Echinacea angustifolia (Q). Refer to the approved product label for the complete composition and ingredient quantities.',
-    usage: '7.5 ml twice daily, or as recommended by a healthcare professional. Shake well if directed on the final label. Use the measuring device supplied with the pack and follow the approved label. Use only as directed; do not exceed the recommended serving. Consult a qualified healthcare professional before use if pregnant, breastfeeding, taking medication or managing a health condition.',
+    botanicals: 'Ruta graveolens, Hecla lava, Symphytum officinale, Calcarea phosphorica, Echinacea angustifolia.',
+    usage: '7.5 ml twice daily, or as recommended by a healthcare professional. Shake well before use.',
     mechanism: null,
-    packaging: 'Oral liquid, net quantity 500 ml. Store as directed on the final pack. Keep out of reach of children.',
+    packaging: 'Oral liquid, net quantity 500 ml. Store as directed on the final pack.',
     scienceCards: []
   }
 };
 
-function initProductDetailsPage() {
+let current3dViewer = null;
+
+/**
+ * Sets up the interactive 3D WebGL rotating product canvas
+ */
+function setup3DViewer(canvas, prod, index) {
+  if (!canvas) return null;
+
+  if (current3dViewer) {
+    current3dViewer.destroy();
+    current3dViewer = null;
+  }
+
+  const L = jarLayer(canvas);
+  const jar = L.jar(prod, index);
+  if (jar && jar.G) {
+    jar.G.userData.shadowA = 0.55;
+  }
+
+  let isDragging = false;
+  let prevX = 0, prevY = 0;
+  let targetRotY = -0.32, currentRotY = -0.32;
+  let targetRotX = 0.05, currentRotX = 0.05;
+  let rafId = 0;
+
+  function onPointerDown(e) {
+    isDragging = true;
+    prevX = e.clientX || (e.touches && e.touches[0].clientX) || 0;
+    prevY = e.clientY || (e.touches && e.touches[0].clientY) || 0;
+    const badge = $('#pdp3dBadge');
+    if (badge) badge.classList.add('hidden');
+  }
+
+  function onPointerMove(e) {
+    if (!isDragging) return;
+    const clientX = e.clientX || (e.touches && e.touches[0].clientX) || 0;
+    const clientY = e.clientY || (e.touches && e.touches[0].clientY) || 0;
+    const dx = clientX - prevX;
+    const dy = clientY - prevY;
+    prevX = clientX;
+    prevY = clientY;
+    targetRotY += dx * 0.01;
+    targetRotX += dy * 0.007;
+    targetRotX = Math.max(-0.45, Math.min(0.45, targetRotX));
+  }
+
+  function onPointerUp() {
+    isDragging = false;
+  }
+
+  canvas.addEventListener('pointerdown', onPointerDown);
+  window.addEventListener('pointermove', onPointerMove);
+  window.addEventListener('pointerup', onPointerUp);
+
+  function resize() {
+    if (!canvas) return;
+    L.resize();
+    if (jar && jar.G) {
+      L.place(jar.G, L.W / 2, L.H / 2);
+      L.size(jar, L.H * 0.68);
+    }
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  let lastTime = performance.now();
+  function render(time) {
+    rafId = requestAnimationFrame(render);
+    const dt = Math.min(0.1, (time - lastTime) / 1000);
+    lastTime = time;
+
+    // Smooth continuous auto-rotation when idle
+    if (!isDragging) {
+      targetRotY += dt * 0.45;
+    }
+
+    currentRotY += (targetRotY - currentRotY) * 0.08;
+    currentRotX += (targetRotX - currentRotX) * 0.08;
+
+    if (jar && jar.G) {
+      jar.G.rotation.y = currentRotY;
+      jar.G.rotation.x = currentRotX;
+      // Gentle floating bob
+      jar.G.position.y = Math.sin(time * 0.0016) * 0.12;
+    }
+
+    L.renderer.render(L.scene, L.cam);
+  }
+  rafId = requestAnimationFrame(render);
+
+  current3dViewer = {
+    destroy() {
+      cancelAnimationFrame(rafId);
+      canvas.removeEventListener('pointerdown', onPointerDown);
+      window.removeEventListener('pointermove', onPointerMove);
+      window.removeEventListener('pointerup', onPointerUp);
+      window.removeEventListener('resize', resize);
+      if (jar && jar.G) L.scene.remove(jar.G);
+    }
+  };
+  return current3dViewer;
+}
+
+/**
+ * Main Product Details Page Render Controller
+ */
+function renderProductDetails(productId) {
   Object.assign(thumbs, SHOTS);
 
-
-  // 1. Identify active product from URL query
-  const params = new URLSearchParams(window.location.search);
-  const activeId = params.get('id') || 'gummies';
-  const prod = [...PRODUCTS, ...EXTRA_PRODUCTS].find(p => p.id === activeId) || PRODUCTS[0];
+  const prodList = [...PRODUCTS, ...EXTRA_PRODUCTS];
+  let prodIndex = prodList.findIndex(p => p.id === productId);
+  if (prodIndex === -1) prodIndex = 0;
+  const prod = prodList[prodIndex];
   const clinical = CLINICAL_DETAILS[prod.id] || CLINICAL_DETAILS.gummies;
+  const story = STORY[prodIndex] || { t: [prod.name, ''], d: prod.desc, c: '#4a825e' };
+  const detail = DETAILS[prod.id] || null;
 
-  // 2. Update page title & SEO meta
+  // 1. Update Document Title
   document.title = `${prod.name} | TranzLife Biosciences`;
-  const metaDesc = document.querySelector('meta[name="description"]');
-  if (metaDesc) metaDesc.setAttribute('content', prod.desc);
+
+  // 2. Render 5-Formulation Switcher Bar
+  const switcherEl = $('#pdpSwitcher');
+  if (switcherEl) {
+    switcherEl.innerHTML = PRODUCTS.map((p, i) => `
+      <a class="pdp-switch-pill ${p.id === prod.id ? 'active' : ''}" data-id="${p.id}" href="?id=${p.id}">
+        <span class="pdp-switch-no">0${i + 1}</span>
+        <span class="pdp-switch-name">${p.short || p.name}</span>
+      </a>
+    `).join('');
+
+    switcherEl.querySelectorAll('.pdp-switch-pill').forEach(pill => {
+      pill.addEventListener('click', e => {
+        e.preventDefault();
+        const id = pill.dataset.id;
+        try {
+          history.pushState(null, '', `?id=${id}`);
+        } catch (_) {}
+        renderProductDetails(id);
+      });
+    });
+  }
 
   // 3. Render Breadcrumbs
   const crumbEl = $('#pdpBreadcrumb');
@@ -149,57 +273,77 @@ function initProductDetailsPage() {
     `;
   }
 
-  // 4. Render Gallery & Tabs
+  // 4. Setup 3D Canvas & Gallery Tabs
+  const canvas = $('#pdp3dCanvas');
+  const mainImg = $('#pdpMainImg');
+  const badge3d = $('#pdp3dBadge');
+  const tagEl = $('#pdpTag');
+  if (tagEl) tagEl.textContent = prod.tag;
+
   const studioImg = SHOTS[prod.id];
   const designImg = DESIGNS[prod.id];
-  const imgBox = $('#pdpImgBox');
-  if (imgBox) {
-    imgBox.innerHTML = studioImg ? `
-      <img id="pdpMainImg" src="${studioImg}" alt="${prod.name}" width="800" height="800">
-      <span class="pdp-badge-tag">${prod.tag}</span>
-    ` : `
-      <div class="pdp-img-soon" role="img" aria-label="${prod.name}: product image coming soon">
-        <span class="pdp-img-soon__mark" aria-hidden="true"></span>
-        <b>${prod.short}</b>
-        <small>${prod.size}</small>
-        <em>Product image coming soon</em>
-      </div>
-      <span class="pdp-badge-tag">${prod.tag}</span>
-    `;
+
+  if (canvas) {
+    canvas.hidden = false;
+    setup3DViewer(canvas, prod, prodIndex);
   }
-  const tabsEl = $('.pdp-gallery-tabs');
-  if (tabsEl && (!studioImg || !designImg)) tabsEl.hidden = true;
+  if (mainImg) mainImg.hidden = true;
+  if (badge3d) badge3d.classList.remove('hidden');
+
+  // Wire Gallery Tabs
+  const tabBtns = $$('.pdp-tab-btn');
+  tabBtns.forEach(btn => {
+    btn.classList.toggle('on', btn.dataset.view === '3d');
+    btn.onclick = () => {
+      tabBtns.forEach(b => b.classList.toggle('on', b === btn));
+      const mode = btn.dataset.view;
+      if (mode === '3d') {
+        if (canvas) canvas.hidden = false;
+        if (mainImg) mainImg.hidden = true;
+        if (badge3d) badge3d.classList.remove('hidden');
+      } else {
+        if (canvas) canvas.hidden = true;
+        if (badge3d) badge3d.classList.add('hidden');
+        if (mainImg) {
+          mainImg.hidden = false;
+          mainImg.src = mode === 'design' && designImg ? designImg : studioImg;
+        }
+      }
+    };
+  });
+
+  // Guarantee Pills
   const pillsEl = $('.pdp-guarantee-pills');
   if (pillsEl && clinical.pills === false) pillsEl.hidden = true;
 
-  const tabBtns = $$('.pdp-tab-btn');
-  tabBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      tabBtns.forEach(b => b.classList.toggle('on', b === btn));
-      const target = btn.dataset.view;
-      const mainImg = $('#pdpMainImg');
-      if (mainImg) {
-        mainImg.src = (target === 'design' && designImg) ? designImg : studioImg;
-      }
-    });
-  });
-
-  // 5. Render Product Details
+  // 5. Render Rich Product Info & Story Copy
   const infoEl = $('#pdpInfo');
   if (infoEl) {
+    const counterStr = `0${prodIndex + 1} / 0${PRODUCTS.length}`;
+    const superTitle = story.t ? story.t.join('') : prod.name;
+    const eyebrowText = detail ? detail.eyebrow : clinical.eyebrow;
+    const taglineText = detail ? detail.tagline : 'Breathe Well. Live Better. Embrace Every Breath.';
+    const introText = detail && detail.intro ? detail.intro[0] : prod.desc;
+    const botanicalList = detail && detail.list ? detail.list : [];
+
     infoEl.innerHTML = `
-      <p class="eyebrow drawn">${clinical.eyebrow}</p>
-      <h1 class="pdp-title">${prod.name}</h1>
-      ${clinical.rating ? `<div class="pdp-rating-row">
-        <div class="pdp-stars">★★★★★</div>
-        <span class="pdp-rating-text">${clinical.rating}</span>
-        <span class="pdp-badge-clinical">Clinical Rigor</span>
-      </div>` : ''}
+      <div class="pdp-meta-row">
+        <p class="eyebrow drawn">${eyebrowText}</p>
+        <span class="pdp-counter">${counterStr}</span>
+      </div>
+
+      <h1 class="pdp-super-title">${superTitle}</h1>
+      <p class="pdp-tagline">${taglineText}</p>
+      <p class="pdp-story-desc">${introText}</p>
+
       <div class="pdp-price-box pdp-pack">
         <span class="pdp-pack-k">Pack</span>
         <span class="pdp-pack-v">${prod.size}</span>
+        <span class="pdp-pack-k" style="margin-left:auto">Formulation</span>
+        <span class="pdp-pack-v">${prod.tag}</span>
       </div>
-      <p class="pdp-desc">${prod.desc}</p>
+
+      <!-- Highlights -->
       <div class="pdp-highlights">
         ${clinical.highlights.map(h => `
           <div class="pdp-highlight-item">
@@ -211,8 +355,22 @@ function initProductDetailsPage() {
         `).join('')}
       </div>
 
-      <!-- Actions: an enquiry (the contact form opens with this product filled in) and the online store
-           (a "coming soon" note until VITE_STORE_URL is set: src/app/store.js) -->
+      <!-- Botanical Ingredients Grid -->
+      ${botanicalList.length ? `
+        <div class="pdp-botanical-section">
+          <p class="eyebrow drawn" style="font-size:11px; margin-bottom:8px;">${detail.listTitle || 'Key Botanical Actives'}</p>
+          <div class="pdp-botanical-cards">
+            ${botanicalList.slice(0, 6).map(([herb, benefit]) => `
+              <div class="pdp-herb-chip">
+                <b>${herb}</b>
+                <span>${benefit}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      ` : ''}
+
+      <!-- Actions -->
       <div class="pdp-actions-row">
         <a class="pill pdp-btn-add" href="contact.html?product=${prod.id}#contact-form"><i aria-hidden="true">↗</i><b>Enquire about this product</b></a>
         ${storeCta(prod.id, { cls: 'pdp-store' })}
@@ -223,7 +381,7 @@ function initProductDetailsPage() {
       <div class="pdp-accordions">
         <div class="pdp-acc-item open">
           <button class="pdp-acc-header" type="button">
-            ${clinical.activesTitle || 'Key Botanical Actives'} <span class="pdp-acc-icon">+</span>
+            ${clinical.activesTitle || 'Full Botanical Composition'} <span class="pdp-acc-icon">+</span>
           </button>
           <div class="pdp-acc-body">
             <p>${clinical.botanicals}</p>
@@ -239,18 +397,9 @@ function initProductDetailsPage() {
           </div>
         </div>
 
-        ${clinical.mechanism ? `<div class="pdp-acc-item">
-          <button class="pdp-acc-header" type="button">
-            Biological Mechanism of Action <span class="pdp-acc-icon">+</span>
-          </button>
-          <div class="pdp-acc-body">
-            <p>${clinical.mechanism}</p>
-          </div>
-        </div>` : ''}
-
         <div class="pdp-acc-item">
           <button class="pdp-acc-header" type="button">
-            ${clinical.packagingTitle || 'Pack &amp; Storage'} <span class="pdp-acc-icon">+</span>
+            ${clinical.packagingTitle || 'Pack & Packaging'} <span class="pdp-acc-icon">+</span>
           </button>
           <div class="pdp-acc-body">
             <p>${clinical.packaging}</p>
@@ -258,41 +407,23 @@ function initProductDetailsPage() {
         </div>
       </div>
     `;
+
+    // Accordions Toggle
+    infoEl.querySelectorAll('.pdp-acc-header').forEach(header => {
+      header.addEventListener('click', () => {
+        const item = header.closest('.pdp-acc-item');
+        item.classList.toggle('open');
+      });
+    });
   }
 
-  // 7. Accordions Interactive Toggle
-  $$('.pdp-acc-header').forEach(header => {
-    header.addEventListener('click', () => {
-      const item = header.closest('.pdp-acc-item');
-      item.classList.toggle('open');
-    });
-  });
-
-  // 7b. Before / after comparison (products with one in src/data/compare.js)
+  // Before / After comparison
   try { initBeforeAfter($('#pdpCompare'), prod.id); } catch (e) { console.warn('Comparison unavailable:', e); }
 
-  // 8. Render Science / Mechanism Cards
-  const sciGrid = $('#pdpScienceGrid');
-  const sciBand = $('.pdp-science-band');
-  if (sciBand && !clinical.scienceCards.length) sciBand.hidden = true;
-  if (sciGrid) {
-    sciGrid.innerHTML = clinical.scienceCards.map(sc => `
-      <div class="pdp-science-card">
-        <div class="icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-          </svg>
-        </div>
-        <h4>${sc.title}</h4>
-        <p>${sc.text}</p>
-      </div>
-    `).join('');
-  }
-
-  // 9. More from TranzLife: the other products
+  // Cross Grid
   const crossGrid = $('#pdpCrossGrid');
   if (crossGrid) {
-    const others = [...PRODUCTS, ...EXTRA_PRODUCTS].filter(p => p.id !== prod.id && SHOTS[p.id]);
+    const others = PRODUCTS.filter(p => p.id !== prod.id);
     crossGrid.innerHTML = others.map(p => `
       <article class="pdp-mini-card">
         <div class="pdp-mini-media">
@@ -302,14 +433,20 @@ function initProductDetailsPage() {
           <h4>${p.name}</h4>
           <div class="pdp-mini-foot">
             <span class="size">${p.size}</span>
-            <a href="product-details.html?id=${p.id}">View details →</a>
+            <a href="?id=${p.id}">View 3D details →</a>
           </div>
         </div>
       </article>
     `).join('');
   }
+}
 
-  // 11. Navigation scroll header styling
+function initProductDetailsPage() {
+  const params = new URLSearchParams(window.location.search);
+  const activeId = params.get('id') || 'gummies';
+  renderProductDetails(activeId);
+
+  // Navigation scroll header
   const nav = $('#nav');
   function onScroll() {
     if (!nav) return;
@@ -318,7 +455,7 @@ function initProductDetailsPage() {
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
 
-  // 12. Mobile / Full-screen Navigation Menu Controller
+  // Mobile navigation
   const menuBtn = $('#dockMenu');
   const menu = $('#menu');
   const menuX = $('#menuX');
@@ -347,6 +484,10 @@ function initProductDetailsPage() {
     }
   });
 
+  window.addEventListener('popstate', () => {
+    const p = new URLSearchParams(window.location.search);
+    renderProductDetails(p.get('id') || 'gummies');
+  });
 }
 
 // Boot on DOM ready

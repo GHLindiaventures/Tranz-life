@@ -1,0 +1,28 @@
+/* ---------- links to the separate online store (src/app/store.js) ----------
+   "Buy online" once VITE_STORE_URL is set; until then a quiet "coming soon" note. */
+.store-link { display: inline-flex; align-items: center; gap: 6px; font-weight: 800; color: inherit; text-decoration: underline; text-decoration-color: rgba(232, 169, 58, .8); text-underline-offset: 4px; }
+.store-link i { font-style: normal; }
+.store-link:hover { color: var(--amber, #e8a93a); }
+.store-soon { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 14px; border-radius: 999px; border: 1px dashed rgba(36, 80, 42, .35); color: var(--muted, #4c6648); font-size: 13px; font-weight: 700; }
+.store-soon i { width: 8px; height: 8px; border-radius: 50%; background: var(--amber, #e8a93a); box-shadow: 0 0 0 3px rgba(232, 169, 58, .25); animation: storePulse 2.4s ease-in-out infinite; }
+@keyframes storePulse { 50% { box-shadow: 0 0 0 6px rgba(232, 169, 58, .08); } }
+@media (prefers-reduced-motion: reduce) { .store-soon i { animation: none; } }
+
+/* product page: pack line, actions, partner link */
+.pdp-pack { display: flex; align-items: baseline; gap: 12px; }
+.pdp-pack-k { font-size: 12px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--sage-ink, #41692b); }
+.pdp-pack-v { font-family: var(--f-display); font-weight: 850; font-stretch: 78%; font-size: clamp(1.4rem, 2.4vw, 1.9rem); color: var(--forest); }
+.pdp-actions-row { flex-wrap: wrap; align-items: center; }
+.pdp-partner { margin: 14px 0 0; font-size: 14px; color: var(--muted); }
+.pdp-partner a { font-weight: 700; color: var(--forest); text-decoration: underline; text-underline-offset: 3px; }
+.pdp-mini-foot .size { font-size: 13px; color: var(--muted); }
+
+/* Products page closing frame: the pack in place of a price */
+.sc-price.sc-price--pack { font-size: clamp(2.2rem, 6vh, 3.6rem) !important; line-height: .95; }
+.sc-store { display: block; margin-top: 14px; }
+
+/* home: "Buy online" beside the product links (only once the store is live) */
+.rc-store { font-size: 13px; }
+
+/* footer note */
+.nf-store { color: #bfd1b6; }

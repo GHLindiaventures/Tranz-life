@@ -1,0 +1,28 @@
+/* Header menu button. Every inner page's header uses it, but its rules live in sections/about.css, which this page
+   does not load (it has its own stylesheet). Same rules, copied unchanged. */
+.menu-btn {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.4);
+  display: grid;
+  place-items: center;
+  color: var(--forest);
+  transition: background 0.3s, transform 0.25s var(--ease-expo), box-shadow 0.25s ease;
+}
+
+.menu-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(20, 52, 26, 0.14);
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.menu-btn:active {
+  transform: translateY(1px) scale(0.95);
+}
+
+.menu-btn svg {
+  width: 20px;
+  height: 20px;
+}
