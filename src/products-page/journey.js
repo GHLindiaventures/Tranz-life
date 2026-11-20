@@ -529,6 +529,11 @@ function initProductJourney() {
 
   function closeOverlay() {
     if (ov.state !== 'open' && ov.state !== 'opening') return;
+    // If opened via product link from the homepage, closing returns directly to the homepage lineup:
+    if (wanted || (document.referrer && document.referrer.includes('index.html'))) {
+      window.location.href = 'index.html#products';
+      return;
+    }
     ov.from = cardSpot(ov.idx);                          // back into its card
     ov.state = 'closing'; ov.t0 = performance.now();
     ov.el.classList.remove('open'); ov.btn.classList.remove('open');
@@ -704,10 +709,16 @@ function initProductJourney() {
   if (wanted) {
     const targetIdx = PRODUCTS.findIndex(p => p.id === wanted || p.slug === wanted);
     if (targetIdx !== -1) {
-      setTimeout(() => {
-        window.dispatchEvent(new CustomEvent('tl:showcase', { detail: { index: targetIdx } }));
+      requestAnimationFrame(() => {
+        openOverlay(targetIdx);
         wake();
-      }, 400);
+      });
+      setTimeout(() => {
+        if (ov.state === 'closed') {
+          openOverlay(targetIdx);
+          wake();
+        }
+      }, 180);
     }
   }
 

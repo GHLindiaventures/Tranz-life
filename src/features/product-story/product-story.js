@@ -15,16 +15,43 @@ function initStory(){
   const R = seeded(19);
 
   // cards, notes and finale labels
-  $('#seqCards').innerHTML = STORY.map((s, i) => `<article class="sc ${i % 2 ? 'sc-r' : 'sc-l'}" style="--c:${s.c}">
+  $('#seqCards').innerHTML = STORY.map((s, i) => `<article class="sc ${i % 2 ? 'sc-r' : 'sc-l'}" data-id="${PRODUCTS[i].id}" style="--c:${s.c}" role="link" tabindex="0" aria-label="View ${PRODUCTS[i].name} 3D showcase">
       <span class="sc-st">${icon(s.ic)}</span>
       <p class="sc-k">${PRODUCTS[i].no} · ${PRODUCTS[i].name}</p>
       <h3><span>${s.t[0]}</span><span>${s.t[1]}</span></h3>
       <p class="sc-d">${icon('spark', 'sc-i')}${s.d}</p>
     </article>`).join('');
   $('#seqNotes').innerHTML = STORY.map((s, i) => `<p class="sn ${i % 2 ? 'sn-l' : 'sn-r'}">${s.note}<svg viewBox="0 0 120 60" aria-hidden="true"><path d="${i % 2 ? 'M110 8C80 10 50 24 30 48m0 0l2-14m-2 14l13-5' : 'M10 8c30 2 60 16 80 40m0 0l-2-14m2 14l-13-5'}"/></svg></p>`).join('');
-  $('#seqLabels').innerHTML = PRODUCTS.map(p => `<span class="sl">${p.short}</span>`).join('');
-  layer.innerHTML = PRODUCTS.map(p => `<img class="sp" src="${CUTS[p.id]}" alt="" decoding="async">`).join('');
+  $('#seqLabels').innerHTML = PRODUCTS.map((p, i) => `<a class="sl" href="products.html?id=${p.id}" data-id="${p.id}" data-idx="${i}" aria-label="Explore ${p.name} 3D showcase">${p.short}</a>`).join('');
+  layer.innerHTML = PRODUCTS.map((p, i) => `<img class="sp" src="${CUTS[p.id]}" alt="${p.name}" data-id="${p.id}" data-idx="${i}" role="link" tabindex="0" aria-label="Explore ${p.name} 3D showcase" decoding="async">`).join('');
   const cards = $$('.sc', root), notes = $$('.sn', root), labels = $$('.sl', root), final = $('#seqFinal'), imgs = $$('.sp', layer);
+
+  // Wire click and keyboard navigation to open the 3D showcase on products.html?id=<productId>
+  const navigateShowcase = (id) => {
+    window.location.href = `products.html?id=${id}`;
+  };
+
+  cards.forEach((card, i) => {
+    card.addEventListener('click', () => navigateShowcase(PRODUCTS[i].id));
+    card.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); navigateShowcase(PRODUCTS[i].id); }
+    });
+  });
+
+  imgs.forEach((img, i) => {
+    img.addEventListener('click', () => navigateShowcase(PRODUCTS[i].id));
+    img.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); navigateShowcase(PRODUCTS[i].id); }
+    });
+    // Two-way hover connection between bottle and handwritten label
+    img.addEventListener('pointerenter', () => labels[i]?.classList.add('is-hovered'));
+    img.addEventListener('pointerleave', () => labels[i]?.classList.remove('is-hovered'));
+  });
+
+  labels.forEach((lb, i) => {
+    lb.addEventListener('pointerenter', () => imgs[i]?.classList.add('is-hovered'));
+    lb.addEventListener('pointerleave', () => imgs[i]?.classList.remove('is-hovered'));
+  });
   const rot = STORY.map((s, i) => (i % 2 ? 1 : -1)*(2 + R()*3));
   // title words fly in from the centre, like a burst
   const title = $('#seqTitle');
