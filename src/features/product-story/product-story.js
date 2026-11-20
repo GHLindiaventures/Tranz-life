@@ -7,6 +7,7 @@ import { icon } from './icons.js';
 import { $, $$ } from '../../utils/dom.js';
 import { clamp, ease, lerp, seeded, smooth } from '../../utils/math.js';
 import { reduce } from '../../utils/media.js';
+import { state } from '../../app/state.js';
 
 function initStory(){
   const root = $('#seq'), pin = $('#seqPin'), layer = $('#seqProds');
@@ -118,7 +119,9 @@ function initStory(){
       else if (fin > 0){ const e = ease.back(clamp(fin*1.5 - i*.1, 0, 1)); x = x2; y = y2 + (1 - e)*H*.5; bw = bw2; bh = bh2; sc = .6 + .4*clamp(e, 0, 1.2); op = clamp(e*1.4, 0, 1); bl = (1 - clamp(e, 0, 1))*blurMax; }
       else { x = x1; y = y1 + (1 - grow)*H*.08 - (1 - shrink)*H*.06; bw = bw1; bh = bh1; sc = .72 + .28*one; op = one; bl = (1 - one)*blurMax; }
       const tilt = fin > 0 ? 0 : side*1.2*Math.sin((p - cOf(i))*7);
-      place(i, x, y, bw, bh, sc, op, bl, tilt);
+      // the first tub is the hero's, flying down the page: it shows here only once the flight has landed
+      const flying = i === 0 && Boolean(state.heroFlight && state.heroFlight.active && !state.heroFlight.landed);
+      place(i, x, y, bw, bh, sc, flying ? 0 : op, bl, tilt);
       const lb = labels[i]; if (lb){ lb.style.left = (x2/W*100).toFixed(2) + '%'; lb.style.top = ((y2 + bh2*.56)/H*100).toFixed(2) + '%'; }
     });
   })(performance.now());

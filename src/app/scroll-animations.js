@@ -1,7 +1,6 @@
-// Scroll-triggered reveals, word splits, parallax and marquee skew.
+// Scroll-triggered reveals, word splits and parallax.
 import { ScrollTrigger, gsap, hasGsap } from '../lib/gsap.js';
 import { $, $$ } from '../utils/dom.js';
-import { clamp } from '../utils/math.js';
 
 function splitWords(el){
   const walk = node => { [...node.childNodes].forEach(ch => {
@@ -24,10 +23,6 @@ function initScroll(){
   // lab bars fill in
   $$('.b-bar i').forEach(i => i.style.setProperty('--s', 0));
   ScrollTrigger.create({ trigger:'#board', start:'top 80%', once:true, onEnter:() => $$('.b-bar i').forEach((i, k) => setTimeout(() => i.style.setProperty('--s', 1), k*140)) });
-  // marquee leans with scroll speed
-  const mq = $('#mq'); let skew = 0;
-  ScrollTrigger.create({ onUpdate:self => { skew = clamp(self.getVelocity()/-300, -7, 7); } });
-  gsap.ticker.add(() => { skew *= .9; mq.style.transform = `skewX(${skew.toFixed(2)}deg)`; });
 }
 
 export { initScroll };

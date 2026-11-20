@@ -1,5 +1,4 @@
-// Entry point: loads styles and boots every feature in order.
-import './styles/main.css';
+// Entry point: boots every feature in order. Styles load from index.html, before the page paints.
 import { intro } from './app/intro.js';
 import { setLoad } from './app/loader.js';
 import { LAYOUT, initPages, pageProgress } from './app/page-sections.js';
@@ -18,6 +17,8 @@ import { buildFilters, buildGrid, fillShots } from './features/products/product-
 import { SHOTS } from './features/products/product-images.js';
 import { initLightbox } from './components/lightbox.js';
 import { initBenefits } from './features/benefits/benefit-slides.js';
+import { initAboutScroll } from './features/insider/about-scroll.js';
+import { initInsiderZoom } from './features/insider/insider-zoom.js';
 import { initStory } from './features/product-story/product-story.js';
 import { buildHerbs } from './features/science/herb-picker.js';
 import { initMolecule } from './features/science/molecule-viewer.js';
@@ -44,6 +45,8 @@ async function boot(){
   setLoad(96);
   initSmooth();
   initScroll();
+  try { initInsiderZoom(); } catch(err){ console.warn('insider zoom unavailable', err); }
+  try { initAboutScroll(); } catch(err){ console.warn('about panel unavailable', err); }
   intro();
 }
 

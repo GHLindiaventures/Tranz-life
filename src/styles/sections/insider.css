@@ -1,5 +1,8 @@
 /* ---------- insider ---------- */
 .insider{text-align:left}
+/* the hero's band hangs over this page's top (features/hero/curve-band.js); leave its room clear */
+#insider{background:transparent;padding-top:calc(max(100vw,900px)*.325)}
+#insider > .band{background:var(--ground);padding-top:clamp(20px,3vw,50px)}
 .in-h{text-align:center;font-size:clamp(3rem,7vw,6.4rem);line-height:.9;color:var(--forest)}
 .in-h .lt{display:block;color:var(--leafy)}
 .in-grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:clamp(30px,6vw,90px);align-items:center;margin-top:clamp(40px,6vw,80px)}
@@ -23,3 +26,7 @@
 .in-why{display:flex;justify-content:flex-end;margin-top:30px;padding-right:12%}
 .in-why .hand{font-size:28px;transform:rotate(-5deg);text-align:center}
 .in-why svg{display:block;margin:6px auto 0;width:40px;height:70px;fill:none;stroke:var(--forest);stroke-width:2;stroke-linecap:round}
+
+/* while the hero tub flies, the Lung Booster card is an empty mint slot that the tub arrives to fill */
+.flight-on .in-card:nth-child(2)>div{background:radial-gradient(78% 78% at 50% 44%,#f1f7e6,#cfe3b8)}
+.flight-on .in-card:nth-child(2) img{opacity:0}

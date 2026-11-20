@@ -1,14 +1,25 @@
 /* ---------- loader ---------- */
 .loader{position:fixed;inset:0;z-index:100;background:var(--stage);display:grid;place-items:center;transition:opacity .7s .1s,visibility 0s .8s}
 .loader-in{display:grid;justify-items:center;gap:16px;color:var(--forest)}
-.loader svg{width:58px;height:58px}
-.loader svg path{stroke-dasharray:6;stroke-dashoffset:6;animation:draw 1.6s var(--ease) forwards}
-.loader svg path+path{animation-delay:.35s}
 @keyframes draw{to{stroke-dashoffset:0}}
-.loader .logo-em{width:min(300px,62vw);animation:lgrow 1.4s var(--ease) both}
-.loader .logo-word{width:min(340px,76vw);animation:lfade 1s .35s var(--ease) both}
-.loader-tag{font-family:var(--f-hand);font-size:24px;color:var(--forest);animation:lfade 1s .6s var(--ease) both}
-@keyframes lgrow{from{transform:scale(.6) translateY(20px);opacity:0}to{transform:none;opacity:1}}
+/* the logo is sketched line by line (DNA, roots, trunk, leaves, then the name), then the real logo fills in.
+   Lines and their timings (--t start, --d length) come from scripts/make-logo-sketch.py. */
+.ld-mark{position:relative;width:min(300px,62vw);aspect-ratio:640/381}
+.ld-word{position:relative;width:min(340px,76vw);aspect-ratio:1100/231}
+.ld-sk{display:block;position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.ld-sk path{fill:none;stroke:#1f4423;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:1;animation:draw var(--d,400ms) cubic-bezier(.45,.05,.25,1) var(--t,0ms) forwards}
+.ld-sk path.g{stroke:#7a5a08;stroke-width:2}
+.ld-word .ld-sk path{stroke-width:2.2}
+.ld-mark .ld-sk{animation:skfade .45s 2.55s both}
+.ld-word .ld-sk{animation:skfade .35s 3.72s both}
+.ld-real{position:absolute;inset:0;width:100%;height:100%}
+.ld-mark .ld-real{animation:fillup .75s cubic-bezier(.45,.05,.25,1) 2.17s both}
+.ld-word .ld-real{animation:fillright .5s cubic-bezier(.45,.05,.25,1) 3.38s both}
+@keyframes skfade{to{opacity:0}}
+@keyframes fillup{from{opacity:0;clip-path:inset(100% 0 0 0);filter:saturate(.2)}to{opacity:1;clip-path:inset(0 0 0 0);filter:none}}
+@keyframes fillright{from{opacity:0;clip-path:inset(0 100% 0 0)}to{opacity:1;clip-path:inset(0 0 0 0)}}
+.loader-tag{font-family:var(--f-hand);font-size:24px;color:var(--forest);animation:lfade .6s 3.75s var(--ease) both}
+@media (prefers-reduced-motion:reduce){.ld-sk{display:none}.ld-real,.loader-tag{animation:none!important;opacity:1}}
 @keyframes lfade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
 .loader-bar{width:150px;height:3px;border-radius:3px;background:rgba(31,70,35,.15);position:relative;overflow:hidden}
 .loader-bar i{position:absolute;inset:0;background:var(--forest);transform-origin:left;transform:scaleX(0);transition:transform .3s}

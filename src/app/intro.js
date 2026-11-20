@@ -5,8 +5,15 @@ import { gsap, hasGsap } from '../lib/gsap.js';
 import { $ } from '../utils/dom.js';
 import { reduce } from '../utils/media.js';
 
-function intro(){
+// the loader's logo sketch runs on CSS from the first paint; wait for it to finish (at most 6 s)
+function sketchDone(loader){
+  const anims = loader.getAnimations ? loader.getAnimations({ subtree:true }).filter(a => isFinite(a.effect?.getTiming().iterations)) : [];
+  return Promise.race([Promise.all(anims.map(a => a.finished.catch(() => {}))), new Promise(r => setTimeout(r, 6000))]);
+}
+
+async function intro(){
   const loader = $('#loader'); setLoad(100);
+  await sketchDone(loader);
   setTimeout(() => {
     loader.classList.add('done');
     state.heroApi && state.heroApi.start();
