@@ -147,7 +147,7 @@
   flex: 1 1 0;
   max-width: 440px;
   min-width: 275px;
-  aspect-ratio: 1065 / 1477;
+  aspect-ratio: 1024 / 1536;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
@@ -184,12 +184,12 @@
   height: 100%;
   object-fit: contain;
   display: block;
-  filter: drop-shadow(0 0 1px rgba(255, 255, 255, 0.7)) drop-shadow(0 24px 40px rgba(18, 48, 20, 0.28));
-  transition: filter 0.4s ease;
+  filter: none;
+  transition: transform 0.4s ease;
 }
 
 .diff-glass-card:hover .diff-card-media img {
-  filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.95)) drop-shadow(0 32px 52px rgba(18, 48, 20, 0.4)) brightness(1.03);
+  filter: none;
 }
 
 /* Card body text container sitting naturally inside the card's curved green area */
