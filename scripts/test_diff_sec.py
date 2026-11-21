@@ -5,7 +5,7 @@ CHROME_PATH = r'C:\Program Files\Google\Chrome\Application\chrome.exe'
 async def test_difference_section():
     proc = subprocess.Popen([
         CHROME_PATH, '--headless', '--remote-debugging-port=9298', '--disable-gpu',
-        '--window-size=1500,1050', 'http://localhost:5173/index.html'
+        '--window-size=1560,1050', 'http://localhost:5173/index.html'
     ])
     await asyncio.sleep(3)
     try:
@@ -28,19 +28,31 @@ async def test_difference_section():
                         return d.get('result', {})
 
             await send('Page.enable')
-            await asyncio.sleep(4.0)
+            await asyncio.sleep(3.5)
 
-            # Hide intro/preloader and scroll directly to #difference
+            # Hide intro/preloader and scroll directly to #difference centered
             expr_scroll = """(() => {
                 const loader = document.getElementById('loader') || document.querySelector('.loader') || document.querySelector('.intro');
                 if (loader) loader.style.display = 'none';
                 const el = document.querySelector('#difference');
-                if (el) el.scrollIntoView({behavior: 'instant'});
+                if (el) el.scrollIntoView({behavior: 'instant', block: 'center'});
             })()"""
             await send('Runtime.evaluate', {'expression': expr_scroll})
-            await asyncio.sleep(2.5)
+            await asyncio.sleep(2.0)
 
-            # Capture screenshot
+            # Wait for all cards images to finish loading/decoding
+            expr_wait_imgs = """(async () => {
+                const imgs = Array.from(document.querySelectorAll('.diff-card-media img'));
+                await Promise.all(imgs.map(img => {
+                    if (img.complete && img.naturalWidth > 0) return Promise.resolve();
+                    return new Promise(res => { img.onload = res; img.onerror = res; });
+                }));
+                return imgs.map(i => ({ src: i.src, w: i.naturalWidth, h: i.naturalHeight }));
+            })()"""
+            res_imgs = await send('Runtime.evaluate', {'expression': expr_wait_imgs, 'awaitPromise': True, 'returnByValue': True})
+            print("Loaded images:", json.dumps(res_imgs.get('result', {}).get('value', []), indent=2))
+
+            # Capture screenshot of viewport
             res = await send('Page.captureScreenshot', {'format': 'png'})
             out_path = r'C:\Users\LENOVO\.gemini\antigravity\brain\6f09ac93-78bb-4130-93d0-ad7882b05545\difference_section_render.png'
             with open(out_path, 'wb') as f:
