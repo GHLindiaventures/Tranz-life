@@ -14,7 +14,7 @@ function buildGrid(){
       <div class="pc-media">${thumbImg(p)}<span class="pc-tag">${p.tag}</span><button class="pc-view" type="button" data-design="${p.id}">View design <i aria-hidden="true">↗</i></button></div>
       <div class="pc-body">
         <p class="pc-no">${p.no} / 05</p>
-        <a href="products.html?id=${p.id}" style="text-decoration:none;color:inherit" aria-label="Explore ${p.name} 3D showcase"><h3>${p.name}</h3></a>
+        <h3>${p.name}</h3>
         <p class="pc-d">${p.desc}</p>
         <ul class="pc-ing">${p.ing.map(x => `<li>${x}</li>`).join('')}</ul>
         <div class="pc-foot"><span class="pc-price">${inr(p.price)}<small>${p.size}</small></span><button class="add pill" data-id="${p.id}"><i aria-hidden="true">+</i>Add to bag</button></div>

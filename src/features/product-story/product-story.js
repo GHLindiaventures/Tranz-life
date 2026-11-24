@@ -23,13 +23,14 @@ function initStory(){
       <p class="sc-d">${icon('spark', 'sc-i')}${s.d}</p>
     </article>`).join('');
   $('#seqNotes').innerHTML = STORY.map((s, i) => `<p class="sn ${i % 2 ? 'sn-l' : 'sn-r'}">${s.note}<svg viewBox="0 0 120 60" aria-hidden="true"><path d="${i % 2 ? 'M110 8C80 10 50 24 30 48m0 0l2-14m-2 14l13-5' : 'M10 8c30 2 60 16 80 40m0 0l-2-14m2 14l-13-5'}"/></svg></p>`).join('');
-  $('#seqLabels').innerHTML = PRODUCTS.map((p, i) => `<a class="sl" href="products.html?id=${p.id}" data-id="${p.id}" data-idx="${i}" aria-label="Explore ${p.name} 3D showcase">${p.short}</a>`).join('');
-  layer.innerHTML = PRODUCTS.map((p, i) => `<img class="sp" src="${CUTS[p.id]}" alt="${p.name}" data-id="${p.id}" data-idx="${i}" role="link" tabindex="0" aria-label="Explore ${p.name} 3D showcase" decoding="async">`).join('');
+  $('#seqLabels').innerHTML = PRODUCTS.map((p, i) => `<span class="sl" data-id="${p.id}" data-idx="${i}">${p.short}</span>`).join('');
+  layer.innerHTML = PRODUCTS.map((p, i) => `<img class="sp" src="${CUTS[p.id]}" alt="${p.name}" data-id="${p.id}" data-idx="${i}" decoding="async">`).join('');
   const cards = $$('.sc', root), notes = $$('.sn', root), labels = $$('.sl', root), final = $('#seqFinal'), imgs = $$('.sp', layer);
 
-  // Wire click and keyboard navigation to open the 3D showcase on products.html?id=<productId>
-  const navigateShowcase = (id) => {
-    window.location.href = `products.html?id=${id}`;
+  // Wire click to scroll to shop on homepage
+  const navigateShowcase = () => {
+    const el = document.querySelector('#shop');
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
   };
 
   cards.forEach((card, i) => {

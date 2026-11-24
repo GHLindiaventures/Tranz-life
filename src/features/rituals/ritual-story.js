@@ -23,11 +23,14 @@ function initStory(){
       <p class="sc-d">${icon('spark', 'sc-i')}${s.d}</p>
     </article>`).join('');
   $('#seqNotes').innerHTML = STORY.map((s, i) => `<p class="sn ${i % 2 ? 'sn-l' : 'sn-r'}">${s.note}<svg viewBox="0 0 120 60" aria-hidden="true"><path d="${i % 2 ? 'M110 8C80 10 50 24 30 48m0 0l2-14m-2 14l13-5' : 'M10 8c30 2 60 16 80 40m0 0l-2-14m2 14l-13-5'}"/></svg></p>`).join('');
-  $('#seqLabels').innerHTML = PRODUCTS.map((p, i) => `<a class="sl" href="products.html?id=${p.id}" data-id="${p.id}" data-idx="${i}" aria-label="Explore ${p.name} 3D showcase">${p.short}</a>`).join('');
+  $('#seqLabels').innerHTML = PRODUCTS.map((p, i) => `<span class="sl" data-id="${p.id}" data-idx="${i}">${p.short}</span>`).join('');
   const cards = $$('.sc', root), notes = $$('.sn', root), labels = $$('.sl', root), final = $('#seqFinal');
 
   cards.forEach((card, i) => {
-    card.addEventListener('click', () => { window.location.href = `products.html?id=${PRODUCTS[i].id}`; });
+    card.addEventListener('click', () => {
+      const el = document.querySelector('#shop');
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    });
   });
   const rot = STORY.map((s, i) => (i % 2 ? 1 : -1)*(2 + R()*3));
   // title words fly in from the centre, like a burst

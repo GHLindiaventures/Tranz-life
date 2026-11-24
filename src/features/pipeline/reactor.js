@@ -7,6 +7,7 @@ import { envCube } from '../../lib/environment.js';
 import { $, $$ } from '../../utils/dom.js';
 import { clamp, lerp, seeded, smooth } from '../../utils/math.js';
 import { reduce } from '../../utils/media.js';
+import videoStep1 from '../../assets/process vedios/1.mp4';
 
 function initReactor(getProgress){
   const canvas = $('#reactCanvas'), pin = $('#pin'), tag = $('#molTag');
@@ -48,7 +49,6 @@ function initReactor(getProgress){
 
   // slides (the "pages" of the pipeline)
   const slidesEl = $('#slides'), ringEl = $('#wipeRing');
-  const pipe = (k) => `<div class="pipe" aria-hidden="true"><div class="pipe-line"><i></i></div><ol>${RX.map((r, i) => `<li class="${i <= k ? 'lit' : ''}${i === k ? ' cur' : ''}"><em></em><b>${String(i+1).padStart(2,'0')}</b><span>${r.t}</span></li>`).join('')}</ol></div>`;
   slidesEl.innerHTML = RX.map((r, k) => `
     <article class="slide ${k % 2 === 0 ? 't-cream' : 't-green'}" data-k="${k}">
       <div class="halo"></div>
@@ -60,11 +60,24 @@ function initReactor(getProgress){
         <p class="st-desc">${r.d}</p>
         <div class="spec">${r.s.map(x => `<span>${x}</span>`).join('')}</div>
       </div>
-      ${pipe(k)}
+      ${k === 0 ? `
+      <div class="slide-video-fullscreen">
+        <video class="process-step-video" src="${videoStep1}" muted playsinline preload="auto"></video>
+        <div class="slide-video-overlay"></div>
+      </div>` : ''}
     </article>`).join('');
   const slides = $$('.slide', slidesEl);
-  slides.forEach(s => s.addEventListener('click', e => { const li = e.target.closest('.pipe li'); if (li) window.dispatchEvent(new CustomEvent('tl:goStage', { detail:[...li.parentNode.children].indexOf(li) })); }));
-  $$('.pipe li').forEach(li => li.style.pointerEvents = 'auto');
+
+  const stepVideo = $('.process-step-video', slidesEl);
+  let videoDur = 10;
+  if (stepVideo) {
+    stepVideo.addEventListener('loadedmetadata', () => {
+      if (stepVideo.duration && !isNaN(stepVideo.duration)) {
+        videoDur = stepVideo.duration;
+      }
+    });
+    stepVideo.load();
+  }
 
   // helpers
   const easeOutCubic = x => 1 - Math.pow(1 - x, 3), easeInCubic = x => x*x*x, easeIO = x => x < .5 ? 4*x*x*x : 1 - Math.pow(-2*x + 2, 3)/2;
@@ -158,6 +171,29 @@ function initReactor(getProgress){
     const yaw = CH.yaw[k] + eY*(CH.yaw[k + 1] - CH.yaw[k]) + Math.sin(p*60)*.035*(lastK ? 1 - eY : 1);
     molG.rotation.set(.18*Math.sin(p*18)*(lastK ? 1 - eY : 1) + (lastK ? CH.pitch*eY : 0), yaw, 0);
     molG.scale.setScalar(sc*fit*pulse*(k === NSTAGE - 1 ? 1 + .3*easeOutCubic(clamp((u - .8)/.2, 0, 1)) : 1));
+
+    // Stage 1 (k === 0) video animation driven by scroll
+    if (stepVideo) {
+      if (k === 0) {
+        const targetTime = clamp(u, 0, 0.98) * videoDur;
+        if (Math.abs(stepVideo.currentTime - targetTime) > 0.03) {
+          stepVideo.currentTime = targetTime;
+        }
+        const vidEl = stepVideo.closest('.slide-video-fullscreen');
+        if (vidEl) {
+          const vScale = 1 + u * 0.05;
+          stepVideo.style.transform = `scale(${vScale})`;
+        }
+        // In stage 0, hide 3D molecule until near the end when it wipes into stage 2
+        molG.visible = u > 0.82;
+        if (molG.visible) {
+          const fade = clamp((u - 0.82) / 0.18, 0, 1);
+          molG.scale.multiplyScalar(fade);
+        }
+      } else {
+        molG.visible = true;
+      }
+    }
     // finale glow
     const fin = k === NSTAGE - 1 ? easeOutCubic(clamp((u - .78)/.22, 0, 1)) : 0;
     halo.material.opacity = fin*.55; halo.scale.setScalar(11 + fin*5); crown.material.opacity = fin*.55; crown.rotation.z = p*30;

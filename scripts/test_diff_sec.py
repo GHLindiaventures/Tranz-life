@@ -5,7 +5,7 @@ CHROME_PATH = r'C:\Program Files\Google\Chrome\Application\chrome.exe'
 async def test_difference_section():
     proc = subprocess.Popen([
         CHROME_PATH, '--headless', '--remote-debugging-port=9298', '--disable-gpu',
-        '--window-size=1560,1050', 'http://localhost:5173/index.html'
+        '--window-size=1560,1050', 'http://localhost:5174/index.html'
     ])
     await asyncio.sleep(3)
     try:
@@ -13,10 +13,9 @@ async def test_difference_section():
         resp = urllib.request.urlopen('http://localhost:9298/json').read().decode()
         targets = json.loads(resp)
         pages = [t for t in targets if t.get('type') == 'page']
-        if not pages:
-            print("No page found")
-            return
-        ws_url = pages[0]['webSocketDebuggerUrl']
+        print("Pages found:", [(p.get('title'), p.get('url')) for p in pages])
+        target_page = [p for p in pages if 'localhost:5174' in p.get('url', '')]
+        ws_url = (target_page[0] if target_page else pages[0])['webSocketDebuggerUrl']
         async with websockets.connect(ws_url, max_size=25*1024*1024) as ws:
             async def send(method, params=None):
                 msg_id = int(time.time() * 1000) % 1000000
@@ -30,27 +29,38 @@ async def test_difference_section():
             await send('Page.enable')
             await asyncio.sleep(3.5)
 
-            # Hide intro/preloader and scroll directly to #difference centered
+            # Scroll directly to #difference
             expr_scroll = """(() => {
                 const loader = document.getElementById('loader') || document.querySelector('.loader') || document.querySelector('.intro');
                 if (loader) loader.style.display = 'none';
                 const el = document.querySelector('#difference');
-                if (el) el.scrollIntoView({behavior: 'instant', block: 'center'});
+                if (el) {
+                    el.scrollIntoView({behavior: 'instant', block: 'start'});
+                    return { found: true, rect: el.getBoundingClientRect() };
+                }
+                return { found: false };
             })()"""
+            scroll_info = await send('Runtime.evaluate', {'expression': expr_scroll, 'returnByValue': True})
+            print("Scroll info:", json.dumps(scroll_info.get('result', {}).get('value', {}), indent=2))
+            await asyncio.sleep(2.0)
             await send('Runtime.evaluate', {'expression': expr_scroll})
             await asyncio.sleep(2.0)
 
-            # Wait for all cards images to finish loading/decoding
-            expr_wait_imgs = """(async () => {
-                const imgs = Array.from(document.querySelectorAll('.diff-card-media img'));
-                await Promise.all(imgs.map(img => {
-                    if (img.complete && img.naturalWidth > 0) return Promise.resolve();
-                    return new Promise(res => { img.onload = res; img.onerror = res; });
-                }));
-                return imgs.map(i => ({ src: i.src, w: i.naturalWidth, h: i.naturalHeight }));
+            # Check geometry of cards and right edge
+            expr_geom = """(() => {
+                const wrap = document.querySelector('.diff-wrap').getBoundingClientRect();
+                const track = document.querySelector('.diff-cards-track').getBoundingClientRect();
+                const cards = Array.from(document.querySelectorAll('.diff-glass-card')).map(c => c.getBoundingClientRect());
+                const lastCard = cards[cards.length - 1];
+                return {
+                    winWidth: window.innerWidth,
+                    wrap: { right: wrap.right, width: wrap.width },
+                    track: { right: track.right, width: track.width },
+                    lastCard: { right: lastCard.right, width: lastCard.width, spaceToWinRight: window.innerWidth - lastCard.right }
+                };
             })()"""
-            res_imgs = await send('Runtime.evaluate', {'expression': expr_wait_imgs, 'awaitPromise': True, 'returnByValue': True})
-            print("Loaded images:", json.dumps(res_imgs.get('result', {}).get('value', []), indent=2))
+            geom = await send('Runtime.evaluate', {'expression': expr_geom, 'returnByValue': True})
+            print("Geometry:", json.dumps(geom.get('result', {}).get('value', {}), indent=2))
 
             # Capture screenshot of viewport
             res = await send('Page.captureScreenshot', {'format': 'png'})
