@@ -9,8 +9,9 @@
 //   4. when the story lets go, the tub lifts out of the lineup, travels down the left side and fills the empty photo slot of
 //      Lung Booster in "See the difference", and stays there.
 // (state.heroFlight.landed is true while the story's own tub is the one on show: features/product-story hides it otherwise.)
-// The flight is driven by the scroll position through GSAP's ticker. It runs on desktop with motion allowed. On phones
-// and with reduced motion the tub just stays in the hero: it tips over and settles above the ribbon as you scroll.
+// The flight is driven by the scroll position through GSAP's ticker. It runs on the desktop layout (wider than 980px in
+// landscape, which includes tablets in landscape) with motion allowed. On phones, tablets in portrait and with reduced
+// motion the tub just stays in the hero: it tips over and settles above the ribbon as you scroll.
 // (The old 3D jar model in features/products/jar-layer.js carried the previous label, so the hero uses the photo.)
 import { PRODUCTS } from '../../data/products.js';
 import { CUTS } from '../products/product-images.js';
@@ -44,7 +45,10 @@ function initHeroJar(){
   // ---- the flight layer: a fixed layer over the page that carries the tub while it travels ----
   const hf = state.heroFlight = { active:false, landed:false };
   let layer = null, shadow = null, path = null, cur = 0, last = performance.now();
-  const canFly = () => !reduce && !!arc && !!seq && stage.clientWidth >= 760;
+  // the route is planned around the desktop layout, so phones and tablets in portrait keep the tub in the hero. This is
+  // the opposite of styles/responsive.css's stacked layout: (max-width:980px), (orientation:portrait) and (max-width:1366px)
+  const wide = matchMedia('(min-width: 981px) and (orientation: landscape), (min-width: 1367px)');
+  const canFly = () => !reduce && !!arc && !!seq && wide.matches;
   function setFlight(on){
     if (on === hf.active) return;
     hf.active = on; hf.landed = false;
@@ -76,13 +80,12 @@ function initHeroJar(){
     if (slotA){ const r = slotA.getBoundingClientRect(); sDock = r.top + r.height / 2 + scrollY - Hv * .47; }
     let ss, xs, ys, ks; stops = [];
     if (slotA && sDock > Hv * 1.7 && sDock + Hv * .3 < sHand - Hv * .1){
-      // two marked stops on the way: (1) just under the band, top-centre, as "You deserve the best" comes up; (2) down the
-      // left side of the headline. It slows into each and a soft ground shadow settles under it there.
-      ss = [0, Hv * .45, sDock - Hv * 1.15, sDock - Hv * .75, sDock - Hv * .6, sDock - Hv * .45, sDock, sDock + Hv * .3, sHand];
-      xs = [G.cx, G.cx, W * .4, W * .447, W * .15, W * .14, W * .3, W * .3, W * .575];
-      ys = [G.y - G.lift, Hv * .33, Hv * .22, Hv * .4, Hv * .42, Hv * .58, Hv * .5, Hv * .72, yHand];
-      ks = [1, Hv * .34 / G.h, Hv * .3 / G.h, Hv * .29 / G.h, Hv * .26 / G.h, Hv * .25 / G.h, Hv * .32 / G.h, Hv * .34 / G.h, kEnd];
-      stops = [sDock - Hv * .75, sDock - Hv * .45];
+      // straight down the page centre, through the headline, then slide across to fill the Lung Booster card
+      ss = [0, Hv * .4, sDock - Hv * .7, sDock - Hv * .25, sDock, sDock + Hv * .3, sHand];
+      xs = [G.cx, W * .5, W * .5, W * .5, W * .3, W * .3, W * .575];
+      ys = [G.y - G.lift, Hv * .32, Hv * .5, Hv * .5, Hv * .5, Hv * .72, yHand];
+      ks = [1, Hv * .34 / G.h, Hv * .32 / G.h, Hv * .3 / G.h, Hv * .32 / G.h, Hv * .34 / G.h, kEnd];
+      stops = [];
     } else {   // no card to dock on: just weave to the story
       ss = [0, sHand * .2, sHand * .4, sHand * .6, sHand * .8, sHand];
       xs = [G.cx, G.cx, W * .22, W * .12, W * .3, W * .575];
@@ -91,24 +94,32 @@ function initHeroJar(){
       slotA = null;
     }
     const A = { x:curve(ss, xs), y:curve(ss, ys), s:curve(ss, ks) };
-    // B: where the story's lineup puts its first tub (see features/product-story), and the benefits photo slot
+    // B: where the story's lineup puts its active product, and the benefits photo slot
     const sLift = sr.bottom + scrollY - Hv;
-    const gap = Math.min(W * .16, 270), x2 = W * .5 - 2 * gap, y2 = Hv * .67, k2 = Math.min(Hv * .31, gap * .92 / ar) / G.h;
-    itemB = $('#benStage .bi:first-child'); slotB = itemB && $('.bi-img', itemB);
+    const activeIdx = state.benefitIdx || 0;
+    const mobile = W < 760 || W / Hv < .9;   // the same test as features/product-story's lineup
+    const gap = Math.min(W * (mobile ? .19 : .16), mobile ? 120 : 270);
+    const col = mobile ? (activeIdx < 3 ? activeIdx - 1 : (activeIdx - 3) - .5) : activeIdx - 2;
+    const x2 = W * .5 + col * (mobile ? W * .3 : gap);
+    const y2 = Hv * .67, k2 = Math.min(Hv * .31, (mobile ? W * .28 : gap * .92) / ar) / G.h;
+    itemB = $('#benStage .bi.on') || $('#benStage .bi:first-child');
+    slotB = itemB && $('.bi-img', itemB);
     let Bp = null, sDockB = 0;
     if (slotB){
       const r = slotB.getBoundingClientRect(); sDockB = r.top + r.height / 2 + scrollY - Hv * .55;
       if (sDockB > sLift + Hv * .6){
         const cx = r.left + r.width / 2, kDock = Math.max(r.width, r.height) * .86 / G.h, d = sDockB - sLift;
         const bs = [sLift, sLift + d * .45, sDockB - Hv * .3, sDockB];
-        Bp = { x:curve(bs, [x2, W * .06, W * .12, cx]), y:curve(bs, [y2, Hv * .5, Hv * .68, Hv * .55]), s:curve(bs, [k2, Hv * .26 / G.h, Hv * .28 / G.h, kDock]) };
+        const mx1 = lerp(x2, cx, 0.35), mx2 = lerp(x2, cx, 0.7);
+        Bp = { x:curve(bs, [x2, mx1, mx2, cx]), y:curve(bs, [y2, Hv * .5, Hv * .68, Hv * .55]), s:curve(bs, [k2, Hv * .26 / G.h, Hv * .28 / G.h, kDock]) };
       }
     }
-    path = { A, B:Bp, W, Hv, sHand, sLift, sDockB };
+    path = { A, B:Bp, W, Hv, sHand, sLift, sDockB, curIdx: activeIdx };
   }
 
   function layout(){
-    const W = stage.clientWidth, H = stage.clientHeight, mobile = W < 760, sp = $('.stage-space');
+    // the stacked layout gives the tub its own space below the headline (.stage-space); the wide one stands it in the arc
+    const W = stage.clientWidth, H = stage.clientHeight, mobile = !wide.matches, sp = $('.stage-space');
     let cx, y, h, lift = 0;
     if (mobile || !arc){
       cx = W*.5;
@@ -153,7 +164,8 @@ function initHeroJar(){
   function flightRender(){
     const now = performance.now(), dt = Math.min(.1, (now - last) / 1000); last = now;
     cur += (scrollY - cur) * (1 - Math.exp(-dt * 12)); if (Math.abs(scrollY - cur) < .05) cur = scrollY;
-    if (!path || path.W !== stage.clientWidth || path.Hv !== innerHeight) plan(stage.clientWidth, innerHeight);
+    const activeIdx = state.benefitIdx || 0;
+    if (!path || path.W !== stage.clientWidth || path.Hv !== innerHeight || path.curIdx !== activeIdx) plan(stage.clientWidth, innerHeight);
     const Hv = path.Hv, sc = cur, t = now / 1000;
     // the story's own copy of the tub is the one on show between the two flights
     const story = sc >= path.sHand - 1 && (!path.B || sc < path.sLift);
@@ -171,6 +183,14 @@ function initHeroJar(){
     let rot = clamp(dx * Hv / path.W * 12.6, -14, 14) + home * (Math.sin(t * .55) * 2.2 + lean.x * 6);
     let op = 1;
     if (P === path.A){
+      hf.flyingIdx = 0;
+      if (img.dataset.curProd !== 'gummies'){
+        img.src = CUTS.gummies;
+        img.dataset.curProd = 'gummies';
+      }
+      if (sc < path.sHand * 0.4 && state.benefitIdx !== 0){
+        state.benefitIdx = 0;
+      }
       // fill the empty Lung Booster card in "You deserve the best" as it comes by, and let go as it scrolls away
       if (slotA){
         const d = onSlot(slotA, 18), w = 1 - smooth(.1, .42, Math.abs(d.cy - Hv * .47) / Hv);
@@ -180,11 +200,35 @@ function initHeroJar(){
       const q = smooth(path.sHand - Hv * .5, path.sHand, sc);            // the shadow settles into the story's
       img.style.filter = `drop-shadow(0 ${lerp(30, 24, q).toFixed(1)}px ${lerp(26, 22, q).toFixed(1)}px rgba(${lerp(20, 31, q) | 0},${lerp(52, 70, q) | 0},${lerp(24, 35, q) | 0},${lerp(.32, .22, q).toFixed(3)}))`;
     } else {
-      // out of the story's lineup, down to the empty Lung Booster photo in "See the difference", where it stays
-      const w = sc >= path.sDockB ? 1 : 1 - smooth(.1, .42, Math.abs(onSlot(slotB).cy - Hv * .55) / Hv);
+      // Route B: between story lineup and benefits slot
+      hf.flyingIdx = activeIdx;
+      const activeProd = PRODUCTS[activeIdx] || PRODUCTS[0];
+      if (img.dataset.curProd !== activeProd.id){
+        img.src = CUTS[activeProd.id];
+        img.dataset.curProd = activeProd.id;
+      }
+
+      const docked = sc >= path.sDockB;
+      document.documentElement.classList.toggle('ben-docked', docked);
+      document.documentElement.classList.toggle('flight-in-air', !docked && sc >= path.sLift);
+
+      if (docked){
+        // While docked in Benefits, the card slot itself renders the active product.
+        // Hiding #flight completely prevents any ghosting or overlap!
+        layer.style.visibility = 'hidden';
+        return;
+      }
+
+      // In air between story lineup and benefits:
+      layer.style.visibility = 'visible';
+      if (!slotB){
+        itemB = $('#benStage .bi.on') || $('#benStage .bi:first-child');
+        slotB = itemB && $('.bi-img', itemB);
+      }
+      const w = 1 - smooth(.1, .42, Math.abs(onSlot(slotB).cy - Hv * .55) / Hv);
       const d = onSlot(slotB);
       x = lerp(x, d.x, w); y = lerp(y, d.y, w); k = lerp(k, d.k, w); rot = lerp(rot, d.rot, w);
-      if (!itemB.classList.contains('on')) op = 1 - w;                   // another product is showing: it is not its card
+      op = 1;
       img.style.filter = 'drop-shadow(0 24px 22px rgba(31,70,35,.22))';
     }
     layer.style.opacity = op.toFixed(3);

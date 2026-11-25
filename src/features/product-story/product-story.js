@@ -34,7 +34,9 @@ function initStory(){
   const arcs = $$('.seq-arcs path', root).map(pth => ({ pth, len:pth.getTotalLength() }));
 
   let W = 1, H = 1, mobile = false;
-  const resize = () => { const r = pin.getBoundingClientRect(); W = r.width || innerWidth; H = r.height || innerHeight; mobile = W < 760 || W/H < .9; };
+  // stacked layout (narrow or portrait screens): each product above a card that spans the screen. The .stacked class
+  // switches the cards' styles to match (styles/responsive.css); a phone on its side keeps the side-by-side layout.
+  const resize = () => { const r = pin.getBoundingClientRect(); W = r.width || innerWidth; H = r.height || innerHeight; mobile = W < 760 || W/H < .9; root.classList.toggle('stacked', mobile); };
   window.addEventListener('resize', resize); resize();
   // fit a product image inside a box (keeps the photo's own proportions)
   const ar = i => (imgs[i].naturalWidth || 1)/(imgs[i].naturalHeight || 1);
@@ -92,8 +94,8 @@ function initStory(){
       else if (fin > 0){ const e = ease.back(clamp(fin*1.5 - i*.1, 0, 1)); x = x2; y = y2 + (1 - e)*H*.5; bw = bw2; bh = bh2; sc = .6 + .4*clamp(e, 0, 1.2); op = clamp(e*1.4, 0, 1); bl = (1 - clamp(e, 0, 1))*blurMax; }
       else { x = x1; y = y1 + (1 - grow)*H*.08 - (1 - shrink)*H*.06; bw = bw1; bh = bh1; sc = .72 + .28*one; op = one; bl = (1 - one)*blurMax; }
       const tilt = fin > 0 ? 0 : side*1.2*Math.sin((p - cOf(i))*7);
-      // the first tub is the hero's, flying down the page: it shows here only once the flight has landed
-      const flying = i === 0 && state.heroFlight.active && !state.heroFlight.landed;
+      // the active product in flight down to benefits (or hero jar arriving): it shows here once landed
+      const flying = state.heroFlight.active && !state.heroFlight.landed && i === (state.heroFlight.flyingIdx ?? 0);
       place(i, x, y, bw, bh, sc, flying ? 0 : op, bl, tilt);
       const lb = labels[i]; if (lb){ lb.style.left = (x2/W*100).toFixed(2) + '%'; lb.style.top = ((y2 + bh2*.56)/H*100).toFixed(2) + '%'; }
     });

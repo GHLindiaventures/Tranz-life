@@ -1,0 +1,61 @@
+/* ---------- mini bag bar (features/cart/mini-bag.js): slim, nav-bar style, stays while the bag has items ---------- */
+.mb{position:fixed;z-index:75;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));width:min(540px,calc(100% - 24px));display:flex;align-items:center;gap:8px;padding:6px 6px 6px 6px;border-radius:999px;background:rgba(255,255,255,.9);-webkit-backdrop-filter:blur(14px) saturate(1.3);backdrop-filter:blur(14px) saturate(1.3);border:1px solid var(--line);box-shadow:0 18px 44px -18px rgba(10,30,14,.45),0 4px 14px -8px rgba(10,30,14,.25);color:var(--ink);transform:translate(-50%,calc(100% + 40px));opacity:0;transition:transform .55s var(--ease),opacity .3s}
+.mb.show{transform:translate(-50%,0);opacity:1}
+
+.mb-sum{flex:1;min-width:0;display:flex;align-items:center;gap:10px;padding:2px 10px 2px 2px;border-radius:999px;text-align:left;transition:background .25s}
+.mb-sum:hover{background:var(--ground)}
+.mb-thumbs{display:flex;flex:none}
+.mb-thumbs .t{position:relative;width:40px;height:40px;border-radius:50%;border:2px solid #fff;background:var(--ground);margin-left:-9px;display:grid;place-items:center}
+.mb-thumbs .t:first-child{margin-left:0}
+.mb-thumbs img{width:100%;height:100%;border-radius:50%;object-fit:cover;display:block}
+.mb-thumbs em{position:absolute;right:-4px;top:-4px;min-width:17px;height:17px;padding:0 4px;border-radius:999px;background:var(--cream);color:var(--on-cream);border:2px solid #fff;font-style:normal;font-size:10.5px;font-weight:800;display:grid;place-items:center;line-height:1}
+.mb-thumbs .t.on{box-shadow:0 0 0 2px var(--sage)}
+.mb-thumbs .more{font-size:12px;font-weight:800;color:var(--forest)}
+.mb.pop .mb-thumbs .t.new{animation:mb-pop .5s var(--ease)}
+.mb-text{min-width:0;display:flex;flex-direction:column;line-height:1.2}
+.mb-line{font-weight:800;font-stretch:84%;font-size:15.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mb-line.flash{color:var(--sage)}
+.mb-ship{font-size:12px;font-weight:600;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mb-ship.done{color:var(--sage)}
+/* − n + for the active product */
+.mb-qty{flex:none;display:flex;align-items:center;gap:2px;padding:3px;border-radius:999px;background:var(--ground);border:1px solid var(--line)}
+.mb-step{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:#fff;color:var(--forest);font-size:20px;font-weight:700;line-height:1;box-shadow:0 1px 3px rgba(10,30,14,.14);transition:background-color .2s,color .2s,transform .2s var(--ease)}
+.mb-step svg{width:16px;height:16px}
+.mb-step:hover:not(:disabled){background:var(--forest);color:var(--on-cream)}
+.mb-step:active:not(:disabled){transform:scale(.92)}
+.mb-step:focus-visible{outline:2px solid var(--sage);outline-offset:2px}
+.mb-step:disabled{opacity:.4;cursor:not-allowed}
+.mb-n{min-width:26px;text-align:center;font-weight:800;font-size:15px;font-variant-numeric:tabular-nums}
+.mb-go{flex:none;min-height:46px;padding:6px 6px 6px 18px;font-size:15px}
+.mb-go i{width:32px;height:32px}
+.mb-track{position:absolute;left:30px;right:30px;bottom:-1px;height:3px;border-radius:999px;background:var(--tint);overflow:hidden}
+.mb-track i{display:block;height:100%;background:var(--sage);transform-origin:left;transition:transform .6s var(--ease)}
+
+/* out of the way while the full-screen menu is open */
+html.menu-open .mb{opacity:0;pointer-events:none;transform:translate(-50%,calc(100% + 40px))}
+/* keep page content and messages clear of the bar */
+html.mb-on footer::after{content:"";display:block;height:86px}
+html.mb-on .toast{bottom:calc(92px + env(safe-area-inset-bottom,0px))}
+
+@keyframes mb-pop{0%{transform:scale(.6)}60%{transform:scale(1.12)}100%{transform:none}}
+
+@media (max-width:620px){
+  .mb{bottom:calc(10px + env(safe-area-inset-bottom,0px));width:calc(100% - 20px)}
+  .mb-thumbs .t{width:36px;height:36px}
+  .mb-line{font-size:15px}
+  .mb-go{padding-left:14px}
+  .mb-step{width:32px;height:32px}
+  .mb-n{min-width:22px}
+}
+@media (max-width:420px){
+  .mb{gap:6px}
+  .mb-sum{gap:8px;padding-right:4px}
+  .mb-go{min-height:44px;padding:6px 14px;font-size:14.5px}
+  .mb-go i{display:none}
+  .mb-step{width:30px;height:30px;font-size:18px}
+  .mb-n{min-width:20px;font-size:14px}
+}
+@media (prefers-reduced-motion:reduce){
+  .mb{transition:opacity .2s}
+  .mb.pop .mb-thumbs .t.new{animation:none}
+}

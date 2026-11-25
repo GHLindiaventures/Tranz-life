@@ -47,8 +47,19 @@ function initNav(){
   $('#dockList').addEventListener('click', () => setTimeout(() => unfold(false), touch ? 250 : 600));
   // remember the fold state before focus unfolds it, so a first tap only opens the bar
   let wasOpen = false; btn.addEventListener('pointerdown', () => { wasOpen = dock.classList.contains('open'); });
+  // phones, tablets (also in landscape) and narrow windows: the menu button moves into the top bar next to the bag,
+  // the side dock is hidden, and one tap opens the full menu (it lists every section), so nothing floats over the
+  // page content. The side dock stays for wide screens with a mouse (the same test as the .wrap gutter in global.css).
+  const small = matchMedia('(max-width: 1180px), not all and (hover: hover) and (pointer: fine)'), btnHome = btn.parentElement, slot = $('.nav-act', nav);
+  const placeMenuBtn = () => {
+    if (small.matches){ if (btn.parentElement !== slot) slot.appendChild(btn); }
+    else if (btn.parentElement !== btnHome) btnHome.insertBefore(btn, btnHome.firstChild);
+    dock.classList.toggle('dock-off', small.matches);
+    unfold(false);
+  };
+  placeMenuBtn(); small.addEventListener('change', placeMenuBtn);
   btn.addEventListener('click', () => {
-    if (touch && !wasOpen && !menu.classList.contains('open')){ wasOpen = true; unfold(true); return; }
+    if (touch && !small.matches && !wasOpen && !menu.classList.contains('open')){ wasOpen = true; unfold(true); return; }
     unfold(false); setOpen(!menu.classList.contains('open'));
   });
   $('#menuX').addEventListener('click', () => setOpen(false));

@@ -30,5 +30,7 @@ p{margin:0}
 .pill:hover i{transform:rotate(45deg)}
 .pill:hover{transform:translateY(-1px)}
 .pill.light{color:var(--forest)}.pill.light i,.pill.light b{background:#fff}
-/* keep content clear of the left dock on desktop */
-@media (min-width:981px){.wrap{padding-left:max(24px,calc(112px - (100vw - 1320px)/2))}}
+/* keep content clear of the left dock, where it shows: wide screens with a mouse (features/navigation/navigation.js
+   moves the menu button into the top bar everywhere else). The dock takes about 112px from the screen's left edge;
+   the margin beside a centred .wrap already covers part of that on screens wider than 1320px. */
+@media (min-width:1181px) and (hover:hover) and (pointer:fine){.wrap{padding-left:max(24px,calc(112px - max(0px,(100vw - 1320px)/2)))}}

@@ -5,6 +5,9 @@ node_modules/
 dist/
 dist-single/
 
+# payment server order file (holds customer details)
+server/data/
+
 # local environment (copy .env.example to .env)
 .env
 .env.local

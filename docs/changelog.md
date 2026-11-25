@@ -1,5 +1,69 @@
 # Changelog
 
+## v13.4 (25 Nov 2026): − / + quantity on the bag bar and in the order summary
+- **Bag bar:** after adding a product, the bar shows **− n +** for it (its thumbnail comes first, with a ring). The text flashes "Calm Inhaler × 3" as it changes. − on the last one is a bin that takes the product out, and the control moves to the next product (the bar goes away when the bag is empty). + stops at 10 of a product. The bar now shows the total first ("₹747 · 3 items"), so a narrow phone cuts the count, not the money.
+- **Checkout order summary:** every item has **− n +** and "₹249 each". The bag changes with it. − on the last one of a product is a bin, except for the only product left (an order needs one). The receipt shows "3 × ₹249" without the buttons.
+- On the **payment step**, a quantity change makes the order again for the new amount (its QR code and Razorpay order were for the old one). The payment area greys out with "Updating your order for the new amount…", waits for the clicks to stop, then shows the new order number and amount, so quick clicks make one new order.
+- One quantity rule for the bag drawer, the bar and the summary (`setQty` in `features/cart/cart.js`). Screen readers hear each change ("Calm Inhaler: 4. Total ₹1,345.") and keep their place on the button.
+
+## v13.3 (25 Nov 2026): new payment step, QR code with UPI app logos, and cards
+- The payment step is laid out like a shop's payment page: the methods on the left (**UPI** "Pay by any UPI app", **Credit / Debit / ATM Card**), the chosen method in the middle, and the order summary with the total amount on the right. A "100% secure" badge sits by the heading. On narrow screens the methods sit in a row above the method, and on phones the summary folds at the top.
+- **UPI on a computer:** "Scan QR and pay", with the amount, a blurred QR and a **Show QR code** button. Clicking it makes a QR code for this order (Razorpay), valid for 10 minutes with a countdown. Under it, "Scan with any UPI app" and the **Google Pay, PhonePe, BHIM and Paytm** logos, plus "+ more". The page confirms by itself once the customer pays from their phone. When the code runs out, **Show new QR code**.
+- **UPI on a phone:** the app logos are buttons (Google Pay, PhonePe, Paytm, BHIM, and "Other UPI app" on Android) that open the app with the amount filled in, as before.
+- **Cards** are live with Razorpay: credit, debit and ATM cards (Visa, Mastercard, RuPay, Amex, Maestro; the matching network lights up as the number is typed). The details go from the browser straight to Razorpay, the bank asks for an OTP in Razorpay's window, and the order confirms by itself. The receipt says, for example, "Visa card ending 1111".
+- Razorpay now runs through one script (Custom Checkout, `razorpay.js`) on every device. The computer QR code uses Razorpay's on-page QR flow, which Razorpay switches on per account (README → Payments → Setting it up).
+- The separate "QR code" tab is gone. TranzLife's own UPI ID (`MERCHANT_UPI_ID`) is now a fallback: its QR code and the UTR form show only when Razorpay is not set up, is down, or can't make a QR code.
+- Admin page: Razorpay payments show "Paid by UPI · Razorpay" or "Paid by card · Razorpay".
+- Test mode: the QR code is a test code (not payable), with "Customer scans and pays" and "Bank declines" buttons under it.
+
+## v13.2 (25 Nov 2026): UPI tab pays through Razorpay, with no UTR
+- The **UPI** tab now shows one button per app: **Google Pay, PhonePe, Paytm, BHIM**, and "Other UPI app" on Android. On a phone, tapping one opens that app with the amount filled in. The customer approves with their UPI PIN and comes back to **Payment confirmed**. On a computer, which can't open UPI apps, the same buttons open Razorpay's window with a QR code for the order.
+- No UTR on the UPI tab: Razorpay reports the payment. The server marks the order paid only when Razorpay says the payment is captured for that order and the full amount. It hears through the checkout's signed response, a signed webhook (`/api/webhooks/razorpay`), or by asking Razorpay when the customer's page or the admin page checks. So it still confirms if the customer closes the page. If the bank is slow, the receipt says "Payment received" and changes to confirmed by itself.
+- "Enter your UPI ID and approve the request" (UPI collect) is not offered: NPCI stopped online shops sending collect requests on Android and computers from 28 February 2026.
+- The **QR code** tab is unchanged: pay TranzLife's own UPI ID, then send the UTR for the admin to check. The UTR form now shows only on this tab.
+- Admin page: UPI-app orders show under Paid with the UTR, Razorpay payment ID and payer's UPI ID, and "Paid twice" (with the payment to refund) if one order is paid twice.
+- Each tab shows only when it is set up. New server settings: `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, `RAZORPAY_WEBHOOK_SECRET` (README → Payments). Still no new dependencies: `server/razorpay.js` uses plain `fetch`.
+- Test mode: a test screen walks through what happens on the customer's phone (the app opens, they pick a bank account and enter their UPI PIN **in the app**, the bank approves) and lets you choose the outcome: pays, bank declines, or backs out. It has no PIN box: a website never asks for a UPI PIN, and the checkout now says so.
+- Fixed: the receipt left an empty cell when it showed both a UTR and a payment ID. The page no longer gets a stray 16px bottom margin while the checkout is open.
+- Tests: the Razorpay flow end to end against a fake Razorpay API (amount in paise, forged signatures, short, uncaptured and failed payments, webhooks and repeats, double payment, Razorpay down, missed webhooks).
+
+## v13.1 (23 Nov 2026): a mini bag bar when a product is added
+- Adding a product now slides up a small bag bar at the bottom centre of the screen, instead of the one-line "added to your bag" message. It shows the product just added (and how many are in the bag), the whole bag as thumbnails with quantities (up to four, then "+n"), the item count and subtotal, and a progress bar to free delivery ("Add ₹450 more for free delivery" / "You get free delivery").
+- **View bag** opens the bag drawer and **Checkout** goes straight to the checkout. The bar hides itself after 5 seconds, but not while the pointer or keyboard focus is on it. × or Escape closes it. Screen readers hear "<product> added. 3 items in your bag, ₹1,747."
+- It never shows over the open bag or the checkout, and it hides when an order is placed. On phones it spans the screen width with full-width buttons. With reduced motion it fades instead of sliding.
+- Fixed: after "Added ✓" the Add button lost its "+" icon, and clicking it twice quickly could leave it stuck on "Added ✓".
+- Code: `features/cart/mini-bag.js` and `styles/components/mini-bag.css`.
+
+## v13.0 (23 Nov 2026): checkout with UPI and QR payments to TranzLife's own UPI ID
+- "Checkout" in the bag opens a checkout dialog: delivery details (name, mobile, email, address, state, PIN code, all checked), then payment, then a receipt. Every order gets a number like `TL-261123-7K3QXM2A` that carries the customer's details, so you always know who paid.
+- Customers pay TranzLife's own UPI ID with no payment gateway and no fees:
+  - **UPI:** on phones, "Open my UPI app" opens their UPI app with the amount and order number filled in. On any device they can copy the UPI ID, amount and order number.
+  - **QR code:** a UPI QR for the exact amount, with the order number as the payment note.
+- After paying, the customer sends the **UTR** (the 12-digit UPI reference number, with help on where each app shows it). The order moves to "verifying", the bag empties, and the page updates by itself to "Payment confirmed", or shows your reason if the UTR is rejected so they can send a corrected one.
+- New **admin page** at `/api/admin` (password `ADMIN_PASSWORD`). It lists orders to verify with the amount, UTR, customer details and items, with Confirm, Reject and "Mark paid" (for payments found in the bank without a UTR), plus a WhatsApp link to the customer. Sign-in is rate-limited, sessions expire after 12 hours, and the page runs under a strict content security policy.
+- New payment server in `server/` (`npm run server`, plain Node, no new dependencies). It prices every order from the catalogue (prices sent by the browser are ignored). It refuses a UTR already used on another order, and refuses a rejected UTR if it is sent again. Orders are saved to `server/data/orders.json` (git-ignored).
+- **Card** payments need a licensed gateway, so the Card option shows only in test mode for now (form, OTP step and receipt ready). README → Payments → "Card payments (later)" describes how to connect one.
+- Without the payment server (`VITE_PAYMENT_API` empty) the checkout runs in **test mode**, clearly labelled, including test buttons that stand in for the admin's confirm and reject.
+- Delivery: ₹49 below ₹999, free from ₹999 (placeholders in `src/data/shipping.js`). Up to 10 of each product per order (the bag now stops at 10). The bag note now says prices include taxes.
+- `VITE_CHECKOUT_URL` (hand the bag to an external hosted checkout) is removed. New settings: `VITE_PAYMENT_API`, `MERCHANT_UPI_ID`, `MERCHANT_NAME` and `ADMIN_PASSWORD` (see README → Payments).
+- New dependency: `qrcode-generator` (MIT, no dependencies) draws the UPI QR code.
+- Tests cover order pricing, UPI ID, UTR, card and address checks, and the payment API end to end (server-side pricing, UTR rules, admin sign-in, confirm and reject).
+
+## v12.32 (20 Nov 2026): card slot stays empty until product touchdown
+- Enforced empty card slots across all products in Benefits while in flight: the card container remains completely empty (clean mint background with no product inside) both during scroll-flight and click transitions.
+- The product fills the card slot only upon exact docking and touchdown (`.flight-on.ben-docked:not(.ben-flying)`), completely eliminating double tubs/ghosting where a product appeared inside the card before the flying tub landed.
+- When scrolling back up, the card immediately empties as the product lifts out and flies back to the lineup.
+
+## v12.31 (20 Nov 2026): dynamic multi-product scroll return and ghost elimination
+- Fixed product overlap where Lung Booster Gummies appeared ghosted behind other active products (such as Calm Inhaler) in Benefits: `#flight` layer is now cleanly hidden while docked at the Benefits card, preventing any visual leakage or double rendering on rapid clicks.
+- Dynamic scroll reversal: when scrolling back up towards the Product Story lineup, whichever product was active in Benefits (`state.benefitIdx`) now lifts out and returns to its exact column in the lineup ($col = -2, -1, 0, +1, +2$), rather than always defaulting to Gummies.
+- Rapid-click handling: multiple consecutive clicks cleanly kill in-progress flight timelines, reset the flyer element, and display only the currently selected product without visual collision.
+
+## v12.30 (20 Nov 2026): multi-product flight from the lineup line into Benefits
+- When navigating between products in "More of what matters. See the difference." (`#benefits`), the incoming product now descends dynamically from its exact column on the lineup line in the preceding section (`#seq`) down into the card photo slot (`.bi-img`), mirroring the hero jar's descent trajectory.
+- Each product cutout (`CUTS`: Gummies, Inhaler, Calm Roll-On, Reviva, Liver Booster) calculates its starting horizontal coordinates from its story lineup column ($col = -2, -1, 0, 1, 2$) and swoops down along a parabolic arc ($y$: `power3.out`, $x$: `power2.out`), leaning naturally into the turn with atmospheric drop-shadow and settling with a subtle touchdown bounce.
+- Slide rows and capsule pill stagger in to meet the product as it docks, and handover to the hero flight tub is synchronized cleanly without double rendering.
+
 ## v12.29 (16 Nov 2026): two marked stops under the hero, with a ground shadow
 - On the way down to the Lung Booster card the tub now rests at the two places the client marked: first top-centre just under the curved band as "You deserve the best" comes up, then down the left side of the headline. Between them it curves left above the headline instead of crossing it.
 - At each stop a soft ground shadow settles under the tub (a blurred ellipse in the `#flight` layer); it fades out while the tub is flying and while it is docked on the card.

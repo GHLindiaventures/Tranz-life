@@ -8,6 +8,8 @@
 @import './components/menu.css';
 @import './components/drawer.css';
 @import './components/lightbox.css';
+@import './components/checkout.css';
+@import './components/mini-bag.css';
 @import './sections/hero.css';
 @import './sections/insider.css';
 @import './sections/about.css';

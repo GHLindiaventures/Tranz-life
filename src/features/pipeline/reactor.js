@@ -82,9 +82,26 @@ function initReactor(getProgress){
     renderer.setSize(W, H, false); cam.aspect = W/H; cam.updateProjectionMatrix();
     const halfH = Math.tan(THREE.MathUtils.degToRad(17.5))*15, halfW = halfH*cam.aspect;
     mobile = W < 760 || cam.aspect < .9;
-    if (!mobile){ world.position.set(halfW*.44, -.2, 0); fit = Math.min(1.05, (halfW*.5)/3.7, (halfH*.86)/3.7); }
+    if (!mobile){ world.position.set(halfW*.44, -.2, 0); fit = Math.min(1.05, (halfW*.5)/3.7, (halfH*.86)/3.7); clearCopy(r, halfW); }
     else { world.position.set(0, halfH*.3, 0); fit = Math.min(1, (halfW*.86)/3.7, (halfH*.4)/3.7); }
     halo.position.set(0, 0, -2); crown.scale.setScalar(Math.max(.55, fit*.9));
+  }
+
+  // side-by-side layout: the molecule sits right of the copy. On narrower screens (tablets in landscape, small laptop
+  // windows) the usual spot would run into the text, so move it right, and shrink it if it still doesn't fit. The text's
+  // own right edge (the widest line of any slide) counts, not the copy box, which is wider than its text.
+  const REACH = 2.8;   // how far the widest molecule reaches either side of its centre, per unit of fit
+  function clearCopy(cr, halfW){
+    let textR = 0;
+    const rg = document.createRange();
+    $$('.slide-copy > *', slidesEl).forEach(el => { rg.selectNodeContents(el); const b = rg.getBoundingClientRect(); if (b.width) textR = Math.max(textR, b.right - cr.left); });
+    if (!textR) return;
+    const ppu = W/(2*halfW), left = textR + 28, room = W - 20 - left;   // px per world unit; the free strip right of the text
+    let cx = W/2 + world.position.x*ppu, reach = REACH*fit*ppu;
+    if (cx - reach >= left) return;
+    fit = Math.min(fit, room/(2*REACH*ppu)); reach = REACH*fit*ppu;
+    cx = left + reach;
+    world.position.x = (cx - W/2)/ppu;
   }
 
   function apply(p){

@@ -10,6 +10,6 @@ const cart = new Map();
 
 // live handles created during boot
 // heroFlight: the hero tub's scroll flight down to the product story (features/hero/hero-jar.js); landed = it has arrived
-const state = { heroApi:null, storyApi:null, lenis:null, mol:null, heroFlight:{ active:false, landed:false } };
+const state = { heroApi:null, storyApi:null, lenis:null, mol:null, benefitIdx:0, heroFlight:{ active:false, landed:false, flyingIdx:0 } };
 
 export { thumbs, cart, state };
