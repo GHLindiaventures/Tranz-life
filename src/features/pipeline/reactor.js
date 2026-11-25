@@ -7,7 +7,14 @@ import { envCube } from '../../lib/environment.js';
 import { $, $$ } from '../../utils/dom.js';
 import { clamp, lerp, seeded, smooth } from '../../utils/math.js';
 import { reduce } from '../../utils/media.js';
-import videoStep1 from '../../assets/process vedios/1.mp4';
+import videoStep1 from '../../assets/process vedios/step1.mp4';
+import videoStep2 from '../../assets/process vedios/step2.mp4';
+import videoStep3 from '../../assets/process vedios/step3.mp4';
+import videoStep4 from '../../assets/process vedios/step4.mp4';
+import videoStep5 from '../../assets/process vedios/step5.mp4';
+import videoStep6 from '../../assets/process vedios/step6.mp4';
+
+const STEP_VIDEOS = [videoStep1, videoStep2, videoStep3, videoStep4, videoStep5, videoStep6];
 
 function initReactor(getProgress){
   const canvas = $('#reactCanvas'), pin = $('#pin'), tag = $('#molTag');
@@ -50,34 +57,34 @@ function initReactor(getProgress){
   // slides (the "pages" of the pipeline)
   const slidesEl = $('#slides'), ringEl = $('#wipeRing');
   slidesEl.innerHTML = RX.map((r, k) => `
-    <article class="slide ${k % 2 === 0 ? 't-cream' : 't-green'}" data-k="${k}">
+    <article class="slide t-green" data-k="${k}">
       <div class="halo"></div>
       <div class="slide-copy">
-        <p class="eyebrow">The TranzLife pipeline</p>
-        <p class="st-no"><b>${String(k+1).padStart(2,'0')}</b> / ${String(NSTAGE).padStart(2,'0')}</p>
-        <h3 class="st-title">${r.t}</h3>
-        <div class="eq"><span class="m">${r.a}</span><i>+</i><span class="m">${r.b}</span><i>→</i><span class="m out">${r.p}</span></div>
+        <div class="st-head">
+          <p class="st-no"><b>${String(k+1).padStart(2,'0')}</b> / ${String(NSTAGE).padStart(2,'0')}</p>
+          <h3 class="st-title">${r.t}</h3>
+        </div>
         <p class="st-desc">${r.d}</p>
-        <div class="spec">${r.s.map(x => `<span>${x}</span>`).join('')}</div>
       </div>
-      ${k === 0 ? `
+      ${k < 6 && STEP_VIDEOS[k] ? `
       <div class="slide-video-fullscreen">
-        <video class="process-step-video" src="${videoStep1}" muted playsinline preload="auto"></video>
+        <video class="process-step-video" data-step="${k}" src="${STEP_VIDEOS[k]}" muted playsinline preload="auto"></video>
         <div class="slide-video-overlay"></div>
       </div>` : ''}
     </article>`).join('');
   const slides = $$('.slide', slidesEl);
 
-  const stepVideo = $('.process-step-video', slidesEl);
-  let videoDur = 10;
-  if (stepVideo) {
-    stepVideo.addEventListener('loadedmetadata', () => {
-      if (stepVideo.duration && !isNaN(stepVideo.duration)) {
-        videoDur = stepVideo.duration;
+  const stepVideos = $$('.process-step-video', slidesEl);
+  const videoDurs = [10.9, 9.7, 10.0, 9.96, 8.04, 10.0];
+  stepVideos.forEach(v => {
+    const idx = parseInt(v.dataset.step, 10);
+    v.addEventListener('loadedmetadata', () => {
+      if (v.duration && !isNaN(v.duration)) {
+        videoDurs[idx] = v.duration;
       }
     });
-    stepVideo.load();
-  }
+    v.load();
+  });
 
   // helpers
   const easeOutCubic = x => 1 - Math.pow(1 - x, 3), easeInCubic = x => x*x*x, easeIO = x => x < .5 ? 4*x*x*x : 1 - Math.pow(-2*x + 2, 3)/2;
@@ -172,61 +179,51 @@ function initReactor(getProgress){
     molG.rotation.set(.18*Math.sin(p*18)*(lastK ? 1 - eY : 1) + (lastK ? CH.pitch*eY : 0), yaw, 0);
     molG.scale.setScalar(sc*fit*pulse*(k === NSTAGE - 1 ? 1 + .3*easeOutCubic(clamp((u - .8)/.2, 0, 1)) : 1));
 
-    // Stage 1 (k === 0) video animation driven by scroll
-    if (stepVideo) {
-      if (k === 0) {
-        const targetTime = clamp(u, 0, 0.98) * videoDur;
-        if (Math.abs(stepVideo.currentTime - targetTime) > 0.03) {
-          stepVideo.currentTime = targetTime;
-        }
-        const vidEl = stepVideo.closest('.slide-video-fullscreen');
-        if (vidEl) {
-          const vScale = 1 + u * 0.05;
-          stepVideo.style.transform = `scale(${vScale})`;
-        }
-        // In stage 0, hide 3D molecule until near the end when it wipes into stage 2
-        molG.visible = u > 0.82;
-        if (molG.visible) {
-          const fade = clamp((u - 0.82) / 0.18, 0, 1);
-          molG.scale.multiplyScalar(fade);
-        }
-      } else {
-        molG.visible = true;
+    // All 6 steps video animation driven by scroll
+    const activeVideo = stepVideos[k];
+    if (activeVideo) {
+      const vDur = videoDurs[k] || 10;
+      const targetTime = clamp(u, 0, 0.98) * vDur;
+      if (Math.abs(activeVideo.currentTime - targetTime) > 0.03) {
+        activeVideo.currentTime = targetTime;
+      }
+      const vScale = 1 + u * 0.05;
+      activeVideo.style.transform = `scale(${vScale})`;
+    }
+    if (wp > 0 && k + 1 < NSTAGE && stepVideos[k + 1]) {
+      if (stepVideos[k + 1].currentTime > 0.05 && wp < 0.25) {
+        stepVideos[k + 1].currentTime = 0;
       }
     }
-    // finale glow
-    const fin = k === NSTAGE - 1 ? easeOutCubic(clamp((u - .78)/.22, 0, 1)) : 0;
-    halo.material.opacity = fin*.55; halo.scale.setScalar(11 + fin*5); crown.material.opacity = fin*.55; crown.rotation.z = p*30;
-    // ambient bokeh
-    amb.material.color.copy(palGreen).lerp(palCream, tc);
-    const hW = Math.tan(THREE.MathUtils.degToRad(17.5))*15*cam.aspect, hH = Math.tan(THREE.MathUtils.degToRad(17.5))*15;
-    ambD.forEach((a, i) => { const ax = a.x + Math.sin(tNow*.4*a.sp + i)*.5, ay = ((a.y + p*30*a.sp + 9) % 18) - 9;
-      // keep the drifting atoms off the text column
-      const vis = mobile ? smooth(-hH*.05, hH*.35, ay*(15/(15 - a.z))) : smooth(-hW*.1, hW*.2, ax*(15/(15 - a.z)));
-      const sz = a.s*vis; tmpV.set(ax, ay, a.z); tmpQ.identity(); ambM.compose(tmpV, tmpQ, ambS.set(sz, sz, sz)); amb.setMatrixAt(i, ambM); });
-    amb.instanceMatrix.needsUpdate = true;
+    molG.visible = false;
+    amb.visible = false;
+    halo.visible = false;
+    crown.visible = false;
 
     // ---- slide "pages": colour wipe from the bottom centre ----
     slides.forEach((el, i) => { const on = i === k || (i === k + 1 && wp > 0); if (el.hidden === on) el.hidden = !on; });
     const cs = slides[k], ns = slides[k + 1];
     cs.style.zIndex = 1; cs.style.clipPath = 'none';
     const diag = Math.hypot(W, H);
-    if (ns && wp > 0){ const Rr = wp*diag*1.06; ns.style.zIndex = 2; ns.style.clipPath = `circle(${Rr}px at 50% 100%)`; const cp = $('.slide-copy', ns); cp.style.transform = `translateY(${(1 - wp)*36}px)`; cp.style.opacity = .35 + .65*wp;
+    const csCopy = $('.slide-copy', cs);
+    if (ns && wp > 0){ const Rr = wp*diag*1.06; ns.style.zIndex = 2; ns.style.clipPath = `circle(${Rr}px at 50% 100%)`; const cp = $('.slide-copy', ns);
+      const outT = clamp(wp/.45, 0, 1), inT = clamp((wp - .45)/.55, 0, 1);
+      cp.style.transform = `translateY(${(1 - inT)*28}px)`; cp.style.opacity = inT;
+      csCopy.style.transform = `translateY(${outT*28}px)`; csCopy.style.opacity = 1 - outT;
       ringEl.style.display = 'block'; ringEl.style.width = ringEl.style.height = Rr*2 + 'px'; ringEl.style.left = (W/2 - Rr) + 'px'; ringEl.style.top = (H - Rr) + 'px'; ringEl.style.opacity = 1 - wp*.9; }
-    else { ringEl.style.display = 'none'; if (ns){ ns.style.clipPath = 'circle(0px at 50% 100%)'; } }
-    $('.slide-copy', cs).style.transform = ''; $('.slide-copy', cs).style.opacity = k === 0 ? clamp(p*NSTAGE/.06, 0, 1) : 1;
+    else { ringEl.style.display = 'none'; if (ns){ ns.style.clipPath = 'circle(0px at 50% 100%)'; }
+      const enter = k === 0 ? clamp(p*NSTAGE/.06, 0, 1) : 1;
+      csCopy.style.transform = enter < 1 ? `translateY(${(1 - enter)*24}px)` : ''; csCopy.style.opacity = enter;
+    }
     // progress along the pipeline: pauses on each node, then travels to the next with the wipe
     const fill = (k + .5)/NSTAGE + wp/NSTAGE;
     pin.style.setProperty('--fill', fill.toFixed(4));
-    // product tag
-    const tagOn = u > .8 || (k === NSTAGE - 1 && u > .7);
-    tag.textContent = RX[k].p; tag.classList.toggle('on', tagOn && wp < .5);
-    const halfH = Math.tan(THREE.MathUtils.degToRad(17.5))*15, rpx = Math.min(H*.3, (3.5*sc*fit/halfH)*(H/2));
-    tag.style.left = (W/2 + (world.position.x/(halfH*cam.aspect))*(W/2)) + 'px'; tag.style.top = (H/2 - (world.position.y/halfH)*(H/2) + rpx + 14) + 'px';
-    lastTheme = wp > .6 ? (k + 1) % 2 === 0 ? 'cream' : 'green' : (k % 2 === 0 ? 'cream' : 'green');
+    // product tag hidden so horizontal bottom context stays clean
+    tag.classList.remove('on');
+    lastTheme = 'green';
     activeStage = wp > .5 ? Math.min(k + 1, NSTAGE - 1) : k;
   }
-  let lastTheme = 'cream', activeStage = 0;
+  let lastTheme = 'green', activeStage = 0;
 
   let last = performance.now();
   function frame(now){

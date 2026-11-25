@@ -5,27 +5,26 @@
 #slides{position:absolute;inset:0}
 .slide{position:absolute;inset:0;background:var(--ground);color:var(--ink);overflow:hidden}
 .slide .halo{position:absolute;inset:0;background:radial-gradient(46% 64% at 72% 46%,var(--halo),transparent 74%);pointer-events:none}
-.slide-copy{position:absolute;z-index:3;left:clamp(74px,6.5vw,110px);top:0;bottom:0;width:min(540px,42vw);display:flex;flex-direction:column;justify-content:center}
-.st-no{margin-top:22px;font-family:var(--f-mono);font-size:14px;color:var(--faint);letter-spacing:.08em}
-.st-no b{font-family:var(--f-display);font-weight:300;font-size:clamp(3.4rem,6.4vw,6rem);line-height:.9;color:var(--sage);letter-spacing:-.03em;margin-right:8px}
-.st-title{font-size:clamp(2.3rem,4.3vw,4rem);line-height:1;margin-top:12px}
-.eq{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:26px}
-.eq .m{padding:9px 16px;border-radius:999px;border:1px solid var(--line-strong);font-size:14px;font-weight:600}
-.eq .m.out{background:var(--cream);color:var(--on-cream);border-color:var(--cream)}
-.eq i{font-style:normal;color:var(--faint);font-size:18px}
-.st-desc{margin-top:22px;color:var(--muted);font-size:1.02rem;max-width:44ch}
-.spec{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}
-.spec span{font-family:var(--f-mono);font-size:11.5px;padding:6px 10px;border-radius:7px;border:1px solid var(--line);color:var(--sage);background:var(--panel)}
+.slide-copy{
+  position:absolute;z-index:3;left:clamp(78px,6.2vw,108px);right:clamp(28px,4vw,64px);bottom:clamp(24px,4vh,40px);top:auto;
+  width:auto;padding:0;
+  display:flex;flex-direction:row;align-items:center;justify-content:flex-start;gap:24px;
+  pointer-events:none;
+  text-shadow:0 2px 14px rgba(10,24,14,.85);
+}
+.st-head{display:flex;align-items:baseline;gap:14px;flex-shrink:0}
+.st-no{margin-top:0;font-family:var(--f-mono);font-size:11.5px;color:rgba(233,239,227,.72);letter-spacing:.1em;display:flex;align-items:baseline;gap:5px}
+.st-no b{font-family:var(--f-display);font-weight:850;font-stretch:64%;font-size:clamp(1.45rem,2.2vw,1.95rem);line-height:1;color:var(--sage);letter-spacing:-.02em}
+.st-title{font-size:clamp(1.45rem,2.3vw,2.05rem);line-height:1;margin-top:0;font-stretch:64%;font-weight:850;text-transform:uppercase;color:#f3f6ec;letter-spacing:.01em;white-space:nowrap}
+.st-desc{margin-top:0;padding-left:24px;border-left:1px solid rgba(233,239,227,.24);color:rgba(233,239,227,.9);font-size:.9rem;line-height:1.4;max-width:60ch}
 .pipe{display:none !important}
 .wipe-ring{position:absolute;z-index:4;display:none;border-radius:50%;border:1.5px solid var(--gold,#e7c680);pointer-events:none;box-shadow:0 0 36px rgba(231,198,128,.35)}
 #reactCanvas{position:absolute;inset:0;width:100%;height:100%;z-index:5;pointer-events:none}
 .mol-tag{position:absolute;z-index:6;transform:translate(-50%,8px);padding:9px 18px;border-radius:999px;background:rgba(14,26,18,.85);color:#f2eee0;font-size:12.5px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;border:1px solid rgba(231,198,128,.55);opacity:0;transition:opacity .4s,transform .5s var(--ease);pointer-events:none;white-space:nowrap}
 .mol-tag.on{opacity:1;transform:translate(-50%,0)}
 .process{background:var(--ground)}
-.st-no b{font-family:var(--f-display);font-stretch:64%;font-weight:850}
-.st-title{font-stretch:64%;font-weight:850;text-transform:uppercase}
 
-/* Step 1 animated process video - Full Screen */
+/* Animated process video - Full Screen */
 .slide-video-fullscreen {
   position: absolute;
   inset: 0;
@@ -49,18 +48,18 @@
 .slide-video-overlay {
   position: absolute;
   inset: 0;
-  background: 
-    linear-gradient(90deg, 
-      rgba(237, 245, 227, 0.94) 0%, 
-      rgba(237, 245, 227, 0.88) 18%, 
-      rgba(237, 245, 227, 0.35) 36%, 
-      transparent 52%, 
-      transparent 100%
-    );
   pointer-events: none;
+  background:
+    linear-gradient(to top,
+      rgba(16, 40, 22, 0.78) 0%,
+      rgba(16, 40, 22, 0.36) 14%,
+      transparent 30%
+    );
 }
 
 @media (max-width:760px){
-  .slide-copy{top:43%;bottom:auto;left:8vw;width:84vw;justify-content:flex-start}
-  .slide-copy .st-no{margin-top:10px}
+  .slide-copy{top:auto;bottom:20px;left:5vw;right:5vw;width:auto;flex-direction:column;align-items:flex-start;gap:6px}
+  .st-head{gap:10px}
+  .st-title{white-space:normal}
+  .st-desc{padding-left:0;border-left:none}
 }
