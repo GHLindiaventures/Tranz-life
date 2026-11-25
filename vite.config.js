@@ -7,6 +7,12 @@ export default defineConfig(({ mode }) => {
   const single = mode === 'single';
   return {
     base: './',
+    server: {
+      allowedHosts: ['albertine-nonempathic-heaven.ngrok-free.dev', '.ngrok-free.dev'],
+      watch: {
+        ignored: ['**/*.mp4']
+      }
+    },
     plugins: single ? [viteSingleFile()] : [],
     build: single
       ? { outDir: 'dist-single', assetsInlineLimit: Number.MAX_SAFE_INTEGER, cssCodeSplit: false }
