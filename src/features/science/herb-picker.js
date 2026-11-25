@@ -71,7 +71,7 @@ function buildHerbs() {
 }
 
 function selectHerb(i, first) {
-  const h = HERBS[i], found = h.p == null ? 'R&D botanical library' : PRODUCTS[h.p].name;
+  const h = HERBS[i], found = (h.notes && h.notes.found) || (h.p == null ? 'R&D botanical library' : PRODUCTS[h.p].name);
   const col = h.color.toString(16).padStart(6, '0');
 
   // Active chip
