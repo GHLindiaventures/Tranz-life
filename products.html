@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Our Products | TranzLife Biosciences - Plant-Powered Science Formulations</title>
+  <meta name="description"
+    content="Explore the five official TranzLife Biosciences formulations: Daily Gummies, Calm Inhaler, Period Relief Roll-On, Reviva Foot Care, and Liver Booster Liquid.">
+  <meta property="og:title" content="Our Products | TranzLife Biosciences">
+  <meta property="og:description"
+    content="Five plant-based essentials engineered for daily wellness, active cellular vitality, and targeted physiological support.">
+  <meta property="og:type" content="website">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,400..900;1,62..125,400..900&family=Caveat:wght@600&display=swap"
+    rel="stylesheet">
+  <link rel="icon" type="image/webp" href="/assets/logo-emblem.webp">
+  <link rel="stylesheet" href="/src/styles/products-page.css">
+</head>
+
+<body>
+  <!-- Header Sticky Navigation Bar -->
+  <header class="nav" id="nav">
+    <a class="brand" href="index.html#home" aria-label="TranzLife Biosciences home">
+      <span class="logo-em" aria-hidden="true"></span>
+      <span class="logo-word" aria-hidden="true"></span>
+    </a>
+    <nav class="nav-pills" aria-label="Main">
+      <a href="index.html#home">Home</a>
+      <a href="products.html" class="on">Products</a>
+      <a href="index.html#benefits">Benefits</a>
+      <a href="index.html#process">Process</a>
+      <a href="index.html#science">Science</a>
+    </nav>
+    <div class="nav-act">
+      <button class="bag" id="bagBtn" aria-label="Open bag">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M5 8h14l-1.2 12H6.2z" />
+          <path d="M9 8V6a3 3 0 0 1 6 0v2" />
+        </svg>
+        <em id="bagCount">0</em>
+      </button>
+      <a class="pill" href="#lineup"><i aria-hidden="true">↓</i><b>View all</b></a>
+    </div>
+  </header>
+
+  <!-- Product journey (from dhina-dev): the 3D product on one fixed canvas, the showcase details falling past it,
+       the statement curtain, then the "Which one is yours?" grid. Built by src/products-page/journey.js. -->
+  <canvas id="flightCanvas" aria-hidden="true"></canvas>
+
+  <main class="pp-main">
+
+
+<section class="page showcase" id="showcase" data-theme="cream" data-dock="lineup">
+  <!-- behind the details, fixed to the screen: white ribbons that draw in and away with the scroll (as in the old
+       product display) -->
+  <div class="sc-bgpin" aria-hidden="true">
+    <svg class="sc-ribbons" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice">
+      <path d="M-80 760C120 560 420 520 560 640s40 320-160 300S120 700 380 520 980 300 1180 420s320 300 380 120"/>
+      <path d="M1520 180C1300 60 980 120 900 300s120 380 300 320 140-300-120-360S520 360 300 300-60 80-100 240"/>
+      <path d="M-60 300C200 120 560 140 700 330s-60 420-300 360-200-320 80-420 640-60 820 160 160 340 260 260"/>
+    </svg>
+  </div>
+  <!-- stays on screen: only the progress row. The product (on #flightCanvas) also stays in one place and turns. -->
+  <div class="showcase-pin" id="showcasePin">
+    <!-- outline around the product, sized from it; it grows like a plant while the counter runs 005 to 013 -->
+    <svg class="sc-frame" id="scFrame" aria-hidden="true"></svg>
+    <!-- the first two text groups stay fixed beside the product: they fade in after the zoom, hold, fade out -->
+    <article class="sc-card" id="scCard">
+      <span class="sc-no" id="scNo" aria-hidden="true"></span>
+      <span class="sc-ico" id="scIco" aria-hidden="true"></span>
+      <p class="sc-kick" id="scKick"></p>
+      <h2 class="sc-h" id="scHead"><span class="sc-h__line" id="scHeadA"></span><span class="sc-h__line" id="scHeadB"></span></h2>
+      <p class="sc-d" id="scDesc"></p>
+    </article>
+    <article class="sc-blk sc-blk--lead" id="scLead">
+      <p class="sc-kick" id="scLeadKick"></p>
+      <p class="sc-tagline" id="scLeadTag"></p>
+      <h4 class="sc-blk__h" id="scLeadHead"></h4>
+      <p class="sc-lead-desc" id="scLeadDesc"></p>
+    </article>
+    <!-- the highlights moment at the end of the details: points left and right of the product, in brackets -->
+    <div class="sc-hl" id="scHl" role="group"></div>
+    <!-- the ingredient badges: they rise beside the product during the details (as in the old product display) -->
+    <div class="sc-pbadges" id="scPinBadges" aria-hidden="true"></div>
+    <!-- the details, set by set, fading in and out beside the still product (showcase-scene.js builds them) -->
+    <div class="sc-chs" id="scChs"></div>
+    <div class="sc-progress" id="scProgress" aria-hidden="true">
+      <span class="sc-progress__label" id="scProgLabel">01 / 05</span>
+      <i class="sc-progress__bar"><b class="sc-progress__fill" id="scProgFill"></b></i>
+      <span class="sc-progress__num" id="scProgNum">000</span>
+    </div>
+  </div>
+
+  <!-- scrolls past the product like a normal page, so the product seems to fall through it -->
+  <div class="sc-flow" id="scFlow">
+
+
+
+    <div class="sc-badges" id="scStickers" aria-hidden="true"></div>
+    <!-- the rest of the product page, built from the existing write-ups (product-details.js and the catalogue) -->
+    <div class="sc-blocks" id="scBlocks"></div>
+  </div>
+</section>
+
+<section class="page statement t-green" id="statement" data-theme="green" data-dock="lineup">
+  <!-- progressive blur along the scalloped edge: four layers, each a little stronger and closer to the edge -->
+  <!-- the curtain's top edge: three rolling hills in this page's own dark green, moving at slightly different speeds as
+       the curtain rises (so the edge changes shape); the grain is painted on them too, so there is no seam -->
+  <svg class="stm-hills" viewBox="0 0 1440 240" preserveAspectRatio="none" aria-hidden="true">
+    <defs><pattern id="stmGrain" width="496" height="496" patternUnits="userSpaceOnUse"><image id="stmGrainImg" class="grain-img" width="496" height="496"/></pattern></defs>
+    <g class="stm-hill stm-hill--back"><path d="M0 150C180 62 360 40 560 108S900 172 1080 92S1340 28 1440 78V240H0Z"/><path class="stm-hill__grain" d="M0 150C180 62 360 40 560 108S900 172 1080 92S1340 28 1440 78V240H0Z"/></g>
+    <g class="stm-hill stm-hill--mid"><path d="M0 188C160 122 330 108 470 158S760 222 980 150S1300 108 1440 166V240H0Z"/><path class="stm-hill__grain" d="M0 188C160 122 330 108 470 158S760 222 980 150S1300 108 1440 166V240H0Z"/></g>
+    <g class="stm-hill stm-hill--front"><path d="M0 214C220 168 420 172 640 202S1050 232 1240 196S1400 184 1440 200V240H0Z"/><path class="stm-hill__grain" d="M0 214C220 168 420 172 640 202S1050 232 1240 196S1400 184 1440 200V240H0Z"/></g>
+  </svg>
+  <div class="stm-pin" id="stmPin">
+    <svg class="stm-art stm-art--a" viewBox="0 0 200 200" aria-hidden="true" style="--s:.32;--r:-18deg"><path d="M30 168c10-46 40-82 92-104M30 168c40-6 78-34 92-104-40 4-76 30-92 104z"/><path d="M62 134l22-6M80 108l22-4M54 148l-4-22M74 124l-6-20"/></svg>
+    <svg class="stm-art stm-art--b" viewBox="0 0 200 200" aria-hidden="true" style="--s:.55;--r:24deg"><path d="M100 188V70M100 120c-26-6-40-26-40-50 26 4 40 22 40 50zM100 96c24-6 38-24 38-48-24 4-38 22-38 48zM100 150c-22-4-34-20-34-40 22 4 34 18 34 40z"/></svg>
+    <svg class="stm-art stm-art--c" viewBox="0 0 200 200" aria-hidden="true" style="--s:.22;--r:8deg"><path d="M40 160C50 100 90 52 170 40c-6 70-48 118-130 120z"/><path d="M40 160c34-36 66-68 108-98"/></svg>
+    <svg class="stm-art stm-art--d" viewBox="0 0 200 200" aria-hidden="true" style="--s:.45;--r:-30deg"><path d="M100 30c26 26 26 66 0 96-26-30-26-70 0-96zM100 126v62M100 150c-16-4-26-14-30-28M100 164c14-4 24-12 28-26"/></svg>
+    <span class="stm-seed" aria-hidden="true"><svg viewBox="0 0 48 48"><path d="M10 38C12 22 22 12 40 10 38 28 28 38 10 38z"/><path d="M10 38L28 20"/></svg></span>
+    <p class="stm-note" aria-hidden="true">Why people<br>love it<svg viewBox="0 0 60 40"><path d="M4 6C26 2 46 14 52 34m0 0l-12-6m12 6l2-13"/></svg></p>
+    <h2 class="stm-title" id="stmTitle" aria-label="Nature, just the way you need it."><span class="stw"><span class="stw-i">Nature,</span></span> <span class="stw"><span class="stw-i">just</span></span> <span class="stw"><span class="stw-i">the</span></span> <span class="stw"><span class="stw-i">way</span></span> <span class="stw"><span class="stw-i">you</span></span> <span class="stw stw-hl"><span class="stw-i">need</span></span> <span class="stw"><span class="stw-i">it.</span></span></h2>
+  </div>
+</section>
+
+<section class="page lineup t-green" id="lineup" data-theme="green">
+  <div class="lineup-pin" id="lineupPin">
+    <div class="lineup-wrap">
+      <h2 class="lu-h" id="luHead" aria-label="Which one is yours?">
+        <span class="lu-half lu-l"><span class="stw"><span class="stw-i">Which one</span></span></span>
+        <span class="lu-sun" aria-hidden="true"><svg viewBox="0 0 120 120"><g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><circle cx="60" cy="60" r="14"/><path transform="rotate(0 60 60)" d="M60 38c-5-8-5-16 0-24 5 8 5 16 0 24z"/><path transform="rotate(30 60 60)" d="M60 38c-5-8-5-16 0-24 5 8 5 16 0 24z"/><path transform="rotate(60 60 60)" d="M60 38c-5-8-5-16 0-24 5 8 5 16 0 24z"/><path transform="rotate(90 60 60)" d="M60 38c-5-8-5-16 0-24 5 8 5 16 0 24z"/><path transform="rotate(120 60 60)" d="M60 38c-5-8-5-16 0-24 5 8 5 16 0 24z"/><path transform="rotate(150 60 60)" d="M60 38c-5-8-5-16 0-24 5 8 5 16 0 24z"/><path transform="rotate(180 60 60)" d="M60 38c-5-8-5-16 0-24 5 8 5 16 0 24z"/><path transform="rotate(210 60 60)" d="M60 38c-5-8-5-16 0-24 5 8 5 16 0 24z"/><path transform="rotate(240 60 60)" d="M60 38c-5-8-5-16 0-24 5 8 5 16 0 24z"/><path transform="rotate(270 60 60)" d="M60 38c-5-8-5-16 0-24 5 8 5 16 0 24z"/><path transform="rotate(300 60 60)" d="M60 38c-5-8-5-16 0-24 5 8 5 16 0 24z"/><path transform="rotate(330 60 60)" d="M60 38c-5-8-5-16 0-24 5 8 5 16 0 24z"/></g></svg></span>
+        <span class="lu-half lu-r"><span class="stw"><span class="stw-i">is yours?</span></span></span>
+      </h2>
+      <div class="lineup-grid" id="lineupGrid">
+      <div class="lineup-card" data-product="gummies">
+        <button class="lineup-item" type="button" data-product="gummies">
+          <span class="lineup-slot" data-slot="gummies"><span class="lineup-shadow" aria-hidden="true"></span></span>
+          <span class="lineup-name">Lung Booster</span>
+        </button>
+        <button class="mini-add lu-add" type="button" data-id="gummies" aria-label="Add to bag"><span aria-hidden="true">+</span></button>
+      </div>
+      <div class="lineup-card" data-product="inhaler">
+        <button class="lineup-item" type="button" data-product="inhaler">
+          <span class="lineup-slot" data-slot="inhaler"><span class="lineup-shadow" aria-hidden="true"></span></span>
+          <span class="lineup-name">Aroma Inhaler</span>
+        </button>
+        <button class="mini-add lu-add" type="button" data-id="inhaler" aria-label="Add to bag"><span aria-hidden="true">+</span></button>
+      </div>
+      <div class="lineup-card" data-product="rollon">
+        <button class="lineup-item" type="button" data-product="rollon">
+          <span class="lineup-slot" data-slot="rollon"><span class="lineup-shadow" aria-hidden="true"></span></span>
+          <span class="lineup-name">CycleRelief</span>
+        </button>
+        <button class="mini-add lu-add" type="button" data-id="rollon" aria-label="Add to bag"><span aria-hidden="true">+</span></button>
+      </div>
+      <div class="lineup-card" data-product="reviva">
+        <button class="lineup-item" type="button" data-product="reviva">
+          <span class="lineup-slot" data-slot="reviva"><span class="lineup-shadow" aria-hidden="true"></span></span>
+          <span class="lineup-name">Reviva</span>
+        </button>
+        <button class="mini-add lu-add" type="button" data-id="reviva" aria-label="Add to bag"><span aria-hidden="true">+</span></button>
+      </div>
+      <div class="lineup-card" data-product="liver">
+        <button class="lineup-item" type="button" data-product="liver">
+          <span class="lineup-slot" data-slot="liver"><span class="lineup-shadow" aria-hidden="true"></span></span>
+          <span class="lineup-name">Liver Booster</span>
+        </button>
+        <button class="mini-add lu-add" type="button" data-id="liver" aria-label="Add to bag"><span aria-hidden="true">+</span></button>
+      </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+  </main>
+
+  <!-- Global Footer -->
+  <footer>
+    <div class="wrap">
+      <div class="f-brand">
+        <span class="logo-em" aria-hidden="true"></span>
+        <span class="logo-word light" role="img" aria-label="TranzLife Biosciences"></span>
+        <p class="hand">Innovating life beyond limits</p>
+      </div>
+      <p class="f-big">Live naturally.<span>Live healthier.</span></p>
+      <div class="f-row">
+        <div>
+          <a class="pill" href="products.html"><i aria-hidden="true">↗</i><b>Shop all products</b></a>
+        </div>
+        <div class="f-col">
+          <h4>Shop</h4>
+          <a href="products.html">All products</a>
+          <a href="products.html#lineup">Product finder</a>
+          <a href="products.html#showcase">Product story</a>
+        </div>
+        <div class="f-col">
+          <h4>Company</h4>
+          <a href="about.html">About TranzLife</a>
+          <a href="index.html#insider">Our vision</a>
+          <a href="science.html#process">Pipeline</a>
+          <a href="science.html">Science</a>
+        </div>
+        <div class="f-col">
+          <h4>Help</h4>
+          <a href="contact.html">Contact</a>
+          <a href="contact.html">Retail partners</a>
+          <a href="contact.html">Corporate gifting</a>
+        </div>
+      </div>
+      <div class="f-bot">
+        <p>
+          TranzLife products are plant-based wellness products and are not intended to diagnose, treat, cure or prevent any disease. *Supports healthy liver function as part of a balanced lifestyle. Consult your doctor before use if you are pregnant, nursing, managing diabetes or taking medication.
+        </p>
+        <span>© 2026 TranzLife Biosciences</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Shopping Bag Drawer -->
+  <div class="scrim" id="scrim"></div>
+  <aside class="drawer" id="drawer" aria-label="Your bag" aria-hidden="true">
+    <div class="d-head">
+      <h3>Your bag</h3>
+      <button class="x" id="closeBag" aria-label="Close bag">×</button>
+    </div>
+    <div class="d-list" id="dList"></div>
+    <div class="d-foot">
+      <div class="d-total"><span>Subtotal</span><b id="dTotal">₹0</b></div>
+      <button class="btn-cream" id="checkout">Checkout <i aria-hidden="true">→</i></button>
+      <p class="d-note">Free delivery on orders over ₹999. Taxes calculated at checkout.</p>
+    </div>
+  </aside>
+  <div class="toast" id="toast" role="status"></div>
+
+  <script type="module" src="/src/products.js"></script>
+</body>
+
+</html>
+

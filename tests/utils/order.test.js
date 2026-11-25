@@ -5,7 +5,7 @@ import { orderRef, priceOrder, REF_PATTERN, toPaise } from '../../src/utils/orde
 describe('priceOrder', () => {
   it('prices from the catalogue and charges delivery below the free threshold', () => {
     const o = priceOrder([{ id:'inhaler', qty:2, price:1 }]);
-    expect(o.items).toEqual([{ id:'inhaler', name:'Calm Inhaler', price:249, qty:2, total:498 }]);
+    expect(o.items).toEqual([{ id:'inhaler', name:'TranzLife Aromatherapy Inhaler', price:249, qty:2, total:498 }]);
     expect(o.subtotal).toBe(498);
     expect(o.shipping).toBe(SHIPPING.fee);
     expect(o.total).toBe(498 + SHIPPING.fee);

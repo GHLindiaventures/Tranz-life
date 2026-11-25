@@ -1,228 +1,263 @@
-// Pinned molecule pipeline scene with the vertical timeline.
-import * as THREE from 'three';
+// Centered continuous process video with synced top overlay, custom video controls, and fullscreen modal.
 import { NSTAGE, RX } from '../../data/pipeline.js';
-import { buildChain } from './molecule-chain.js';
-import { radialCanvas } from '../../lib/canvas-art.js';
-import { envCube } from '../../lib/environment.js';
-import { $, $$ } from '../../utils/dom.js';
-import { clamp, lerp, seeded, smooth } from '../../utils/math.js';
-import { reduce } from '../../utils/media.js';
+import { $ } from '../../utils/dom.js';
+import processVideoUrl from '../../assets/process vedios/process vedio.mp4';
 
-function initReactor(getProgress){
-  const canvas = $('#reactCanvas'), pin = $('#pin'), tag = $('#molTag');
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias:true, alpha:true });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.75));
-  renderer.outputEncoding = THREE.sRGBEncoding; renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.05;
-  const scene = new THREE.Scene(); scene.environment = envCube();
-  const cam = new THREE.PerspectiveCamera(35, 1, .1, 80); cam.position.set(0, 0, 15);
-  scene.add(new THREE.HemisphereLight(0xf2f5e2, 0x24351f, .6));
-  const key = new THREE.DirectionalLight(0xfff0cf, 1.7); key.position.set(4, 7, 8); scene.add(key);
-  const rim = new THREE.DirectionalLight(0xbfe6a8, .9); rim.position.set(-6, 2, -5); scene.add(rim);
+const STEP_CUES = [
+  { start: 0.0  }, // 01 Ethical sourcing
+  { start: 5.6  }, // 02 Gentle extraction
+  { start: 11.0 }, // 03 Formulation
+  { start: 20.1 }, // 04 Batch testing
+  { start: 30.1 }, // 05 Stability & sensory
+  { start: 38.0 }, // 06 Sealed & shipped
+];
 
-  const T = c => { const t = new THREE.CanvasTexture(c); t.encoding = THREE.sRGBEncoding; return t; };
-  const sparkTex = T(radialCanvas('rgba(255,244,214,1)', 'rgba(255,220,150,0)', 64));
-  const world = new THREE.Group(); scene.add(world);
-  const molG = new THREE.Group(); world.add(molG);
-  const CH = buildChain();
+const PLAY_ICON = `<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="7 4 21 12 7 20 7 4"></polygon></svg>`;
+const PAUSE_ICON = `<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>`;
 
-  // meshes
-  const sphere = new THREE.SphereGeometry(1, 40, 28), cyl = new THREE.CylinderGeometry(1, 1, 1, 18, 1, true);
-  const atomMesh = CH.atoms.map(a => { const m = new THREE.Mesh(sphere, new THREE.MeshPhysicalMaterial({ color:a.base, roughness:.2, clearcoat:1, clearcoatRoughness:.12, envMapIntensity:1.2, emissive:0x000000 })); m.scale.setScalar(a.rad); m.visible = false; molG.add(m); return m; });
-  const bondMat = new THREE.MeshStandardMaterial({ color:0xd7dfc8, roughness:.35, metalness:.05, envMapIntensity:.8 });
-  const bondMesh = CH.bonds.map(() => { const m = new THREE.Mesh(cyl, bondMat); m.visible = false; molG.add(m); return m; });
-  // flash, shock ring, sparks, byproduct
-  const flash = new THREE.Sprite(new THREE.SpriteMaterial({ map:sparkTex, color:0xffe2a0, transparent:true, depthWrite:false, blending:THREE.AdditiveBlending })); flash.visible = false; molG.add(flash);
-  const shock = new THREE.Mesh(new THREE.TorusGeometry(1, .011, 8, 120), new THREE.MeshBasicMaterial({ color:0xe0a53a, transparent:true, depthWrite:false })); shock.visible = false; molG.add(shock);
-  const NS = 36, sp = new Float32Array(NS*3), sdir = []; { const R = seeded(5); for (let i=0;i<NS;i++){ const v = new THREE.Vector3(R()-.5, R()-.5, R()-.5).normalize().multiplyScalar(.6 + R()*1.2); sdir.push(v); } }
-  const sgeo = new THREE.BufferGeometry(); sgeo.setAttribute('position', new THREE.BufferAttribute(sp, 3));
-  const sparks = new THREE.Points(sgeo, new THREE.PointsMaterial({ size:.34, map:sparkTex, color:0xffe6a8, transparent:true, depthWrite:false, blending:THREE.AdditiveBlending })); sparks.frustumCulled = false; sparks.visible = false; molG.add(sparks);
-  const by = new THREE.Group(); molG.add(by); by.visible = false;
-  [[0,0,0,.2,0xf6f2e4],[.38,-.28,0,.13,0xbfe3ff],[-.38,-.28,0,.13,0xbfe3ff]].forEach(([x,y,z,r,c]) => { const m = new THREE.Mesh(sphere, new THREE.MeshPhysicalMaterial({ color:c, roughness:.15, clearcoat:1, envMapIntensity:1.2, transparent:true })); m.position.set(x,y,z); m.scale.setScalar(r); by.add(m); });
-  const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map:sparkTex, color:0xffd98a, transparent:true, depthWrite:false, blending:THREE.AdditiveBlending, opacity:0 })); halo.scale.setScalar(13); halo.position.z = -2; world.add(halo);
-  const crown = new THREE.Mesh(new THREE.TorusGeometry(4.1, .02, 8, 160), new THREE.MeshBasicMaterial({ color:0xe7c680, transparent:true, opacity:0, depthWrite:false })); crown.rotation.x = 1.15; world.add(crown);
+function controlsMarkup(prefix) {
+  return `
+    <div class="process-controls" id="${prefix}Controls">
+      <input class="pc-seek" id="${prefix}Seek" type="range" min="0" max="100" step="0.1" value="0" aria-label="Seek video">
+    </div>`;
+}
 
-  // ambient drifting molecules (parallax on scroll)
-  const AN = 30, amb = new THREE.InstancedMesh(sphere, new THREE.MeshStandardMaterial({ roughness:.4, transparent:true, opacity:.42, envMapIntensity:.6 }), AN), ambD = [];
-  { const R = seeded(23), c = new THREE.Color(); for (let i=0;i<AN;i++){ ambD.push({ x:(R()-.5)*34, y:(R()-.5)*18, z:-4 - R()*12, s:.1 + R()*.24, sp:.4 + R()*1.2 }); c.setHex([0x5fa23a,0x2c6a34,0xdba43f,0x9cc27a][i%4]); amb.setColorAt(i, c); } }
-  scene.add(amb); const ambM = new THREE.Matrix4(), ambS = new THREE.Vector3();
+function initReactor(getProgress) {
+  const slidesEl = $('#slides');
+  const ringEl = $('#wipeRing'), tag = $('#molTag'), canvas = $('#reactCanvas');
+  if (ringEl) ringEl.style.display = 'none';
+  if (tag) tag.classList.remove('on');
+  if (canvas) canvas.style.display = 'none';
 
-  // slides (the "pages" of the pipeline)
-  const slidesEl = $('#slides'), ringEl = $('#wipeRing');
-  const pipe = (k) => `<div class="pipe" aria-hidden="true"><div class="pipe-line"><i></i></div><ol>${RX.map((r, i) => `<li class="${i <= k ? 'lit' : ''}${i === k ? ' cur' : ''}"><em></em><b>${String(i+1).padStart(2,'0')}</b><span>${r.t}</span></li>`).join('')}</ol></div>`;
-  slidesEl.innerHTML = RX.map((r, k) => `
-    <article class="slide ${k % 2 === 0 ? 't-cream' : 't-green'}" data-k="${k}">
-      <div class="halo"></div>
-      <div class="slide-copy">
-        <p class="eyebrow">The TranzLife pipeline</p>
-        <p class="st-no"><b>${String(k+1).padStart(2,'0')}</b> / ${String(NSTAGE).padStart(2,'0')}</p>
-        <h3 class="st-title">${r.t}</h3>
-        <div class="eq"><span class="m">${r.a}</span><i>+</i><span class="m">${r.b}</span><i>→</i><span class="m out">${r.p}</span></div>
-        <p class="st-desc">${r.d}</p>
-        <div class="spec">${r.s.map(x => `<span>${x}</span>`).join('')}</div>
+  const totalPad = String(NSTAGE).padStart(2, '0');
+
+  slidesEl.innerHTML = `
+    <div class="wrap process-layout">
+      <div class="process-header">
+        <p class="eyebrow">The TranzLife process</p>
+        <h3 class="h2 process-heading">From the roots of nature to the infinity of science</h3>
       </div>
-      ${pipe(k)}
-    </article>`).join('');
-  const slides = $$('.slide', slidesEl);
-  slides.forEach(s => s.addEventListener('click', e => { const li = e.target.closest('.pipe li'); if (li) window.dispatchEvent(new CustomEvent('tl:goStage', { detail:[...li.parentNode.children].indexOf(li) })); }));
-  $$('.pipe li').forEach(li => li.style.pointerEvents = 'auto');
 
-  // helpers
-  const easeOutCubic = x => 1 - Math.pow(1 - x, 3), easeInCubic = x => x*x*x, easeIO = x => x < .5 ? 4*x*x*x : 1 - Math.pow(-2*x + 2, 3)/2;
-  const easeOutBack = x => { const c1 = 1.70158, c3 = c1 + 1; return 1 + c3*Math.pow(x - 1, 3) + c1*Math.pow(x - 1, 2); };
-  const bump = (u, c, w) => Math.exp(-Math.pow((u - c)/w, 2));
-  const Sk = CH.stages.map(s => Math.min(1, 3.35/s.Rpre)), Sk1 = CH.stages.map(s => Math.min(1, 3.35/s.Rpost));
-  const spinAxis = new THREE.Vector3(.3, 1, .2).normalize(), up = new THREE.Vector3(0,1,0);
-  const tmpQ = new THREE.Quaternion(), tmpV = new THREE.Vector3(), tmpV2 = new THREE.Vector3(), tmpC = new THREE.Color();
-  const posCache = CH.atoms.map(() => new THREE.Vector3());
-  const palCream = new THREE.Color(0x2c4a2c), palGreen = new THREE.Color(0xd7dfc8);
-  let W = 1, H = 1, fit = 1, mobile = false, cur = 0, target = 0, visible = false, tNow = 0;
+      <div class="process-stage-wrap">
+        <div class="process-mini-card" id="processMiniCard">
+          <video class="process-mini-video" id="processMiniVideo" src="${processVideoUrl}" muted playsinline loop preload="auto"></video>
+          <div class="process-mini-scrim"></div>
+          <div class="process-mini-top">
+            <div class="process-live-step">
+              <div class="st-head">
+                <p class="st-no"><b id="processStepNum">01</b> / ${totalPad}</p>
+                <h4 class="st-title" id="processStepTitle">${RX[0].t}</h4>
+              </div>
+              <p class="st-desc" id="processStepDesc">${RX[0].d}</p>
+            </div>
+            <button class="process-fs-btn" id="miniFsBtn" type="button" aria-label="Full screen">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="15 3 21 3 21 9"></polyline>
+                <polyline points="9 21 3 21 3 15"></polyline>
+                <line x1="21" y1="3" x2="14" y2="10"></line>
+                <line x1="3" y1="21" x2="10" y2="14"></line>
+              </svg>
+            </button>
+          </div>
+          <button class="pc-center-play" id="miniPlayBtn" type="button" aria-label="Pause video">${PAUSE_ICON}</button>
+          ${controlsMarkup('mini')}
+        </div>
+      </div>
+    </div>`;
 
-  function resize(){
-    const r = canvas.getBoundingClientRect(); W = Math.max(1, r.width); H = Math.max(1, r.height);
-    renderer.setSize(W, H, false); cam.aspect = W/H; cam.updateProjectionMatrix();
-    const halfH = Math.tan(THREE.MathUtils.degToRad(17.5))*15, halfW = halfH*cam.aspect;
-    mobile = W < 760 || cam.aspect < .9;
-    if (!mobile){ world.position.set(halfW*.44, -.2, 0); fit = Math.min(1.05, (halfW*.5)/3.7, (halfH*.86)/3.7); clearCopy(r, halfW); }
-    else { world.position.set(0, halfH*.3, 0); fit = Math.min(1, (halfW*.86)/3.7, (halfH*.4)/3.7); }
-    halo.position.set(0, 0, -2); crown.scale.setScalar(Math.max(.55, fit*.9));
+  // Fullscreen modal mounted on document.body so it covers navbar/dock cleanly
+  let modal = $('#processFullscreenModal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'processFullscreenModal';
+    modal.className = 'process-modal';
+    modal.setAttribute('aria-hidden', 'true');
+    modal.innerHTML = `
+      <video class="process-modal-video" id="processModalVideo" src="${processVideoUrl}" muted playsinline loop preload="auto"></video>
+      <div class="process-modal-scrim"></div>
+      <button class="process-modal-close" id="processModalClose" type="button" aria-label="Close full screen video">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+      <button class="pc-center-play" id="modalPlayBtn" type="button" aria-label="Pause video">${PAUSE_ICON}</button>
+      <div class="process-modal-copy">
+        <div class="st-head">
+          <p class="st-no"><b id="modalStepNum">01</b> / ${totalPad}</p>
+          <h4 class="st-title" id="modalStepTitle">${RX[0].t}</h4>
+        </div>
+        <p class="st-desc" id="modalStepDesc">${RX[0].d}</p>
+      </div>
+      ${controlsMarkup('modal')}`;
+    document.body.appendChild(modal);
   }
 
-  // side-by-side layout: the molecule sits right of the copy. On narrower screens (tablets in landscape, small laptop
-  // windows) the usual spot would run into the text, so move it right, and shrink it if it still doesn't fit. The text's
-  // own right edge (the widest line of any slide) counts, not the copy box, which is wider than its text.
-  const REACH = 2.8;   // how far the widest molecule reaches either side of its centre, per unit of fit
-  function clearCopy(cr, halfW){
-    let textR = 0;
-    const rg = document.createRange();
-    $$('.slide-copy > *', slidesEl).forEach(el => { rg.selectNodeContents(el); const b = rg.getBoundingClientRect(); if (b.width) textR = Math.max(textR, b.right - cr.left); });
-    if (!textR) return;
-    const ppu = W/(2*halfW), left = textR + 28, room = W - 20 - left;   // px per world unit; the free strip right of the text
-    let cx = W/2 + world.position.x*ppu, reach = REACH*fit*ppu;
-    if (cx - reach >= left) return;
-    fit = Math.min(fit, room/(2*REACH*ppu)); reach = REACH*fit*ppu;
-    cx = left + reach;
-    world.position.x = (cx - W/2)/ppu;
+  const miniCard = $('#processMiniCard', slidesEl);
+  const miniVideo = $('#processMiniVideo', slidesEl);
+  const modalVideo = $('#processModalVideo', modal);
+  const closeBtn = $('#processModalClose', modal);
+
+  const miniControls = $('#miniControls', slidesEl);
+  const miniPlayBtn = $('#miniPlayBtn', slidesEl);
+  const miniSeek = $('#miniSeek', slidesEl);
+  const miniFsBtn = $('#miniFsBtn', slidesEl);
+
+  const modalControls = $('#modalControls', modal);
+  const modalPlayBtn = $('#modalPlayBtn', modal);
+  const modalSeek = $('#modalSeek', modal);
+
+  const numEl = $('#processStepNum', slidesEl);
+  const titleEl = $('#processStepTitle', slidesEl);
+  const descEl = $('#processStepDesc', slidesEl);
+  const modalNumEl = $('#modalStepNum', modal);
+  const modalTitleEl = $('#modalStepTitle', modal);
+  const modalDescEl = $('#modalStepDesc', modal);
+
+  let activeStage = 0;
+  let shownStage = -1;
+  let wasVisible = false;
+  let isOpen = false;
+  let userPaused = false;
+
+  function activeVideo() {
+    return isOpen ? modalVideo : miniVideo;
   }
 
-  function apply(p){
-    const s = clamp(p, 0, 1)*NSTAGE; const k = Math.min(NSTAGE - 1, Math.floor(s)); const u = Math.min(1, s - k);
-    const ST = CH.stages[k], frame = CH.frames[k];
-    const eShift = easeIO(clamp((u - .78)/.17, 0, 1));
-    // jump phases
-    const t1 = clamp((u - .04)/.38, 0, 1), t2 = clamp((u - .42)/.18, 0, 1);
-    const gap = tmpV2.copy(ST.d).multiplyScalar(1.05);
-    const off0 = ST.d.clone().multiplyScalar(10.5).add(new THREE.Vector3(0, 4.2, 0));
-    const off = new THREE.Vector3();
-    if (u < .42){ const e = easeOutCubic(t1); off.copy(off0).lerp(gap, e); off.y += Math.abs(Math.sin(t1*Math.PI*3))*(1.9*(1 - t1) + .28); }
-    else off.copy(gap).multiplyScalar(1 - easeInCubic(t2));
-    const theta = u < .42 ? (1 - easeIO(t1))*Math.PI*5 : 0;
-    tmpQ.setFromAxisAngle(spinAxis, theta);
-    const dockB = ST.placed.get(ST.aDock);
-    const colF = easeOutCubic(clamp((u - .6)/.18, 0, 1));
-    const snap = bump(u, .6, .025), pulse = 1 + .07*snap;
-    // positions
-    CH.atoms.forEach((a, id) => {
-      const m = atomMesh[id];
-      if (a.stage > k){ m.visible = false; return; }
-      const pv = posCache[id];
-      let scale = a.rad, col = a.base;
-      if (a.stage < k){
-        const base = frame.get(id); pv.copy(base).addScaledVector(ST.shift, eShift);
-      } else { // joining fragment
-        const dp = ST.placed.get(id); tmpV.copy(dp).sub(dockB).applyQuaternion(tmpQ); pv.copy(dockB).add(off).add(tmpV).addScaledVector(ST.shift, eShift);
-        if (u < .04) scale = a.rad*.001;
+  function syncPlayButtons() {
+    const v = activeVideo();
+    const isPaused = v.paused;
+    miniPlayBtn.innerHTML = isPaused ? PLAY_ICON : PAUSE_ICON;
+    miniPlayBtn.setAttribute('aria-label', isPaused ? 'Play video' : 'Pause video');
+    modalPlayBtn.innerHTML = isPaused ? PLAY_ICON : PAUSE_ICON;
+    modalPlayBtn.setAttribute('aria-label', isPaused ? 'Play video' : 'Pause video');
+  }
+
+  function syncUI(t, dur) {
+    let idx = 0;
+    for (let i = STEP_CUES.length - 1; i >= 0; i--) {
+      if (t >= STEP_CUES[i].start) {
+        idx = i;
+        break;
       }
-      if (k === 0 && a.stage === -1){ scale = a.rad*easeOutBack(clamp(p*NSTAGE/.1, 0, 1)); if (scale < .001) scale = .001; }
-      m.visible = true; m.position.copy(pv); m.scale.setScalar(scale*(1 + .03*Math.sin(tNow*2 + id)));
-      const mat = m.material;
-      if (a.stage === k){ tmpC.copy(a.base).lerp(CH.atoms[ST.aId].base, .45*colF); mat.color.copy(tmpC); }
-      else if (a.stage >= 0 && a.stage < k) mat.color.copy(a.base).lerp(CH.atoms[CH.stages[a.stage].aId].base, .45);
-      else mat.color.copy(a.base);
-      const glow = snap*.5 + (k === NSTAGE - 1 ? easeOutCubic(clamp((u - .8)/.2, 0, 1))*.22 : 0);
-      mat.emissive.setRGB(glow*.9, glow*.7, glow*.3);
-    });
-    // bonds
-    const tcream = (k % 2 === 0) ? 1 : 0, nextCream = ((k + 1) % 2 === 0) ? 1 : 0;
-    const wp = u > .86 && k < NSTAGE - 1 ? easeIO((u - .86)/.14) : 0;
-    const tc = lerp(tcream, nextCream, wp);
-    bondMat.color.copy(palGreen).lerp(palCream, tc);
-    CH.bonds.forEach((b, bi) => {
-      const m = bondMesh[bi]; const A = atomMesh[b.i], B = atomMesh[b.j];
-      if (CH.atoms[b.i].stage > k || CH.atoms[b.j].stage > k || (b.stage > k)){ m.visible = false; return; }
-      let g = 1;
-      if (b.stage === k && b.t0 >= 0) g = easeOutBack(clamp((u - b.t0)/(b.t1 - b.t0), 0, 1));
-      else if (b.stage > k) g = 0;
-      if (b.stage === -1 && k === 0) g = Math.min(1, A.scale.x > .01 ? 1 : 0);
-      if (b.stage === k && b.t0 < 0 && u < .04) g = 0;
-      if (g <= .001){ m.visible = false; return; }
-      const pa = A.position, pb = B.position; tmpV.copy(pb).sub(pa); const L = tmpV.length(); if (L < .01){ m.visible = false; return; }
-      tmpV.multiplyScalar(1/L); m.position.copy(pa).addScaledVector(tmpV, L*.5);
-      m.quaternion.setFromUnitVectors(up, tmpV); m.scale.set(.085*(1 + .5*snap), L*Math.min(g, 1.04), .085*(1 + .5*snap)); m.visible = true;
-    });
-    // flash / shock / sparks / byproduct at the junction
-    const J = tmpV2.copy(ST.J).addScaledVector(ST.shift, eShift);
-    const fl = bump(u, .6, .022);
-    flash.visible = fl > .02; flash.position.copy(J); flash.scale.setScalar(.8 + fl*5.5); flash.material.opacity = Math.min(1, fl*1.1);
-    const ts = clamp((u - .58)/.22, 0, 1);
-    shock.visible = ts > 0 && ts < 1; if (shock.visible){ shock.position.copy(J); shock.quaternion.copy(cam.quaternion); shock.scale.setScalar(.3 + easeOutCubic(ts)*3.3); shock.material.opacity = (1 - ts)*.8; }
-    const tp = clamp((u - .58)/.28, 0, 1);
-    sparks.visible = tp > 0 && tp < 1; if (sparks.visible){ for (let i=0;i<NS;i++){ const v = sdir[i], e = easeOutCubic(tp); sp[i*3] = J.x + v.x*e*2.6; sp[i*3+1] = J.y + v.y*e*2.6 - tp*tp*.6; sp[i*3+2] = J.z + v.z*e*2.6; } sgeo.attributes.position.needsUpdate = true; sparks.material.opacity = (1 - tp)*.95; }
-    const tb = clamp((u - .6)/.34, 0, 1);
-    by.visible = tb > 0 && tb < 1; if (by.visible){ const e = easeOutCubic(tb); by.position.copy(J).addScaledVector(tmpV.set(ST.d.x*.4 + .5, 1, ST.d.z*.4), 5.2*e); by.position.y += Math.sin(tb*Math.PI)*.8; by.rotation.set(tb*6, tb*8, 0); by.scale.setScalar(1 - tb*tb); by.children.forEach(c => c.material.opacity = 1 - tb*tb); }
-    // group transform
-    const sc = lerp(Sk[k], Sk1[k], eShift);
-    const eY = easeIO(clamp((u - .78)/.22, 0, 1)), lastK = k === NSTAGE - 1;
-    const yaw = CH.yaw[k] + eY*(CH.yaw[k + 1] - CH.yaw[k]) + Math.sin(p*60)*.035*(lastK ? 1 - eY : 1);
-    molG.rotation.set(.18*Math.sin(p*18)*(lastK ? 1 - eY : 1) + (lastK ? CH.pitch*eY : 0), yaw, 0);
-    molG.scale.setScalar(sc*fit*pulse*(k === NSTAGE - 1 ? 1 + .3*easeOutCubic(clamp((u - .8)/.2, 0, 1)) : 1));
-    // finale glow
-    const fin = k === NSTAGE - 1 ? easeOutCubic(clamp((u - .78)/.22, 0, 1)) : 0;
-    halo.material.opacity = fin*.55; halo.scale.setScalar(11 + fin*5); crown.material.opacity = fin*.55; crown.rotation.z = p*30;
-    // ambient bokeh
-    amb.material.color.copy(palGreen).lerp(palCream, tc);
-    const hW = Math.tan(THREE.MathUtils.degToRad(17.5))*15*cam.aspect, hH = Math.tan(THREE.MathUtils.degToRad(17.5))*15;
-    ambD.forEach((a, i) => { const ax = a.x + Math.sin(tNow*.4*a.sp + i)*.5, ay = ((a.y + p*30*a.sp + 9) % 18) - 9;
-      // keep the drifting atoms off the text column
-      const vis = mobile ? smooth(-hH*.05, hH*.35, ay*(15/(15 - a.z))) : smooth(-hW*.1, hW*.2, ax*(15/(15 - a.z)));
-      const sz = a.s*vis; tmpV.set(ax, ay, a.z); tmpQ.identity(); ambM.compose(tmpV, tmpQ, ambS.set(sz, sz, sz)); amb.setMatrixAt(i, ambM); });
-    amb.instanceMatrix.needsUpdate = true;
+    }
+    activeStage = idx;
 
-    // ---- slide "pages": colour wipe from the bottom centre ----
-    slides.forEach((el, i) => { const on = i === k || (i === k + 1 && wp > 0); if (el.hidden === on) el.hidden = !on; });
-    const cs = slides[k], ns = slides[k + 1];
-    cs.style.zIndex = 1; cs.style.clipPath = 'none';
-    const diag = Math.hypot(W, H);
-    if (ns && wp > 0){ const Rr = wp*diag*1.06; ns.style.zIndex = 2; ns.style.clipPath = `circle(${Rr}px at 50% 100%)`; const cp = $('.slide-copy', ns); cp.style.transform = `translateY(${(1 - wp)*36}px)`; cp.style.opacity = .35 + .65*wp;
-      ringEl.style.display = 'block'; ringEl.style.width = ringEl.style.height = Rr*2 + 'px'; ringEl.style.left = (W/2 - Rr) + 'px'; ringEl.style.top = (H - Rr) + 'px'; ringEl.style.opacity = 1 - wp*.9; }
-    else { ringEl.style.display = 'none'; if (ns){ ns.style.clipPath = 'circle(0px at 50% 100%)'; } }
-    $('.slide-copy', cs).style.transform = ''; $('.slide-copy', cs).style.opacity = k === 0 ? clamp(p*NSTAGE/.06, 0, 1) : 1;
-    // progress along the pipeline: pauses on each node, then travels to the next with the wipe
-    const fill = (k + .5)/NSTAGE + wp/NSTAGE;
-    pin.style.setProperty('--fill', fill.toFixed(4));
-    // product tag
-    const tagOn = u > .8 || (k === NSTAGE - 1 && u > .7);
-    tag.textContent = RX[k].p; tag.classList.toggle('on', tagOn && wp < .5);
-    const halfH = Math.tan(THREE.MathUtils.degToRad(17.5))*15, rpx = Math.min(H*.3, (3.5*sc*fit/halfH)*(H/2));
-    tag.style.left = (W/2 + (world.position.x/(halfH*cam.aspect))*(W/2)) + 'px'; tag.style.top = (H/2 - (world.position.y/halfH)*(H/2) + rpx + 14) + 'px';
-    lastTheme = wp > .6 ? (k + 1) % 2 === 0 ? 'cream' : 'green' : (k % 2 === 0 ? 'cream' : 'green');
-    activeStage = wp > .5 ? Math.min(k + 1, NSTAGE - 1) : k;
+    if (idx !== shownStage) {
+      shownStage = idx;
+      const num = String(idx + 1).padStart(2, '0');
+      const { t: title, d: desc } = RX[idx];
+      numEl.textContent = num;
+      titleEl.textContent = title;
+      descEl.textContent = desc;
+      modalNumEl.textContent = num;
+      modalTitleEl.textContent = title;
+      modalDescEl.textContent = desc;
+    }
+
+    const total = dur && !isNaN(dur) ? dur : 49.53;
+    const pct = Math.min(100, Math.max(0, (t / total) * 100));
+    miniSeek.value = pct.toFixed(1);
+    modalSeek.value = pct.toFixed(1);
+    miniSeek.style.setProperty('--pct', `${pct}%`);
+    modalSeek.style.setProperty('--pct', `${pct}%`);
   }
-  let lastTheme = 'cream', activeStage = 0;
 
-  let last = performance.now();
-  function frame(now){
+  function togglePlay(e) {
+    if (e) e.stopPropagation();
+    const v = activeVideo();
+    if (v.paused) {
+      userPaused = false;
+      v.play().catch(() => {});
+    } else {
+      userPaused = true;
+      v.pause();
+    }
+    syncPlayButtons();
+  }
+
+  function handleSeek(seekEl) {
+    const v = activeVideo();
+    const total = v.duration && !isNaN(v.duration) ? v.duration : 49.53;
+    const target = (parseFloat(seekEl.value) / 100) * total;
+    v.currentTime = target;
+    syncUI(target, total);
+  }
+
+  miniControls.addEventListener('click', (e) => e.stopPropagation());
+  modalControls.addEventListener('click', (e) => e.stopPropagation());
+  miniPlayBtn.addEventListener('click', togglePlay);
+  modalPlayBtn.addEventListener('click', togglePlay);
+  miniSeek.addEventListener('input', () => handleSeek(miniSeek));
+  modalSeek.addEventListener('input', () => handleSeek(modalSeek));
+
+  function openModal(e) {
+    if (e) e.stopPropagation();
+    if (isOpen) return;
+    isOpen = true;
+    modalVideo.currentTime = miniVideo.currentTime || 0;
+    if (!miniVideo.paused) miniVideo.pause();
+    modal.classList.add('is-open');
+    modal.setAttribute('aria-hidden', 'false');
+    if (!userPaused) modalVideo.play().catch(() => {});
+    syncPlayButtons();
+  }
+
+  function closeModal() {
+    if (!isOpen) return;
+    isOpen = false;
+    miniVideo.currentTime = modalVideo.currentTime || 0;
+    if (!modalVideo.paused) modalVideo.pause();
+    modal.classList.remove('is-open');
+    modal.setAttribute('aria-hidden', 'true');
+    if (wasVisible && !userPaused) miniVideo.play().catch(() => {});
+    syncPlayButtons();
+  }
+
+  miniCard.addEventListener('click', openModal);
+  miniFsBtn.addEventListener('click', openModal);
+  closeBtn.addEventListener('click', closeModal);
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && isOpen) closeModal();
+  });
+
+  function frame() {
     requestAnimationFrame(frame);
-    const dt = Math.min(.05, (now - last)/1000); last = now; tNow += dt;
     const st = getProgress();
-    visible = st.visible; if (!visible) return;
-    target = st.p; const diff = target - cur; cur += diff*(1 - Math.exp(-dt*(reduce ? 60 : 9)));
-    if (Math.abs(target - cur) < 1e-5) cur = target;
-    apply(cur);
-    renderer.render(scene, cam);
+    const visible = st.visible;
+
+    if (isOpen) {
+      syncUI(modalVideo.currentTime || 0, modalVideo.duration);
+      return;
+    }
+
+    if (visible) {
+      if (!wasVisible) {
+        wasVisible = true;
+        if (!userPaused && miniVideo.paused) {
+          miniVideo.play().catch(() => {});
+        }
+        syncPlayButtons();
+      }
+      syncUI(miniVideo.currentTime || 0, miniVideo.duration);
+    } else if (wasVisible) {
+      wasVisible = false;
+      if (!miniVideo.paused) miniVideo.pause();
+    }
   }
-  window.addEventListener('resize', resize); resize(); apply(0);
+
+  miniVideo.load();
+  modalVideo.load();
+  syncUI(0, 49.53);
+  syncPlayButtons();
   requestAnimationFrame(frame);
-  return { resize, theme:() => lastTheme, stage:() => activeStage, count:NSTAGE };
+
+  return {
+    resize() {},
+    theme: () => 'green',
+    stage: () => activeStage,
+    count: NSTAGE,
+  };
 }
 
 export { initReactor };

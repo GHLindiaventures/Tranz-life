@@ -1,0 +1,60 @@
+Created At: 2026-11-18T15:18:22+05:30
+Completed At: 2026-11-18T15:18:24+05:30
+Created At: 2026-11-18T15:18:22+05:30
+Completed At: 2026-11-18T15:18:24+05:30
+Showing lines 1-55 of 55
+1: // Entry point: boots every feature in order. Styles load from index.html, before the page paints.
+2: import { intro } from './app/intro.js';
+3: import { setLoad } from './app/loader.js';
+4: import { LAYOUT, initPages, pageProgress } from './app/page-sections.js';
+5: import { initScroll } from './app/scroll-animations.js';
+6: import { initSmooth } from './app/smooth-scroll.js';
+7: import { state, thumbs } from './app/state.js';
+8: import { initCart, renderCart } from './features/cart/cart.js';
+9: import { initContactForm } from './features/contact/contact-form.js';
+10: import { buildNeeds, selectNeed } from './features/finder/product-finder.js';
+11: import { initHeroJar } from './features/hero/hero-jar.js';
+12: import { buildMarquee } from './features/hero/marquee.js';
+13: import { buildLab } from './features/lab/lab-board.js';
+14: import { initNav } from './features/navigation/navigation.js';
+15: import { initReactor } from './features/pipeline/reactor.js';
+16: import { buildFilters, buildGrid, fillShots } from './features/products/product-grid.js';
+17: import { SHOTS } from './features/products/product-images.js';
+18: import { initLightbox } from './components/lightbox.js';
+19: import { initBenefits } from './features/benefits/benefit-slides.js';
+20: import { initInsiderZoom } from './features/insider/insider-zoom.js';
+21: import { initStory } from './features/product-story/product-story.js';
+22: import { buildHerbs } from './features/science/herb-picker.js';
+23: import { initMolecule } from './features/science/molecule-viewer.js';
+24: import { $ } from './utils/dom.js';
+25: 
+26: // Boot order matters: static UI first, then the 3D scenes (studio shots feed the cards), then scroll wiring.
+27: async function boot(){
+28:   setLoad(8);
+29:   initCart(); initContactForm();
+30:   buildMarquee(); buildLab(); buildNeeds(); renderCart(); initNav();
+31:   setLoad(20);
+32:   try { if (document.fonts) await Promise.race([Promise.all(['850 40px Archivo','600 20px Archivo','600 24px Caveat'].map(f => document.fonts.load(f))).then(() => document.fonts.ready), new Promise(r => setTimeout(r, 2500))]); } catch(e){}
+33:   setLoad(36);
+34:   try { state.heroApi = initHeroJar(); } catch(err){ console.warn('hero jar unavailable', err); }
+35:   Object.assign(thumbs, SHOTS); initLightbox();
+36:   setLoad(78);
+37:   fillShots(); buildGrid(); buildFilters(); selectNeed(1, true);
+38:   try { initBenefits(); } catch(err){ console.warn('benefit slides unavailable', err); }
+39:   try { state.mol = initMolecule(); } catch(err){ console.warn('molecule viewer unavailable', err); }
+40:   buildHerbs();
+41:   setLoad(88);
+42:   try { state.storyApi = initStory(); } catch(err){ console.warn('product story unavailable', err); }
+43:   try { initPages(); LAYOUT.reactor = initReactor(() => pageProgress('process')); } catch(err){ console.warn('pipeline scene unavailable', err); }
+44:   setLoad(96);
+45:   initSmooth();
+46:   initScroll();
+47:   try { initInsiderZoom(); } catch(err){ console.warn('insider zoom unavailable', err); }
+48:   intro();
+49: }
+50: 
+51: // never leave the loading screen up, even if a 3D scene fails
+52: const failSafe = setTimeout(() => $('#loader').classList.add('done'), 25000);
+53: 
+54: boot().catch(err => { console.error(err); $('#loader').classList.add('done'); }).finally(() => clearTimeout(failSafe));
+55: 

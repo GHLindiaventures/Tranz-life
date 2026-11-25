@@ -193,6 +193,10 @@
 ## v12.3 (11 Nov 2026): no unstyled flash on load
 - The stylesheet now loads from `index.html` (`<link rel="stylesheet" href="/src/styles/main.css">`) instead of being imported in `main.js`, so the page never paints before its styles arrive (this showed as plain text and a black shape in `npm run dev`).
 - A small inline style in `<head>` paints the loading screen's colour from the very first frame.
+## v13 (12 Nov 2026): Hero full product lineup
+- Upgraded the hero section to showcase all five TranzLife products together in a balanced lineup on the grassy mound.
+- Products enter with a choreographed staggered rise (TranzLife Gummies leading in the center, flanked by Calm Inhaler and Period Relief Roll-On, with Liver Booster and Reviva Roll-On framing the wings).
+- Broadened the hero stage mound and adjusted arc framing for responsive display across desktop, tablet, and mobile.
 
 ## v12.2 (6 Nov 2026): benefits change on click
 - The benefits panel no longer pins or changes while you scroll; the page scrolls straight on to the next section.

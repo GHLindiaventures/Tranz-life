@@ -10,12 +10,28 @@ export default defineConfig(({ mode }) => {
   const proxy = { '/api': `http://localhost:${env.PAYMENT_PORT || 8787}` };
   return {
     base: './',
-    server: { proxy },
+    server: {
+      proxy,
+      allowedHosts: ['albertine-nonempathic-heaven.ngrok-free.dev', '.ngrok-free.dev'],
+      watch: {
+        ignored: ['**/*.mp4']
+      }
+    },
     preview: { proxy },
     plugins: single ? [viteSingleFile()] : [],
     build: single
       ? { outDir: 'dist-single', assetsInlineLimit: Number.MAX_SAFE_INTEGER, cssCodeSplit: false }
-      : { outDir: 'dist', chunkSizeWarningLimit: 900 },
+      : {
+          outDir: 'dist',
+          chunkSizeWarningLimit: 900,
+          rollupOptions: {
+            input: {
+              main: 'index.html',
+              products: 'products.html',
+              productDetails: 'product-details.html'
+            }
+          }
+        },
     test: { environment: 'node', include: ['tests/**/*.test.js'] }
   };
 });

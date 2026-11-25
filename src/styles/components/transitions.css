@@ -1,0 +1,46 @@
+/* Page-to-page loading screen (DNA helix): public/page-loader.js, loaded at the top of every page's <head>. */
+
+/* ---------- Section Transitions: Full-Bleed Layered Sheets ---------- */
+:root {
+  --sheet-max-radius: 36px;
+  --sheet-radius: 0px;
+}
+
+@media (max-width: 768px) {
+  :root {
+    --sheet-max-radius: 24px;
+  }
+}
+
+/* Layered sheet base: 100% full-width, edge-to-edge, zero side gaps */
+.sheet-stack {
+  position: sticky;
+  top: var(--sticky-top, 0px);
+  width: 100% !important;
+  max-width: 100% !important;
+  margin-inline: 0 !important;
+  border-top-left-radius: var(--sheet-radius, 0px);
+  border-top-right-radius: var(--sheet-radius, 0px);
+  border-bottom-left-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+  box-shadow: 0 -14px 36px rgba(14, 32, 16, 0.07);
+  will-change: border-radius;
+  background-color: var(--ground);
+}
+
+/* Contact footer sheet rising over #shop */
+#contact.sheet-stack {
+  border-top-left-radius: var(--sheet-radius, 36px);
+  border-top-right-radius: var(--sheet-radius, 36px);
+  box-shadow: 0 -20px 48px rgba(10, 28, 12, 0.12);
+}
+
+/* Reduced motion accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .sheet-stack {
+    position: relative !important;
+    top: auto !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+}

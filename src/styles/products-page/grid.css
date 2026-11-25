@@ -1,0 +1,205 @@
+/* ---------- Lineup: dark products grid, one tall card per product ---------- */
+
+/* Fixed flight canvas spanning the viewport. It draws the showcase product and, in the grid, each product inside its
+   card panel (one WebGL context for all of it). Above the sections (z 45) except #statement (46), below nav/dock. */
+#flightCanvas {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 45;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+#flightCanvas.active { opacity: 1; visibility: visible; }
+
+.lineup {
+  position: relative;
+  background: var(--ground);
+  color: var(--ink);
+  /* same total height as before (so the cream hills below stay where they were), but the cards sit higher: less room
+     above the heading and between heading and cards, the same amount added under the cards, so the hills that rise
+     over this page's bottom never touch them */
+  padding: clamp(96px, 12vh, 140px) 0 6vw;   /* clear of the nav on top; the showcase follows directly below */
+  margin-top: 0;                    /* no longer tucked under the statement page, which cut off the heading */
+}
+/* no pin: the heading and cards scroll past normally (the reference does not pin them either) */
+.lineup-pin { position: relative; }
+.lineup-wrap {
+  position: relative;
+  width: 100%;
+  margin-inline: auto;
+  padding-inline: 3vw;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5vw;                       /* heading to cards (was 4vw: the cards moved up, see .lineup padding) */
+}
+
+/* heading in two halves on one line with a rotating sunburst between them */
+.lu-h {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2vw;
+  font-size: 9.4vw;
+  font-stretch: 62%;
+  font-weight: 850;
+  line-height: .86;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--ink);
+}
+.lu-r { color: var(--sage); }
+.lu-h .stw-i { transform: translate3d(0, 115%, 0); }
+.lu-h .stw { padding-block: .14em; margin-block: -.14em; }   /* room for the tall letters inside their reveal masks */
+.lu-sun { flex: none; width: 8vw; aspect-ratio: 1; color: var(--gold); will-change: transform; }
+.lu-sun svg { width: 100%; height: 100%; display: block; }
+
+/* five tall cards in one row */
+.lineup-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 1vw;
+  align-items: start;
+}
+.lineup-card {
+  position: relative;               /* positioned: offsetTop/Left chain used to measure the panel for the 3D layer */
+  padding: .7vw;
+  background: #f8f8f0;              /* off-white frame on the dark page */
+  border-radius: 2px;
+  will-change: transform, opacity;
+  --c: #b6cba5;
+  --hl: 0;
+}
+.lineup-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  border-radius: 6px;
+}
+.lineup-item:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
+
+/* the panel: soft product tint at rest; on highlight the product colour grows out of the centre as a circle
+   (clip-path, driven by --hl 0..1 from JS) and cream line-art slides in from the corners */
+.lineup-slot {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 1 / 1.72;
+  border-radius: 7px;
+  overflow: hidden;
+  background: #ece2b1;
+  isolation: isolate;
+}
+.lineup-slot::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: color-mix(in srgb, var(--c) 90%, #14301a);
+  clip-path: circle(calc(var(--hl) * 78%) at 50% 52%);
+  will-change: clip-path;
+}
+.lu-art {
+  position: absolute;
+  z-index: -1;
+  color: #f8f8f0;
+  opacity: var(--hl);
+  will-change: transform;
+}
+.lu-art svg { display: block; width: 100%; height: 100%; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.lu-art--a { left: -4%; bottom: -3%; width: 46%; aspect-ratio: 1; transform: translate(calc((1 - var(--hl)) * -160%), calc((1 - var(--hl)) * 160%)) rotate(calc(-45deg * (1 - var(--hl)) + 18deg)); }
+.lu-art--b { right: -3%; top: -3%; width: 42%; aspect-ratio: 1; transform: translate(calc((1 - var(--hl)) * 160%), calc((1 - var(--hl)) * -160%)) rotate(calc(60deg * (1 - var(--hl)) - 30deg)); }
+.lu-art--c { right: 6%; bottom: 5%; width: 30%; aspect-ratio: 1; transform: translate(calc((1 - var(--hl)) * 200%), calc((1 - var(--hl)) * 200%)) rotate(12deg); }
+.lu-art--d { left: -3%; top: 3%; width: 30%; aspect-ratio: 1; transform: translate(calc((1 - var(--hl)) * -200%), calc((1 - var(--hl)) * -200%)) rotate(15deg); }
+
+/* soft contact shadow under the 3D product (the product itself is on #flightCanvas) */
+.lineup-shadow {
+  position: absolute;
+  left: 50%;
+  bottom: 6%;
+  width: 46%;
+  height: 12px;
+  margin-left: -23%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(22, 36, 18, .34), rgba(22, 36, 18, .08) 60%, transparent);
+  filter: blur(3px);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* name bottom left in the hand font; its letters roll up to the deeper colour on highlight */
+.lineup-name {
+  display: block;
+  padding: .9vw 2.6vw .3vw .5vw;
+  font-family: var(--f-hand);
+  font-weight: 600;
+  font-size: clamp(18px, 1.6vw, 26px);
+  line-height: 1.1;
+  color: var(--forest);
+}
+.lu-w { display: inline-block; overflow: hidden; vertical-align: top; height: 1.15em; }
+.lu-ch {
+  display: inline-block;
+  white-space: pre;
+  text-shadow: 0 1.15em 0 var(--c-deep, #946c3c);
+  transition: transform .5s var(--ease);
+  transition-delay: calc(var(--i) * 14ms);
+}
+.lineup-card.on .lu-ch { transform: translateY(-1.15em); }
+
+/* quick add: a plain plus at the bottom right */
+.lu-add {
+  position: absolute;
+  right: calc(.7vw + .4vw);
+  bottom: calc(.7vw + .2vw);
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  font-size: 26px;
+  font-weight: 300;
+  line-height: 1;
+  color: var(--forest);
+  transition: transform .25s var(--ease);
+}
+.lu-add:hover { transform: rotate(90deg) scale(1.1); }
+.lu-add:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; border-radius: 4px; }
+.lu-add.ok { color: var(--sage); }
+
+/* tablet: 3 per row, no pin (the JS follows the section through the viewport) */
+@media (max-width: 1023px) {
+  .lineup { padding: 7vw 0 19vw; }
+  .lineup-wrap { padding-inline: 4vw; }
+  .lineup-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 2vw; }
+  .lineup-card { grid-column: span 2; padding: 1.2vw; }
+  .lineup-card:nth-child(4) { grid-column: 2 / span 2; }
+  .lineup-card:nth-child(5) { grid-column: 4 / span 2; }
+  .lineup-name { padding: 1.6vw 6vw 1vw 1vw; }
+  .lu-add { right: 2vw; bottom: 1.4vw; }
+}
+/* phones: heading stacked in two lines, 2 cards per row with the last one centred, no sunburst */
+@media (max-width: 767px) {
+  .lu-h { flex-direction: column; align-items: center; justify-content: center; gap: 0; font-size: 17.6vw; text-align: center; white-space: normal; }
+  .lu-sun { display: none; }
+  .lineup-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 3vw; }
+  .lineup-card, .lineup-card:nth-child(4), .lineup-card:nth-child(5) { grid-column: auto; padding: 2.5vw; }
+  .lineup-card:nth-child(5) { grid-column: 1 / -1; justify-self: center; width: calc(50% - 1.5vw); }
+  .lineup-name { font-size: 17px; padding: 2.4vw 8vw 1vw 1vw; }
+  .lu-add { right: 3vw; bottom: 2vw; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lu-h .stw-i { transform: none; }
+  .lu-ch { transition: none; }
+}
+
+/* the details are not on the page itself: they open (in the overlay) when a product is chosen, and the product returns to its card at the end. The sections stay in the DOM because the overlay is built from the showcase. */
+body:not(.scene-on) .pp-main > #showcase, body:not(.scene-on) .pp-main > #statement { display: none; }
+.lineup { min-height: 100vh; min-height: 100svh; }
+
+
+/* the shadow under each product is drawn in 3D now (jar-layer.js), so the flat one in the card is not needed */
+.lineup-shadow { display: none; }

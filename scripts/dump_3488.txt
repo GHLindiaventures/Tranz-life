@@ -1,0 +1,96 @@
+Created At: 2026-11-18T17:28:15+05:30
+Completed At: 2026-11-18T17:28:15+05:30
+Created At: 2026-11-18T17:28:15+05:30
+Completed At: 2026-11-18T17:28:15+05:30
+Showing lines 90-180 of 184
+90:   if (descEl) descEl.textContent = h.txt;
+91: 
+92:   // Handwritten styling notes in whitespace with decorative curved arrows (NEVER touching the product image)
+93:   const factsEl = $('#sciHerbFacts');
+94:   if (factsEl) {
+95:     factsEl.innerHTML = `
+96:       <div class="herb-callout-note note-part" role="button" tabindex="0" aria-label="Part used: ${h.part}">
+97:         <div class="herb-fact-head">
+98:           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 20A7 7 0 0 1 4 13C4 8 11 3 11 3s7 5 7 10a7 7 0 0 1-7 7Z"/><path d="M11 13a3 3 0 0 0 3-3"/></svg>
+99:           <span class="herb-fact-label">Part used</span>
+100:         </div>
+101:         <b class="herb-fact-val">${h.part}</b>
+102:         <svg class="herb-style-arrow" viewBox="0 0 120 60" aria-hidden="true">
+103:           <path d="M10 8c30 2 60 16 80 40m0 0l-2-14m2 14l-13-5"/>
+104:         </svg>
+105:       </div>
+106:       <div class="herb-callout-note note-cmp" role="button" tabindex="0" aria-label="Key compound: ${h.cmp}">
+107:         <div class="herb-fact-head">
+108:           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><circle cx="19" cy="6" r="2"/><circle cx="5" cy="18" r="2"/><path d="M14 10l3.5-2.5M6.5 16.5L10 14"/></svg>
+109:           <span class="herb-fact-label">Key compound</span>
+110:         </div>
+111:         <b class="herb-fact-val">${h.cmp}</b>
+112:         <svg class="herb-style-arrow arrow-left" viewBox="0 0 120 60" aria-hidden="true">
+113:           <path d="M110 8C80 10 50 24 30 48m0 0l2-14m-2 14l13-5"/>
+114:         </svg>
+115:       </div>
+116:       <div class="herb-callout-note note-found" role="button" tabindex="0" aria-label="Standardized in: ${found}">
+117:         <div class="herb-fact-head">
+118:           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+119:           <span class="herb-fact-label">Standardized in</span>
+120:         </div>
+121:         <b class="herb-fact-val">${found}</b>
+122:         <svg class="herb-style-arrow" viewBox="0 0 120 60" aria-hidden="true">
+123:           <path d="M10 8c30 2 60 16 80 40m0 0l-2-14m2 14l-13-5"/>
+124:         </svg>
+125:       </div>`;
+126: 
+127:     // Interactive hover focus on each note
+128:     factsEl.querySelectorAll('.herb-callout-note').forEach(card => {
+129:       card.addEventListener('pointerenter', () => {
+130:         card.classList.add('active-focus');
+131:         const halo = $('#sciHerbHalo');
+132:         if (halo) halo.style.transform = 'scale(1.18)';
+133:         const photo = $('#sciHerbPhoto');
+134:         if (photo) photo.style.filter = 'drop-shadow(0 26px 48px rgba(28, 48, 20, .24)) scale(1.03)';
+135:       });
+136:       card.addEventListener('pointerleave', () => {
+137:         card.classList.remove('active-focus');
+138:         const halo = $('#sciHerbHalo');
+139:         if (halo) halo.style.transform = '';
+140:         const photo = $('#sciHerbPhoto');
+141:         if (photo) photo.style.filter = '';
+142:       });
+143:     });
+144:   }
+145: 
+146:   // Ingredient photo
+147:   const photoImg = $('#sciHerbPhoto');
+148:   if (photoImg && h.img) {
+149:     if (!first && hasGsap) {
+150:       gsap.to(photoImg, {
+151:         opacity: 0, scale: .92, y: 10, duration: .18, ease: 'power2.in',
+152:         onComplete() {
+153:           photoImg.src = h.img;
+154:           photoImg.alt = h.n;
+155:           photoImg.onload = () => {
+156:             gsap.fromTo(photoImg,
+157:               { opacity: 0, scale: .92, y: 10 },
+158:               { opacity: 1, scale: 1, y: 0, duration: .4, ease: 'power3.out' }
+159:             );
+160:           };
+161:         }
+162:       });
+163:     } else {
+164:       photoImg.src = h.img;
+165:       photoImg.alt = h.n;
+166:     }
+167:   }
+168: 
+169:   // Halo colour
+170:   const halo = $('#sciHerbHalo');
+171:   if (halo) {
+172:     halo.style.background = `radial-gradient(circle, #${col}22 0%, transparent 68%)`;
+173:   }
+174: 
+175:   if (!first && hasGsap) {
+176:     gsap.from('#sciHerbTitle, #sciHerbLatin, #sciHerbIndex', { opacity: 0, y: -6, duration: .3, stagger: .04, ease: 'power2.out' });
+177:     gsap.from('#sciHerbDesc, #sciHerbFacts > *', { opacity: 0, y: 10, duration: .35, stagger: .04, ease: 'power2.out' });
+178:     gsap.fromTo('.herb-style-arrow path', { strokeDasharray: 180, strokeDashoffset: 180 }, { strokeDashoffset: 0, duration: .85, ease: 'power2.out' });
+179:   }
+180: 

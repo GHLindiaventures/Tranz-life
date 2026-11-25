@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <script src="/page-loader.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Details | TranzLife Biosciences</title>
+  <meta name="description"
+    content="Clinical formulation details, active botanical ingredients, usage directions, and biological mechanisms of action for TranzLife Biosciences wellness solutions.">
+  <meta property="og:title" content="Product Details | TranzLife Biosciences">
+  <meta property="og:description"
+    content="From the roots of nature to the infinity of science. Explore science-backed plant formulations.">
+  <meta property="og:type" content="product">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,400..900;1,62..125,400..900&family=Caveat:wght@600&display=swap"
+    rel="stylesheet">
+  <link rel="icon" type="image/webp" href="/assets/logo-emblem.webp">
+  <link rel="stylesheet" href="/src/styles/main.css">
+  <link rel="stylesheet" href="/src/styles/sections/product-details.css">
+  <style id="tl-critical">
+    /* hide the full-screen menu from the very first frame (same as components/menu.css) */
+    .menu {
+      position: fixed;
+      visibility: hidden
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Header Sticky Navigation Bar -->
+  <header class="nav" id="nav">
+    <a class="brand" href="index.html#home" aria-label="TranzLife Biosciences home">
+      <span class="logo-em" aria-hidden="true"></span>
+      <span class="logo-word" aria-hidden="true"></span>
+    </a>
+    <nav class="nav-pills" aria-label="Main">
+      <a href="index.html#home">Home</a>
+      <a href="index.html#products" class="on">Products</a>
+      <a href="index.html#benefits">Benefits</a>
+      <a href="index.html#process">Process</a>
+      <a href="index.html#science">Science</a>
+    </nav>
+    <div class="nav-act">
+      <a class="pill" href="index.html#products"><i aria-hidden="true">←</i><b>All products</b></a>
+    </div>
+  </header>
+
+  <main class="pdp-page">
+    <div class="wrap">
+
+      <!-- Formulation Switcher Bar -->
+      <nav class="pdp-switcher" id="pdpSwitcher" aria-label="Select Formulation"></nav>
+
+      <!-- Breadcrumbs -->
+      <nav class="pdp-breadcrumb" id="pdpBreadcrumb" aria-label="Breadcrumb"></nav>
+
+      <!-- Main PDP Hero Grid -->
+      <div class="pdp-grid">
+
+        <!-- Left Gallery with 3D Live Model -->
+        <div class="pdp-gallery">
+          <div class="pdp-main-img-box" id="pdpImgBox">
+            <canvas id="pdp3dCanvas" class="pdp-3d-canvas" width="600" height="600"></canvas>
+            <img id="pdpMainImg" alt="Product photo" width="800" height="800" hidden>
+            <span class="pdp-badge-tag" id="pdpTag"></span>
+            <div class="pdp-3d-badge" id="pdp3dBadge">
+              <span class="pdp-3d-dot"></span> 3D Live Model · Drag to Rotate 360°
+            </div>
+          </div>
+          <div class="pdp-gallery-tabs">
+            <button class="pdp-tab-btn on" data-view="3d" type="button">✨ 3D Live Model</button>
+            <button class="pdp-tab-btn" data-view="studio" type="button">Studio Shot</button>
+            <button class="pdp-tab-btn" data-view="design" type="button">Pack Design</button>
+          </div>
+          <div class="pdp-guarantee-pills">
+            <span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+              </svg>
+              GMP Certified
+            </span>
+            <span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12" />
+                <path d="M11 3c2 2 4.5 4 8 4" />
+              </svg>
+              100% Plant-Derived
+            </span>
+            <span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10" />
+                <path d="m9 12 2 2 4-4" />
+              </svg>
+              Clean Label
+            </span>
+          </div>
+        </div>
+
+        <!-- Right Product Summary & Actions -->
+        <div class="pdp-info" id="pdpInfo">
+          <!-- Dynamically populated from CLINICAL_DETAILS in src/product-details.js -->
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Before / after comparison (only for products that have one: src/data/compare.js) -->
+    <section class="bac-band" id="pdpCompare" aria-label="Before and after comparison" hidden></section>
+
+    <!-- Targeted Biochemical Mechanisms -->
+    <section class="pdp-science-band">
+      <div class="wrap">
+        <div class="pdp-science-head">
+          <p class="eyebrow drawn">Biochemical Synergy</p>
+          <h2 class="h2">Targeted <em>Cellular Mechanisms</em></h2>
+          <p class="sub">
+            How active phytocompounds interact with human physiology to produce noticeable, clinical-grade results.
+          </p>
+        </div>
+        <div class="pdp-science-grid" id="pdpScienceGrid">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Cross-Sell Formulations -->
+    <section class="pdp-cross-band">
+      <div class="wrap">
+        <div class="pdp-cross-head">
+          <p class="eyebrow drawn">More from TranzLife</p>
+          <h2 class="h2">Explore Other <em>Formulations</em></h2>
+        </div>
+        <div class="pdp-cross-grid" id="pdpCrossGrid">
+          <!-- filled by product-details.js with the other products -->
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Global Footer -->
+  <footer class="night-foot" id="siteFooter">
+    <!-- "After Dark": the last page of the day (features/footer/night-footer.js, sections/footer.css) -->
+    <div class="nf-sky" aria-hidden="true"><span class="nf-stars"></span><span class="nf-moon"></span><span
+        class="nf-sun"></span></div>
+    <div class="wrap nf-in">
+      <div class="nf-top">
+        <a class="nf-brand" href="index.html" aria-label="TranzLife Biosciences home"><span class="logo-em"
+            aria-hidden="true"></span><span class="logo-word light" aria-hidden="true"></span></a>
+        <button class="nf-dawn" type="button" id="nfDawn"><span>Back to dawn</span><i aria-hidden="true">↑</i></button>
+      </div>
+      <nav class="nf-links" aria-label="Footer"><a href="index.html#products"><span>Products</span></a><a href="index.html#benefits"><span>Benefits</span></a><a href="index.html#process"><span>Process</span></a><a href="index.html#science"><span>Science</span></a><a href="index.html#shop"><span>Shop</span></a><a href="index.html#contact"><span>Contact</span></a></nav>
+      <div class="nf-meta">
+        <p class="nf-where">Egmore, Chennai, Tamil Nadu, India</p>
+        <a class="nf-mail" href="mailto:care@tranzlife.in">care@tranzlife.in</a>
+        <span class="nf-store" id="nfStore">Online store · coming soon</span>
+      </div>
+      <div class="nf-legal">
+        <p class="nf-care"><b>We don’t cure. We care.</b> TranzLife products support everyday well-being and are not
+          intended to treat or cure any disease.</p>
+        <p class="nf-fine"><span>© 2026 TranzLife Biosciences</span><a href="privacy.html">Privacy</a><a
+            href="terms.html">Terms</a></p>
+      </div>
+    </div>
+    <p class="nf-word" aria-hidden="true">
+      <span>T</span><span>R</span><span>A</span><span>N</span><span>Z</span><span>L</span><span>I</span><span>F</span><span>E</span>
+    </p>
+  </footer>
+
+  <div class="toast" id="toast" role="status"></div>
+
+  <script type="module" src="/src/product-details.js"></script>
+</body>
+
+</html>

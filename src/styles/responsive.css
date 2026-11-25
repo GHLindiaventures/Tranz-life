@@ -24,34 +24,41 @@
   .st-tag{font-size:11px;letter-spacing:.16em;gap:8px}.st-tag::before,.st-tag::after{width:18px}
   .f-brand .hand{margin-left:0;width:100%}.f-brand .logo-em{height:70px}.f-brand .logo-word{height:38px}
   .st-buy{position:relative;left:auto;top:auto;margin-left:0;order:2;align-self:center;margin-top:18px}
-  .st-squig{transform:none}
   .st-arc,.st-hill,.facts{left:50%}
-  .st-arc{top:auto;bottom:calc(-1*min(64vw,340px));width:min(128vw,680px);height:min(128vw,680px)}
-  .st-hill{width:70vw;height:30vh;bottom:-16vh}
-  .facts{position:relative;left:auto;top:auto;width:auto;height:auto;order:4;display:flex;justify-content:center;gap:12px;margin:-30px 0 28px}
+  .st-arc{top:auto;bottom:calc(-1*min(59vw,310px));width:min(118vw,620px);height:min(118vw,620px)}
+  .st-hill{width:min(96vw,560px);height:28vh;bottom:-13vh}
+  .facts{position:relative;left:auto;top:auto;width:auto;height:auto;order:4;display:flex;justify-content:center;gap:12px;margin:-30px 0 calc(16vw + 40px)}
   .fact{position:relative;width:92px;margin:0;transform:none}
   .fact b{font-size:28px}
   .st-note{display:none}
   .stage-space{order:3;height:62vh;min-height:420px}
+  .mq-track span{font-size:clamp(70px,18vw,120px)}
   .in-grid,.sci,.finder-grid,.contact-card,.lab-head{grid-template-columns:minmax(0,1fr)}
   .in-cards{height:clamp(320px,90vw,460px)}
   .in-copy{padding:28px 22px}
   .in-copy::after{background:linear-gradient(180deg,rgba(248,250,243,.84) 0%,rgba(248,250,243,.7) 60%,rgba(248,250,243,.25) 100%)}
   .in-why{justify-content:center;padding-right:0}
-  .sci,.finder-grid,.contact-card,.lab-head{grid-template-columns:minmax(0,1fr)}
   .seq{height:760vh}
   .sn{display:none}
   .seq-title{font-size:clamp(2.2rem,10vw,3.4rem);top:96px}
   .sl{font-size:17px}
+  .ben{grid-template-columns:minmax(0,1fr)}
+  .ben-img{min-height:0;height:auto;aspect-ratio:1/1}
+  .ben-copy{padding:4px 6px 8px}
+  .ben-copy .h2{font-size:clamp(1.9rem,8.4vw,2.6rem)}
+  .tbl{margin-top:14px;font-size:13.5px}
   .tbl .tr{grid-template-columns:minmax(0,1fr) 70px 62px}
   .tbl .td{padding:8px 6px}
+  .tbl-set .tr{margin-top:2px}
   .tbl .ok{width:44px;height:26px}
   .tbl-note{margin-top:8px;font-size:12px}
   /* small labels a little larger on phones and tablets */
   .pc-no,.pc-tag,.pc-price small,.pc-ing li,.herb-facts small,.b-row.hd,.bs-cap span{font-size:12px}
   .bs-cap{font-size:12.5px;left:10px;bottom:10px}
   .sci-art{justify-self:center}
-  .grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .pc,.pc:nth-child(4),.pc:nth-child(5){grid-column:span 1}
+  .pc:nth-child(1){grid-column:1/-1}
   .f-row{grid-template-columns:repeat(3,minmax(0,1fr))}
   .f-row>div:first-child{grid-column:1/-1}
   .process{height:720vh}
@@ -76,14 +83,8 @@
 .seq.stacked .sc h3{font-size:clamp(2.6rem,12vw,3.8rem)}
 .seq.stacked .sc-d{font-size:15px}
 @media (max-width:620px){
-  .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-  .pc{padding:6px;border-radius:20px}
-  .pc-media{border-radius:15px}
-  .pc-body{padding:10px 6px 6px;gap:6px}
-  .pc h3{font-size:17px}
-  .pc-d,.pc-ing{display:none}
-  .pc-foot{flex-direction:column;align-items:stretch;gap:8px;padding-top:10px}
-  .pc-price{font-size:18px}
+  .grid{grid-template-columns:minmax(0,1fr)}
+  .pc:nth-child(1){grid-column:auto}
   .match{grid-template-columns:minmax(0,1fr)}
   form{grid-template-columns:minmax(0,1fr)}
   .herb-facts{grid-template-columns:minmax(0,1fr)}

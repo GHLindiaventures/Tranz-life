@@ -1,0 +1,15 @@
+/* Matte finish from dhina-dev (its base/tokens.css and base/global.css additions), scoped to this page's sections.
+   The grain tile is drawn once by src/products-page/grain.js and handed over in --grain; until then it is "none",
+   so nothing changes if that ever fails. The shared footer is left as on every other page. */
+:root { --grain: none; }
+.pp-main > .page::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: var(--grain) repeat;
+  background-size: 496px 496px;
+  opacity: var(--grain-o, .2);
+}
+.pp-main > .t-green { --grain-o: .14; }

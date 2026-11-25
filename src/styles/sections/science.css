@@ -1,34 +1,447 @@
-/* ---------- science ---------- */
-.science{background:var(--ground-2);border-block:1px solid var(--line)}
-.sci-grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:clamp(32px,6vw,96px);align-items:center}
-.mol{position:relative;aspect-ratio:1/1;max-width:100%;border-radius:32px;background:radial-gradient(60% 60% at 50% 45%,rgba(169,193,139,.16),transparent 70%),var(--ground);border:1px solid var(--line);overflow:hidden}
-.mol canvas{width:100%;height:100%;display:block;cursor:grab;touch-action:pan-y}
-.mol-cap{position:absolute;left:22px;bottom:20px;right:22px;display:flex;justify-content:space-between;align-items:flex-end;gap:10px;pointer-events:none}
-.mol-cap b{font-family:var(--f-mono);font-weight:400;font-size:13px;color:var(--sage)}
-.mol-cap small{font-size:12px;color:var(--faint)}
-.mol-orbit{position:absolute;inset:12%;border:1px dashed var(--line);border-radius:50%;pointer-events:none;animation:spin 60s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-.herbs{display:flex;flex-wrap:wrap;gap:8px;margin-top:30px}
-.herbs button{padding:9px 16px;border-radius:999px;border:1px solid var(--line-strong);font-size:14px;transition:all .3s}
-.herbs button.on{background:var(--cream);color:var(--on-cream);border-color:var(--cream)}
-.herb-info{margin-top:30px;padding-top:26px;border-top:1px solid var(--line)}
-.herb-info h3{font-size:clamp(2rem,3.4vw,2.8rem);line-height:1.05}
-.herb-info .latin{font-family:var(--f-display);font-style:italic;color:var(--sage);font-size:18px;margin-top:4px}
-.herb-info p{color:var(--muted);margin-top:14px;max-width:52ch}
-.herb-facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:22px}
-.herb-facts div{padding:14px;border-radius:14px;background:var(--panel);border:1px solid var(--line);min-width:0}
-.herb-facts small{display:block;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint)}
-.herb-facts b{display:block;font-weight:500;font-size:15px;margin-top:4px;overflow-wrap:anywhere}
-/* science: the DNA helix from the photo frames the molecule viewer */
-.sci{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(30px,5vw,80px);align-items:center}
-.sci-art{position:relative;aspect-ratio:1/1.02;max-width:640px;width:100%;justify-self:end}
-.sci-art .dna{position:absolute;right:-6%;bottom:-4%;width:100%;height:auto;-webkit-mask-image:linear-gradient(90deg,#000 74%,transparent 98%),linear-gradient(180deg,#000 76%,transparent 98%);-webkit-mask-composite:source-in;mask-image:linear-gradient(90deg,#000 74%,transparent 98%),linear-gradient(180deg,#000 76%,transparent 98%);mask-composite:intersect;filter:drop-shadow(0 24px 30px rgba(46,70,24,.16));will-change:transform}
-.sci-ring{position:absolute;left:2%;top:6%;width:62%;aspect-ratio:1;border-radius:50%;border:2px solid #fff;box-shadow:0 0 40px rgba(255,255,255,.45),inset 0 0 40px rgba(255,255,255,.2);background:radial-gradient(circle at 50% 45%,rgba(255,255,255,.55),rgba(255,255,255,.1) 70%);overflow:hidden;backdrop-filter:blur(3px)}
-.sci-ring::after{content:"";position:absolute;inset:-7%;border-radius:50%;border:1.5px solid rgba(255,255,255,.6);transform:translate(4%,-3%)}
-.sci-ring canvas{width:100%;height:100%;display:block;cursor:grab;touch-action:pan-y}
-.sci-cap{position:absolute;left:8%;top:calc(6% + 62% + 10px);font-weight:700;font-stretch:85%;font-size:14px;color:var(--forest)}
-.sci-cap small{display:block;font-weight:500;color:var(--muted);font-size:12px}
-.sci-bg{background:linear-gradient(180deg,var(--ground),#f1f0cf 60%,var(--ground))}
-.herbs button{font-weight:700;font-stretch:85%;background:rgba(255,255,255,.5)}
-.herb-info h3{font-stretch:66%;text-transform:uppercase}
-.herb-info .latin{font-family:var(--f-hand);font-size:24px;font-style:normal}
+/* =========================================================
+   SCIENCE SECTION — Clean Editorial Botanical Showcase
+   ========================================================= */
+
+/* ---- Section Background ---- */
+.sci-bg {
+  background: var(--ground-2);
+  position: relative;
+}
+
+/* ---- Main 2-Col Grid ---- */
+.sci {
+  display: grid;
+  grid-template-columns: minmax(0, .95fr) minmax(0, 1.05fr);
+  gap: clamp(32px, 5vw, 68px);
+  align-items: start;
+}
+
+/* ---- Left Column: Intro ---- */
+.sci-intro {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---- Eyebrow Row ---- */
+.sci-eyebrow-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.sci-lab-tag {
+  font-family: var(--f-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  color: var(--sage);
+  background: rgba(111, 158, 76, .1);
+  border: 1px solid rgba(111, 158, 76, .2);
+  padding: 3px 10px;
+  border-radius: 999px;
+}
+
+/* ---- Herb Selector Chips ---- */
+.herbs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 28px;
+}
+
+.herbs button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--line-strong);
+  background: rgba(255, 255, 255, .55);
+  font-family: var(--f-body);
+  font-weight: 700;
+  font-stretch: 85%;
+  font-size: 13.5px;
+  color: var(--ink);
+  cursor: pointer;
+  transition: all .25s var(--ease);
+}
+
+.herb-chip-num {
+  font-family: var(--f-mono);
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--faint);
+  letter-spacing: .02em;
+}
+
+.herbs button:hover {
+  background: rgba(255, 255, 255, .95);
+  border-color: var(--sage);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(31, 70, 35, .08);
+}
+
+.herbs button.on {
+  background: var(--cream);
+  color: var(--on-cream);
+  border-color: var(--cream);
+  box-shadow: 0 4px 14px rgba(36, 80, 42, .24);
+}
+
+.herbs button.on .herb-chip-num {
+  color: rgba(244, 248, 239, .7);
+}
+
+/* ---- Quality Standards Bar (Left Column Footer) ---- */
+.sci-standards {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-top: 36px;
+  padding-top: 24px;
+  border-top: 1px solid var(--line);
+}
+
+.sci-standard-item b {
+  display: block;
+  font-family: var(--f-mono);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--sage);
+  letter-spacing: .02em;
+}
+
+.sci-standard-item small {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--faint);
+  margin-top: 2px;
+  letter-spacing: .02em;
+}
+
+.sci-standard-div {
+  width: 1px;
+  height: 26px;
+  background: var(--line);
+}
+
+/* =========================================================
+   RIGHT COLUMN: BOTANICAL SPECIMEN SHOWCASE WITH THE IMAGE
+   ========================================================= */
+.sci-art {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---- Specimen Header ---- */
+.sci-specimen-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line);
+}
+
+.sci-specimen-badge {
+  display: block;
+  font-family: var(--f-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .16em;
+  color: var(--sage);
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.sci-herb-title {
+  font-family: var(--f-display);
+  font-size: clamp(2rem, 3.2vw, 2.7rem);
+  font-weight: 700;
+  font-stretch: 66%;
+  text-transform: uppercase;
+  line-height: 1.05;
+  color: var(--ink);
+  margin: 0;
+}
+
+.sci-herb-latin {
+  font-family: var(--f-hand);
+  font-size: 24px;
+  color: var(--sage);
+  line-height: 1;
+  white-space: nowrap;
+}
+
+/* ---- Botanical Image Stage with 3D Tilt & Halo ---- */
+.sci-stage {
+  position: relative;
+  width: 100%;
+  height: 480px;
+  max-height: 56vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  perspective: 900px;
+  cursor: grab;
+  margin: 10px 0 4px;
+}
+
+.sci-stage:active {
+  cursor: grabbing;
+}
+
+/* Soft ambient colour halo behind the botanical */
+.sci-herb-halo {
+  position: absolute;
+  width: 65%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(140, 184, 106, .14) 0%, transparent 68%);
+  pointer-events: none;
+  transition: background .6s, transform .3s ease;
+}
+
+/* The actual ingredient image — balanced size for high-detail prominence while preserving clearance */
+.sci-herb-photo {
+  position: relative;
+  max-width: 78%;
+  max-height: 78%;
+  object-fit: contain;
+  filter: drop-shadow(0 22px 38px rgba(28, 48, 20, .16));
+  transition: opacity .35s, filter .3s ease;
+  will-change: transform, filter;
+  z-index: 2;
+}
+
+.sci-herb-photo.entering {
+  opacity: 0;
+  transform: scale(.92) translateY(10px);
+}
+
+/* =========================================================
+   INTERACTIVE CALLOUT CARDS BESIDE THE INGREDIENT
+   ========================================================= */
+/* =========================================================
+   DECORATIVE BOTANICAL ARROW OVERLAY
+   (Curved hand-drawn arrows coming from near ingredient to name —
+    NEVER touching or overlapping product image)
+   ========================================================= */
+.sci-arrow-overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 3;
+}
+
+.sci-arrow-path {
+  fill: none;
+  stroke: var(--forest);
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: stroke-width .24s var(--ease), stroke .24s var(--ease), filter .24s var(--ease);
+}
+
+.sci-arrow-path.highlighted {
+  stroke: #0a260e;
+  stroke-width: 3.2;
+  filter: drop-shadow(0 2px 8px rgba(18, 56, 23, .45));
+}
+
+@media (max-width: 640px) {
+  .sci-arrow-overlay {
+    display: none;
+  }
+}
+
+/* =========================================================
+   HANDWRITTEN BOTANICAL STYLING NOTES
+   (Clean calligraphy in deep ink — transparent, no boxes, no glowing dots, no dullness)
+   ========================================================= */
+.herb-callouts {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 4;
+}
+
+.herb-callout-note {
+  position: absolute;
+  pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 2px 4px;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  cursor: pointer;
+  transition: transform .28s var(--ease);
+  user-select: none;
+  overflow: visible;
+}
+
+.herb-callout-note.note-cmp {
+  align-items: flex-end;
+  text-align: right;
+}
+
+.herb-callout-note:hover,
+.herb-callout-note.active-focus {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  transform: translateY(-2px) scale(1.04) !important;
+}
+
+.herb-callout-note .herb-fact-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #123817;
+}
+
+.herb-callout-note .herb-fact-head svg {
+  flex-shrink: 0;
+  width: 15px;
+  height: 15px;
+  color: #123817;
+  opacity: 1;
+}
+
+.herb-callout-note .herb-fact-label {
+  display: block;
+  font-family: var(--f-hand);
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--forest);
+  line-height: 1.1;
+  letter-spacing: .01em;
+  opacity: .92;
+}
+
+.herb-callout-note .herb-fact-val {
+  display: block;
+  font-family: var(--f-hand);
+  font-size: 27px;
+  font-weight: 500;
+  color: var(--forest);
+  margin-top: 2px;
+  line-height: 1.1;
+  white-space: nowrap;
+  opacity: .96;
+}
+
+/* Positioning in open whitespace — GENEROUS BREATHING ROOM FROM INGREDIENT PHOTO */
+/* Note 1: Part used — Upper-left whitespace */
+.herb-callout-note.note-part {
+  top: 6%;
+  left: 8px;
+}
+
+/* Note 2: Key compound — Upper-right whitespace (moved to topside so longer names like Ascorbic acid never overlap arrows) */
+.herb-callout-note.note-cmp {
+  top: 22%;
+  right: 12px;
+}
+
+/* Note 3: Standardized in — Lower-left whitespace */
+.herb-callout-note.note-found {
+  bottom: 6%;
+  left: 8px;
+}
+
+/* ---- Botanical Phytotherapy Dossier (Centered Description & Context) ---- */
+.sci-specimen-dossier {
+  margin-top: 2px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  width: 100%;
+}
+
+.sci-herb-desc {
+  color: var(--ink);
+  opacity: .88;
+  font-size: 15.5px;
+  line-height: 1.65;
+  margin: 0;
+  width: 100%;
+  max-width: 100%;
+  text-align: center;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+@media (max-width: 980px) {
+  .sci {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 36px;
+  }
+  .sci-art {
+    justify-self: center;
+    max-width: 540px;
+    width: 100%;
+  }
+  .sci-stage {
+    height: 380px;
+  }
+}
+
+@media (max-width: 680px) {
+  .sci-arrow-overlay,
+  .sci-hand-note {
+    display: none;
+  }
+  .sci-stage {
+    height: auto;
+    min-height: 320px;
+    flex-direction: column;
+    padding-bottom: 16px;
+  }
+  .herb-callouts {
+    position: relative;
+    inset: auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 12px;
+    justify-content: center;
+  }
+  .herb-callout-note.note-part,
+  .herb-callout-note.note-cmp,
+  .herb-callout-note.note-found {
+    position: relative;
+    top: auto;
+    bottom: auto;
+    left: auto;
+    right: auto;
+    flex: 1 1 calc(50% - 8px);
+    min-width: 140px;
+    align-items: flex-start;
+    text-align: left;
+  }
+  .sci-specimen-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  .sci-standards {
+    flex-wrap: wrap;
+    gap: 14px;
+  }
+}

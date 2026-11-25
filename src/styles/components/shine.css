@@ -1,0 +1,281 @@
+/* ---------- Premium Finish: Navigation & Logo Sheen ---------- */
+
+/* ==========================================================================
+   PART 3: PREMIUM SHINE ON LOGO & NAV BARS
+   ========================================================================== */
+
+/* 1. Brand Logo: Mask-Clipped 1.2s Diagonal Sheen */
+@keyframes logo-sheen-sweep {
+  0% {
+    background-position: 220% 0;
+    opacity: 0;
+  }
+  5% {
+    opacity: 1;
+  }
+  24% {
+    background-position: -80% 0;
+    opacity: 1;
+  }
+  28%, 100% {
+    background-position: -80% 0;
+    opacity: 0;
+  }
+}
+
+.brand {
+  position: relative;
+}
+
+.brand .logo-em,
+.brand .logo-word {
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle glass depth on the logo pill */
+.nav .brand {
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.88),
+    inset 0 -1px 2px rgba(18, 48, 22, 0.08),
+    0 12px 28px -14px rgba(18, 48, 22, 0.28) !important;
+  border: 1px solid rgba(231, 198, 128, 0.65) !important;
+}
+
+.nav.t-green .brand {
+  border: 1px solid rgba(231, 198, 128, 0.45) !important;
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.2),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.3),
+    0 12px 28px -14px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Logo Emblem Masked Shine Pass */
+.brand .logo-em::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    115deg,
+    transparent 26%,
+    rgba(255, 255, 255, 0.4) 42%,
+    rgba(255, 255, 255, 0.98) 50%,
+    rgba(255, 255, 255, 0.4) 58%,
+    transparent 74%
+  );
+  background-size: 260% 100%;
+  -webkit-mask-image: url('../../assets/logo/logo-emblem.webp');
+  mask-image: url('../../assets/logo/logo-emblem.webp');
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  animation: logo-sheen-sweep 5.2s ease-in-out infinite 3.0s;
+}
+
+/* Logo Wordmark Masked Shine Pass */
+.brand .logo-word::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    115deg,
+    transparent 26%,
+    rgba(255, 255, 255, 0.45) 42%,
+    rgba(255, 255, 255, 1) 50%,
+    rgba(255, 255, 255, 0.45) 58%,
+    transparent 74%
+  );
+  background-size: 260% 100%;
+  -webkit-mask-image: url('../../assets/logo/logo-word.webp');
+  mask-image: url('../../assets/logo/logo-word.webp');
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  animation: logo-sheen-sweep 5.2s ease-in-out infinite 3.15s;
+}
+
+.nav.t-green .brand .logo-word::after {
+  -webkit-mask-image: url('../../assets/logo/logo-word-light.webp');
+  mask-image: url('../../assets/logo/logo-word-light.webp');
+}
+
+/* Hover: Trigger immediate 0.85s glide */
+.brand:hover .logo-em::after,
+.brand:hover .logo-word::after {
+  animation: logo-hover-sweep 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+}
+
+@keyframes logo-hover-sweep {
+  0% {
+    background-position: 220% 0;
+    opacity: 1;
+  }
+  100% {
+    background-position: -80% 0;
+    opacity: 0;
+  }
+}
+
+/* 2. Nav Pills & Buttons: 1px Gradient Border, Idle Sheen & Hover Glint */
+@keyframes nav-glint-sweep {
+  0% {
+    transform: translate3d(-140%, -100%, 0) rotate(35deg);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.9;
+  }
+  80% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translate3d(240%, 100%, 0) rotate(35deg);
+    opacity: 0;
+  }
+}
+
+@keyframes nav-idle-glint {
+  0%, 82% {
+    transform: translate3d(-140%, -100%, 0) rotate(35deg);
+    opacity: 0;
+  }
+  86% {
+    opacity: 0.75;
+  }
+  94% {
+    opacity: 0.75;
+    transform: translate3d(240%, 100%, 0) rotate(35deg);
+  }
+  98%, 100% {
+    opacity: 0;
+  }
+}
+
+.nav-pills a,
+.nav-act .bag {
+  position: relative;
+  overflow: hidden !important;
+  border-radius: 999px;
+  border: 1px solid;
+  border-color: rgba(255, 255, 255, 0.65) rgba(255, 255, 255, 0.35) rgba(18, 48, 22, 0.12) rgba(255, 255, 255, 0.45);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.75),
+    0 4px 12px rgba(18, 48, 22, 0.08);
+}
+
+/* Active Nav Pill: steady warm gold sheen */
+.nav-pills a.on {
+  border-color: rgba(231, 198, 128, 0.85) !important;
+  box-shadow:
+    inset 0 1px 2px rgba(255, 255, 255, 0.95),
+    0 0 14px rgba(231, 198, 128, 0.35),
+    0 4px 14px rgba(20, 52, 26, 0.15) !important;
+}
+
+/* Glint Ray Element: Strictly clipped inside border-radius */
+.nav-pills a::after,
+.nav-act .bag::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 50%;
+  height: 200%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.75) 50%,
+    transparent 100%
+  );
+  transform: translate3d(-140%, -100%, 0) rotate(35deg);
+  pointer-events: none;
+  opacity: 0;
+  border-radius: inherit;
+}
+
+/* Idle glint every 8.5s with staggered delays */
+.nav-pills a:nth-child(1)::after { animation: nav-idle-glint 8.5s ease-in-out infinite 0.5s; }
+.nav-pills a:nth-child(2)::after { animation: nav-idle-glint 8.5s ease-in-out infinite 1.8s; }
+.nav-pills a:nth-child(3)::after { animation: nav-idle-glint 8.5s ease-in-out infinite 3.1s; }
+.nav-pills a:nth-child(4)::after { animation: nav-idle-glint 8.5s ease-in-out infinite 4.4s; }
+.nav-act .bag::after { animation: nav-idle-glint 8.5s ease-in-out infinite 5.7s; }
+
+/* Immediate hover sweep */
+.nav-pills a:hover::after,
+.nav-act .bag:hover::after {
+  animation: nav-glint-sweep 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+}
+
+/* 3. Dock Menu Button: Rotating Conic Highlight & Hover Glint */
+@keyframes dock-conic-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.dock-menu {
+  position: relative;
+  overflow: visible;
+}
+
+.dock-menu::before {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0%,
+    rgba(231, 198, 128, 0.45) 25%,
+    rgba(255, 255, 255, 0.75) 32%,
+    transparent 45%,
+    transparent 100%
+  );
+  pointer-events: none;
+  z-index: 0;
+  animation: dock-conic-spin 9s linear infinite;
+  mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #fff calc(100% - 2.5px));
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #fff calc(100% - 2.5px));
+}
+
+.dock-menu::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: linear-gradient(
+    125deg,
+    transparent 20%,
+    rgba(255, 255, 255, 0.6) 50%,
+    transparent 80%
+  );
+  transform: translate3d(-120%, -120%, 0) rotate(30deg);
+  pointer-events: none;
+  opacity: 0;
+  overflow: hidden;
+}
+
+.dock-menu:hover::after {
+  animation: nav-glint-sweep 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Prefers-reduced-motion: disable sweeps and spins */
+@media (prefers-reduced-motion: reduce) {
+  .brand .logo-em::after,
+  .brand .logo-word::after,
+  .dock-menu::before {
+    animation: none !important;
+  }
+  .nav-pills a::after,
+  .nav-act .bag::after,
+  .dock-menu::after {
+    display: none !important;
+  }
+}

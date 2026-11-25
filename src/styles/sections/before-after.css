@@ -1,0 +1,277 @@
+/* Before / after comparison (product details page). Loaded only by src/features/compare/before-after.js.
+   The stage holds two aligned layers; --pos (0..100, set by JS) is where the handle stands: the "before" layer shows
+   to its left, the "after" layer (clipped) to its right. */
+.bac-band {
+  margin-top: clamp(60px, 8vw, 110px);
+  padding-block: clamp(60px, 8vw, 100px);
+  background:
+    radial-gradient(ellipse 70% 60% at 85% 0%, rgba(140, 184, 106, .16), transparent 70%),
+    var(--ground);
+  border-top: 1px solid var(--line);
+}
+.bac-band + .pdp-science-band { margin-top: 0; }
+
+.bac-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  gap: clamp(20px, 4vw, 64px);
+  align-items: end;
+  margin-bottom: clamp(28px, 4vw, 48px);
+}
+.bac-head .h2 { margin-top: 14px; font-size: clamp(2.3rem, 4.6vw, 4.2rem); }
+.bac-head .sub { max-width: 46ch; }
+
+/* ---------- stage ---------- */
+.bac-stage {
+  --pos: 50;
+  position: relative;
+  aspect-ratio: 21 / 10;
+  border-radius: 28px;
+  overflow: hidden;
+  isolation: isolate;
+  touch-action: pan-y;               /* vertical swipes scroll the page; sideways drags move the handle */
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: ew-resize;
+  box-shadow: 0 30px 70px -34px rgba(20, 52, 26, .45), 0 0 0 1px rgba(31, 70, 35, .12);
+}
+.bac-layer { position: absolute; inset: 0; }
+.bac-layer img {               /* kept in the middle band, clear of the tags at either side */
+  position: absolute;
+  inset: 9% 18%;
+  width: 64%;
+  height: 82%;
+  object-fit: contain;
+  pointer-events: none;
+}
+.bac-bg { position: absolute; inset: 0; overflow: hidden; }
+
+/* before: dull, murky, heavy */
+.bac-before .bac-bg {
+  background:
+    radial-gradient(ellipse 55% 60% at 50% 52%, rgba(120, 104, 78, .55), transparent 70%),
+    radial-gradient(ellipse 120% 90% at 50% 50%, #57513f 0%, #3b3a2f 55%, #26261f 100%);
+}
+.bac-before .bac-bg::before {        /* fine floating particles: the everyday load */
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: .5;
+  background-image:
+    radial-gradient(circle, rgba(196, 178, 140, .55) 1.2px, transparent 1.8px),
+    radial-gradient(circle, rgba(150, 140, 110, .4) 1px, transparent 1.6px);
+  background-size: 46px 46px, 29px 29px;
+  background-position: 0 0, 13px 17px;
+}
+.bac-haze {
+  position: absolute;
+  inset: -10%;
+  background: radial-gradient(ellipse 45% 35% at 30% 30%, rgba(160, 150, 120, .22), transparent 70%),
+              radial-gradient(ellipse 40% 30% at 75% 75%, rgba(120, 110, 90, .25), transparent 70%);
+  filter: blur(8px);
+}
+.bac-before img { filter: saturate(.9) contrast(1.02); }
+
+/* after: fresh, light, botanical */
+.bac-after { clip-path: inset(0 0 0 calc(var(--pos) * 1%)); }
+.bac-after .bac-bg {
+  background:
+    radial-gradient(ellipse 120% 95% at 50% 45%, #f7f4e3 0%, #e3efd8 46%, #b9d7a6 100%);
+}
+.bac-glow {
+  position: absolute;
+  left: 50%;
+  top: 52%;
+  width: 62%;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 236, 170, .75) 0%, rgba(231, 198, 128, .28) 38%, transparent 68%);
+}
+.bac-glow::after {                     /* a thin gold ring around the glow */
+  content: "";
+  position: absolute;
+  inset: 14%;
+  border-radius: 50%;
+  border: 1px solid rgba(214, 162, 58, .35);
+}
+.bac-leaf { position: absolute; width: clamp(60px, 9vw, 130px); fill: rgba(111, 158, 76, .2); stroke: rgba(36, 80, 42, .35); stroke-width: 1.4; stroke-linecap: round; }
+.bac-leaf--a { right: 4%; top: 6%; transform: rotate(18deg); }
+.bac-leaf--b { right: 12%; bottom: 4%; transform: rotate(-110deg) scale(.8); }
+.bac-leaf--c { left: 6%; bottom: 8%; transform: rotate(-40deg) scale(.7); }
+
+/* full-picture artwork (data: fill: true): the illustration is the whole scene, so it covers the stage edge to edge
+   and the designed backdrops underneath are not drawn; the artwork is centred, so narrower stages crop only sides */
+.bac-stage--fill .bac-bg { display: none; }
+.bac-stage--fill .bac-layer img { inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.bac-stage--fill .bac-before img { filter: none; }
+.bac-stage--fill .bac-tag--before,
+.bac-stage--fill .bac-label--before { background: rgba(33, 38, 44, .84); border-color: transparent; }
+
+/* ---------- tags on each picture ---------- */
+.bac-tags { position: absolute; inset: 0; margin: 0; padding: 0; list-style: none; pointer-events: none; }
+.bac-tag {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 13px 7px 10px;
+  border-radius: 999px;
+  font-size: clamp(11px, 1vw, 13.5px);
+  font-weight: 700;
+  letter-spacing: .02em;
+  white-space: nowrap;
+}
+.bac-tag::before { content: ""; width: 7px; height: 7px; border-radius: 50%; flex: none; }
+.bac-tag--before { left: 3%; color: #efe7d2; background: rgba(30, 28, 22, .55); border: 1px solid rgba(239, 231, 210, .2); backdrop-filter: blur(6px); }
+.bac-tag--before::before { background: #c9a46a; box-shadow: 0 0 0 3px rgba(201, 164, 106, .25); }
+.bac-tag--after { right: 3%; color: var(--forest); background: rgba(255, 255, 255, .72); border: 1px solid rgba(36, 80, 42, .14); backdrop-filter: blur(6px); }
+.bac-tag--after::before { background: var(--sage); box-shadow: 0 0 0 3px rgba(111, 158, 76, .22); }
+.bac-tag:nth-child(1) { top: 30%; }
+.bac-tag:nth-child(2) { top: 48%; }
+.bac-tag:nth-child(3) { top: 66%; }
+.bac-tag--before:nth-child(2) { left: 1.8%; }
+.bac-tag--after:nth-child(2) { right: 1.8%; }
+
+/* ---------- labels: each fades as its side is covered ---------- */
+.bac-label {
+  position: absolute;
+  top: clamp(14px, 2.2vw, 26px);
+  z-index: 3;
+  margin: 0;
+  display: grid;
+  gap: 2px;
+  padding: 10px 16px 11px;
+  border-radius: 16px;
+  pointer-events: none;
+  transition: opacity .25s ease;
+}
+.bac-label b { font-family: var(--f-display); font-stretch: 75%; font-weight: 850; font-size: clamp(1.15rem, 2vw, 1.6rem); letter-spacing: .02em; text-transform: uppercase; line-height: 1; }
+.bac-label small { font-size: 11.5px; font-weight: 600; letter-spacing: .04em; opacity: .85; }
+.bac-label--before { left: clamp(14px, 2.2vw, 26px); color: #f3ecd8; background: rgba(28, 26, 20, .5); backdrop-filter: blur(8px); opacity: clamp(0, (var(--pos) - 10) / 12, 1); }
+.bac-label--after { right: clamp(14px, 2.2vw, 26px); text-align: right; color: var(--forest); background: rgba(255, 255, 255, .75); backdrop-filter: blur(8px); opacity: clamp(0, (90 - var(--pos)) / 12, 1); }
+.bac-concept {
+  position: absolute;
+  left: 50%;
+  bottom: 14px;
+  transform: translateX(-50%);
+  z-index: 3;
+  margin: 0;
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: #fff;
+  background: rgba(20, 40, 24, .45);
+  backdrop-filter: blur(6px);
+  pointer-events: none;
+}
+
+/* ---------- handle ---------- */
+.bac-handle {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(var(--pos) * 1%);
+  z-index: 4;
+  width: 56px;
+  margin-left: -28px;
+  display: grid;
+  place-items: center;
+  outline: none;
+}
+.bac-line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 2px;
+  margin-left: -1px;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0), #fff 12%, #fff 88%, rgba(255, 255, 255, 0));
+  box-shadow: 0 0 14px rgba(255, 255, 255, .55);
+}
+.bac-knob {
+  position: relative;
+  width: clamp(50px, 5vw, 60px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  background: var(--forest);
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, .9), 0 0 0 6px rgba(227, 162, 26, .55), 0 14px 30px -8px rgba(10, 30, 14, .6);
+  transition: transform .3s var(--ease-expo, ease), box-shadow .3s ease;
+}
+.bac-knob svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+.bac-stage:hover .bac-knob,
+.bac-stage.is-dragging .bac-knob { transform: scale(1.08); }
+.bac-handle:focus-visible .bac-knob { box-shadow: 0 0 0 4px #fff, 0 0 0 7px var(--gold), 0 14px 30px -8px rgba(10, 30, 14, .6); }
+
+/* ---------- below the picture ---------- */
+.bac-benefits {
+  list-style: none;
+  margin: clamp(26px, 3.5vw, 40px) 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 14px;
+}
+.bac-benefits li {
+  display: grid;
+  gap: 6px;
+  align-content: start;
+  padding: 18px 18px 20px;
+  border-radius: 20px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+}
+.bac-benefits b { font-size: 15px; color: var(--forest); line-height: 1.2; }
+.bac-benefits span:not(.bac-ic) { font-size: 13.5px; line-height: 1.45; color: var(--muted); }
+.bac-ic { width: 38px; height: 38px; border-radius: 12px; display: grid; place-items: center; background: var(--panel-2); color: var(--forest); margin-bottom: 4px; }
+.bac-ic svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+
+.bac-herbs { margin-top: clamp(24px, 3vw, 34px); }
+.bac-herbs__k { margin: 0 0 12px; font-size: 12px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--sage-ink); }
+.bac-herbs ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.bac-herbs li { padding: 7px 13px; border-radius: 999px; font-size: 13.5px; font-weight: 650; color: var(--forest); background: rgba(255, 255, 255, .65); border: 1px solid var(--line); }
+.bac-herbs small { font-weight: 600; color: var(--faint); margin-left: 3px; }
+
+.bac-caption { display: none; margin: 12px 0 0; text-align: center; font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--sage-ink); }
+.bac-note { margin: 22px 0 0; max-width: 92ch; font-size: 12.5px; line-height: 1.55; color: var(--faint); }
+
+@media (max-width: 1100px) {
+  .bac-stage { aspect-ratio: 16 / 10; }
+  .bac-layer img { inset: 14% 16% 10%; width: 68%; height: 76%; }
+  .bac-tag:nth-child(3) { display: none; }
+  .bac-tag:nth-child(1) { top: auto; bottom: 22%; }
+  .bac-tag:nth-child(2) { top: auto; bottom: 10%; }
+}
+@media (max-width: 980px) {
+  .bac-head { grid-template-columns: 1fr; align-items: start; }
+  .bac-benefits { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 640px) {
+  .bac-stage { aspect-ratio: 4 / 3.6; border-radius: 22px; }
+  .bac-layer img { inset: 14% 2% 10%; width: 96%; height: 76%; }
+  .bac-tag { padding: 5px 10px 5px 8px; font-size: 11px; }
+  .bac-tag:nth-child(1) { top: auto; bottom: 15%; }
+  .bac-tag:nth-child(2) { top: auto; bottom: 4%; }
+  .bac-tag:nth-child(3) { display: none; }
+  .bac-tag--before:nth-child(2), .bac-tag--before:nth-child(1) { left: 3%; }
+  .bac-tag--after:nth-child(2), .bac-tag--after:nth-child(1) { right: 3%; }
+  .bac-label { padding: 8px 12px; }
+  .bac-label small { display: none; }
+  /* no room inside the picture on a phone: the "conceptual illustration" note sits right under it instead */
+  .bac-concept { display: none; }
+  .bac-caption { display: block; }
+  /* benefits: compact rows (icon beside the text) instead of tall cards */
+  .bac-benefits { grid-template-columns: 1fr; gap: 10px; }
+  .bac-benefits li { grid-template-columns: 38px minmax(0, 1fr); column-gap: 14px; row-gap: 2px; padding: 14px 16px; border-radius: 16px; }
+  .bac-benefits .bac-ic { grid-row: span 2; margin-bottom: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bac-knob, .bac-label { transition: none; }
+}

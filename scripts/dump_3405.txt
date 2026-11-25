@@ -1,0 +1,66 @@
+Created At: 2026-11-18T17:19:21+05:30
+Completed At: 2026-11-18T17:19:21+05:30
+Created At: 2026-11-18T17:19:21+05:30
+Completed At: 2026-11-18T17:19:21+05:30
+Showing lines 15-75 of 241
+15:   rosemary: {
+16:     part: 'M 250 120 C 215 120 185 102 155 75 m 0 0 l 12 3 m -12 -3 l 4 12',
+17:     cmp:  'M 370 210 C 395 210 418 200 440 185 m 0 0 l -12 2 m 12 -2 l -4 12',
+18:     found:'M 265 280 C 230 298 190 322 150 345 m 0 0 l 3 -12 m -3 12 l 12 -4',
+19:   },
+20:   rose: {
+21:     part: 'M 245 120 C 215 120 185 100 155 75 m 0 0 l 12 3 m -12 -3 l 4 12',
+22:     cmp:  'M 365 200 C 390 200 415 195 440 185 m 0 0 l -12 2 m 12 -2 l -4 12',
+23:     found:'M 265 280 C 230 300 190 322 150 345 m 0 0 l 3 -12 m -3 12 l 12 -4',
+24:   },
+25:   tulsi: {
+26:     part: 'M 250 125 C 220 125 185 105 155 75 m 0 0 l 12 3 m -12 -3 l 4 12',
+27:     cmp:  'M 365 215 C 390 215 415 205 440 185 m 0 0 l -12 2 m 12 -2 l -4 12',
+28:     found:'M 270 275 C 230 295 190 320 150 345 m 0 0 l 3 -12 m -3 12 l 12 -4',
+29:   },
+30:   eucalyptus: {
+31:     part: 'M 250 115 C 218 118 185 100 155 75 m 0 0 l 12 3 m -12 -3 l 4 12',
+32:     cmp:  'M 360 210 C 388 210 415 202 440 185 m 0 0 l -12 2 m 12 -2 l -4 12',
+33:     found:'M 270 275 C 230 295 190 320 150 345 m 0 0 l 3 -12 m -3 12 l 12 -4',
+34:   },
+35:   ashwagandha: {
+36:     part: 'M 245 130 C 215 130 185 108 155 75 m 0 0 l 12 3 m -12 -3 l 4 12',
+37:     cmp:  'M 375 205 C 398 205 420 198 440 185 m 0 0 l -12 2 m 12 -2 l -4 12',
+38:     found:'M 265 285 C 230 302 190 324 150 345 m 0 0 l 3 -12 m -3 12 l 12 -4',
+39:   },
+40:   amla: {
+41:     part: 'M 250 125 C 220 125 185 105 155 75 m 0 0 l 12 3 m -12 -3 l 4 12',
+42:     cmp:  'M 360 205 C 388 205 415 198 440 185 m 0 0 l -12 2 m 12 -2 l -4 12',
+43:     found:'M 270 280 C 230 300 190 322 150 345 m 0 0 l 3 -12 m -3 12 l 12 -4',
+44:   },
+45:   chamomile: {
+46:     part: 'M 245 125 C 218 125 185 105 155 75 m 0 0 l 12 3 m -12 -3 l 4 12',
+47:     cmp:  'M 365 205 C 390 205 415 198 440 185 m 0 0 l -12 2 m 12 -2 l -4 12',
+48:     found:'M 270 280 C 230 300 190 322 150 345 m 0 0 l 3 -12 m -3 12 l 12 -4',
+49:   }
+50: };
+51: 
+52: let tiltInitialized = false;
+53: 
+54: function initHerbTilt() {
+55:   if (tiltInitialized) return;
+56:   const stage = $('#sciStage');
+57:   const img = $('#sciHerbPhoto');
+58:   if (!stage || !img) return;
+59:   tiltInitialized = true;
+60: 
+61:   let rafId = null;
+62:   let targetRx = 0, targetRy = 0;
+63:   let currentRx = 0, currentRy = 0;
+64:   let isHovered = false;
+65: 
+66:   function updateTilt() {
+67:     if (!isHovered && Math.abs(currentRx) < 0.05 && Math.abs(currentRy) < 0.05) {
+68:       img.style.transform = '';
+69:       const cards = stage.querySelectorAll('.herb-callout-card');
+70:       cards.forEach(c => { if (!c.classList.contains('active-focus')) c.style.transform = ''; });
+71:       rafId = null;
+72:       return;
+73:     }
+74:     currentRx += (targetRx - currentRx) * 0.12;
+75:     currentRy += (targetRy - currentRy) * 0.12;
