@@ -1,5 +1,9 @@
 # Changelog
 
+## v13.5 (26 Nov 2026): "Our story" card, and "The TranzLife Difference" section removed
+- **"You deserve TranzLife" card:** an "Our story" tag (the same dark green pill as "Know more") above a new headline, "Meet TranzLife, where the roots of nature meet the science of everyday wellness." The text says what TranzLife makes and points to "Know more" ("Our story in six short scenes").
+- **Removed "The TranzLife Difference" (`#difference`, "Everyday Care, Real Benefits")** with its four photo cards, its styles (`sections/difference.css`) and its four card images. "See the difference" (`#benefits`) is unchanged.
+
 ## v13.4 (25 Nov 2026): − / + quantity on the bag bar and in the order summary
 - **Bag bar:** after adding a product, the bar shows **− n +** for it (its thumbnail comes first, with a ring). The text flashes "Calm Inhaler × 3" as it changes. − on the last one is a bin that takes the product out, and the control moves to the next product (the bar goes away when the bag is empty). + stops at 10 of a product. The bar now shows the total first ("₹747 · 3 items"), so a narrow phone cuts the count, not the money.
 - **Checkout order summary:** every item has **− n +** and "₹249 each". The bag changes with it. − on the last one of a product is a bin, except for the only product left (an order needs one). The receipt shows "3 × ₹249" without the buttons.
