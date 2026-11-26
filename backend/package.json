@@ -1,0 +1,24 @@
+{
+  "name": "tranzlife-backend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "TranzLife API: customer login by SMS code, customer accounts, orders and payments, stored in PostgreSQL.",
+  "type": "module",
+  "engines": {
+    "node": ">=20.12"
+  },
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "migrate": "node src/db/migrate.js",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@electric-sql/pglite": "0.5.16",
+    "express": "5.3.0",
+    "pg": "8.23.1"
+  },
+  "devDependencies": {
+    "vitest": "2.1.9"
+  }
+}

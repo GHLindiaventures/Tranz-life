@@ -4,18 +4,18 @@
 .ben-ctrl{display:flex;align-items:center;gap:10px;flex:none}
 .ben-count{margin-right:8px;font-weight:700;font-stretch:85%;color:var(--sage);font-variant-numeric:tabular-nums}
 .ben-count b{color:var(--forest);font-size:1.25em}
-.ben-arrow{width:46px;height:46px;border-radius:50%;background:#fff;color:var(--forest);font-size:18px;font-weight:800;box-shadow:0 10px 24px -14px rgba(31,70,35,.5);transition:transform .3s var(--ease, ease),background .3s,color .3s}
+.ben-arrow{width:46px;height:46px;border-radius:50%;background:#fff;color:var(--forest);font-size:18px;font-weight:800;box-shadow:0 10px 24px -14px rgba(31,70,35,.5);transition:transform .3s var(--ease, ease),background .3s,color .3s;cursor:pointer}
 .ben-arrow:hover{background:var(--forest);color:#fff;transform:translateY(-1px)}
 
 /* every product sits in the same spot; only the current one shows */
-.ben-stage{display:grid;margin-top:clamp(30px,4vw,52px);cursor:pointer;outline:none}
+.ben-stage{display:grid;margin-top:clamp(30px,4vw,52px);cursor:pointer;outline:none;position:relative}
 .ben-stage:focus-visible{outline:2px solid var(--gold);outline-offset:8px;border-radius:12px}
 .bi{grid-area:1/1;display:grid;grid-template-columns:minmax(0,.6fr) minmax(0,1.4fr);gap:clamp(24px,4vw,64px);align-items:center;visibility:hidden;transform-origin:50% 50%}
 .bi.on{visibility:visible}
-.bi-img{position:relative;margin:0;border-radius:24px;overflow:hidden;background:var(--ground-2);aspect-ratio:4/5;width:min(100%,320px);max-height:min(48vh,400px);justify-self:center;box-shadow:0 40px 70px -44px rgba(31,70,35,.55)}
-.bi-img img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;pointer-events:none;transition:transform .9s var(--ease, ease)}
+.bi-img{position:relative;margin:0;border-radius:24px;overflow:hidden;background:radial-gradient(78% 78% at 50% 44%,#f1f7e6,#cfe3b8);aspect-ratio:4/5;width:min(100%,320px);max-height:min(48vh,400px);justify-self:center;box-shadow:0 40px 70px -44px rgba(31,70,35,.55)}
+.bi-img img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;padding:22px 18px 36px;pointer-events:none;filter:drop-shadow(0 20px 18px rgba(31,70,35,.20));transition:transform .9s var(--ease, ease)}
 .ben-stage:hover .bi.on .bi-img img{transform:scale(1.04)}
-.bs-cap{position:absolute;left:12px;bottom:12px;display:inline-flex;align-items:center;gap:10px;padding:7px 13px 7px 7px;border-radius:999px;background:rgba(255,255,255,.88);backdrop-filter:blur(8px);font-weight:800;font-stretch:85%;font-size:13.5px;color:var(--forest)}
+.bs-cap{position:absolute;left:12px;bottom:12px;display:inline-flex;align-items:center;gap:10px;padding:7px 13px 7px 7px;border-radius:999px;background:rgba(255,255,255,.88);backdrop-filter:blur(8px);font-weight:800;font-stretch:85%;font-size:13.5px;color:var(--forest);z-index:2}
 .bs-cap span{padding:4px 9px;border-radius:999px;background:var(--forest);color:#fff;font-size:11px;letter-spacing:.06em}
 .bi-body{min-width:0}
 .bi-tag{font-size:12.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--sage)}
@@ -36,6 +36,13 @@
 .tbl-note{margin-top:22px;font-size:12.5px;color:var(--faint)}
 .brandmark{font-family:var(--f-display);font-stretch:70%;font-weight:850;font-size:17px;color:var(--forest);text-transform:none}
 
+/* flying product cutout that descends from the lineup line above into the benefit slot */
+.ben-flyer{position:absolute;top:0;left:0;pointer-events:none;z-index:20;visibility:hidden;will-change:transform,opacity,filter;transform-origin:50% 50%}
+.bf-img{display:block;width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 32px 28px rgba(31,70,35,.26));transform-origin:50% 50%}
+.bf-shadow{position:absolute;left:50%;bottom:-4%;width:85%;height:18px;transform:translate(-50%,0);border-radius:50%;background:radial-gradient(ellipse at center,rgba(31,70,35,.30) 0%,rgba(31,70,35,0) 70%);pointer-events:none;opacity:0;transition:opacity .3s}
+
+html.ben-flying #flight{opacity:0 !important;transition:opacity .15s}
+
 @media (max-width:760px){
   .ben-head{flex-direction:column;align-items:flex-start;gap:14px}
   .ben-head .h2{font-size:clamp(1.9rem,8.4vw,2.6rem)}
@@ -50,6 +57,9 @@
   .bi-next{margin-top:14px;font-size:14px}
 }
 
-/* while the tub flies, the Lung Booster photo slot is empty (mint) until the tub arrives and fills it */
-.flight-on .bi:first-child .bi-img{background:radial-gradient(78% 78% at 50% 44%,#f1f7e6,#cfe3b8)}
-.flight-on .bi:first-child .bi-img img{opacity:0}
+/* while in scroll flight between story lineup and benefits, the active card slot is empty until docked */
+html.flight-in-air .bi.on .bi-img img{opacity:0}
+/* While flight is active, card slot remains completely empty until product arrives and docks */
+.flight-on .bi .bi-img img{opacity:0 !important;visibility:hidden !important;transition:opacity .25s ease}
+.flight-on.ben-docked:not(.ben-flying) .bi.on .bi-img img{opacity:1 !important;visibility:visible !important}
+.flight-on.ben-flying .bi .bi-img img{opacity:0 !important;visibility:hidden !important}

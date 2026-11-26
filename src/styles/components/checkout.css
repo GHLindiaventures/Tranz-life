@@ -1,0 +1,255 @@
+/* ---------- checkout dialog (features/checkout) ---------- */
+html.co-open{overflow:hidden}
+.co{position:fixed;inset:0;z-index:90;display:grid;place-items:center;padding:clamp(12px,3vw,40px)}
+.co-scrim{position:absolute;inset:0;background:rgba(10,24,13,.62);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);opacity:0;transition:opacity .35s}
+.co-panel{position:relative;display:flex;flex-direction:column;width:min(1160px,100%);max-height:100%;overflow:hidden;background:var(--panel-2);border-radius:28px;box-shadow:0 50px 120px -50px rgba(0,0,0,.55);opacity:0;transform:translateY(18px) scale(.985);transition:opacity .35s,transform .5s var(--ease)}
+.co-scroll{flex:1 1 auto;min-height:0;overflow:auto;overscroll-behavior:contain}
+.co.open .co-scrim,.co.open .co-panel{opacity:1}
+.co.open .co-panel{transform:none}
+.co form{display:block}
+
+.co-head{position:sticky;top:0;z-index:3;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:20px;padding:20px clamp(20px,3vw,34px);background:var(--panel-2);border-bottom:1px solid var(--line)}
+.co-eyebrow{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--sage)}
+.co-eyebrow svg{width:14px;height:14px}
+.co-title h3{font-size:clamp(26px,3vw,34px);font-stretch:66%;text-transform:uppercase;margin-top:4px}
+.co-steps{list-style:none;margin:0;padding:0;display:flex;justify-content:center;gap:clamp(10px,2vw,26px);font-size:14px;font-weight:700;color:var(--faint)}
+.co-steps li{display:flex;align-items:center;gap:8px}
+.co-steps li span{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;border:1.5px solid var(--line-strong);font-size:13px}
+.co-steps li.on{color:var(--ink)}
+.co-steps li.on span{background:var(--cream);border-color:var(--cream);color:var(--on-cream)}
+.co-steps li.past{color:var(--sage)}
+.co-steps li.past span{border-color:var(--sage);background:var(--tint)}
+.co-x{background:var(--panel)}
+
+.co-test{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;margin:16px clamp(20px,3vw,34px) 0;padding:10px 16px;border-radius:14px;background:#fff4d9;color:#6d4c06;font-size:14px}
+.co-test b{font-weight:800;letter-spacing:.1em;text-transform:uppercase;font-size:12px;background:#e3a21a;color:#fff;border-radius:999px;padding:3px 10px}
+
+.co-body{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(0,1fr);gap:clamp(20px,3vw,40px);padding:clamp(20px,3vw,34px)}
+.co-main{min-width:0}
+.co-h{font-size:clamp(24px,2.4vw,30px);font-stretch:72%;margin-bottom:18px;outline:none}
+.co-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.co .field input,.co .field select{background:#fff;border-color:var(--line)}
+.co .field input:focus,.co .field select:focus{border-color:var(--sage)}
+.co .field input[aria-invalid="true"],.co .field select[aria-invalid="true"]{border-color:#c2410c;background:#fff8f4}
+.co-ferr{min-height:0;font-size:13px;color:#b5400d;font-weight:600}
+.co-ferr:empty{display:none}
+.co-err{margin-top:16px;padding:12px 16px;border-radius:14px;background:#fdeee6;color:#8a2f08;font-size:14.5px;font-weight:600}
+.co-cta{margin-top:22px;width:100%;min-height:52px;font-size:17px}
+.co-cta b{font-weight:800}
+.co-cta:disabled{opacity:.5;cursor:not-allowed}
+.co-link{color:var(--sage);font-weight:700;text-decoration:underline;text-underline-offset:3px;padding:2px}
+.co-link:hover{color:var(--ink)}
+.co-lead{color:var(--muted);font-size:16px}
+.co-note{display:flex;gap:10px;align-items:flex-start;margin-top:16px;font-size:13.5px;color:var(--muted)}
+.co-note svg{flex:none;width:16px;height:16px;margin-top:2px;color:var(--sage)}
+.co-test-note{padding:10px 14px;border-radius:14px;background:#fff4d9;color:#6d4c06;flex-wrap:wrap;gap:4px 10px}
+.co-test-note b{font-weight:800}
+.co code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.92em;background:rgba(255,255,255,.7);padding:1px 5px;border-radius:5px;white-space:nowrap}
+
+/* payment step: methods on the left, the chosen one beside them */
+.co-pay-head{display:flex;justify-content:space-between;align-items:center;gap:12px 16px;flex-wrap:wrap}
+.co-pay-head .co-h{margin-bottom:6px}
+.co-secure{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:999px;background:var(--tint);color:var(--forest);font-size:13px;font-weight:800}
+.co-secure svg{width:14px;height:14px}
+.co-ref{font-size:14px;color:var(--muted);margin-bottom:18px}
+.co-ref b{color:var(--ink);font-weight:700;letter-spacing:.02em}
+.co-paybox{display:grid;grid-template-columns:minmax(190px,.8fr) minmax(0,2fr);gap:16px;align-items:start}
+.co-methods{display:grid;gap:10px}
+.co-method{display:flex;align-items:center;gap:12px;text-align:left;padding:14px;border-radius:18px;background:#fff;border:1.5px solid var(--line);transition:border-color .25s,box-shadow .25s,background-color .25s}
+.co-method-ic{flex:none;width:40px;height:40px;border-radius:12px;display:grid;place-items:center;background:var(--ground);color:var(--forest);transition:background-color .25s,color .25s}
+.co-method-ic svg{width:25px;height:25px}
+.co-method b{display:block;font-weight:800;font-size:15.5px;font-stretch:84%;line-height:1.2}
+.co-method small{display:block;margin-top:3px;font-size:12.5px;color:var(--muted);line-height:1.3}
+.co-method:hover{border-color:var(--line-strong)}
+.co-method:focus-visible{outline:none;box-shadow:0 0 0 3px var(--tint)}
+.co-method[aria-selected="true"]{border-color:var(--forest);background:#f7faf3;box-shadow:0 0 0 3px var(--tint)}
+.co-method[aria-selected="true"] .co-method-ic{background:var(--cream);color:var(--on-cream)}
+.co-panes{min-width:0}
+.co-panes>.co-err{margin:0 0 12px}
+.co-pane{padding:clamp(18px,2.4vw,24px);border-radius:22px;background:#fff}
+.co-pane-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.co-pane-h{margin:0;font-family:var(--f-display);font-size:clamp(21px,2vw,24px);font-weight:800;font-stretch:76%;letter-spacing:-.01em;line-height:1.1}
+.co-pane-sub{margin-top:2px;font-size:14px;color:var(--muted)}
+.co-upi-mark{flex:none;height:20px;width:auto}
+.co-step{display:flex;align-items:center;gap:10px;font-weight:800;font-stretch:84%;font-size:17px;margin-bottom:14px}
+.co-step span{flex:none;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:var(--cream);color:var(--on-cream);font-size:13px;font-stretch:100%}
+
+/* UPI on a computer: the QR card, with the UPI apps under it */
+.co-qrcard{max-width:360px;margin:16px auto 0;padding:18px 16px 16px;border-radius:20px;border:1.5px solid var(--line);background:#fff;text-align:center;box-shadow:0 24px 40px -34px rgba(16,40,22,.5)}
+.co-qr-amt small{display:block;font-size:11.5px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--faint)}
+.co-qr-amt b{display:block;margin-top:2px;font-size:28px;font-weight:800;font-stretch:76%;color:var(--ink);line-height:1.1}
+.co-qrbox{position:relative;width:min(216px,100%);aspect-ratio:1;margin:12px auto 0;border-radius:16px;overflow:hidden;border:1.5px solid var(--line);background:#fff}
+.co-qr-img{position:absolute;inset:0;padding:6px;transition:filter .35s,opacity .35s}
+.co-qr-img svg{display:block;width:100%;height:100%}
+.co-qrcard:not([data-qr-state="live"]) .co-qr-img{filter:blur(6px);opacity:.5}
+.co-qr-cover{position:absolute;inset:0;display:grid;place-items:center}
+.co-qr-show{padding:11px 18px;border-radius:12px;background:#fff;border:1.5px solid var(--forest);color:var(--forest);font-weight:800;font-size:15px;box-shadow:0 12px 26px -14px rgba(16,40,22,.55);transition:background-color .25s,color .25s,transform .25s var(--ease)}
+.co-qr-show:hover{background:var(--forest);color:#fff;transform:translateY(-1px)}
+.co-qr-show:focus-visible{outline:none;box-shadow:0 0 0 4px var(--tint)}
+.co-qr-cover .co-spin{display:none}
+.co-qrcard[data-qr-state="loading"] .co-qr-show{display:none}
+.co-qrcard[data-qr-state="loading"] .co-qr-cover .co-spin{display:block}
+.co-qrcard[data-qr-state="live"] .co-qr-cover{display:none}
+.co-qr-msg{min-height:2.8em;margin:10px auto 0;max-width:30ch;font-size:13.5px;line-height:1.4;color:var(--muted);text-wrap:balance}
+.co-qr-msg b{color:var(--ink)}
+.co-qr-msg .co-dot{display:inline-block;vertical-align:middle;margin:-2px 7px 0 0}
+.co-qrcard[data-qr-state="live"] .co-qr-msg{max-width:none;color:#6d4c06;font-weight:700}
+.co-qrcard[data-qr-state="live"] .co-qr-msg b{color:#6d4c06;font-variant-numeric:tabular-nums}
+.co-qrcard[data-qr-state="expired"] .co-qr-msg{color:#8a2f08;font-weight:700}
+.co-qr-to{margin-top:10px;font-size:13.5px;color:var(--muted);overflow-wrap:anywhere}
+.co-qr-to b{color:var(--ink)}
+.co-qr-scan{margin-top:12px;padding-top:12px;border-top:1px dashed var(--line-strong);font-size:11.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--faint)}
+.co-logos{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:8px}
+.co-logos li{display:grid;place-items:center;height:34px;padding:0 10px;border-radius:10px;border:1px solid var(--line);background:#fff}
+.co-logos img{display:block;height:17px;width:auto}
+.co-logos li:first-child img{height:16px}
+.co-logos .co-logo-more{font-size:12.5px;font-weight:800;color:var(--muted);background:var(--panel-2)}
+.co-qr-test{max-width:360px;margin:12px auto 0;align-items:center;justify-content:center}
+.co-qr-test .co-link{color:#6d4c06}
+
+/* UPI on a phone: one button per app */
+.co-amt-line{margin-top:6px;font-size:15px;color:var(--muted)}
+.co-amt-line b{margin-left:4px;font-size:21px;font-weight:800;font-stretch:80%;color:var(--ink)}
+.co-apps{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:14px}
+.co-app{position:relative;display:flex;align-items:center;justify-content:center;gap:10px;min-height:62px;padding:10px 30px 10px 14px;border-radius:16px;background:#fff;border:1.5px solid var(--line);transition:border-color .25s,box-shadow .25s,transform .25s var(--ease)}
+.co-app img{display:block;height:22px;width:auto;max-width:100%;object-fit:contain}
+.co-app[data-app="gpay"] img{height:19px}
+.co-app b{font-weight:800;font-size:15px;font-stretch:88%;line-height:1.2}
+.co-app i{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-style:normal;font-weight:700;color:var(--faint);transition:transform .25s var(--ease),color .25s}
+.co-app:hover{border-color:var(--forest)}
+.co-app:hover i{color:var(--forest);transform:translate(3px,-50%)}
+.co-app:focus-visible{outline:none;border-color:var(--forest);box-shadow:0 0 0 3px var(--tint)}
+.co-app-any{display:grid;place-items:center;color:var(--forest)}
+.co-app-any svg{width:24px;height:24px}
+.co-busy .co-link{font-size:15px}
+
+/* TranzLife's own QR code: the UTR */
+.co-utr{margin-top:12px}
+.co-utr .co-cta{margin-top:16px}
+.co-utr input{font-size:18px;letter-spacing:.08em}
+.co-utr input::placeholder{letter-spacing:normal;font-size:15px}
+.co-where{margin-top:12px;font-size:14px;color:var(--muted)}
+.co-where summary{cursor:pointer;color:var(--sage);font-weight:700;width:max-content;max-width:100%}
+.co-where ul{margin:10px 0 0;padding-left:18px;display:grid;gap:4px}
+
+/* card */
+.co-nets{list-style:none;margin:12px 0 16px;padding:0;display:flex;flex-wrap:wrap;gap:6px}
+.co-nets li{padding:4px 10px;border-radius:8px;border:1.5px solid var(--line);background:#fff;font-size:12.5px;font-weight:800;color:var(--forest);transition:opacity .2s,border-color .2s,background-color .2s}
+.co-nets.picked li{opacity:.35}
+.co-nets.picked li.on{opacity:1;border-color:var(--forest);background:var(--tint)}
+.co-cardform .co-cta{margin-top:18px}
+.co-cnum{position:relative}
+.co-cnum input{padding-right:118px;letter-spacing:.04em}
+.co-brand{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--forest)}
+
+.co-status{display:flex;align-items:center;gap:10px;margin-top:14px;padding:10px 14px;border-radius:14px;background:#fff4d9;color:#6d4c06;font-size:14.5px;font-weight:700}
+.co-dot{flex:none;width:9px;height:9px;border-radius:50%;background:#e3a21a;animation:co-pulse 1.4s ease-in-out infinite}
+@keyframes co-pulse{0%,100%{box-shadow:0 0 0 0 var(--halo)}50%{box-shadow:0 0 0 7px transparent}}
+
+/* order summary */
+.co-summary{align-self:start;position:sticky;top:100px;padding:clamp(18px,2.4vw,24px);border-radius:22px;background:#fff}
+.co-summary summary{display:flex;justify-content:space-between;align-items:center;gap:12px;cursor:pointer;list-style:none;font-weight:800;font-stretch:80%;font-size:19px}
+.co-summary summary::-webkit-details-marker{display:none}
+.co-summary summary b{font-size:19px}
+.co-items{display:grid;gap:4px;margin-top:14px}
+.co-item{display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:12px;align-items:center;padding-block:10px;border-bottom:1px solid var(--line)}
+.co-item img,.co-item>span:first-child{width:52px;height:60px;object-fit:cover;border-radius:10px;background:var(--ground)}
+.co-item b{display:block;font-weight:700;font-size:14.5px;line-height:1.25}
+.co-item small{color:var(--muted);font-size:13px}
+.co-item>span:last-child{font-weight:700;font-size:15px}
+/* − n + on each item (the receipt shows "n × price" instead) */
+.co-item .co-q{display:none}
+.co.co-is-done .co-item .co-q{display:inline}
+.co.co-is-done .co-item .co-each,.co.co-is-done .co-qty{display:none}
+.co-qty{display:inline-flex;align-items:center;gap:2px;margin-top:6px;padding:2px;border-radius:999px;border:1px solid var(--line);background:var(--panel-2)}
+.co-qty button{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:#fff;color:var(--forest);font-size:17px;font-weight:700;line-height:1;box-shadow:0 1px 2px rgba(10,30,14,.12);transition:background-color .2s,color .2s,transform .2s var(--ease)}
+.co-qty button svg{width:14px;height:14px}
+.co-qty button:hover:not(:disabled){background:var(--forest);color:var(--on-cream)}
+.co-qty button:active:not(:disabled){transform:scale(.92)}
+.co-qty button:focus-visible{outline:2px solid var(--sage);outline-offset:2px}
+.co-qty button:disabled{opacity:.35;cursor:not-allowed;box-shadow:none}
+.co-qty output{min-width:26px;text-align:center;font-weight:800;font-size:14px;font-variant-numeric:tabular-nums}
+/* payment step while the order is made again for a new amount */
+.co-reorder{display:none;align-items:center;gap:10px;margin:-6px 0 14px;padding:10px 14px;border-radius:14px;background:#fff4d9;color:#6d4c06;font-size:14px;font-weight:700}
+.co-reorder .co-spin{width:18px;height:18px;border-width:2.5px}
+.co.co-reordering .co-reorder{display:flex}
+.co.co-reordering .co-paybox{opacity:.45;pointer-events:none;filter:saturate(.5);transition:opacity .2s}
+.co-totals{margin:12px 0 0;display:grid;gap:8px}
+.co-totals div{display:flex;justify-content:space-between;font-size:15px}
+.co-totals dt{color:var(--muted)}
+.co-totals dd{margin:0;font-weight:700}
+.co-totals .co-grand{align-items:baseline;padding:12px 14px;margin-top:6px;border-radius:14px;background:#eef5e6;font-size:19px}
+.co-totals .co-grand dt{color:var(--ink);font-weight:800}
+.co-totals .co-grand dd{font-weight:800}
+.co-free{font-size:13px;color:var(--sage);font-weight:700}
+.co-tax{margin-top:8px;font-size:13px;color:var(--faint)}
+
+/* receipt */
+.co-done{text-align:left}
+.co-done-mark{width:64px;height:64px;border-radius:50%;background:var(--cream);color:var(--on-cream);display:grid;place-items:center;margin-bottom:18px;animation:co-pop .6s var(--ease)}
+.co-done-mark svg{width:32px;height:32px}
+.co-done-mark.wait{background:#fff4d9;color:#b07a0a}
+.co-receipt{margin:22px 0 0;display:grid;grid-template-columns:1fr 1fr;gap:1px;border-radius:18px;overflow:hidden;background:var(--line)}
+.co-receipt div{background:#fff;padding:14px 16px;min-width:0}
+.co-receipt .full{grid-column:1/-1}
+.co-receipt dt{font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}
+.co-receipt dd{margin:4px 0 0;font-weight:700;overflow-wrap:anywhere}
+.co.co-is-done .co-summary{opacity:.75}
+@keyframes co-pop{0%{transform:scale(.4);opacity:0}60%{transform:scale(1.08);opacity:1}100%{transform:none}}
+
+/* busy overlay and the test-mode stand-in for the UPI app / bank page */
+.co-busy,.co-sim{position:absolute;inset:0;z-index:5;display:grid;place-items:center;align-content:center;gap:16px;background:rgba(244,248,239,.86);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);border-radius:inherit}
+.co-busy p{font-weight:700;color:var(--ink);text-align:center;padding-inline:24px}
+.co-spin{width:38px;height:38px;border-radius:50%;border:3.5px solid var(--tint);border-top-color:var(--forest);animation:co-spin .8s linear infinite}
+@keyframes co-spin{to{transform:rotate(360deg)}}
+.co-sim{background:rgba(10,24,13,.55);z-index:6}
+.co-sim-card{width:min(380px,calc(100% - 32px));background:#fff;border-radius:24px;padding:26px;box-shadow:0 40px 80px -30px rgba(0,0,0,.5);text-align:center}
+.co-sim-tag{display:inline-block;font-size:11.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;background:#fff4d9;color:#6d4c06;border-radius:999px;padding:4px 10px}
+.co-sim-card h4{font-size:32px;font-stretch:72%;margin:14px 0 8px}
+.co-sim-card p{color:var(--muted);font-size:15px}
+.co-sim-card input{margin-top:16px;text-align:center;font-size:22px;letter-spacing:.3em;background:var(--ground)}
+.co-sim-card input::placeholder{letter-spacing:normal;font-size:16px}
+.co-sim-btns{display:grid;gap:10px;justify-items:center;margin-top:18px}
+.co-sim-btns .btn-cream{width:100%;min-height:50px}
+.co-sim-alt{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 20px}
+/* UPI stand-in: what happens on the customer's phone, step by step */
+.co-sim-card:has(.co-sim-steps){width:min(440px,calc(100% - 32px))}
+.co-sim-steps{margin:14px 0 0;padding:0;list-style:none;counter-reset:sim;display:grid;gap:10px;text-align:left}
+.co-sim-steps li{counter-increment:sim;display:grid;grid-template-columns:26px minmax(0,1fr);gap:10px;align-items:start;font-size:14.5px;color:var(--muted);line-height:1.45}
+.co-sim-steps li::before{content:counter(sim);width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:var(--tint);color:var(--forest);font-size:12.5px;font-weight:800}
+.co-sim-steps b{color:var(--ink)}
+.co-sim-card .co-sim-safe{display:flex;gap:8px;align-items:flex-start;margin-top:14px;padding:10px 12px;border-radius:12px;background:var(--ground);text-align:left;font-size:13.5px;line-height:1.4;color:var(--forest)}
+.co-sim-safe svg{flex:none;width:16px;height:16px;margin-top:1px}
+
+@media (max-width:860px){
+  .co{padding:0;place-items:end stretch}
+  .co-panel{border-radius:24px 24px 0 0;max-height:96%;max-height:96svh}
+  .co-head{grid-template-columns:1fr auto;padding:16px 18px}
+  .co-steps{grid-column:1/-1;grid-row:2;justify-content:flex-start}
+  .co-body{grid-template-columns:minmax(0,1fr);padding:18px 18px calc(24px + env(safe-area-inset-bottom,0px))}
+  .co-test{margin:14px 18px 0}
+  .co-summary{position:static;order:-1;padding:14px 18px}
+  .co-summary[open] summary{margin-bottom:4px}
+}
+/* too narrow for methods beside the pane: they sit in a row above it */
+@media (max-width:1080px){
+  .co-paybox{grid-template-columns:minmax(0,1fr)}
+  .co-methods{grid-auto-flow:column;grid-auto-columns:minmax(0,1fr)}
+}
+@media (max-width:560px){
+  .co-grid{grid-template-columns:minmax(0,1fr)}
+  .co-method{gap:10px;padding:12px}
+  .co-method-ic{width:34px;height:34px;border-radius:10px}
+  .co-method-ic svg{width:22px;height:22px}
+  .co-method b{font-size:14.5px}
+  .co-pane{padding:16px}
+  .co-receipt{grid-template-columns:minmax(0,1fr)}
+  .co-steps li{font-size:13px}
+}
+@media (max-width:400px){
+  .co-method small{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  .co-panel,.co-scrim{transition:none}
+  .co-done-mark,.co-dot{animation:none}
+}

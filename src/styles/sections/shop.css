@@ -44,3 +44,5 @@
 .cta p{margin:18px auto 0;max-width:40ch;color:var(--forest);font-weight:600}
 .cta .pill{margin-top:26px}
 .cta svg{position:absolute;inset:0;width:100%;height:100%;fill:none;stroke:rgba(255,255,255,.75);stroke-width:22;stroke-linecap:round;pointer-events:none}
+/* the swoosh runs behind the words and the button, not across them */
+.cta h2,.cta p,.cta .pill{position:relative}

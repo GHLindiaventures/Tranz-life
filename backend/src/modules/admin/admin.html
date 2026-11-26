@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="data:,">
+<title>TranzLife Orders</title>
+<style nonce="__NONCE__">
+:root{--ink:#1f4423;--muted:#4c6648;--faint:#7c9077;--line:rgba(31,70,35,.14);--bg:#e9efe3;--panel:#fff;--forest:#24502a;--on:#f4f8ef;--sage:#6f9e4c;--tint:rgba(140,184,106,.25);--warn:#fff4d9;--warn-ink:#6d4c06;--bad:#8a2f08;--bad-bg:#fdeee6;color-scheme:light}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font:15.5px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none}
+:focus-visible{outline:2px solid #e3a21a;outline-offset:2px;border-radius:6px}
+.wrap{max-width:1120px;margin:0 auto;padding:0 16px}
+.top{background:var(--forest);color:var(--on)}
+.top .wrap{display:flex;align-items:center;gap:14px;min-height:60px}
+.brand{font-weight:800;letter-spacing:.02em;font-size:18px}
+.top span{opacity:.8;font-size:14px}
+#logout{margin-left:auto;color:var(--on);border:1px solid rgba(244,248,239,.4);border-radius:999px;padding:6px 14px;font-size:14px}
+h1{font-size:30px;line-height:1.1;margin:28px 0 8px}
+.card{background:var(--panel);border-radius:20px;padding:24px}
+.login{max-width:420px;margin:48px auto}
+.login h1{margin-top:0}
+label{display:block;font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:16px 0 6px}
+input{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:#fff}
+input:focus{outline:none;border-color:var(--sage)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:999px;padding:10px 18px;font-weight:700;background:var(--forest);color:var(--on)}
+.btn.alt{background:#fff;color:var(--ink);border:1px solid var(--line)}
+.btn.bad{background:var(--bad-bg);color:var(--bad)}
+.btn:disabled{opacity:.5;cursor:wait}
+.login .btn{width:100%;margin-top:18px;padding:13px}
+.err{margin-top:12px;color:var(--bad);font-weight:600}
+.intro p{color:var(--muted);max-width:70ch;margin:0}
+.intro b{color:var(--ink)}
+.tabs{display:flex;flex-wrap:wrap;gap:8px;margin:22px 0 16px}
+.tabs button{padding:8px 14px;border-radius:999px;background:#fff;border:1px solid var(--line);font-weight:700;font-size:14px}
+.tabs button[aria-pressed="true"]{background:var(--forest);color:var(--on);border-color:var(--forest)}
+.tabs em{font-style:normal;display:inline-block;min-width:22px;margin-left:6px;padding:0 6px;border-radius:999px;background:var(--tint);font-size:12.5px}
+.tabs button[aria-pressed="true"] em{background:rgba(244,248,239,.25)}
+.msg{padding:10px 14px;border-radius:12px;background:var(--warn);color:var(--warn-ink);font-weight:600;margin-bottom:14px}
+.list{display:grid;gap:14px;padding-bottom:40px}
+.empty{color:var(--muted);padding:40px 0;text-align:center}
+.order{background:var(--panel);border-radius:20px;padding:18px 20px;border-left:6px solid var(--line)}
+.order.verifying{border-left-color:#e3a21a}
+.order.paid{border-left-color:var(--sage)}
+.order.rejected{border-left-color:#c2410c}
+.o-head{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px}
+.ref{font-weight:800;font-size:17px;letter-spacing:.02em}
+.pill{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:3px 10px;border-radius:999px;background:var(--bg);color:var(--muted)}
+.verifying .pill{background:var(--warn);color:var(--warn-ink)}
+.paid .pill{background:var(--tint);color:var(--forest)}
+.rejected .pill{background:var(--bad-bg);color:var(--bad)}
+.o-head time{margin-left:auto;color:var(--faint);font-size:13.5px}
+.o-grid{display:grid;grid-template-columns:1fr 1.3fr 1.3fr;gap:18px;margin-top:14px}
+.k{display:block;font-size:11.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin-bottom:2px}
+.amt{display:block;font-size:28px;font-weight:800;line-height:1.1;margin-bottom:10px}
+.utr{font-size:18px;font-weight:800;letter-spacing:.06em;font-variant-numeric:tabular-nums}
+.none{color:var(--faint);font-weight:600}
+.copy{margin-left:6px;font-size:12.5px;font-weight:700;color:var(--sage);text-decoration:underline}
+small{display:block;color:var(--faint);font-size:12.5px}
+.who b{display:block}
+.who a{display:block;color:var(--forest)}
+.who span,.items li{color:var(--muted);font-size:14px}
+.items ul{margin:0;padding:0;list-style:none}
+.reason{margin-top:12px;padding:8px 12px;border-radius:10px;background:var(--bad-bg);color:var(--bad);font-size:14px}
+.o-foot{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:16px;padding-top:14px;border-top:1px solid var(--line)}
+.o-foot .wa{margin-left:auto;font-weight:700;color:var(--forest);font-size:14px}
+.hist{margin-top:10px;font-size:13px;color:var(--faint)}
+.step{font-weight:700;color:var(--forest)}
+.step::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--sage);margin-right:8px;vertical-align:1px}
+@media (max-width:760px){.o-grid{grid-template-columns:1fr}.o-head time{margin-left:0;width:100%}.o-foot .wa{margin-left:0}}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap"><span class="brand">TranzLife</span><span>Orders and UPI payments</span><button id="logout" type="button" hidden>Sign out</button></div></header>
+<main class="wrap">
+  <section id="login" class="card login" hidden>
+    <h1>Sign in</h1>
+    <form id="loginForm">
+      <label for="pw">Admin password</label>
+      <input id="pw" type="password" autocomplete="current-password" required>
+      <button class="btn" type="submit">Sign in</button>
+      <p id="loginErr" class="err" role="alert" hidden></p>
+    </form>
+  </section>
+
+  <section id="app" hidden>
+    <div class="intro">
+      <h1>Orders</h1>
+      <p><b>Payments through Razorpay</b> (the UPI QR code, Google Pay, PhonePe, Paytm, BHIM and cards) confirm by themselves and show under Paid. <b>Payments to your own UPI QR code need you</b> (the site shows it only when Razorpay is not available): before you confirm one, find the UTR and the amount in your bank or UPI app. A UTR typed by a customer is not proof of payment until you see the money arrive. The order number is in the payment note too.</p>
+    </div>
+    <div class="tabs" id="tabs" role="group" aria-label="Show orders">
+      <button type="button" data-s="verifying" aria-pressed="true">To verify<em data-c="verifying">0</em></button>
+      <button type="button" data-s="awaiting_payment" aria-pressed="false">Awaiting payment<em data-c="awaiting_payment">0</em></button>
+      <button type="button" data-s="paid" aria-pressed="false">Paid<em data-c="paid">0</em></button>
+      <button type="button" data-s="rejected" aria-pressed="false">Rejected<em data-c="rejected">0</em></button>
+      <button type="button" data-s="all" aria-pressed="false">All</button>
+    </div>
+    <p id="msg" class="msg" role="status" hidden></p>
+    <div id="list" class="list" aria-live="polite"></div>
+  </section>
+</main>
+
+<script nonce="__NONCE__">
+(() => {
+  const BASE = location.pathname.replace(/\/+$/, '');           // /api/admin
+  const $ = s => document.querySelector(s);
+  const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' })[c]);
+  const inr = n => '₹' + Number(n).toLocaleString('en-IN');
+  const when = iso => iso ? new Date(iso).toLocaleString('en-IN', { day:'numeric', month:'short', hour:'numeric', minute:'2-digit' }) : '';
+  const utrText = u => u ? u.replace(/(\d{4})(?=\d)/g, '$1 ') : '';
+  const LABEL = { awaiting_payment:'Awaiting payment', verifying:'To verify', paid:'Paid', rejected:'Rejected' };
+  // after payment: packed -> shipped -> out for delivery -> delivered (the customer sees each step in My Orders)
+  const STEPS = ['packed', 'shipped', 'out_for_delivery', 'delivered'];
+  const STEP_LABEL = { packed:'Packed', shipped:'Shipped', out_for_delivery:'Out for delivery', delivered:'Delivered' };
+  function delivery(o){
+    const next = STEPS[STEPS.indexOf(o.deliveryStep) + 1];
+    return `<span class="step">${o.deliveryStep ? STEP_LABEL[o.deliveryStep] : 'Not packed yet'}</span>`
+      + (next ? `<button class="btn" data-act="delivery" data-step="${next}" data-ref="${o.ref}">Mark ${STEP_LABEL[next].toLowerCase()}</button>` : '');
+  }
+  let token = null, status = 'verifying', orders = [], timer = 0;
+  try { token = sessionStorage.getItem('tl-admin'); } catch(e){}
+
+  async function api(path, body){
+    const res = await fetch(BASE + path, {
+      method:body ? 'POST' : 'GET', cache:'no-store',
+      headers:{ ...(body ? { 'Content-Type':'application/json' } : {}), ...(token ? { Authorization:`Bearer ${token}` } : {}) },
+      body:body ? JSON.stringify(body) : undefined
+    });
+    const data = await res.json().catch(() => ({}));
+    if (res.status === 401 && path !== '/login'){ signOut(data.error); throw new Error(data.error); }
+    if (!res.ok) throw new Error(data.error || `Error ${res.status}`);
+    return data;
+  }
+  function say(text){ const m = $('#msg'); m.hidden = !text; m.textContent = text || ''; }
+
+  function show(signedIn){
+    $('#login').hidden = signedIn; $('#app').hidden = !signedIn; $('#logout').hidden = !signedIn;
+    clearInterval(timer);
+    if (signedIn){ load(); timer = setInterval(() => { if (!document.hidden) load(true); }, 30000); }
+    else setTimeout(() => $('#pw').focus(), 0);
+  }
+  function signOut(reason){
+    token = null; try { sessionStorage.removeItem('tl-admin'); } catch(e){}
+    show(false);
+    if (reason){ $('#loginErr').hidden = false; $('#loginErr').textContent = reason; }
+  }
+
+  $('#loginForm').addEventListener('submit', async e => {
+    e.preventDefault(); const err = $('#loginErr'), btn = e.target.querySelector('button');
+    err.hidden = true; btn.disabled = true;
+    try {
+      const r = await api('/login', { password:$('#pw').value });
+      token = r.token; try { sessionStorage.setItem('tl-admin', token); } catch(e){}
+      $('#pw').value = ''; show(true);
+    } catch(ex){ err.hidden = false; err.textContent = ex.message; }
+    finally { btn.disabled = false; }
+  });
+  $('#logout').addEventListener('click', () => { api('/logout', {}).catch(() => {}); signOut(); });
+
+  $('#tabs').addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    status = b.dataset.s;
+    document.querySelectorAll('#tabs button').forEach(x => x.setAttribute('aria-pressed', x === b));
+    load();
+  });
+
+  async function load(quiet){
+    try {
+      const r = await api(`/orders?status=${status}`);
+      orders = r.orders;
+      Object.entries(r.counts).forEach(([k, n]) => { const el = document.querySelector(`[data-c="${k}"]`); if (el) el.textContent = n; });
+      document.title = r.counts.verifying ? `(${r.counts.verifying}) TranzLife Orders` : 'TranzLife Orders';
+      render(); if (!quiet) say('');
+    } catch(ex){ if (token) say(ex.message); }
+  }
+
+  function waLink(o){
+    const first = o.customer.name.split(' ')[0];
+    const text = o.status === 'paid' ? `Hi ${first}, your TranzLife order ${o.ref} (${inr(o.total)}) is confirmed. Thank you!`
+      : o.status === 'rejected' ? `Hi ${first}, we could not find your payment for TranzLife order ${o.ref} (UTR ${o.utr}). Could you check the UTR in your UPI app?`
+      : `Hi ${first}, this is TranzLife about your order ${o.ref} (${inr(o.total)}).`;
+    return `https://wa.me/91${o.customer.phone}?text=${encodeURIComponent(text)}`;
+  }
+
+  function card(o){
+    const c = o.customer;
+    const actions = o.status === 'verifying'
+      ? `<button class="btn" data-act="confirm" data-ref="${o.ref}">Confirm payment</button><button class="btn bad" data-act="reject" data-ref="${o.ref}">Reject</button>`
+      : o.status === 'awaiting_payment' ? `<button class="btn alt" data-act="confirm" data-ref="${o.ref}">Mark paid (enter UTR)</button>`
+      : o.status === 'rejected' ? `<button class="btn alt" data-act="confirm" data-ref="${o.ref}">Confirm anyway</button>`
+      : `<span class="none">Paid ${esc(when(o.paidAt))}${o.payment ? ` by ${o.payment.method === 'card' ? 'card' : 'UPI'} · Razorpay` : ''}</span>${delivery(o)}`;
+    const pay = o.payment;
+    // Razorpay payments come with Razorpay's payment ID (and, for UPI, the UTR from the bank); payments to TranzLife's own QR code with the UTR the customer sent
+    const paidHow = pay
+      ? `<span class="k">Paid by ${pay.method === 'card' ? 'card' : 'UPI'} · Razorpay</span>${pay.rrn && pay.method !== 'card' ? `<span class="utr">${esc(utrText(pay.rrn))}</span><button class="copy" type="button" data-copy="${esc(pay.rrn)}">Copy</button>` : ''}<small>${esc(pay.id)}${pay.vpa ? ` · from ${esc(pay.vpa)}` : ''}</small>`
+      : `<span class="k">UTR</span>${o.utr ? `<span class="utr">${esc(utrText(o.utr))}</span><button class="copy" type="button" data-copy="${esc(o.utr)}">Copy</button><small>Sent ${esc(when(o.utrSubmittedAt))}</small>` : '<span class="none">Not sent yet</span>'}`;
+    const twice = (o.extraPayments || []).map(p => esc(p.id)).join(', ');
+    const hist = (o.utrHistory || []).filter(h => h.result !== 'submitted' || o.utrHistory.length > 1)
+      .map(h => `${esc(when(h.at))}: ${esc(h.result)} ${esc(utrText(h.utr))}${h.reason ? ` (${esc(h.reason)})` : ''}`).join(' · ');
+    return `<article class="order ${o.status}">
+      <div class="o-head"><span class="ref">${esc(o.ref)}</span><span class="pill">${LABEL[o.status]}</span><time>Ordered ${esc(when(o.createdAt))}</time></div>
+      <div class="o-grid">
+        <div>
+          <span class="k">${pay ? 'Amount' : 'Amount to find'}</span><b class="amt">${inr(o.total)}</b>
+          ${paidHow}
+        </div>
+        <div class="who">
+          <span class="k">Customer</span><b>${esc(c.name)}</b>
+          <a href="tel:+91${esc(c.phone)}">+91 ${esc(c.phone)}</a><a href="mailto:${esc(c.email)}">${esc(c.email)}</a>
+          <span>${esc(c.address)}, ${esc(c.city)}, ${esc(c.state)} ${esc(c.pincode)}</span>
+        </div>
+        <div class="items">
+          <span class="k">Items</span>
+          <ul>${o.items.map(i => `<li>${i.qty} × ${esc(i.name)}: ${inr(i.total)}</li>`).join('')}<li>Delivery: ${o.shipping ? inr(o.shipping) : 'Free'}</li></ul>
+        </div>
+      </div>
+      ${o.status === 'rejected' && o.rejectedReason ? `<p class="reason">Told the customer: ${esc(o.rejectedReason)}</p>` : ''}
+      ${twice ? `<p class="reason">Paid twice: Razorpay payment ${twice} paid ${inr(o.total)} again. Refund it from the Razorpay dashboard (Transactions → Payments).</p>` : ''}
+      ${hist ? `<p class="hist">${hist}</p>` : ''}
+      <div class="o-foot">${actions}<a class="wa" href="${waLink(o)}" target="_blank" rel="noopener noreferrer">WhatsApp ${esc(c.name.split(' ')[0])} ↗</a></div>
+    </article>`;
+  }
+
+  function render(){
+    $('#list').innerHTML = orders.length ? orders.map(card).join('') : `<p class="empty">No orders here.</p>`;
+  }
+
+  $('#list').addEventListener('click', async e => {
+    const cp = e.target.closest('[data-copy]');
+    if (cp){ try { await navigator.clipboard.writeText(cp.dataset.copy); cp.textContent = 'Copied'; setTimeout(() => { cp.textContent = 'Copy'; }, 1500); } catch(ex){} return; }
+    const b = e.target.closest('[data-act]'); if (!b) return;
+    const o = orders.find(x => x.ref === b.dataset.ref); if (!o) return;
+    let body = {};
+    if (b.dataset.act === 'delivery'){
+      b.disabled = true;
+      try { await api(`/orders/${o.ref}/delivery`, { step:b.dataset.step }); say(`${o.ref}: ${STEP_LABEL[b.dataset.step].toLowerCase()}. The customer sees it in My Orders.`); load(true); }
+      catch(ex){ say(ex.message); b.disabled = false; }
+      return;
+    }
+    if (b.dataset.act === 'confirm'){
+      if (o.utr && o.status === 'verifying'){
+        if (!confirm(`Have you found UTR ${utrText(o.utr)} for ${inr(o.total)} in your bank or UPI app?`)) return;
+      } else {
+        const utr = prompt(`Enter the UTR you found in your bank or UPI app for ${inr(o.total)} (order ${o.ref}):`, o.utr || '');
+        if (utr === null) return;
+        body = { utr };
+      }
+    } else {
+      const reason = prompt('Reason shown to the customer:', 'We could not find this payment in our bank account.');
+      if (reason === null) return;
+      body = { reason };
+    }
+    b.disabled = true;
+    try { await api(`/orders/${o.ref}/${b.dataset.act}`, body); say(b.dataset.act === 'confirm' ? `${o.ref} confirmed as paid.` : `${o.ref} rejected. The customer sees the reason and can send another UTR.`); load(true); }
+    catch(ex){ say(ex.message); b.disabled = false; }
+  });
+
+  show(!!token);
+})();
+</script>
+</body>
+</html>

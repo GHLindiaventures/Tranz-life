@@ -17,6 +17,9 @@
 .in-copy::before{content:"";position:absolute;inset:-8%;z-index:-2;background:url('../../assets/images/botanical-background.jpg') 78% 50%/cover no-repeat;animation:drift 22s ease-in-out infinite alternate;will-change:transform}
 .in-copy::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(100deg,rgba(248,250,243,.86) 0%,rgba(248,250,243,.6) 46%,rgba(248,250,243,.08) 78%,rgba(248,250,243,0) 100%)}
 @keyframes drift{from{transform:translate3d(-2%,1.5%,0) scale(1.02)}to{transform:translate3d(2.5%,-2%,0) scale(1.1)}}
+/* "Our story" tag above the card's headline: the same dark green pill and type as the "Know more" button (.pill b) */
+.in-copy .in-tag{display:block;width:fit-content;margin-bottom:20px;padding:6px 14px;border-radius:999px;background:var(--cream);color:var(--on-cream);font-weight:700;font-stretch:80%;font-size:16px;line-height:1.25}
+@media (pointer:coarse){.in-copy .in-tag{padding:8px 16px}}
 .in-copy .in-lead{max-width:22ch}
 .in-copy .in-body{max-width:40ch}
 .in-copy .in-row span{max-width:21ch;line-height:1.3}

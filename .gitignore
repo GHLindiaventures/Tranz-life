@@ -5,6 +5,9 @@ node_modules/
 dist/
 dist-single/
 
+# local database of the backend (holds customer details and orders)
+backend/.data/
+
 # local environment (copy .env.example to .env)
 .env
 .env.local
@@ -19,3 +22,5 @@ Thumbs.db
 .idea/
 .vscode/
 __pycache__/
+
+.vercel

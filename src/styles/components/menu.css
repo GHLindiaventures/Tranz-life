@@ -38,11 +38,16 @@
 .menu-contact{font-weight:800;font-stretch:82%;color:var(--forest);border-bottom:2px solid currentColor;padding-bottom:2px}
 html.menu-open .nav{opacity:0;pointer-events:none}
 .nav{transition:top .4s var(--ease),width .4s var(--ease),background .4s,box-shadow .4s,padding .4s,opacity .4s}
+/* phones, tablets and narrow windows: the menu button lives in the top bar (features/navigation/navigation.js),
+   so the side dock is hidden */
+.dock.dock-off{display:none}
+.nav .dock-menu{width:44px;height:44px;flex:none;box-shadow:0 10px 22px -12px rgba(31,70,35,.7)}
+.nav .dock-menu .dm-ring{inset:-4px;width:calc(100% + 8px);height:calc(100% + 8px)}
+.nav.t-green .dock-menu{background:#e9efe3;color:var(--forest)}
+.nav.t-green .dock-menu .dm-ring circle:first-child{stroke:#e9efe3}
 @media (max-width:980px){
-  .dock{left:max(8px,env(safe-area-inset-left,0px));padding:5px}
-  .dock-menu{width:44px;height:44px}
-  .dock-cur{top:5px;height:44px}
-  .menu-in{grid-template-columns:minmax(0,1fr);align-items:start;padding:110px 24px 30px 78px;overflow-y:auto}
+  .nav-act{gap:8px}
+  .menu-in{grid-template-columns:minmax(0,1fr);align-items:start;padding:110px 24px 30px;overflow-y:auto}
   .menu-top{left:24px;right:20px;top:16px}
   .menu-top .logo-em{height:38px}.menu-top .logo-word{height:22px}
   .menu-side{display:none}

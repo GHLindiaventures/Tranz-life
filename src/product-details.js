@@ -12,6 +12,7 @@ import './components/page-scrollbar.js';
 import './components/chat-loader.js';
 import { $, $$ } from './utils/dom.js';
 import { initBeforeAfter } from './features/compare/before-after.js';
+import { initAccountMenu } from './features/account/account-menu.js';
 
 // Product page content per product. Ingredients follow official composition sheet
 const CLINICAL_DETAILS = {
@@ -454,6 +455,9 @@ function initProductDetailsPage() {
   }
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
+
+  // Account icon (login / My Orders) in the top bar
+  initAccountMenu();
 
   // Mobile navigation
   const menuBtn = $('#dockMenu');

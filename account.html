@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+  <title>My Account | TranzLife Biosciences</title>
+  <meta name="description" content="Your TranzLife account: your orders and their delivery, your profile and your saved addresses.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,400..900;1,62..125,400..900&family=Caveat:wght@600&display=swap"
+    rel="stylesheet">
+  <link rel="icon" type="image/webp" href="/assets/logo-emblem.webp">
+  <link rel="stylesheet" href="/src/styles/account-page.css">
+</head>
+
+<body class="t-cream">
+  <header class="nav" id="nav">
+    <a class="brand" href="index.html#home" aria-label="TranzLife Biosciences home">
+      <span class="logo-em" aria-hidden="true"></span>
+      <span class="logo-word" aria-hidden="true"></span>
+    </a>
+    <nav class="nav-pills" aria-label="Main">
+      <a href="index.html#home">Home</a>
+      <a href="products.html">Products</a>
+      <a href="index.html#shop">Shop</a>
+    </nav>
+    <div class="nav-act">
+      <a class="pill" href="index.html#shop"><i aria-hidden="true">↗</i><b>Shop all</b></a>
+    </div>
+  </header>
+
+  <main class="ac-page">
+    <div class="wrap ac-layout">
+      <aside class="ac-side" id="acSide" hidden>
+        <div class="ac-card ac-me">
+          <span class="ac-avatar" data-ac-initial aria-hidden="true"></span>
+          <p><small>Hello,</small><b data-ac-name></b></p>
+        </div>
+        <nav class="ac-card ac-nav" aria-label="Your account">
+          <a href="#orders" data-view="orders"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7.5 12 3l8 4.5v9L12 21l-8-4.5z"/><path d="M4 7.5 12 12l8-4.5M12 12v9"/></svg>My Orders<i aria-hidden="true">›</i></a>
+          <p class="ac-nav-h">Account settings</p>
+          <a href="#profile" data-view="profile">Profile information</a>
+          <a href="#addresses" data-view="addresses">Manage addresses</a>
+          <button type="button" data-logout><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h4.5A1.5 1.5 0 0 1 20 5.5v13a1.5 1.5 0 0 1-1.5 1.5H14"/><path d="M10 16.5 5.5 12 10 7.5M5.5 12H15"/></svg>Log out</button>
+        </nav>
+      </aside>
+      <section class="ac-main" id="acMain" tabindex="-1" aria-live="polite">
+        <p class="ac-loading">Loading your account…</p>
+      </section>
+    </div>
+  </main>
+
+  <div class="toast" id="toast" role="status"></div>
+
+  <script type="module" src="/src/account-page.js"></script>
+</body>
+
+</html>

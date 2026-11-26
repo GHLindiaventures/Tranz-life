@@ -1,6 +1,8 @@
 /* ---------- hero stage ---------- */
 /* the first screen is the product standing in the white arc with the facts on its left and the headline, lede and "Buy now" on the right; the curved band sits just below it and comes up on the next scroll. Everything is placed from --h, the first screen's height. */
-.stage{--h:clamp(680px,100vh,1000px);--cx:36%;--cy:calc(var(--h)*1.05);--r:calc(var(--h)*.56);--bw:min(62vw,calc(var(--h)*1.2));position:relative;height:calc(var(--h)*1.12);background:radial-gradient(70% 40% at 35% 30%,#c6d8b6,transparent 70%),var(--stage);overflow-x:clip;overflow-y:visible}
+/* --r: the arc's radius, from the screen height but never wider than 38vw (tablets in landscape are short and narrow);
+   --cx: its centre, at 36% across but far enough in that the fact bubbles on its left side stay on screen */
+.stage{--h:clamp(680px,100vh,1000px);--r:min(calc(var(--h)*.56),38vw);--cx:max(36%,calc(var(--r)*.87 + 64px));--cy:calc(var(--h)*1.05);--bw:min(62vw,calc(var(--h)*1.2));position:relative;height:calc(var(--h)*1.12);background:radial-gradient(70% 40% at 35% 30%,#c6d8b6,transparent 70%),var(--stage);overflow-x:clip;overflow-y:visible}
 .st-arc{position:absolute;left:var(--cx);top:calc(var(--cy) - var(--r));width:calc(var(--r)*2);height:calc(var(--r)*2);transform:translateX(-50%);pointer-events:none;z-index:0}
 .st-arc svg{width:100%;height:100%;overflow:visible}
 .st-arc circle{fill:none;stroke:#fff;stroke-width:2.4%;stroke-linecap:round}
@@ -37,7 +39,7 @@
 .st-copy{position:absolute;z-index:4;right:max(48px,6vw);top:calc(var(--h)*.2);width:min(600px,40vw);text-align:center}
 .st-tag{display:inline-flex;align-items:center;gap:12px;margin-bottom:16px;font-weight:800;font-stretch:90%;font-size:13px;letter-spacing:.22em;text-transform:uppercase;color:var(--forest)}
 .st-tag::before,.st-tag::after{content:"";width:34px;height:2px;border-radius:2px;background:var(--gold)}
-.st-h{font-size:clamp(4rem,calc(var(--h)*.125),9.6rem);font-stretch:64%;font-weight:850;text-transform:uppercase;line-height:.84;letter-spacing:-.01em;color:var(--forest)}
+.st-h{font-size:clamp(4rem,min(calc(var(--h)*.125),9.6vw),9.6rem);font-stretch:64%;font-weight:850;text-transform:uppercase;line-height:.84;letter-spacing:-.01em;color:var(--forest)}
 .st-h .ln{display:block}
 .st-h .ln:first-child{color:#fff}
 .st-lede{margin:22px auto 0;max-width:34ch;font-size:clamp(17px,2.2vh,20px);font-weight:600;color:var(--forest);line-height:1.3}

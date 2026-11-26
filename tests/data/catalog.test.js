@@ -23,8 +23,14 @@ describe('catalogue data', () => {
     expect(HERBS.some(h => h.p != null)).toBe(true);
   });
   it('every product has its product image, cut-out and design board', () => {
-    PRODUCTS.forEach(p => ['', '-cut', '-design'].forEach(k =>
-      expect(existsSync(new URL(`../../src/assets/products/${p.id}${k}.webp`, import.meta.url))).toBe(true)));
+    const prodImgSrc = readFileSync(new URL('../../src/features/products/product-images.js', import.meta.url), 'utf8');
+    PRODUCTS.forEach(p => {
+      ['', '-cut'].forEach(k =>
+        expect(existsSync(new URL(`../../src/assets/products/${p.id}${k}.webp`, import.meta.url))).toBe(true));
+      const m = prodImgSrc.match(new RegExp(`import\\s+${p.id}Design\\s+from\\s+['"]([^'"]+)['"]`));
+      expect(m).toBeTruthy();
+      expect(existsSync(new URL(`../../src/features/products/${m[1]}`, import.meta.url))).toBe(true);
+    });
   });
   it('every product has benefits for the benefits panel', () => {
     PRODUCTS.forEach(p => expect(BENEFITS[p.id]?.length).toBeGreaterThan(2));
