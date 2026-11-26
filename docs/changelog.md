@@ -1,5 +1,14 @@
 # Changelog
 
+## v14.0 (26 Nov 2026): customer accounts, and the backend in its own folder with PostgreSQL
+- **Login with a mobile number:** a person icon in the top bar on every page. A 6-digit code by SMS (Twilio Verify), which verifies itself once typed, with a 30-second resend timer. A new number gets an account and is asked for a name. No passwords.
+- **Account menu:** logged in, the icon shows the customer's initial and opens "Hello, name", My Orders, My Profile, Saved addresses and Log out.
+- **Account page (`account.html`):** My Orders (status, then each order's tracking steps with dates, items, price, delivery address and payment), Profile information (name, gender, email) and Manage addresses (up to 10, home or work, one default).
+- **Checkout:** login stays optional. Logged in, the delivery step shows the saved addresses with the default filled in, the order goes to My Orders, and a new delivery address is saved to the address book.
+- **Admin page:** paid orders get **Mark packed → shipped → out for delivery → delivered**, which customers follow in My Orders.
+- **New `backend/` folder** replacing `server/`: Express 5 and PostgreSQL (hosted through `DATABASE_URL`, or a local PGlite database with nothing to install), numbered SQL migrations, and modules split into routes, services, SQL and views. Orders, items, payments and their history now live in database tables instead of a JSON file. Sessions (customer and admin) are stored hashed in the database. Settings moved to `backend/.env`. 47 end-to-end tests run on a real in-memory Postgres (`npm run backend:test`).
+- Without a backend (as on the current live site), login and My Orders run in test mode in the browser, like the checkout.
+
 ## v13.5 (26 Nov 2026): "Our story" card, and "The TranzLife Difference" section removed
 - **"You deserve TranzLife" card:** an "Our story" tag (the same dark green pill as "Know more") above a new headline, "Meet TranzLife, where the roots of nature meet the science of everyday wellness." The text says what TranzLife makes and points to "Know more" ("Our story in six short scenes").
 - **Removed "The TranzLife Difference" (`#difference`, "Everyday Care, Real Benefits")** with its four photo cards, its styles (`sections/difference.css`) and its four card images. "See the difference" (`#benefits`) is unchanged.

@@ -7,6 +7,7 @@ import { state, thumbs } from './app/state.js';
 import { initSmooth } from './app/smooth-scroll.js';
 import { SHOTS } from './features/products/product-images.js';
 import { initCart, renderCart } from './features/cart/cart.js';
+import { initAccountMenu } from './features/account/account-menu.js';
 import { initGrain } from './products-page/grain.js';
 import { initProductJourney } from './products-page/journey.js';
 import { initStatementPage } from './products-page/statement-page.js';
@@ -21,13 +22,14 @@ function initProductsPage() {
   // Populate image thumbs for the cart drawer
   Object.assign(thumbs, SHOTS);
 
-  // 1. Initialize shopping bag state & render initial counts
+  // 1. Initialize shopping bag state & render initial counts, and the account icon in the top bar
   try {
     initCart();
     renderCart();
   } catch (e) {
     console.warn('Cart initialization deferred:', e);
   }
+  try { initAccountMenu(); } catch (e) { console.warn('Account menu unavailable:', e); }
 
   // 2. The product journey (smooth scroll as on dhina-dev: the display a card opens pauses and resumes it)
   try { initGrain(); } catch (e) { console.warn('Grain unavailable:', e); }

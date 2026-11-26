@@ -5,6 +5,7 @@ import { LAYOUT, initPages, pageProgress } from './app/page-sections.js';
 import { initScroll } from './app/scroll-animations.js';
 import { initSmooth } from './app/smooth-scroll.js';
 import { state, thumbs } from './app/state.js';
+import { initAccountMenu } from './features/account/account-menu.js';
 import { initCart, renderCart } from './features/cart/cart.js';
 import { initContactForm } from './features/contact/contact-form.js';
 import { buildNeeds, selectNeed } from './features/finder/product-finder.js';
@@ -28,7 +29,7 @@ import { $ } from './utils/dom.js';
 async function boot(){
   setLoad(8);
   initCart(); initContactForm();
-  buildCurveBand(); buildLab(); buildNeeds(); renderCart(); initNav();
+  buildCurveBand(); buildLab(); buildNeeds(); renderCart(); initNav(); initAccountMenu();
   setLoad(20);
   try { if (document.fonts) await Promise.race([Promise.all(['850 40px Archivo','600 20px Archivo','600 24px Caveat'].map(f => document.fonts.load(f))).then(() => document.fonts.ready), new Promise(r => setTimeout(r, 2500))]); } catch(e){}
   setLoad(36);

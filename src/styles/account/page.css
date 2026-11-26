@@ -1,0 +1,151 @@
+/* The account page: sidebar (who is logged in, the sections) and the main panel (My Orders, one order, profile,
+   addresses). Built by src/account-page.js and features/account/*-view.js. */
+body{background:var(--ground);min-height:100vh}
+.ac-page{padding:calc(env(safe-area-inset-top,0px) + 118px) 0 80px}
+.ac-page .wrap{max-width:1120px;padding-left:max(24px,env(safe-area-inset-left,0px))}
+.ac-layout{display:grid;grid-template-columns:270px minmax(0,1fr);gap:22px;align-items:start}
+.ac-layout:has(.ac-side[hidden]){grid-template-columns:minmax(0,1fr);max-width:620px;margin-inline:auto}
+.ac-side[hidden]{display:none}
+.ac-main{min-width:0;outline:none}
+
+/* ---------- shared pieces ---------- */
+.ac-card{background:#fff;border-radius:22px;padding:22px 24px;box-shadow:0 22px 44px -34px rgba(31,70,35,.4);border:1px solid rgba(31,70,35,.06)}
+.ac-h{margin:2px 0 18px;font-size:clamp(26px,3vw,34px);line-height:1.05;font-weight:850;font-stretch:80%;color:var(--forest)}
+.ac-sub{margin:0 0 12px;font-size:13px;font-weight:750;letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}
+.ac-sub:not(:first-child){margin-top:20px}
+.ac-list{display:grid;gap:12px}
+.ac-loading{color:var(--muted);font-size:15px}
+.ac-btn{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:0 24px;border-radius:999px;background:var(--forest);color:#f4f8ef;font-weight:750;font-size:15px;text-decoration:none;transition:transform .2s,opacity .2s}
+.ac-btn:hover{transform:translateY(-1px)}
+.ac-btn:disabled{opacity:.6;cursor:wait}
+.ac-btn.ghost{background:#fff;color:var(--forest);box-shadow:inset 0 0 0 1.5px var(--line-strong)}
+.ac-link{color:var(--forest);font-weight:700;font-size:14.5px;text-decoration:underline;text-underline-offset:3px;padding:2px}
+.ac-link.bad{color:#b23c0a}
+.ac-actions{display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px;margin:14px 0 0}
+.ac-empty{text-align:center;padding:44px 28px}
+.ac-empty h2{margin:0 0 8px;font-size:22px;font-weight:800;font-stretch:85%;color:var(--forest)}
+.ac-empty p{margin:0 auto 20px;max-width:46ch;color:var(--muted);line-height:1.5}
+.ac-welcome .ac-h{margin-bottom:10px}
+.ac-back{display:inline-block;margin:0 0 12px;color:var(--forest);font-weight:700;font-size:14.5px;text-decoration:none}
+.ac-back:hover{text-decoration:underline}
+.ac-help{margin:18px 0 0;font-size:14.5px;color:var(--muted)}
+.ac-help a{color:var(--forest);font-weight:700}
+
+/* ---------- sidebar ---------- */
+.ac-side{position:sticky;top:108px;display:grid;gap:14px}
+.ac-me{display:flex;align-items:center;gap:14px;padding:16px 18px}
+.ac-avatar{flex:none;width:52px;height:52px;border-radius:50%;display:grid;place-items:center;background:var(--forest);color:#f4f8ef;font-size:22px;font-weight:850}
+.ac-me p{margin:0;min-width:0;display:grid}
+.ac-me small{color:var(--faint);font-size:13px}
+.ac-me b{font-size:18px;font-weight:800;font-stretch:85%;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ac-nav{display:grid;padding:8px}
+.ac-nav a,.ac-nav button{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:14px;font-size:15px;font-weight:650;color:var(--ink);text-decoration:none;text-align:left;width:100%}
+.ac-nav a:hover,.ac-nav button:hover{background:var(--ground)}
+.ac-nav a[aria-current]{background:rgba(140,184,106,.22);color:var(--forest);font-weight:800}
+.ac-nav svg{width:20px;height:20px;flex:none;fill:none;stroke:var(--sage);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.ac-nav a i{margin-left:auto;font-style:normal;color:var(--faint)}
+.ac-nav-h{margin:10px 14px 4px;font-size:12px;font-weight:750;letter-spacing:.12em;text-transform:uppercase;color:var(--faint)}
+.ac-nav a:not(:has(svg)){padding-left:46px}
+.ac-nav button{margin-top:6px;border-top:1px solid var(--line);border-radius:0 0 14px 14px}
+
+/* ---------- orders ---------- */
+.ac-order{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr) auto;align-items:center;gap:18px;color:inherit;text-decoration:none;transition:transform .25s var(--ease),box-shadow .25s}
+.ac-order:hover{transform:translateY(-2px);box-shadow:0 26px 50px -30px rgba(31,70,35,.45)}
+.ac-order-items{display:grid;gap:10px}
+.ac-item{display:flex;align-items:center;gap:12px;min-width:0}
+.ac-item img,.ac-noimg{flex:none;width:58px;height:58px;border-radius:14px;object-fit:cover;background:var(--ground-2)}
+.ac-item p{margin:0;min-width:0;display:grid}
+.ac-item b{font-size:15px;font-weight:700;line-height:1.25}
+.ac-item small{font-size:13.5px;color:var(--muted)}
+.ac-more{margin:0;font-size:13.5px;color:var(--faint)}
+.ac-order-state{display:grid;gap:4px}
+.ac-order-state small,.ac-order-total small{font-size:13px;color:var(--faint)}
+.ac-order-total{display:grid;justify-items:end;text-align:right}
+.ac-order-total b{font-size:19px;font-weight:850;font-stretch:85%}
+.ac-chip{display:inline-flex;align-items:center;gap:8px;font-size:14.5px;font-weight:750;color:var(--ink)}
+.ac-chip i{width:9px;height:9px;border-radius:50%;background:var(--sage);box-shadow:0 0 0 4px rgba(111,158,76,.18)}
+.ac-chip.wait i{background:#e3a21a;box-shadow:0 0 0 4px rgba(227,162,26,.2)}
+.ac-chip.done i{background:#2f7d32;box-shadow:0 0 0 4px rgba(47,125,50,.18)}
+.ac-chip.bad i{background:#c2410c;box-shadow:0 0 0 4px rgba(194,65,12,.16)}
+
+.ac-order-head{display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:10px 20px}
+.ac-order-head p{margin:-12px 0 18px;color:var(--muted)}
+.ac-main > .ac-card + .ac-two{margin-top:14px}
+.ac-two{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:14px}
+.ac-lines{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.ac-lines li span{margin-left:auto;font-weight:700}
+.ac-price{margin:16px 0 0;padding-top:12px;border-top:1px solid var(--line);display:grid;gap:6px;font-size:15px}
+.ac-price div{display:flex;justify-content:space-between}
+.ac-price dt{color:var(--muted)}
+.ac-price dd{margin:0;font-weight:650}
+.ac-price .total{margin-top:4px;padding-top:10px;border-top:1px dashed var(--line);font-size:17px}
+.ac-price .total dt,.ac-price .total dd{color:var(--ink);font-weight:850}
+.ac-addr{margin:0;font-size:15px;line-height:1.55;color:var(--muted)}
+.ac-addr b{display:block;color:var(--ink)}
+.ac-addr b span{font-weight:600;color:var(--muted);margin-left:8px}
+.ac-note{display:grid;gap:8px;padding:16px 18px;border-radius:16px;background:var(--panel-2)}
+.ac-note p{margin:0;color:var(--muted);line-height:1.5}
+.ac-note.bad{background:#fdeee6}
+
+/* tracking: a row of steps on wide screens, a column on phones */
+.ac-track{list-style:none;margin:4px 0 0;padding:0;display:grid;grid-template-columns:repeat(6,minmax(0,1fr))}
+.ac-track li{position:relative;display:grid;justify-items:center;gap:6px;text-align:center;padding:0 4px}
+.ac-track li::before{content:"";position:absolute;top:8px;right:50%;width:100%;height:3px;background:var(--line);z-index:0}
+.ac-track li:first-child::before{display:none}
+.ac-track li.done::before{background:var(--forest)}
+.ac-track i{position:relative;z-index:1;width:19px;height:19px;border-radius:50%;background:#fff;box-shadow:inset 0 0 0 2.5px var(--line-strong)}
+.ac-track li.done i{background:var(--forest);box-shadow:none}
+.ac-track li.current i{box-shadow:0 0 0 6px rgba(36,80,42,.15)}
+.ac-track b{min-height:2.5em;font-size:13.5px;line-height:1.25;color:var(--faint);font-weight:650}
+.ac-track li.done b{color:var(--ink);font-weight:750}
+.ac-track small{font-size:12px;color:var(--faint);min-height:1em}
+
+/* ---------- forms (profile, addresses) ---------- */
+.ac-form{display:grid;gap:16px}
+.ac-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 16px}
+.ac-field{display:grid;gap:6px;margin:0;padding:0;border:0;min-width:0}
+.ac-field.full{grid-column:1 / -1}
+.ac-field label,.ac-field legend{font-size:13px;font-weight:700;color:var(--muted);padding:0;margin-bottom:2px}
+.ac-field input,.ac-field select{width:100%;min-height:48px;padding:0 14px;border:1.5px solid var(--line);border-radius:12px;background:#fff;font-size:15.5px;color:var(--ink);outline:0;transition:border-color .2s}
+.ac-field input:focus,.ac-field select:focus{border-color:var(--forest)}
+.ac-field input[readonly]{background:var(--ground);color:var(--muted)}
+.ac-field [aria-invalid="true"]{border-color:#c2410c;background:#fff8f4}
+.ac-ferr{min-height:0;color:#b23c0a;font-size:13px;font-weight:600}
+.ac-ferr:empty{display:none}
+.ac-hint{color:var(--faint);font-size:13px}
+.ac-form-err{margin:0;color:#b23c0a;font-weight:600}
+.ac-form .ac-btn{justify-self:start}
+.ac-radios{display:flex;flex-wrap:wrap;gap:10px 22px}
+.ac-radio{display:inline-flex;align-items:center;gap:8px;font-size:15px;cursor:pointer}
+.ac-radio input{width:18px;height:18px;accent-color:var(--forest)}
+
+/* ---------- addresses ---------- */
+.ac-add{display:block;width:100%;margin-bottom:12px;text-align:left;font-size:15.5px;font-weight:750;color:var(--forest);border:1.5px dashed var(--line-strong);box-shadow:none}
+.ac-add:hover{background:#f7faf3}
+.ac-addr-form{margin-bottom:12px}
+.ac-tags{display:flex;gap:8px;margin:0 0 10px}
+.ac-tag{padding:3px 10px;border-radius:999px;background:var(--ground);font-size:11.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.ac-tag.def{background:rgba(140,184,106,.25);color:var(--forest)}
+
+/* ---------- narrow screens ---------- */
+@media (max-width:900px){
+  .ac-page{padding-top:calc(env(safe-area-inset-top,0px) + 96px)}
+  .ac-layout{grid-template-columns:minmax(0,1fr)}
+  .ac-side{position:static}
+  .ac-nav{display:flex;flex-wrap:wrap;gap:6px}
+  .ac-nav a,.ac-nav button{width:auto;padding:10px 14px;border-radius:999px;background:var(--ground)}
+  .ac-nav a:not(:has(svg)){padding-left:14px}
+  .ac-nav button{margin:0;border:0}
+  .ac-nav-h,.ac-nav a i{display:none}
+}
+@media (max-width:640px){
+  .ac-card{padding:18px}
+  .ac-order{grid-template-columns:minmax(0,1fr) auto;gap:12px}
+  .ac-order-items{grid-column:1 / -1}
+  .ac-two,.ac-grid{grid-template-columns:minmax(0,1fr)}
+  .ac-track{grid-template-columns:minmax(0,1fr);gap:0}
+  .ac-track li{grid-template-columns:19px minmax(0,1fr);justify-items:start;text-align:left;column-gap:14px;row-gap:0;padding:0 0 18px}
+  .ac-track li::before{top:auto;bottom:calc(100% - 9px);right:auto;left:8px;width:3px;height:calc(100% + 0px)}
+  .ac-track i{grid-row:span 2}
+  .ac-track b{min-height:0}
+}

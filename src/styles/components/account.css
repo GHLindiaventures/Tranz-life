@@ -1,0 +1,92 @@
+/* Customer account pieces used on every page: the person icon and its menu in the top bar (features/account/
+   account-menu.js), the login window (login-dialog.js) and the account strip in the checkout (checkout.js). */
+
+/* ---------- person icon and menu ---------- */
+.acct{position:relative}
+.acct-btn{position:relative;width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.7);color:var(--ink);display:grid;place-items:center;transition:background .3s,color .3s}
+.t-green .acct-btn{background:rgba(255,255,255,.1)}
+.acct-btn svg{width:20px;height:20px}
+.acct-initial{display:none;font-weight:800;font-size:17px;font-stretch:85%}
+.acct.in .acct-btn{background:var(--forest);color:#f4f8ef}
+.acct.in .acct-btn svg{display:none}
+.acct.in .acct-initial{display:block}
+.acct-menu{position:absolute;top:calc(100% + 12px);right:0;z-index:60;width:248px;padding:8px;border-radius:20px;background:#fff;color:var(--ink);box-shadow:0 24px 50px -20px rgba(31,70,35,.45),0 0 0 1px rgba(31,70,35,.06);text-align:left}
+.acct-menu[hidden]{display:none}
+.acct-hi{display:grid;gap:1px;padding:10px 12px 12px;margin-bottom:6px;border-bottom:1px solid var(--line)}
+.acct-hi span{font-size:12.5px;color:var(--faint)}
+.acct-hi b{font-size:17px;font-weight:800;font-stretch:85%;color:var(--forest);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.acct-hi small{font-size:13px;color:var(--muted)}
+.acct-menu a,.acct-menu button{display:flex;align-items:center;gap:12px;width:100%;padding:11px 12px;border-radius:12px;font-size:15px;font-weight:600;color:var(--ink);text-decoration:none;text-align:left}
+.acct-menu a:hover,.acct-menu button:hover,.acct-menu a:focus-visible,.acct-menu button:focus-visible{background:var(--ground)}
+.acct-menu svg{width:19px;height:19px;flex:none;color:var(--sage)}
+.acct-menu button{margin-top:4px;border-top:1px solid var(--line);border-radius:0 0 12px 12px}
+
+/* ---------- login window ---------- */
+.lg{position:fixed;inset:0;z-index:93;display:grid;place-items:center;padding:16px}
+.lg[hidden]{display:none}
+.lg-scrim{position:absolute;inset:0;background:rgba(5,10,6,.55);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);opacity:0;transition:opacity .3s}
+.lg-panel{position:relative;display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);width:min(780px,100%);min-height:460px;max-height:calc(100dvh - 32px);overflow:auto;border-radius:28px;background:#fff;color:var(--ink);box-shadow:0 40px 90px -30px rgba(5,20,8,.6);opacity:0;transform:translateY(14px) scale(.98);transition:opacity .3s,transform .4s var(--ease)}
+.lg.open .lg-scrim,.lg.open .lg-panel{opacity:1}
+.lg.open .lg-panel{transform:none}
+html.lg-open{overflow:hidden}
+
+.lg-side{display:flex;flex-direction:column;padding:40px 32px;color:#f4f8ef;background:radial-gradient(120% 90% at 0% 100%,rgba(141,184,107,.35),transparent 60%),linear-gradient(160deg,#2b5e32,#1d4424)}
+.lg-side h3{font-size:34px;line-height:1;font-weight:850;font-stretch:80%;margin:0 0 14px}
+.lg-side p{margin:0;color:rgba(244,248,239,.82);font-size:16px;line-height:1.45}
+.lg-perks{list-style:none;margin:auto 0 0;padding:28px 0 0;display:grid;gap:12px;font-size:14.5px;font-weight:600}
+.lg-perks li{display:flex;gap:10px;align-items:center}
+.lg-perks li::before{content:"✓";flex:none;display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:rgba(244,248,239,.16);font-size:12px}
+
+.lg-main{position:relative;display:flex;flex-direction:column;justify-content:center;padding:52px 36px 32px}
+.lg-x{position:absolute;top:14px;right:14px;width:40px;height:40px;border-radius:50%;border:1px solid var(--line);font-size:20px;line-height:1;color:var(--muted);display:grid;place-items:center}
+.lg-x:hover{background:var(--ground)}
+.lg-step{display:grid;gap:12px}
+.lg-step[hidden]{display:none}
+.lg-label{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.lg-label small{text-transform:none;letter-spacing:0;font-weight:500;color:var(--faint)}
+.lg-phone{display:flex;align-items:center;border:1.5px solid var(--line-strong);border-radius:14px;overflow:hidden;background:#fff;transition:border-color .2s}
+.lg-phone:focus-within{border-color:var(--forest)}
+.lg-phone span{padding:0 4px 0 16px;font-size:18px;font-weight:700;color:var(--muted)}
+.lg-phone input{flex:1;min-width:0;border:0;outline:0;padding:15px 16px 15px 8px;font-size:18px;font-weight:600;letter-spacing:.04em;background:none}
+.lg-input{border:1.5px solid var(--line-strong);border-radius:14px;padding:13px 16px;font-size:16px;background:#fff;outline:0}
+.lg-input:focus{border-color:var(--forest)}
+.lg-fine{margin:0;font-size:13.5px;line-height:1.45;color:var(--faint)}
+.lg-sent{margin:0 0 4px;font-size:15px;color:var(--muted);line-height:1.5}
+.lg-sent b{color:var(--ink);white-space:nowrap}
+.lg-code{width:100%;border:1.5px solid var(--line-strong);border-radius:14px;padding:14px 12px;text-align:center;font-size:30px;font-weight:800;letter-spacing:.5em;text-indent:.5em;font-variant-numeric:tabular-nums;outline:0;background:#fff}
+.lg-code:focus{border-color:var(--forest)}
+.lg-test{margin:0;padding:10px 12px;border-radius:12px;background:#fff4d9;color:#6d4c06;font-size:13.5px;line-height:1.4}
+.lg-test b{margin-right:6px}
+.lg-test code{font:inherit;font-weight:800;letter-spacing:.12em}
+.lg-cta{min-height:52px;border-radius:999px;background:var(--forest);color:#f4f8ef;font-size:16px;font-weight:750;margin-top:6px;transition:opacity .2s,transform .2s}
+.lg-cta:hover{transform:translateY(-1px)}
+.lg-cta:disabled{opacity:.6;cursor:wait;transform:none}
+.lg-link{color:var(--forest);font-weight:700;text-decoration:underline;text-underline-offset:3px;padding:2px}
+.lg-resend{margin:2px 0 0;font-size:14px;color:var(--faint);text-align:center}
+.lg-skip{justify-self:center;font-size:14px;color:var(--muted)}
+.lg-hi{margin:0;font-size:24px;font-weight:850;font-stretch:82%;color:var(--forest)}
+.lg-err{margin:14px 0 0;color:#b23c0a;font-size:14px;font-weight:600;line-height:1.4}
+.lg-err[hidden]{display:none}
+
+@media (max-width:640px){
+  .lg{place-items:end stretch;padding:0}
+  .lg-panel{grid-template-columns:1fr;min-height:0;border-radius:26px 26px 0 0;max-height:94dvh;transform:translateY(40px)}
+  .lg-side{padding:26px 22px 20px}
+  .lg-side h3{font-size:28px;margin-bottom:6px}
+  .lg-perks{display:none}
+  .lg-main{padding:24px 22px calc(26px + env(safe-area-inset-bottom,0px))}
+  .lg-x{top:-56px;right:14px;background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.3);color:#f4f8ef}
+}
+
+/* ---------- account strip in the checkout ---------- */
+.co-acct{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;margin:0 0 16px;padding:12px 16px;border-radius:14px;background:var(--panel-2,#f4f8ef);font-size:14.5px;line-height:1.4;color:var(--muted)}
+.co-acct b{color:var(--ink)}
+.co-acct .co-link{margin-left:auto}
+.co-saved{display:grid;gap:8px;margin:0 0 18px;padding:0;border:0}
+.co-saved legend{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.co-saved label{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border:1.5px solid var(--line);border-radius:14px;cursor:pointer;font-size:14px;font-weight:400;line-height:1.45;letter-spacing:normal;text-transform:none;color:var(--muted);background:#fff}
+.co-saved label:has(input:checked){border-color:var(--forest);background:#f7faf3}
+.co-saved input{flex:none;width:18px;height:18px;min-height:0;padding:0;margin:2px 0 0;accent-color:var(--forest)}
+.co-saved b{display:block;color:var(--ink)}
+.co-track{margin:14px 0 0;font-size:14.5px;color:var(--muted);text-align:center}
+.co-track a{color:var(--forest);font-weight:700}

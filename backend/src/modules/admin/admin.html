@@ -69,6 +69,8 @@ small{display:block;color:var(--faint);font-size:12.5px}
 .o-foot{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin-top:16px;padding-top:14px;border-top:1px solid var(--line)}
 .o-foot .wa{margin-left:auto;font-weight:700;color:var(--forest);font-size:14px}
 .hist{margin-top:10px;font-size:13px;color:var(--faint)}
+.step{font-weight:700;color:var(--forest)}
+.step::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--sage);margin-right:8px;vertical-align:1px}
 @media (max-width:760px){.o-grid{grid-template-columns:1fr}.o-head time{margin-left:0;width:100%}.o-foot .wa{margin-left:0}}
 </style>
 </head>
@@ -111,6 +113,14 @@ small{display:block;color:var(--faint);font-size:12.5px}
   const when = iso => iso ? new Date(iso).toLocaleString('en-IN', { day:'numeric', month:'short', hour:'numeric', minute:'2-digit' }) : '';
   const utrText = u => u ? u.replace(/(\d{4})(?=\d)/g, '$1 ') : '';
   const LABEL = { awaiting_payment:'Awaiting payment', verifying:'To verify', paid:'Paid', rejected:'Rejected' };
+  // after payment: packed -> shipped -> out for delivery -> delivered (the customer sees each step in My Orders)
+  const STEPS = ['packed', 'shipped', 'out_for_delivery', 'delivered'];
+  const STEP_LABEL = { packed:'Packed', shipped:'Shipped', out_for_delivery:'Out for delivery', delivered:'Delivered' };
+  function delivery(o){
+    const next = STEPS[STEPS.indexOf(o.deliveryStep) + 1];
+    return `<span class="step">${o.deliveryStep ? STEP_LABEL[o.deliveryStep] : 'Not packed yet'}</span>`
+      + (next ? `<button class="btn" data-act="delivery" data-step="${next}" data-ref="${o.ref}">Mark ${STEP_LABEL[next].toLowerCase()}</button>` : '');
+  }
   let token = null, status = 'verifying', orders = [], timer = 0;
   try { token = sessionStorage.getItem('tl-admin'); } catch(e){}
 
@@ -182,7 +192,7 @@ small{display:block;color:var(--faint);font-size:12.5px}
       ? `<button class="btn" data-act="confirm" data-ref="${o.ref}">Confirm payment</button><button class="btn bad" data-act="reject" data-ref="${o.ref}">Reject</button>`
       : o.status === 'awaiting_payment' ? `<button class="btn alt" data-act="confirm" data-ref="${o.ref}">Mark paid (enter UTR)</button>`
       : o.status === 'rejected' ? `<button class="btn alt" data-act="confirm" data-ref="${o.ref}">Confirm anyway</button>`
-      : `<span class="none">Paid ${esc(when(o.paidAt))}${o.payment ? ` by ${o.payment.method === 'card' ? 'card' : 'UPI'} · Razorpay` : ''}</span>`;
+      : `<span class="none">Paid ${esc(when(o.paidAt))}${o.payment ? ` by ${o.payment.method === 'card' ? 'card' : 'UPI'} · Razorpay` : ''}</span>${delivery(o)}`;
     const pay = o.payment;
     // Razorpay payments come with Razorpay's payment ID (and, for UPI, the UTR from the bank); payments to TranzLife's own QR code with the UTR the customer sent
     const paidHow = pay
@@ -225,6 +235,12 @@ small{display:block;color:var(--faint);font-size:12.5px}
     const b = e.target.closest('[data-act]'); if (!b) return;
     const o = orders.find(x => x.ref === b.dataset.ref); if (!o) return;
     let body = {};
+    if (b.dataset.act === 'delivery'){
+      b.disabled = true;
+      try { await api(`/orders/${o.ref}/delivery`, { step:b.dataset.step }); say(`${o.ref}: ${STEP_LABEL[b.dataset.step].toLowerCase()}. The customer sees it in My Orders.`); load(true); }
+      catch(ex){ say(ex.message); b.disabled = false; }
+      return;
+    }
     if (b.dataset.act === 'confirm'){
       if (o.utr && o.status === 'verifying'){
         if (!confirm(`Have you found UTR ${utrText(o.utr)} for ${inr(o.total)} in your bank or UPI app?`)) return;

@@ -5,8 +5,8 @@ node_modules/
 dist/
 dist-single/
 
-# payment server order file (holds customer details)
-server/data/
+# local database of the backend (holds customer details and orders)
+backend/.data/
 
 # local environment (copy .env.example to .env)
 .env
@@ -22,3 +22,5 @@ Thumbs.db
 .idea/
 .vscode/
 __pycache__/
+
+.vercel

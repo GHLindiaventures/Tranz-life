@@ -7,7 +7,8 @@
 // ("company" QR), and the customer sends the UTR, which TranzLife checks on the admin page.
 //
 // Two providers behind one interface:
-//   live: the TranzLife payment server (server/). Used when VITE_PAYMENT_API is set.
+//   live: the TranzLife backend (backend/). Used when VITE_PAYMENT_API is set. Sends the login cookie, so a logged-in
+//         customer's order goes to their account (My Orders).
 //   demo: the same flow inside the browser, with no server and no money.
 //
 //   methods                          -> payment tabs: ['upi', 'card']
@@ -97,8 +98,8 @@ function liveGateway(api){
   async function call(path, body){
     let res;
     try {
-      res = await fetch(api + path, body === undefined ? { cache:'no-store' }
-        : { method:'POST', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify(body) });
+      res = await fetch(api + path, body === undefined ? { cache:'no-store', credentials:'include' }
+        : { method:'POST', credentials:'include', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify(body) });
     } catch(err){ throw new PaymentError('network', 'We could not reach our server. Check your connection and try again.'); }
     const data = await res.json().catch(() => ({}));
     if (!res.ok) throw new PaymentError(data.code || 'failed', data.error || `Our server returned an error (${res.status}).`);

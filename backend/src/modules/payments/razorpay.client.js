@@ -1,12 +1,10 @@
-// Razorpay, for paying with a UPI app (Google Pay, PhonePe, Paytm, BHIM). Plain fetch, no SDK.
-// Razorpay reports each payment itself, so the customer never sends a UTR:
+// Razorpay's API, with plain fetch (no SDK). Razorpay reports each payment itself, so the customer never types a UTR:
 //   - the checkout's success response is signed with the key secret: HMAC-SHA256(order_id + "|" + payment_id)
 //   - webhooks are signed with the webhook secret over the raw request body (header X-Razorpay-Signature)
-//   - and the server can always ask Razorpay for an order's payments
+//   - and we can always ask Razorpay for an order's payments
 import { createHmac, timingSafeEqual } from 'node:crypto';
 
 const API = 'https://api.razorpay.com/v1';
-const KEY_PATTERN = /^rzp_(test|live)_[A-Za-z0-9]+$/;
 
 const hmacHex = (secret, data) => createHmac('sha256', secret).update(data).digest('hex');
 function sameText(a, b){
@@ -41,4 +39,4 @@ function createRazorpay({ keyId, keySecret, webhookSecret = '', fetchImpl = glob
   };
 }
 
-export { createRazorpay, KEY_PATTERN };
+export { createRazorpay };

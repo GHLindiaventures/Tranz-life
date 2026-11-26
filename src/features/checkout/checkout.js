@@ -18,6 +18,8 @@ import { $, $$ } from '../../utils/dom.js';
 import { inr } from '../../utils/format.js';
 import { priceOrder } from '../../utils/order.js';
 import { cardBrand, checkCustomer, formatCardNumber, formatExpiry, luhn, normaliseUtr, parseExpiry, validCvv } from '../../utils/payment.js';
+import { currentUser } from '../account/account-state.js';
+import { initCheckoutAccount, recordOrder } from './checkout-account.js';
 import { createGateway } from './gateway.js';
 import { qrSvg } from './qr-code.js';
 
@@ -57,6 +59,7 @@ const utrText = u => String(u ?? '').replace(/(\d{4})(?=\d)/g, '$1 ');
 let gw = null, box = null;
 // upiView: 'qr' (computer: Razorpay's QR code) | 'apps' (phone: UPI app buttons) | 'company' (TranzLife's own QR + UTR)
 let lines = [], customer = null, order = null, view = 'details', method = 'upi', upiView = 'qr';
+let accountStrip = null; // login offer / saved addresses at the top of the details step (checkout-account.js)
 let busy = false, payRun = 0, poll = 0, pollCheck = null, simClose = null, payCancel = null, lastFocus = null;
 let qrPay = null, qrTimer = 0, reorderTimer = 0, reorderRun = 0;
 
@@ -133,6 +136,8 @@ function template(){
     <div class="co-main">
       <form class="co-view co-details" data-view="details" novalidate>
         <h4 class="co-h" tabindex="-1">Where should we deliver?</h4>
+        <div class="co-acct" data-co-acct hidden></div>
+        <fieldset class="co-saved" data-co-saved hidden></fieldset>
         <div class="co-grid">
           ${field('name', 'Full name', { auto:'name', ph:'Your name', full:true })}
           ${field('phone', 'Mobile number', { type:'tel', auto:'tel-national', ph:'98765 43210', mode:'tel' })}
@@ -512,6 +517,7 @@ function ask(req){
 // ---------- step 3: submitted / confirmed ----------
 // st: { status:'paid'|'processing'|'verifying', utr, paymentId, via:'upi'|'card', paidWith }
 function placed(st){
+  recordOrder({ ...order, method:st.via, utr:st.utr }, st.status);
   renderDone(st); setView('done');
   document.dispatchEvent(new CustomEvent('tl:ordered', { detail:{ ref:order.ref, total:order.total, status:st.status, method:st.via } }));
   if (st.status !== 'paid') startPolling(st);
@@ -544,7 +550,8 @@ function renderDone({ status, utr, paymentId, via, paidWith }){
       <div class="full"><dt>Delivering to</dt><dd>${esc(c.name)}, ${esc(c.address)}, ${esc(c.city)}, ${esc(c.state)} ${esc(c.pincode)} · +91 ${esc(c.phone)}</dd></div>
     </dl>
     ${demo && paid ? '<p class="co-note co-test-note"><b>Test payment</b><span>No money moved.</span></p>' : ''}
-    <button class="btn-cream co-cta" type="button" data-co-close><span>Continue shopping</span><i aria-hidden="true">→</i></button>`;
+    <button class="btn-cream co-cta" type="button" data-co-close><span>Continue shopping</span><i aria-hidden="true">→</i></button>
+    ${currentUser() ? `<p class="co-track">Follow its delivery any time in <a href="account.html#orders/${esc(o.ref)}">My Orders</a>.</p>` : ''}`;
 }
 
 // asks the server every few seconds whether the payment has been confirmed (or, for a UTR, rejected)
@@ -587,6 +594,7 @@ function build(){
   box.innerHTML = template();
   document.body.appendChild(box);
 
+  accountStrip = initCheckoutAccount($('.co-details', box));
   $('.co-details', box).addEventListener('submit', submitDetails);
   $('.co-details', box).addEventListener('input', e => { if (e.target.name) setFieldErr(e.target.name, ''); });
   $('.co-utr', box).addEventListener('submit', sendUtr);
@@ -655,6 +663,7 @@ function openCheckout(bagLines){
   lines = bagLines.map(l => ({ ...l })); order = null; payRun++; stopPolling();
   renderSummary(priced);
   showErr(''); setView('details');
+  accountStrip.refresh();
   lastFocus = document.activeElement;
   box.hidden = false; document.documentElement.classList.add('co-open');
   requestAnimationFrame(() => box.classList.add('open'));

@@ -2,7 +2,7 @@
   "name": "tranzlife-web",
   "version": "1.0.0",
   "private": true,
-  "description": "TranzLife Biosciences marketing and shop website: 3D product scenes, pinned scroll story, molecule pipeline, with a UPI and QR code checkout.",
+  "description": "TranzLife Biosciences marketing and shop website: 3D product scenes, pinned scroll story, molecule pipeline, customer accounts and a UPI and card checkout. The API is in backend/.",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -10,7 +10,9 @@
     "build:single": "vite build --mode single",
     "preview": "vite preview",
     "test": "vitest run",
-    "server": "node server/index.js"
+    "backend": "npm --prefix backend run dev",
+    "backend:install": "npm --prefix backend install",
+    "backend:test": "npm --prefix backend test"
   },
   "dependencies": {
     "gsap": "3.12.5",
