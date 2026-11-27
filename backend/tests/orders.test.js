@@ -6,7 +6,7 @@ const api = useTestApi();
 
 describe('checkout', () => {
   it('prices the order on the server and returns a UPI link to the merchant UPI ID', async () => {
-    const res = await api.post('/api/orders', { items:[{ id:'inhaler', qty:2, price:1 }], customer, total:1 });
+    const res = await api.placeOrder({ items:[{ id:'inhaler', qty:2, price:1 }], customer, total:1 });
     expect(res.status).toBe(201);
     const o = await res.json();
     expect(o.total).toBe(249 * 2 + 49);
@@ -17,27 +17,34 @@ describe('checkout', () => {
     expect(await api.status(o.ref)).toEqual({ ref:o.ref, status:'awaiting_payment', total:547, utr:null, reason:null, paymentId:null });
   });
 
-  it('stores the order, its items and its first event in the database', async () => {
+  it('needs a logged-in customer', async () => {
+    const res = await api.post('/api/orders', { items:[{ id:'inhaler', qty:1 }], customer });
+    expect(await api.json(res)).toMatchObject({ status:401, code:'auth', error:expect.stringMatching(/log in/) });
+    expect(await api.db.query('SELECT ref FROM orders')).toEqual([]);
+  });
+
+  it("stores the order (in the customer's account), its items and its first event in the database", async () => {
     const o = await api.newOrder([{ id:'inhaler', qty:2 }, { id:'gummies', qty:1 }]);
     const row = await api.db.one('SELECT status, total, customer_id, ship_city FROM orders WHERE ref = $1', [o.ref]);
-    expect(row).toEqual({ status:'awaiting_payment', total:249 * 2 + 549, customer_id:null, ship_city:'Bengaluru' });
+    const { id } = await api.db.one("SELECT id FROM customers WHERE phone = '9000000001'");
+    expect(row).toEqual({ status:'awaiting_payment', total:249 * 2 + 549, customer_id:id, ship_city:'Bengaluru' });
     expect(await api.db.query('SELECT product_id, qty FROM order_items WHERE order_ref = $1 ORDER BY product_id', [o.ref]))
       .toEqual([{ product_id:'gummies', qty:1 }, { product_id:'inhaler', qty:2 }]);
     expect((await api.db.query('SELECT type FROM order_events WHERE order_ref = $1', [o.ref])).map(e => e.type)).toEqual(['placed']);
   });
 
   it('refuses bad bags and bad delivery details', async () => {
-    expect((await api.post('/api/orders', { items:[{ id:'nope', qty:1 }], customer })).status).toBe(400);
-    const res = await api.post('/api/orders', { items:[{ id:'inhaler', qty:1 }], customer:{ ...customer, pincode:'12' } });
+    expect((await api.placeOrder({ items:[{ id:'nope', qty:1 }], customer })).status).toBe(400);
+    const res = await api.placeOrder({ items:[{ id:'inhaler', qty:1 }], customer:{ ...customer, pincode:'12' } });
     expect(res.status).toBe(400);
     expect((await res.json()).error).toMatch(/PIN/);
-    expect((await api.post('/api/orders', 'not json')).status).toBe(400);
+    expect((await api.placeOrder('not json')).status).toBe(400);
     expect((await fetch(api.base + '/api/orders', { method:'POST', body:'items=1' })).status).toBe(415);
   });
 
   it('takes no orders until a payment method is set', async () => {
     api.use({ env:{ MERCHANT_UPI_ID:'' } });
-    expect((await api.post('/api/orders', { items:[{ id:'inhaler', qty:1 }], customer })).status).toBe(503);
+    expect((await api.placeOrder({ items:[{ id:'inhaler', qty:1 }], customer })).status).toBe(503);
   });
 
   it('accepts a 12-digit UTR and moves the order to verifying', async () => {

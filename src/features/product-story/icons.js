@@ -8,7 +8,8 @@ const ICONS = {
   spark:'<path d="M13 2L4 14h7l-1 8 9-12h-7z"/>',
   flower:'<circle cx="12" cy="10" r="2.2"/><path d="M12 7.8C10 4 14 4 12 7.8M14.2 10c3.8-2 3.8 2 0 0M12 12.2c2 3.8-2 3.8 0 0M9.8 10C6 12 6 8 9.8 10"/><path d="M12 13v8M12 18c2-2 4-2 5-1"/>',
   foot:'<path d="M9 21c-2.5 0-3.5-2-3.5-4.5S7 11 7 8.5 8 5 10 5s2.5 2 2.5 4-1 4-1 6 1 2 1 3-1 3-3.5 3z"/><circle cx="15" cy="5" r="1.1"/><circle cx="17.2" cy="7.2" r="1"/><circle cx="18.2" cy="10" r=".9"/><circle cx="13.4" cy="3.2" r="1.2"/>',
-  drop:'<path d="M12 3c3.5 4.5 6 7.6 6 10.8a6 6 0 0 1-12 0C6 10.6 8.5 7.5 12 3z"/><path d="M9.5 14.5a2.6 2.6 0 0 0 2.5 2.5"/>'
+  drop:'<path d="M12 3c3.5 4.5 6 7.6 6 10.8a6 6 0 0 1-12 0C6 10.6 8.5 7.5 12 3z"/><path d="M9.5 14.5a2.6 2.6 0 0 0 2.5 2.5"/>',
+  sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/>'
 };
 
 const icon = (k, cls = '') => `<svg class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[k]}</svg>`;

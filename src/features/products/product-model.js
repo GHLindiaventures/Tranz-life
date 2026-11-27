@@ -13,7 +13,6 @@ import { attachGummies } from './gummy-pour.js';
 import liverGlbUrl from '../../assets/products/liver-booster.glb?url';
 import cycleReliefGlbUrl from '../../assets/products/cyclerelief.glb?url';
 import lungBoosterGlbUrl from '../../assets/products/lungbooster.glb?url';
-import energyGlbUrl from '../../assets/products/energy-booster.glb?url';   // scripts/add_energy_threads.mjs
 
 const V2 = (x, y) => new THREE.Vector2(x, y);
 const lin = hex => new THREE.Color(hex).convertSRGBToLinear();
@@ -279,7 +278,6 @@ const HD_LOADERS = {
   gummies: () => import('../../assets/products/lungbooster-hd.glb?url').then(m => m.default),
   rollon: () => import('../../assets/products/cyclerelief-hd.glb?url').then(m => m.default),
   liver: () => import('../../assets/products/liver-booster-hd.glb?url').then(m => m.default),
-  energy: () => import('../../assets/products/energy-booster-hd.glb?url').then(m => m.default),
 };
 
 function disposeObject(obj) {
@@ -489,8 +487,8 @@ const DRAWN = { jar:gummiesJar, inhaler:breatheFreeInhaler, rollon:calmRollOn, r
 const SCANNED = { ...DRAWN,
   jar:withGlb(() => ({ G: new THREE.Group(), h: 4.0 }), lungBoosterGlbUrl),
   rollon:withGlb(calmRollOn, cycleReliefGlbUrl),
-  liver:withGlb(liverBottle, liverGlbUrl),
-  energy:withGlb(energyBottle, energyGlbUrl) };
+  liver:withGlb(liverBottle, liverGlbUrl) };
+// (Energy Booster stays the drawn amber bottle with the real label everywhere: its .glb files show an older wood-cap design.)
 let scanned = true;
 function useScannedModels(on = true){ scanned = on; }
 

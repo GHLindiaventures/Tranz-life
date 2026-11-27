@@ -104,6 +104,33 @@ const DETAILS = {
     closingTitle: 'Making liver health a priority',
     closing: 'Liver health begins with everyday habits: a balanced diet, regular physical activity, limiting alcohol, maintaining a healthy weight and following medical advice about medicines.',
     note: 'Liver wellness products should not replace a balanced lifestyle, appropriate medical assessment or prescribed treatment. Consult a qualified healthcare professional if you have concerns about liver function.'
+  },
+
+  // From the Energy Booster brochure (a draft marketing aid): wellness positioning only, no treatment claims.
+  energy: {
+    eyebrow: 'Herbal & Bioactive Wellness Formulation',
+    title: 'TranzLife Energy Booster',
+    tagline: 'Natural Wellness Formulation. Nature, Science, Wellness.',
+    intro: [
+      'TranzLife Energy Booster is a convenient oral liquid designed to complement an active lifestyle and an everyday wellness routine.',
+      'It combines selected botanical and mineral ingredients in a ready-to-use liquid, for adults seeking to complement their daily energy, activity and general well-being.'
+    ],
+    highlightsTitle: 'Designed for active days',
+    highlights: [
+      ['Botanical-inspired formula', 'Selected botanical and mineral ingredients in a ready-to-use liquid format.'],
+      ['Everyday energy & activity', 'For adults seeking to complement daily energy, activity and general well-being.'],
+      ['A simple, measured routine', '7.5 ml twice daily, or as advised by a healthcare professional.'],
+      ['500 ml oral liquid', 'With a measuring device in the pack. Follow the directions on the label.']
+    ],
+    listTitle: 'Key ingredients',
+    list: [
+      ['Ruta graveolens (Q)', 'Botanical ingredient'],
+      ['Hecla lava (3X)', 'Mineral-origin preparation'],
+      ['Symphytum officinale (Q)', 'Botanical ingredient'],
+      ['Calcarea phosphorica (8X)', 'Mineral-origin preparation'],
+      ['Echinacea angustifolia (Q)', 'Botanical ingredient']
+    ],
+    note: 'Use only as directed and do not exceed the recommended serving. Consult a qualified healthcare professional before use if pregnant, breastfeeding, taking medication or managing a health condition. Keep out of reach of children.'
   }
 };
 

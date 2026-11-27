@@ -1,9 +1,9 @@
-// Profile information on the account page: name, gender and email. The mobile number is how the customer logs in,
-// so it is shown but not edited here.
+// Profile information on the account page: name, gender and contact email. The mobile number or email address the
+// customer logs in with is shown but not edited here.
 import { toast } from '../../components/toast.js';
 import { $ } from '../../utils/dom.js';
 import { esc } from '../../utils/html.js';
-import { account, currentUser, setUser } from './account-state.js';
+import { account, currentUser, loginLabel, setUser } from './account-state.js';
 import { showFieldError } from './form-errors.js';
 
 function renderProfile(main){
@@ -15,7 +15,7 @@ function renderProfile(main){
       <div class="ac-field full"><label for="pf-name">Full name</label><input id="pf-name" name="name" autocomplete="name" maxlength="80" value="${esc(u.name)}"><small class="ac-ferr" data-for="name"></small></div>
       <fieldset class="ac-field full"><legend>Gender</legend><div class="ac-radios">${gender('female', 'Female')}${gender('male', 'Male')}${gender('', 'Prefer not to say')}</div></fieldset>
       <div class="ac-field full"><label for="pf-email">Email address</label><input id="pf-email" name="email" type="email" autocomplete="email" maxlength="120" value="${esc(u.email)}" placeholder="you@example.com"><small class="ac-ferr" data-for="email"></small></div>
-      <div class="ac-field full"><label for="pf-phone">Mobile number</label><input id="pf-phone" value="+91 ${esc(u.phone)}" readonly><small class="ac-hint">You log in with this number.</small></div>
+      <div class="ac-field full"><label for="pf-login">You log in with</label><input id="pf-login" value="${esc(loginLabel(u))}" readonly><small class="ac-hint">Your ${u.phone ? 'mobile number' : 'email address'}: we send your login code here.</small></div>
       <button class="ac-btn" type="submit">Save changes</button>
     </form>`;
 

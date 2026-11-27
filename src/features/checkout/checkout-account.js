@@ -1,11 +1,13 @@
-// The account strip at the top of the checkout's delivery step. Login is optional: guests just fill in the form.
-//   logged out: "Log in to use your saved addresses and keep this order in My Orders" with a Log in button
-//   logged in:  the saved addresses to pick from; the default one is filled in, and the order goes to My Orders
+// The account strip at the top of the checkout's delivery step. The checkout opens only for a logged-in customer
+// (features/cart/cart.js asks them to log in first), so normally it shows:
+//   the saved addresses to pick from, with the default one filled in (or, with none saved yet, the name, mobile number
+//   and email from their account), and that the order goes to My Orders
+// If they log out in another tab meanwhile, it asks them to log in again before the order can be placed.
 // initCheckoutAccount(form) -> { refresh() }   refresh() when the checkout opens
 // recordOrder(order, status) keeps a test-mode order in My Orders (the real backend links orders by itself)
 import { $ } from '../../utils/dom.js';
 import { esc } from '../../utils/html.js';
-import { account, currentUser, loginMode, onUser } from '../account/account-state.js';
+import { account, currentUser, loginLabel, loginMode, onUser } from '../account/account-state.js';
 import { openLogin } from '../account/login-dialog.js';
 
 const ADDRESS_FIELDS = ['name', 'phone', 'address', 'city', 'state', 'pincode'];
@@ -29,8 +31,8 @@ function initCheckoutAccount(form){
     const mode = loginMode();
     bar.hidden = !user && !mode;
     bar.innerHTML = user
-      ? `<span>Logged in as <b>${esc(user.name || `+91 ${user.phone}`)}</b>. This order will be in My Orders.</span>`
-      : `<span>Have an account? Log in to use your saved addresses and keep this order in My Orders.</span><button class="co-link" type="button" data-co-login>Log in</button>`;
+      ? `<span>Logged in as <b>${esc(user.name || loginLabel(user))}</b>. This order will be in My Orders.</span>`
+      : `<span>Please log in to place your order. It is saved in your account and delivered to your address.</span><button class="co-link" type="button" data-co-login>Log in</button>`;
     const list = user?.addresses || [];
     saved.hidden = !list.length;
     const radio = (value, body) => `<label><input type="radio" name="savedAddress" value="${esc(value)}"${picked === value ? ' checked' : ''}><span>${body}</span></label>`;
@@ -39,12 +41,14 @@ function initCheckoutAccount(form){
       ${radio('', '<b>A new address</b>Type it below')}` : '';
   }
 
-  // logged in with an empty form: start from the default address
+  // logged in with an empty form: start from the default address, or (no address saved yet) from the profile, so a new
+  // customer only types the address. Someone who logged in with their email types their mobile number here.
   function useDefault(user){
-    const def = user?.addresses?.find(a => a.isDefault) || user?.addresses?.[0];
-    if (!def || !formIsEmpty()) return;
-    fill(def, user);
-    draw(user);
+    if (!user || !formIsEmpty()) return;
+    const def = user.addresses?.find(a => a.isDefault) || user.addresses?.[0];
+    if (def){ fill(def, user); draw(user); return; }
+    const known = { name:user.name, phone:user.phone, email:user.email };
+    Object.entries(known).forEach(([k, v]) => { if (v && !field(k).value) field(k).value = v; });
   }
 
   function refresh(){

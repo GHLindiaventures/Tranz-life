@@ -1,41 +1,54 @@
-// The login window, like a big shop's: (1) mobile number, (2) the 6-digit code sent by SMS, which verifies by itself
-// once all six digits are in, (3) for a new customer, their name. No passwords.
+// The login window, like a big shop's: (1) mobile number, or email address ("Use email instead"), (2) the 6-digit
+// code sent by SMS or email, which verifies by itself once all six digits are in, (3) for a new customer, their name.
+// No passwords.
 //   openLogin({ reason }) -> Promise of the logged-in customer, or null when the window is closed
+//   requireLogin(reason)  -> the logged-in customer, opening the window first when nobody is logged in
 import { state } from '../../app/state.js';
 import { toast } from '../../components/toast.js';
 import { $, $$ } from '../../utils/dom.js';
 import { esc } from '../../utils/html.js';
-import { account, setUser } from './account-state.js';
+import { account, currentUser, emailLogin, loginMode, ready, setUser } from './account-state.js';
 
+const REASON = 'Get to your orders, saved addresses and a faster checkout.';
+const HELP = {
+  phone:"We'll text you a 6-digit code. New here? The same code creates your account.",
+  email:"We'll email you a 6-digit code. New here? The same code creates your account."
+};
 const spaced = phone => `+91 ${phone.slice(0, 5)} ${phone.slice(5)}`;
 
-let box = null, phone = '', user = null, busy = false, countdown = 0, resolveOpen = null, lastFocus = null;
+let box = null, method = 'phone', login = null, user = null, busy = false, countdown = 0, resolveOpen = null, lastFocus = null;
 
 function template(){
   return `
   <div class="lg-scrim" data-lg-close></div>
   <div class="lg-panel" role="dialog" aria-modal="true" aria-labelledby="lgTitle" data-lenis-prevent>
+    <button class="lg-x" type="button" data-lg-close aria-label="Close login">×</button>
     <aside class="lg-side">
       <h3 id="lgTitle">Login</h3>
-      <p data-lg-reason>Get to your orders, saved addresses and a faster checkout.</p>
+      <p data-lg-reason>${REASON}</p>
       <ul class="lg-perks">
         <li>Track every order, step by step</li>
         <li>Saved delivery addresses</li>
-        <li>No password: a code by SMS</li>
+        <li data-lg-perk>No password: a code by SMS</li>
       </ul>
     </aside>
     <div class="lg-main">
-      <button class="lg-x" type="button" data-lg-close aria-label="Close login">×</button>
-
-      <form class="lg-step" data-step="phone" novalidate>
-        <label class="lg-label" for="lg-phone">Mobile number</label>
-        <div class="lg-phone"><span aria-hidden="true">+91</span><input id="lg-phone" type="tel" inputmode="numeric" autocomplete="tel-national" maxlength="14" placeholder="98765 43210" aria-describedby="lg-phone-help"></div>
-        <p class="lg-fine" id="lg-phone-help">We'll text you a 6-digit code. New here? The same code creates your account.</p>
+      <form class="lg-step" data-step="start" novalidate>
+        <div class="lg-by" data-by="phone">
+          <label class="lg-label" for="lg-phone">Mobile number</label>
+          <div class="lg-phone"><span aria-hidden="true">+91</span><input id="lg-phone" type="tel" inputmode="numeric" autocomplete="tel-national" maxlength="14" placeholder="98765 43210" aria-describedby="lg-help"></div>
+        </div>
+        <div class="lg-by" data-by="email" hidden>
+          <label class="lg-label" for="lg-mail">Email address</label>
+          <input id="lg-mail" class="lg-input" type="email" inputmode="email" autocomplete="email" maxlength="120" placeholder="you@example.com" aria-describedby="lg-help">
+        </div>
+        <button class="lg-switch" type="button" data-lg-switch hidden></button>
+        <p class="lg-fine" id="lg-help" data-lg-help>${HELP.phone}</p>
         <button class="lg-cta" type="submit">Request code</button>
       </form>
 
       <form class="lg-step" data-step="code" novalidate hidden>
-        <p class="lg-sent">Enter the code sent to <b data-lg-phone></b> <button type="button" class="lg-link" data-lg-change>Change</button></p>
+        <p class="lg-sent">Enter the code sent to <b data-lg-to></b> <button type="button" class="lg-link" data-lg-change>Change</button></p>
         <label class="sr" for="lg-code">6-digit code</label>
         <input id="lg-code" class="lg-code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="······">
         <p class="lg-test" data-lg-test hidden></p>
@@ -47,8 +60,10 @@ function template(){
         <p class="lg-hi">Welcome to TranzLife!</p>
         <label class="lg-label" for="lg-name">What should we call you?</label>
         <input id="lg-name" class="lg-input" autocomplete="name" maxlength="80" placeholder="Your full name">
-        <label class="lg-label" for="lg-email">Email <small>(optional, for order updates)</small></label>
-        <input id="lg-email" class="lg-input" type="email" autocomplete="email" maxlength="120" placeholder="you@example.com">
+        <div class="lg-by" data-lg-contact>
+          <label class="lg-label" for="lg-email">Email <small>(optional, for order updates)</small></label>
+          <input id="lg-email" class="lg-input" type="email" autocomplete="email" maxlength="120" placeholder="you@example.com">
+        </div>
         <button class="lg-cta" type="submit">Continue</button>
         <button class="lg-link lg-skip" type="button" data-lg-skip>Skip for now</button>
       </form>
@@ -67,8 +82,20 @@ function setBusy(on){
 function showStep(name){
   $$('.lg-step', box).forEach(f => { f.hidden = f.dataset.step !== name; });
   showError('');
-  const first = $(`[data-step="${name}"] input`, box);
+  const first = $$(`[data-step="${name}"] input`, box).find(i => !i.closest('[hidden]'));
   setTimeout(() => first?.focus(), 30);
+}
+
+// mobile number or email address on the first step
+function useMethod(next){
+  method = next;
+  $$('[data-by]', box).forEach(el => { el.hidden = el.dataset.by !== method; });
+  const sw = $('[data-lg-switch]', box);
+  sw.hidden = !emailLogin();
+  sw.textContent = method === 'phone' ? 'Use email instead' : 'Use mobile number instead';
+  $('[data-lg-help]', box).textContent = HELP[method];
+  showError('');
+  setTimeout(() => $(method === 'phone' ? '#lg-phone' : '#lg-mail', box).focus(), 30);
 }
 
 function startCountdown(seconds){
@@ -88,12 +115,13 @@ async function requestCode(e){
   e?.preventDefault(); if (busy) return;
   setBusy(true); showError('');
   try {
-    const r = await account.requestCode(phone || $('#lg-phone', box).value);
-    phone = r.phone;
-    $('[data-lg-phone]', box).textContent = spaced(phone);
+    const ask = login || (method === 'email' ? { email:$('#lg-mail', box).value } : { phone:$('#lg-phone', box).value });
+    const r = await account.requestCode(ask);
+    login = r.kind === 'email' ? { email:r.to } : { phone:r.to };
+    $('[data-lg-to]', box).textContent = r.kind === 'email' ? r.to : spaced(r.to);
     const test = $('[data-lg-test]', box);
     test.hidden = !r.testCode;
-    if (r.testCode) test.innerHTML = `<b>Test mode</b> No SMS is sent. Your code is <code>${esc(r.testCode)}</code>`;
+    if (r.testCode) test.innerHTML = `<b>Test mode</b> No ${r.kind === 'email' ? 'email' : 'SMS'} is sent. Your code is <code>${esc(r.testCode)}</code>`;
     $('#lg-code', box).value = '';
     showStep('code'); startCountdown(r.resendIn || 30);
   } catch(err){ showError(err.message); }
@@ -106,10 +134,11 @@ async function verifyCode(e){
   if (input.value.length < 6) return showError('Enter all 6 digits of the code.');
   setBusy(true); showError('');
   try {
-    const r = await account.verifyCode(phone, input.value);
+    const r = await account.verifyCode(login, input.value);
     user = setUser(r.user);
-    if (!user.name) showStep('name');
-    else finish(`Welcome back, ${user.name.split(' ')[0]}`);
+    if (user.name) return finish(`Welcome back, ${user.name.split(' ')[0]}`);
+    $('[data-lg-contact]', box).hidden = !!user.loginEmail; // they logged in with their email: no need to ask for it
+    showStep('name');
   } catch(err){
     showError(err.message); input.value = ''; input.focus();
   } finally { setBusy(false); }
@@ -119,7 +148,8 @@ async function saveName(e){
   e.preventDefault(); if (busy) return;
   setBusy(true); showError('');
   try {
-    user = setUser(await account.saveProfile({ name:$('#lg-name', box).value, email:$('#lg-email', box).value, gender:user.gender }));
+    const email = user.loginEmail ? user.email : $('#lg-email', box).value;
+    user = setUser(await account.saveProfile({ name:$('#lg-name', box).value, email, gender:user.gender }));
     finish(`Welcome, ${user.name.split(' ')[0]}`);
   } catch(err){ showError(err.message); }
   finally { setBusy(false); }
@@ -156,14 +186,15 @@ function build(){
   box = document.createElement('div');
   box.className = 'lg'; box.hidden = true; box.innerHTML = template();
   document.body.appendChild(box);
-  $('[data-step="phone"]', box).addEventListener('submit', requestCode);
+  $('[data-step="start"]', box).addEventListener('submit', requestCode);
   $('[data-step="code"]', box).addEventListener('submit', verifyCode);
   $('[data-step="name"]', box).addEventListener('submit', saveName);
   $('#lg-code', box).addEventListener('input', e => {
     e.target.value = e.target.value.replace(/\D/g, '').slice(0, 6);
     if (e.target.value.length === 6) verifyCode();
   });
-  $('[data-lg-change]', box).addEventListener('click', () => { clearInterval(countdown); phone = ''; showStep('phone'); });
+  $('[data-lg-switch]', box).addEventListener('click', () => useMethod(method === 'phone' ? 'email' : 'phone'));
+  $('[data-lg-change]', box).addEventListener('click', () => { clearInterval(countdown); login = null; showStep('start'); useMethod(method); });
   $('[data-lg-resend]', box).addEventListener('click', () => requestCode());
   $('[data-lg-skip]', box).addEventListener('click', () => finish(''));
   box.addEventListener('click', e => { if (e.target.closest('[data-lg-close]')) close(); });
@@ -173,16 +204,26 @@ function build(){
 function openLogin({ reason } = {}){
   if (!box) build();
   close(); // a window already open settles as closed
-  phone = ''; user = null;
-  $('#lg-phone', box).value = ''; $('#lg-name', box).value = ''; $('#lg-email', box).value = '';
-  $('[data-lg-reason]', box).textContent = reason || 'Get to your orders, saved addresses and a faster checkout.';
+  login = null; user = null;
+  ['#lg-phone', '#lg-mail', '#lg-name', '#lg-email'].forEach(id => { $(id, box).value = ''; });
+  $('[data-lg-reason]', box).textContent = reason || REASON;
+  $('[data-lg-perk]', box).textContent = emailLogin() ? 'No password: a code by SMS or email' : 'No password: a code by SMS';
   lastFocus = document.activeElement;
   box.hidden = false;
   document.documentElement.classList.add('lg-open');
   requestAnimationFrame(() => box.classList.add('open'));
   state.lenis?.stop();
-  showStep('phone');
+  showStep('start');
+  useMethod('phone');
   return new Promise(resolve => { resolveOpen = resolve; });
 }
 
-export { openLogin };
+// the logged-in customer; asks them to log in first when nobody is. Null when they close the window, or when login is
+// not available (then nothing that needs an account, like checking out, can go ahead).
+async function requireLogin(reason){
+  await ready;
+  if (currentUser()) return currentUser();
+  return loginMode() ? openLogin({ reason }) : null;
+}
+
+export { openLogin, requireLogin };

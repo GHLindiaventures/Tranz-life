@@ -13,7 +13,7 @@ function buildGrid(){
     <article class="pc" data-cat="${p.cat}" style="--c:${STORY[i].c}">
       <div class="pc-media">${thumbImg(p)}<span class="pc-tag">${p.tag}</span><button class="pc-view" type="button" data-design="${p.id}">View design <i aria-hidden="true">↗</i></button></div>
       <div class="pc-body">
-        <p class="pc-no">${p.no} / 05</p>
+        <p class="pc-no">${p.no} / ${String(PRODUCTS.length).padStart(2, '0')}</p>
         <h3>${p.name}</h3>
         <p class="pc-d">${p.desc}</p>
         <ul class="pc-ing">${p.ing.map(x => `<li>${x}</li>`).join('')}</ul>

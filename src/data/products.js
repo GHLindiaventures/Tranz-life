@@ -83,30 +83,26 @@ export const PRODUCTS = [
     fit: 1.14,
     barcode: '8906132540130',
     dosage: 'Adults: 10 ml (2 tsp) twice daily after meals'
-  }
-];
-
-// Products with their own page (product-details.html?id=...) that are not in the Products page 3D showcase or grid:
-// the Home hero, the lineup and the Products page build a 3D model for every entry in PRODUCTS above.
-// Energy Booster: from the draft brochure (TranzLife_Energy_Booster_Brochure.pdf). Product photo: assets/products/energy.webp. No price yet:
-// price null shows "Price to be announced" and an enquiry button instead of Add to bag.
-export const EXTRA_PRODUCTS = [
+  },
   {
     id: 'energy',
     no: '06',
     short: 'Energy Booster',
+    // From the Energy Booster brochure (a draft marketing aid: no treatment claims). The brochure has no price: ₹649, the
+    // same as the other 500 ml liquid, until the client confirms the MRP. Photo and cut-out: scripts/make-energy-assets.py.
     name: 'TranzLife Energy Booster',
     cat: 'liquid',
     tag: 'Energy & Vitality',
-    price: null,
+    price: 649,
     size: '500 ml Oral Liquid',
-    desc: 'Herbal & bioactive wellness formulation. A convenient oral liquid designed to complement an active lifestyle and everyday wellness routine.',
+    desc: 'A herbal and bioactive oral liquid with selected botanical and mineral ingredients, designed to complement an active lifestyle and your everyday energy, activity and well-being.',
     ing: ['Ruta graveolens (Q)', 'Hecla lava (3X)', 'Symphytum officinale (Q)', 'Calcarea phosphorica (8X)', 'Echinacea angustifolia (Q)'],
     model: 'energy',
     fit: 1.18,
     dosage: '7.5 ml twice daily, or as advised by a healthcare professional'
   }
 ];
+
 
 // R&D Breakthrough Discoveries
 export const RD_PROGRAMS = [

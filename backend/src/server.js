@@ -26,8 +26,8 @@ function printSummary({ config, db, razorpay, codes }){
   const say = line => console.log(`  ${line}`);
   console.log(`TranzLife API on http://localhost:${config.port}/api`);
   say(db.kind === 'postgres' ? 'Database: PostgreSQL (DATABASE_URL)' : `Database: local PostgreSQL in ${config.localDbDir}`);
-  if (codes?.name === 'twilio') say('Customer login: codes by SMS through Twilio Verify');
-  else if (codes?.name === 'test') say('Customer login: TEST MODE. Codes show on the login screen; anyone can log in as any number. Never use this on the live shop.');
+  if (codes?.name === 'twilio') say(`Customer login: codes by SMS${codes.email ? ' and by email' : ''} through Twilio Verify${codes.email ? '' : ' (email login off: see TWILIO_VERIFY_EMAIL)'}`);
+  else if (codes?.name === 'test') say('Customer login: TEST MODE (mobile and email). Codes show on the login screen; anyone can log in as anyone. Never use this on the live shop.');
   else say('Customer login: off. Set the TWILIO_ settings in backend/.env (or OTP_TEST_MODE=true to try it out).');
   if (razorpay) say(`Payments: Razorpay ${razorpay.mode === 'live' ? 'LIVE (real money)' : 'test mode (no real money)'}${razorpay.webhooks ? '' : '. Set RAZORPAY_WEBHOOK_SECRET so payments confirm even when the customer closes the page'}`);
   else say('Payments: Razorpay off. Set RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET.');

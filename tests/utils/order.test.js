@@ -10,6 +10,10 @@ describe('priceOrder', () => {
     expect(o.shipping).toBe(SHIPPING.fee);
     expect(o.total).toBe(498 + SHIPPING.fee);
   });
+  it('sells the Energy Booster at its catalogue price', () => {
+    const o = priceOrder([{ id:'energy', qty:1, price:1 }]);
+    expect(o.items).toEqual([{ id:'energy', name:'TranzLife Energy Booster', price:649, qty:1, total:649 }]);
+  });
   it('delivers free from the threshold up', () => {
     const o = priceOrder([{ id:'gummies', qty:1 }, { id:'reviva', qty:1 }, { id:'inhaler', qty:1 }]);
     expect(o.subtotal).toBeGreaterThanOrEqual(SHIPPING.freeFrom);

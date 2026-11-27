@@ -49,7 +49,7 @@ function createApp({ db, config, razorpay = null, codes = null, log = console })
   app.use(express.json({ limit:'64kb' }), jsonOnly);
   app.use('/api', loadCustomer(db));
   app.use('/api', authRoutes({ auth, customers, crossSite:!!config.allowedOrigin }));
-  app.use('/api', customersRoutes({ customers, loginMode }));
+  app.use('/api', customersRoutes({ customers, loginMode, emailLogin:!!codes?.email }));
   app.use('/api', ordersRoutes({ orders }));
   app.use('/api', adminRoutes({ db, orders, adminPassword:config.adminPassword, log }));
   app.use('/api', (req, res) => res.status(404).json({ code:'not_found', error:'Not found.' }));

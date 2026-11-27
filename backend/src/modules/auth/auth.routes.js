@@ -1,6 +1,6 @@
 // Customer login.
-//   POST /api/auth/otp      { phone }        -> { phone, resendIn, testCode? }   texts a code (test mode: returns it)
-//   POST /api/auth/verify   { phone, code }  -> { user, isNew }                  sets the login cookie
+//   POST /api/auth/otp      { phone } or { email }   -> { kind, to, resendIn, testCode? }   sends a code (test mode: returns it)
+//   POST /api/auth/verify   { phone or email, code } -> { user, isNew }                     sets the login cookie
 //   POST /api/auth/logout                    -> { ok }
 import { Router } from 'express';
 import { readCookie } from '../../lib/http.js';
@@ -10,11 +10,11 @@ function authRoutes({ auth, customers, crossSite }){
   const r = Router();
 
   r.post('/auth/otp', async (req, res) => {
-    res.json(await auth.requestCode(req.body.phone, req.ip));
+    res.json(await auth.requestCode(req.body, req.ip));
   });
 
   r.post('/auth/verify', async (req, res) => {
-    const { customer, isNew, session } = await auth.verifyCode(req.body.phone, req.body.code);
+    const { customer, isNew, session } = await auth.verifyCode(req.body);
     setLoginCookie(req, res, session, crossSite);
     res.json({ user:await customers.account(customer), isNew });
   });

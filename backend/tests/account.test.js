@@ -59,9 +59,9 @@ describe('address book', () => {
 });
 
 describe('My Orders', () => {
-  it("lists a logged-in customer's orders, saves the delivery address once, and leaves guest orders out", async () => {
+  it("lists a customer's own orders, saves the delivery address once, and leaves other customers' orders out", async () => {
     const cookie = await api.login();
-    await api.newOrder();                                        // guest order: not in the account
+    await api.newOrder();                                        // another customer's order: not in this account
     const a = await api.newOrder([{ id:'gummies', qty:1 }], cookie);
     const b = await api.newOrder([{ id:'inhaler', qty:3 }], cookie);
     const { orders } = await (await api.get('/api/me/orders', cookie)).json();

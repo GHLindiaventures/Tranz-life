@@ -4,9 +4,10 @@
 //         its test orders stay in this browser (localStorage). For trying the site out before the backend is live.
 //
 //   mode                        'live' | 'demo'
-//   me()                        -> { user, login }   user is null when logged out; login: 'twilio' | 'test' | 'demo' | null (off)
-//   requestCode(phone)          -> { phone, resendIn, testCode? }
-//   verifyCode(phone, code)     -> { user, isNew }
+//   me()                        -> { user, login, emailLogin }   user is null when logged out;
+//                                  login: 'twilio' | 'test' | 'demo' | null (off); emailLogin: codes by email work too
+//   requestCode(login)          -> { kind, to, resendIn, testCode? }   login: { phone } or { email }
+//   verifyCode(login, code)     -> { user, isNew }
 //   logout()
 //   saveProfile(profile)        -> user
 //   addAddress(a) / editAddress(id, a) / deleteAddress(id) / makeDefault(id) -> user
@@ -15,7 +16,7 @@
 //   recordOrder(order, status)  demo only: keeps a test checkout's order in My Orders
 // Failures reject with an AccountError { code, message, field? }.
 import { checkAddress, checkProfile } from '../../utils/account.js';
-import { normalisePhone } from '../../utils/payment.js';
+import { normalisePhone, validEmail } from '../../utils/payment.js';
 
 class AccountError extends Error {
   constructor(code, message, field){ super(message); this.name = 'AccountError'; this.code = code; this.field = field; }
@@ -37,8 +38,8 @@ function liveAccount(api){
   return {
     mode:'live',
     me:() => call('/me'),
-    requestCode:phone => call('/auth/otp', { phone }),
-    verifyCode:(phone, code) => call('/auth/verify', { phone, code }),
+    requestCode:login => call('/auth/otp', login),
+    verifyCode:(login, code) => call('/auth/verify', { ...login, code }),
     logout:() => call('/auth/logout', {}),
     saveProfile:p => user(call('/me', p)),
     addAddress:a => user(call('/me/addresses', a)),
@@ -72,35 +73,48 @@ function demoAccount(){
   const findAddress = (c, id) => c.addresses.find(a => a.id === id) || fail('not_found', 'That address is not in your account.');
   const firstError = errors => { const [field, msg] = Object.entries(errors)[0]; fail('invalid', msg, field); };
 
+  // { phone } or { email } -> { kind, key }; the key (the number or the address) is how this browser stores the account
+  function readLogin(login = {}){
+    if (login.email){
+      const email = String(login.email).trim().toLowerCase();
+      if (!validEmail(email)) fail('invalid', 'Enter a valid email address, like you@example.com.');
+      return { kind:'email', key:email };
+    }
+    return { kind:'phone', key:normalisePhone(login.phone) || fail('invalid', 'Enter a 10-digit Indian mobile number.') };
+  }
+
   return {
     mode:'demo',
-    me(){ const s = load(); return later({ user:(s.session && s.customers?.[s.session]) || null, login:'demo' }); },
+    me(){ const s = load(); return later({ user:(s.session && s.customers?.[s.session]) || null, login:'demo', emailLogin:true }); },
 
-    requestCode(input){
-      const phone = normalisePhone(input) || fail('invalid', 'Enter a 10-digit Indian mobile number.');
+    requestCode(login){
+      const { kind, key } = readLogin(login);
       const s = load(); s.codes ||= {};
-      const last = s.codes[phone];
+      const last = s.codes[key];
       const wait = last ? Math.ceil(RESEND_SECONDS - (Date.now() - last.sentAt) / 1000) : 0;
       if (wait > 0) fail('busy', `Please wait ${wait} seconds before asking for another code.`);
       const code = String(Math.floor(Math.random() * 1e6)).padStart(6, '0');
-      s.codes[phone] = { code, sentAt:Date.now(), expiresAt:Date.now() + CODE_MINUTES * 60e3, tries:0 };
+      s.codes[key] = { code, sentAt:Date.now(), expiresAt:Date.now() + CODE_MINUTES * 60e3, tries:0 };
       save(s);
-      return later({ phone, resendIn:RESEND_SECONDS, testCode:code });
+      return later({ kind, to:key, resendIn:RESEND_SECONDS, testCode:code });
     },
 
-    verifyCode(input, codeInput){
-      const phone = normalisePhone(input) || fail('invalid', 'Enter a 10-digit Indian mobile number.');
-      const s = load(), c = s.codes?.[phone], code = String(codeInput ?? '').replace(/\D/g, '');
+    verifyCode(login, codeInput){
+      const { kind, key } = readLogin(login);
+      const s = load(), c = s.codes?.[key], code = String(codeInput ?? '').replace(/\D/g, '');
       if (!c || c.expiresAt < Date.now()) fail('expired', 'This code has expired. Ask for a new one.');
       if (++c.tries > MAX_TRIES){ save(s); fail('too_many', 'Too many wrong codes. Ask for a new code.'); }
       if (c.code !== code){ save(s); fail('wrong_code', 'That code is not right. Check the code and try again.'); }
-      delete s.codes[phone];
+      delete s.codes[key];
       s.customers ||= {};
-      const isNew = !s.customers[phone];
-      if (isNew) s.customers[phone] = { id:`demo-${phone}`, phone, name:'', email:'', gender:'', memberSince:new Date().toISOString(), addresses:[] };
-      s.session = phone;
+      const isNew = !s.customers[key];
+      if (isNew){
+        s.customers[key] = { id:`demo-${key}`, phone:kind === 'phone' ? key : null, loginEmail:kind === 'email' ? key : null,
+          name:'', email:kind === 'email' ? key : '', gender:'', memberSince:new Date().toISOString(), addresses:[] };
+      }
+      s.session = key;
       save(s);
-      return later({ user:s.customers[phone], isNew });
+      return later({ user:s.customers[key], isNew });
     },
 
     logout(){ const s = load(); s.session = null; save(s); return later({ ok:true }); },
@@ -142,9 +156,9 @@ function demoAccount(){
       });
     },
 
-    orders(){ return withCustomer((c, s) => s.orders?.[c.phone] || []); },
+    orders(){ return withCustomer((c, s) => s.orders?.[s.session] || []); },
     order(ref){
-      return withCustomer((c, s) => (s.orders?.[c.phone] || []).find(o => o.ref === ref) || fail('not_found', 'We could not find that order in your account.'));
+      return withCustomer((c, s) => (s.orders?.[s.session] || []).find(o => o.ref === ref) || fail('not_found', 'We could not find that order in your account.'));
     },
 
     // a test checkout finished: keep it in My Orders, and its address in the address book (like the backend does)
@@ -159,7 +173,7 @@ function demoAccount(){
         timeline:[{ step:'placed', at:now }, ...(paid ? [{ step:'paid', at:now }] : [])]
       };
       s.orders ||= {};
-      s.orders[c.phone] = [view, ...(s.orders[c.phone] || []).filter(o => o.ref !== order.ref)];
+      s.orders[s.session] = [view, ...(s.orders[s.session] || []).filter(o => o.ref !== order.ref)];
       const { address, errors } = checkAddress(order.customer);
       const known = c.addresses.some(a => a.address.toLowerCase() === address.address.toLowerCase() && a.pincode === address.pincode);
       if (!errors && !known && c.addresses.length < MAX_ADDRESSES) c.addresses.push({ ...address, id:`a${Date.now().toString(36)}`, isDefault:!c.addresses.length });

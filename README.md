@@ -1,6 +1,6 @@
 # TranzLife Biosciences website
 
-Marketing and shop site for TranzLife Biosciences ("Innovating Life Beyond Limits"): five plant-based products (gummies, a calming inhaler, a period relief roll-on, the Reviva foot-care roll-on and a liver booster liquid).
+Marketing and shop site for TranzLife Biosciences ("Innovating Life Beyond Limits"): six plant-based products (gummies, a calming inhaler, a period relief roll-on, the Reviva foot-care roll-on, a liver booster liquid and an energy booster oral liquid).
 
 The site is a single page built with Vite and plain JavaScript (ES modules). It includes:
 
@@ -137,15 +137,15 @@ A UTR typed by a customer is **not proof of payment**. Confirm only after you se
 
 ## Customer accounts
 
-The person icon in the top bar (every page) logs customers in with their **mobile number and a 6-digit code by SMS**, like the big shops: no passwords, and a new number gets an account straight away. Logged in, the icon shows their initial and opens a menu: **My Orders**, **My Profile**, **Saved addresses**, **Log out**. These open `account.html`:
+The person icon in the top bar (every page) logs customers in with their **mobile number and a 6-digit code by SMS**, or with **Use email instead**, their **email address and a code by email**, like the big shops: no passwords, and a new number or address gets an account straight away. A logged-out customer who adds a product to the bag sees the login window straight away (once per visit; the product is in the bag either way). Logged in, the icon shows their initial and opens a menu: **My Orders**, **My Profile**, **Saved addresses**, **Log out**. These open `account.html`:
 
 - **My Orders:** every order placed while logged in, newest first, with its status. Opening one shows the **tracking steps** (Ordered → Payment confirmed → Packed → Shipped → Out for delivery → Delivered, with dates), the items and price, the delivery address and the payment.
 - **Profile information:** name, gender and email. The mobile number is how they log in.
 - **Manage addresses:** up to 10 addresses (home or work), one of them the default.
 
-Login is **optional at checkout**: guests still check out as before. A logged-in customer sees their saved addresses at the top of the delivery step (the default one is filled in), their order goes to My Orders, and a new delivery address is saved to their address book.
+Customers can browse and fill their bag without logging in, but **checking out needs a login**: **Checkout** opens the login window first, and the checkout opens as soon as they are in (closing the login window keeps the bag). So every order belongs to an account. The delivery step shows their saved addresses with the default one filled in, or, with none saved yet, their name, mobile number and email from the account, so they only type the address. The order goes to My Orders and the address is saved to their address book. The backend refuses an order from anyone not logged in.
 
-Codes are texted by **Twilio Verify**. Until the backend has Twilio keys, login runs in test mode: the code shows on the login screen. Setting it up: [backend/README.md → What you do manually](backend/README.md#what-you-do-manually).
+Codes are sent by **Twilio Verify** (emails through SendGrid). Until the backend has Twilio keys, login runs in test mode: the code shows on the login screen. Setting it up: [backend/README.md → What you do manually](backend/README.md#what-you-do-manually).
 
 ## Project structure
 
@@ -186,6 +186,6 @@ See `docs/architecture.md` for how the pieces talk to each other.
 
 - Fonts load from Google Fonts: Archivo and Caveat.
 - The logo lives in `src/assets/logo/`. To replace only the emblem (the tree picture) and keep the TRANZLIFE wordmark, run `python scripts/cut-emblem.py emblem-on-white.png`, then `python scripts/make-logo-sketch.py`, and set the `aspect-ratio` it prints in `src/styles/components/logo.css` and `loader.css`. To replace the whole logo, run `python scripts/cut-logo.py new-logo-on-white.png` (or drop in your own transparent WebP files with the same names), then run `python scripts/make-logo-sketch.py` to redraw the loading-screen sketch, and rebuild.
-- Product images live in `src/assets/products/`. To update them after a design changes, put the five design files (`gummies.png`, `inhaler.png`, `rollon.png`, `reviva.png`, `liver.png`) in a folder and run `python scripts/make-product-assets.py path/to/folder`. The cut-outs used in the hero and the product story come from `python scripts/make-product-cutouts.py path/to/folder` (needs `rembg`, see `scripts/requirements.txt`). The crop boxes at the top of each script match the current designs.
+- Product images live in `src/assets/products/`. To update them after a design changes, put the five design files (`gummies.png`, `inhaler.png`, `rollon.png`, `reviva.png`, `liver.png`) in a folder and run `python scripts/make-product-assets.py path/to/folder`. The cut-outs used in the hero and the product story come from `python scripts/make-product-cutouts.py path/to/folder` (needs `rembg`, see `scripts/requirements.txt`). The crop boxes at the top of each script match the current designs. The Energy Booster's photo and cut-out come from `python scripts/make-energy-assets.py path/to/energy-photo.png`.
 - Prices in `src/data/products.js` are placeholders until the client confirms them.
 - The contact form is front-end only until `VITE_CONTACT_ENDPOINT` is set. Login and checkout run in test mode until the backend is connected (see Payments and Customer accounts).

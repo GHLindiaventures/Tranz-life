@@ -1,12 +1,14 @@
 // Orders: placing one, paying by UTR (TranzLife's own QR code), the customer's My Orders, and the admin's steps.
 // Prices are worked out here from the catalogue, never taken from the browser. Razorpay payments are in payments.service.js.
+// Only a logged-in customer can place an order: every order belongs to an account, so it shows in their My Orders and
+// its delivery address is saved to their address book.
 //
 // Order status:   awaiting_payment -> paid                                     (Razorpay: confirmed by itself)
 //                 awaiting_payment -> verifying (UTR sent) -> paid             (own QR code: confirmed by the admin)
 //                                                          -> rejected         (the customer sees why and can send a new UTR)
 // Delivery, once paid (the admin moves it along): packed -> shipped -> out_for_delivery -> delivered
 import { randomBytes } from 'node:crypto';
-import { badRequest, conflict, notFound, unavailable } from '../../lib/errors.js';
+import { badRequest, conflict, notFound, unauthorized, unavailable } from '../../lib/errors.js';
 import { checkCustomer, DELIVERY_STEPS, normaliseUtr, orderRef, priceOrder, REF_PATTERN, toPaise, upiUri } from '../../lib/shared.js';
 import * as repo from './orders.repo.js';
 import { adminView, customerView, publicStatus } from './orders.views.js';
@@ -23,8 +25,10 @@ function createOrderService({ db, razorpay, payments, customers, merchant, log =
   }
 
   // ---------- checkout ----------
-  // { items:[{ id, qty }], customer:{ name, phone, … } } -> what the checkout needs to take the payment
-  async function placeOrder(body, customerId = null){
+  // { items:[{ id, qty }], customer:{ name, phone, … } } for the logged-in customer -> what the checkout needs to take
+  // the payment
+  async function placeOrder(body, customerId){
+    if (!customerId) throw unauthorized('Please log in to place your order.');
     if (!merchant.upiId && !razorpay) throw unavailable('Payments are not set up yet. Please try again later.');
     const priced = priceOrder(Array.isArray(body.items) ? body.items : []);
     const { customer, errors } = checkCustomer(body.customer || {});
@@ -37,8 +41,8 @@ function createOrderService({ db, razorpay, payments, customers, merchant, log =
       await repo.insertOrder(t, { ref, customerId, customer, priced, upiId, razorpayOrderId });
       await repo.addEvent(t, ref, 'placed');
     });
-    if (customerId) await customers.rememberAddress(customerId, customer);
-    log.info(`[orders] ${ref} placed: ₹${priced.total} for ${customer.name}${customerId ? ' (logged in)' : ''}`);
+    await customers.rememberAddress(customerId, customer);
+    log.info(`[orders] ${ref} placed: ₹${priced.total} for ${customer.name}`);
 
     return {
       ref, items:priced.items, subtotal:priced.subtotal, shipping:priced.shipping, total:priced.total, currency:priced.currency,
