@@ -25,11 +25,11 @@ describe('catalogue data', () => {
   it('every product has its product image, cut-out and design board', () => {
     const prodImgSrc = readFileSync(new URL('../../src/features/products/product-images.js', import.meta.url), 'utf8');
     PRODUCTS.forEach(p => {
-      ['', '-cut'].forEach(k =>
-        expect(existsSync(new URL(`../../src/assets/products/${p.id}${k}.webp`, import.meta.url))).toBe(true));
-      const m = prodImgSrc.match(new RegExp(`import\\s+${p.id}Design\\s+from\\s+['"]([^'"]+)['"]`));
-      expect(m).toBeTruthy();
-      expect(existsSync(new URL(`../../src/features/products/${m[1]}`, import.meta.url))).toBe(true);
+      ['', 'Cut', 'Design'].forEach(suffix => {
+        const m = prodImgSrc.match(new RegExp(`import\\s+${p.id}${suffix}\\s+from\\s+['"]([^'"]+)['"]`));
+        expect(m).toBeTruthy();
+        expect(existsSync(new URL(`../../src/features/products/${m[1]}`, import.meta.url))).toBe(true);
+      });
     });
   });
   it('every product has benefits for the benefits panel', () => {

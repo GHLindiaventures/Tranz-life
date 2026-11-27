@@ -6,14 +6,14 @@ import inhalerDesign from '../../assets/products/TranzLife BreatheFree Packaging
 import rollon from '../../assets/products/rollon.webp';
 import rollonDesign from '../../assets/products/TranzLife Calm Roll-On Packaging.png';
 import reviva from '../../assets/products/reviva.webp';
-import revivaDesign from '../../assets/products/Reviva Roll-On Botanical Back Panel.png';
+import revivaDesign from '../../assets/products/reviva.png';
 import liver from '../../assets/products/liver.webp';
 import liverDesign from '../../assets/products/TranzLife Liver Booster Packaging Set.png';
 
 import gummiesCut from '../../assets/products/gummies-cut.webp';
 import inhalerCut from '../../assets/products/inhaler-cut.webp';
-import rollonCut from '../../assets/products/rollon-cut.webp';
-import revivaCut from '../../assets/products/reviva-cut.webp';
+import rollonCut from '../../assets/products/rollon-cut.png';
+import revivaCut from '../../assets/products/reviva-cut.png';
 import liverCut from '../../assets/products/liver-cut.webp';
 
 const SHOTS = { gummies, inhaler, rollon, reviva, liver };
