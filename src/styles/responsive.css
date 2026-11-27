@@ -38,7 +38,7 @@
   .in-copy{padding:28px 22px}
   .in-copy::after{background:linear-gradient(180deg,rgba(248,250,243,.84) 0%,rgba(248,250,243,.7) 60%,rgba(248,250,243,.25) 100%)}
   .in-why{justify-content:center;padding-right:0}
-  .seq{height:760vh}
+  .seq{height:870vh}
   .sn{display:none}
   .seq-title{font-size:clamp(2.2rem,10vw,3.4rem);top:96px}
   .sl{font-size:17px}

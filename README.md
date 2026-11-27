@@ -1,6 +1,6 @@
 # TranzLife Biosciences website
 
-Marketing and shop site for TranzLife Biosciences ("Innovating Life Beyond Limits"): five plant-based products (gummies, a calming inhaler, a period relief roll-on, the Reviva foot-care roll-on and a liver booster liquid).
+Marketing and shop site for TranzLife Biosciences ("Innovating Life Beyond Limits"): six plant-based products (gummies, a calming inhaler, a period relief roll-on, the Reviva foot-care roll-on, a liver booster liquid and an energy booster oral liquid).
 
 The site is a single page built with Vite and plain JavaScript (ES modules). It includes:
 
@@ -186,6 +186,6 @@ See `docs/architecture.md` for how the pieces talk to each other.
 
 - Fonts load from Google Fonts: Archivo and Caveat.
 - The logo lives in `src/assets/logo/`. To replace only the emblem (the tree picture) and keep the TRANZLIFE wordmark, run `python scripts/cut-emblem.py emblem-on-white.png`, then `python scripts/make-logo-sketch.py`, and set the `aspect-ratio` it prints in `src/styles/components/logo.css` and `loader.css`. To replace the whole logo, run `python scripts/cut-logo.py new-logo-on-white.png` (or drop in your own transparent WebP files with the same names), then run `python scripts/make-logo-sketch.py` to redraw the loading-screen sketch, and rebuild.
-- Product images live in `src/assets/products/`. To update them after a design changes, put the five design files (`gummies.png`, `inhaler.png`, `rollon.png`, `reviva.png`, `liver.png`) in a folder and run `python scripts/make-product-assets.py path/to/folder`. The cut-outs used in the hero and the product story come from `python scripts/make-product-cutouts.py path/to/folder` (needs `rembg`, see `scripts/requirements.txt`). The crop boxes at the top of each script match the current designs.
+- Product images live in `src/assets/products/`. To update them after a design changes, put the five design files (`gummies.png`, `inhaler.png`, `rollon.png`, `reviva.png`, `liver.png`) in a folder and run `python scripts/make-product-assets.py path/to/folder`. The cut-outs used in the hero and the product story come from `python scripts/make-product-cutouts.py path/to/folder` (needs `rembg`, see `scripts/requirements.txt`). The crop boxes at the top of each script match the current designs. The Energy Booster's photo and cut-out come from `python scripts/make-energy-assets.py path/to/energy-photo.png`.
 - Prices in `src/data/products.js` are placeholders until the client confirms them.
 - The contact form is front-end only until `VITE_CONTACT_ENDPOINT` is set. Login and checkout run in test mode until the backend is connected (see Payments and Customer accounts).

@@ -3,7 +3,7 @@
 // from the brochure catalogue (src/data/catalog.js), with an "Enquire" button that opens the contact form.
 import '../../styles/components/chat.css';   // the chat brings its own styles, so every page (whatever its stylesheet) gets it
 import { CATALOG } from '../../data/catalog.js';
-import { PRODUCTS, EXTRA_PRODUCTS } from '../../data/products.js';
+import { PRODUCTS } from '../../data/products.js';
 import { $ } from '../../utils/dom.js';
 
 const API = (import.meta.env.VITE_CHAT_API || '') + '/api/chat';
@@ -132,7 +132,7 @@ function open(on, quiet){
 function teaseText(){
   const page = location.pathname.split('/').pop() || 'index.html';
   if (page.startsWith('product-details')){
-    const id = new URLSearchParams(location.search).get('id'), p = [...PRODUCTS, ...EXTRA_PRODUCTS].find(x => x.id === id);
+    const id = new URLSearchParams(location.search).get('id'), p = PRODUCTS.find(x => x.id === id);
     if (p) return `Curious about the ${p.short || p.name}? Ask me anything here! 🌿`;
   }
   if (page.startsWith('products')) return 'Not sure which product fits your day? Ask me here! 🌿';

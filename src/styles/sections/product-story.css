@@ -1,5 +1,5 @@
 /* ---------- product story (pinned) ---------- */
-.seq{height:820vh;position:relative}
+.seq{height:940vh;position:relative}   /* about 100vh of scroll per product, plus the finale */
 .seq-pin{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden;isolation:isolate}
 .seq-arcs{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;transform:translateZ(0)}
 .seq-arcs path{fill:none;stroke:#fff;stroke-width:34;stroke-linecap:round;stroke-dasharray:0 9999}

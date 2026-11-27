@@ -1,5 +1,5 @@
 // Pinned product story: each real product (cut out of the client's design) comes forward while its card glides past,
-// then all five line up.
+// then they all line up.
 import { PRODUCTS } from '../../data/products.js';
 import { STORY } from '../../data/product-story.js';
 import { CUTS } from '../products/product-images.js';
@@ -78,7 +78,9 @@ function initStory(){
     el.style.visibility = op > .004 ? 'visible' : 'hidden';
   }
 
-  const S0 = .03, ST = .148, DUR = .25, FIN = .8;
+  // each product's turn: the cards are spread so the last one is centred at the same point whatever the count
+  // (five products: a step of .148, each card on screen for .25 of the scroll)
+  const S0 = .03, ST = .592/Math.max(1, NP - 1), DUR = Math.min(.25, ST*1.7), FIN = .8;
   const sOf = i => S0 + i*ST, cOf = i => sOf(i) + DUR/2, mOf = i => i < NP - 1 ? (cOf(i) + cOf(i + 1))/2 : 2;
   let cur = 0, last = performance.now(), playing = false;
   (function frame(now){
@@ -106,15 +108,18 @@ function initStory(){
     if (p > .84 && !playing){ playing = true; final.classList.add('play'); }
     if (p < .78 && playing){ playing = false; final.classList.remove('play'); }
 
-    // products: one at a time (coming forward out of a blur), then all five line up
-    const gap = Math.min(W*(mobile ? .19 : .16), mobile ? 120 : 270), blurMax = reduce ? 0 : 16;
+    // products: one at a time (coming forward out of a blur), then they all line up: in one row, or on narrow screens
+    // in two rows (the first one the longer)
+    const gap = Math.min(W*(mobile ? .19 : .8/NP), mobile ? 120 : 1350/NP), blurMax = reduce ? 0 : 16;
+    const perRow = Math.ceil(NP/2);
     PRODUCTS.forEach((pr, i) => {
       const a = i === 0 ? -9 : mOf(i - 1), b = mOf(i);
       const grow = i === 0 ? 1 : ease.out(clamp((p - a)/.045, 0, 1)), shrink = 1 - ease.inn(clamp((p - (b - .035))/.035, 0, 1));
       const one = grow*shrink, side = i % 2 ? -1 : 1;
       const x1 = mobile ? W*.5 : W*.5 + side*W*.075, y1 = mobile ? H*.33 : H*.52;
       const bh1 = (mobile ? Math.min(H*.34, W*.66) : H*.5), bw1 = mobile ? W*.8 : W*.27;
-      const row = mobile ? (i < 3 ? 0 : 1) : 0, col = mobile ? (i < 3 ? i - 1 : (i - 3) - .5) : i - 2;
+      const row = mobile && i >= perRow ? 1 : 0, inRow = mobile ? (row ? NP - perRow : perRow) : NP;
+      const col = (row ? i - perRow : i) - (inRow - 1)/2;
       const x2 = W*.5 + col*(mobile ? W*.3 : gap), y2 = mobile ? H*(.5 + row*.24) : H*.67;
       const bh2 = mobile ? H*.17 : H*.31, bw2 = mobile ? W*.28 : gap*.92;
       let x, y, bw, bh, sc, op, bl;

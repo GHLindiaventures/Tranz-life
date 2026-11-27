@@ -1,5 +1,13 @@
 # Changelog
 
+## v14.5 (27 Nov 2026): Energy Booster in the product sections
+- **TranzLife Energy Booster** (500 ml oral liquid, ₹649, the same as the other 500 ml liquid until the client confirms the MRP) is the sixth product everywhere: the home product story (its own "Everyday energy" card, then the lineup of six), benefits, product finder ("Keep up with active days"), shop grid (Liquid filter), menu card, bag and checkout; the Products page showcase and "Which one is yours?" lineup; and its product page. Before, it only had its own page, with no price.
+- Copy from the Energy Booster brochure, wellness positioning only: botanical and mineral ingredients (Ruta graveolens, Hecla lava, Symphytum officinale, Calcarea phosphorica, Echinacea angustifolia), 7.5 ml twice daily, the brochure's precautions. No treatment claims.
+- Images: the new lifestyle photo (`energy.webp`), the bottle cut out of the white-background packshot (`energy-cut.webp`) and that packshot as the "View design" / "Pack Design" image (`energy-pack.webp`), from `scripts/make-energy-assets.py`.
+- The 3D bottle is the drawn amber bottle with the real label on every page. The `energy-booster*.glb` files show an older wood-cap design, so they are no longer used.
+- Layouts made for six: the shop grid is 3 × 2, the Products page lineup has six cards in a row (3 per row on tablets, 2 on phones), and the home story spaces its cards and the final lineup by the number of products (two rows of three on phones; its scroll is a little longer).
+- Fixed: product pages showed their title without the space ("Breathewell", now "Breathe well").
+
 ## v14.4 (27 Nov 2026): checking out needs a login
 - Customers can still add products without logging in, but **Checkout** (bag and mini bag bar) opens the login window first: "Log in to check out. Your order is saved in your account, delivered to your address, and you can follow it in My Orders." The checkout opens as soon as they are logged in; closing the window keeps the bag.
 - The delivery step fills in the default saved address, or, with none saved yet, the name, mobile number and email from the account, so a new customer only types the address (someone who logged in with email types their mobile number here).

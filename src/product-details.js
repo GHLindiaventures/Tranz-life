@@ -2,7 +2,7 @@
 import './features/footer/night-footer.js';
 import { thumbs } from './app/state.js';
 import { storeCta } from './app/store.js';
-import { PRODUCTS, EXTRA_PRODUCTS } from './data/products.js';
+import { PRODUCTS } from './data/products.js';
 import { SHOTS, DESIGNS } from './features/products/product-images.js';
 import { jarLayer } from './features/products/jar-layer.js';
 import { DETAILS } from './products-page/data/product-details.js';
@@ -229,7 +229,7 @@ function setup3DViewer(canvas, prod, index) {
 function renderProductDetails(productId) {
   Object.assign(thumbs, SHOTS);
 
-  const prodList = [...PRODUCTS, ...EXTRA_PRODUCTS];
+  const prodList = PRODUCTS;
   let prodIndex = prodList.findIndex(p => p.id === productId);
   if (prodIndex === -1) prodIndex = 0;
   const prod = prodList[prodIndex];
@@ -321,7 +321,7 @@ function renderProductDetails(productId) {
   const infoEl = $('#pdpInfo');
   if (infoEl) {
     const counterStr = `0${prodIndex + 1} / 0${PRODUCTS.length}`;
-    const superTitle = story.t ? story.t.join('') : prod.name;
+    const superTitle = story.t ? story.t.join(' ') : prod.name;
     const eyebrowText = detail ? detail.eyebrow : clinical.eyebrow;
     const taglineText = detail ? detail.tagline : 'Breathe Well. Live Better. Embrace Every Breath.';
     const introText = detail && detail.intro ? detail.intro[0] : prod.desc;

@@ -5,7 +5,8 @@ const BENEFITS = {
   inhaler:['100% natural ingredients', 'Organic ingredients', 'Premium nasal inhaler', 'Twin-tip, pocket-size design'],
   rollon:['Made for period cramp relief', 'Rosemary, rose and peppermint', 'Pocket-size roll-on bottle', 'Comes in its own gift box'],
   reviva:['Diabetic foot care', 'Plant-based formula', 'Skin friendly', 'Soothing care for dry, tired feet', 'Easy everyday roll-on'],
-  liver:['Supports healthy liver function*', 'Detox support*', 'Plant-based formula', 'Overall wellness*', '100 ml bottle']
+  liver:['Supports healthy liver function*', 'Detox support*', 'Plant-based formula', 'Overall wellness*', '100 ml bottle'],
+  energy:['Natural wellness formulation', 'Botanical and mineral ingredients', 'Complements daily energy and activity', 'Simple 7.5 ml routine, twice a day', '500 ml oral liquid']
 };
 
 export { BENEFITS };

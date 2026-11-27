@@ -7,7 +7,7 @@
 .filters button.on{background:var(--cream);color:var(--on-cream)}
 /* product cards: compact frosted-glass cards over soft colour light */
 #shop{background:radial-gradient(38% 30% at 12% 46%,rgba(228,154,82,.28),transparent 70%),radial-gradient(34% 28% at 50% 58%,rgba(56,165,139,.22),transparent 70%),radial-gradient(36% 30% at 88% 48%,rgba(214,150,159,.26),transparent 70%),radial-gradient(40% 26% at 70% 80%,rgba(164,185,85,.22),transparent 70%),var(--ground)}
-.grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:16px;margin-top:46px}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:46px}
 .pc{position:relative;display:flex;flex-direction:column;padding:8px;border-radius:24px;background:linear-gradient(160deg,rgba(255,255,255,.62),rgba(255,255,255,.34));border:1px solid rgba(255,255,255,.75);backdrop-filter:blur(18px) saturate(1.4);-webkit-backdrop-filter:blur(18px) saturate(1.4);box-shadow:0 1px 0 rgba(255,255,255,.9) inset,0 24px 50px -30px rgba(31,70,35,.35);transition:transform .5s var(--ease),box-shadow .5s var(--ease)}
 .pc:hover{transform:translateY(-6px);box-shadow:0 1px 0 rgba(255,255,255,.9) inset,0 34px 60px -30px rgba(31,70,35,.45)}
 .pc.hide{display:none}
@@ -28,7 +28,6 @@
 .pc-price{font-family:var(--f-display);font-stretch:70%;font-weight:800;font-size:21px}
 .pc-price small{display:block;font-family:var(--f-body);font-stretch:88%;font-weight:500;font-size:11px;color:var(--faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:140px}
 .pc-foot{flex-direction:column;align-items:stretch}
-@media (max-width:1240px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 .pc .add.pill{justify-content:center;font-size:13px;padding:3px 12px 3px 3px;gap:6px;white-space:nowrap}
 .pc .add.pill i{width:28px;height:28px}
 .add.pill{gap:0}
