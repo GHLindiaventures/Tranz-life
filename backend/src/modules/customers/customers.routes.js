@@ -1,5 +1,6 @@
 // The logged-in customer's account.
-//   GET  /api/me                              -> { user, login }   user is null when logged out; login: 'twilio' | 'test' | null
+//   GET  /api/me                              -> { user, login, emailLogin }   user is null when logged out;
+//                                             login: 'twilio' | 'test' | null (off); emailLogin: codes by email work too
 //   POST /api/me                              { name, email, gender } -> { user }
 //   POST /api/me/addresses                    address -> { user }    (up to 10; the first one is the default)
 //   POST /api/me/addresses/:id                address -> { user }
@@ -8,11 +9,11 @@
 import { Router } from 'express';
 import { requireCustomer } from '../auth/auth.middleware.js';
 
-function customersRoutes({ customers, loginMode }){
+function customersRoutes({ customers, loginMode, emailLogin }){
   const r = Router();
 
   r.get('/me', async (req, res) => {
-    res.json({ user:req.customer ? await customers.account(req.customer) : null, login:loginMode });
+    res.json({ user:req.customer ? await customers.account(req.customer) : null, login:loginMode, emailLogin });
   });
 
   r.post('/me', requireCustomer, async (req, res) => {

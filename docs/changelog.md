@@ -1,5 +1,12 @@
 # Changelog
 
+## v14.3 (27 Nov 2026): log in with email, and the login window opens when a product is added
+- **Add to bag while logged out:** the login window opens straight away ("Added to your bag. Log in to keep your bag, check out faster and follow your order."). The product is in the bag either way. Once per visit, so closing it means "not now"; the checkout still offers to log in.
+- **Email login:** "Use email instead" right under the mobile number field. The 6-digit code goes by email (Twilio Verify with SendGrid), and "Use mobile number instead" switches back. A new email customer gets that address as their contact email and is only asked for their name.
+- Accounts can have a mobile number, a login email, or both (migration `002_email_login.sql`). The login email is only ever set by typing a code we emailed, separate from the profile's contact email, so typing someone else's address into a profile never opens their account. The account menu, profile ("You log in with") and checkout show whichever the customer uses.
+- Email login on the live backend needs `TWILIO_VERIFY_EMAIL=true` after the Twilio email integration is set up (backend/README.md); until then the link is hidden there. Test mode has it.
+- Fixed: on the home page the login window was split into two columns (the contact section's styles give every form two columns). The close button no longer covers the text on phones.
+
 ## v14.2 (27 Nov 2026): sharper logo emblem, sized for each place
 - The emblem is cut again from a twice-as-large image (766×626 instead of 389×319), so the tree's leaves, the roots and the stripes of the DNA ribbon are crisp, also on retina and phone screens.
 - Each place gets the pixels it needs: `logo-emblem-lg.webp` (766 px) for the loading screen (260 px wide, sharp up to 3x screens) and the menu watermark; `logo-emblem.webp` (360 px, 83 KB instead of 268 KB) for the top bar, menu header, footer and product-details page. Pages other than Home download only the small one.

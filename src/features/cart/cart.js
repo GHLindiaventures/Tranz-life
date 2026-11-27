@@ -33,6 +33,8 @@ function addToCart(id, btn){
     clearTimeout(btn._added);
     btn._added = setTimeout(() => { btn.classList.remove('ok'); btn.innerHTML = btn.dataset.label; }, 1400);
   }
+  // a logged-out customer is asked to log in (features/account/account-menu.js)
+  document.dispatchEvent(new CustomEvent('tl:added', { detail:{ id } }));
 }
 
 // sets a product's quantity in the bag (0 or less removes it) and redraws; the one rule used by the bag drawer, the mini bag

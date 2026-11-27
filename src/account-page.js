@@ -41,7 +41,7 @@ function route(){
 
 function showCustomer(user){
   $('[data-ac-name]', side).textContent = user?.name || 'TranzLife customer';
-  $('[data-ac-initial]', side).textContent = (user?.name || user?.phone || '?').charAt(0).toUpperCase();
+  $('[data-ac-initial]', side).textContent = (user?.name || user?.loginEmail || user?.phone || '?').charAt(0).toUpperCase();
 }
 
 async function start(){

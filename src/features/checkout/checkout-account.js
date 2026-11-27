@@ -5,7 +5,7 @@
 // recordOrder(order, status) keeps a test-mode order in My Orders (the real backend links orders by itself)
 import { $ } from '../../utils/dom.js';
 import { esc } from '../../utils/html.js';
-import { account, currentUser, loginMode, onUser } from '../account/account-state.js';
+import { account, currentUser, loginLabel, loginMode, onUser } from '../account/account-state.js';
 import { openLogin } from '../account/login-dialog.js';
 
 const ADDRESS_FIELDS = ['name', 'phone', 'address', 'city', 'state', 'pincode'];
@@ -29,7 +29,7 @@ function initCheckoutAccount(form){
     const mode = loginMode();
     bar.hidden = !user && !mode;
     bar.innerHTML = user
-      ? `<span>Logged in as <b>${esc(user.name || `+91 ${user.phone}`)}</b>. This order will be in My Orders.</span>`
+      ? `<span>Logged in as <b>${esc(user.name || loginLabel(user))}</b>. This order will be in My Orders.</span>`
       : `<span>Have an account? Log in to use your saved addresses and keep this order in My Orders.</span><button class="co-link" type="button" data-co-login>Log in</button>`;
     const list = user?.addresses || [];
     saved.hidden = !list.length;

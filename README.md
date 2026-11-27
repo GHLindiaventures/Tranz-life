@@ -137,7 +137,7 @@ A UTR typed by a customer is **not proof of payment**. Confirm only after you se
 
 ## Customer accounts
 
-The person icon in the top bar (every page) logs customers in with their **mobile number and a 6-digit code by SMS**, like the big shops: no passwords, and a new number gets an account straight away. Logged in, the icon shows their initial and opens a menu: **My Orders**, **My Profile**, **Saved addresses**, **Log out**. These open `account.html`:
+The person icon in the top bar (every page) logs customers in with their **mobile number and a 6-digit code by SMS**, or with **Use email instead**, their **email address and a code by email**, like the big shops: no passwords, and a new number or address gets an account straight away. A logged-out customer who adds a product to the bag sees the login window straight away (once per visit; the product is in the bag either way). Logged in, the icon shows their initial and opens a menu: **My Orders**, **My Profile**, **Saved addresses**, **Log out**. These open `account.html`:
 
 - **My Orders:** every order placed while logged in, newest first, with its status. Opening one shows the **tracking steps** (Ordered → Payment confirmed → Packed → Shipped → Out for delivery → Delivered, with dates), the items and price, the delivery address and the payment.
 - **Profile information:** name, gender and email. The mobile number is how they log in.
@@ -145,7 +145,7 @@ The person icon in the top bar (every page) logs customers in with their **mobil
 
 Login is **optional at checkout**: guests still check out as before. A logged-in customer sees their saved addresses at the top of the delivery step (the default one is filled in), their order goes to My Orders, and a new delivery address is saved to their address book.
 
-Codes are texted by **Twilio Verify**. Until the backend has Twilio keys, login runs in test mode: the code shows on the login screen. Setting it up: [backend/README.md → What you do manually](backend/README.md#what-you-do-manually).
+Codes are sent by **Twilio Verify** (emails through SendGrid). Until the backend has Twilio keys, login runs in test mode: the code shows on the login screen. Setting it up: [backend/README.md → What you do manually](backend/README.md#what-you-do-manually).
 
 ## Project structure
 

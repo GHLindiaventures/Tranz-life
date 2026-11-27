@@ -58,7 +58,8 @@ function readTwilio(get, problems){
   if (!accountSid || !authToken || !serviceSid) problems.push('Set all three of TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN and TWILIO_VERIFY_SERVICE_SID, or none.');
   if (accountSid && !TWILIO_ACCOUNT.test(accountSid)) problems.push('TWILIO_ACCOUNT_SID should start with AC followed by 32 letters and numbers.');
   if (serviceSid && !TWILIO_SERVICE.test(serviceSid)) problems.push('TWILIO_VERIFY_SERVICE_SID should start with VA (Twilio Console → Verify → Services).');
-  return { accountSid, authToken, serviceSid };
+  // codes by email too, once the Verify service's email integration is set up in the Twilio Console
+  return { accountSid, authToken, serviceSid, email:get('TWILIO_VERIFY_EMAIL') === 'true' };
 }
 
 export { loadConfig, loadSettings, ConfigError };

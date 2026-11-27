@@ -1,7 +1,10 @@
 // SQL for customers and their address books. Each function takes `db` (the database or a transaction) first, runs one
 // small query, and returns plain objects in the shape the API uses (camelCase).
 
-const toCustomer = r => r && ({ id:r.id, phone:r.phone, name:r.name, email:r.email, gender:r.gender, memberSince:r.created_at });
+// phone and loginEmail are how the customer logs in (either can be null, not both); email is their contact email
+const toCustomer = r => r && ({
+  id:r.id, phone:r.phone, loginEmail:r.login_email, name:r.name, email:r.email, gender:r.gender, memberSince:r.created_at
+});
 const toAddress = r => r && ({
   id:r.id, name:r.name, phone:r.phone, address:r.address, landmark:r.landmark, city:r.city, state:r.state,
   pincode:r.pincode, label:r.label, isDefault:r.is_default
@@ -17,11 +20,20 @@ async function findCustomerByPhone(db, phone){
   return toCustomer(await db.one('SELECT * FROM customers WHERE phone = $1', [phone]));
 }
 
-// the customer with this mobile number, created if it is new. Returns { customer, isNew }.
-async function findOrCreateCustomer(db, phone){
-  const created = await db.one('INSERT INTO customers (phone) VALUES ($1) ON CONFLICT (phone) DO NOTHING RETURNING *', [phone]);
+async function findCustomerByLoginEmail(db, email){
+  return toCustomer(await db.one('SELECT * FROM customers WHERE login_email = $1', [email]));
+}
+
+// the customer who logs in with this mobile number or email address, created if it is new. Returns { customer, isNew }.
+// login: { kind:'phone', value:'9876543210' } or { kind:'email', value:'asha@example.com' }
+async function findOrCreateCustomer(db, { kind, value }){
+  const created = kind === 'email'
+    // a new email customer: the address is their contact email too
+    ? await db.one('INSERT INTO customers (login_email, email) VALUES ($1, $1) ON CONFLICT (login_email) DO NOTHING RETURNING *', [value])
+    : await db.one('INSERT INTO customers (phone) VALUES ($1) ON CONFLICT (phone) DO NOTHING RETURNING *', [value]);
   if (created) return { customer:toCustomer(created), isNew:true };
-  return { customer:await findCustomerByPhone(db, phone), isNew:false };
+  const customer = kind === 'email' ? await findCustomerByLoginEmail(db, value) : await findCustomerByPhone(db, value);
+  return { customer, isNew:false };
 }
 
 async function recordLogin(db, id){
@@ -77,6 +89,6 @@ async function findSameAddress(db, customerId, { address, pincode }){
 }
 
 export {
-  findCustomerById, findCustomerByPhone, findOrCreateCustomer, recordLogin, updateProfile,
+  findCustomerById, findCustomerByPhone, findCustomerByLoginEmail, findOrCreateCustomer, recordLogin, updateProfile,
   listAddresses, countAddresses, insertAddress, updateAddress, deleteAddress, setDefaultAddress, findSameAddress
 };

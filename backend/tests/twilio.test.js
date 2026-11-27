@@ -18,7 +18,7 @@ function fakeTwilio(answer){
 describe('Twilio Verify', () => {
   it('texts a code to the +91 number, with the account SID and auth token', async () => {
     const { calls, twilio } = fakeTwilio(() => [201, { status:'pending' }]);
-    expect(await twilio.send('9876543210')).toEqual({});
+    expect(await twilio.send({ kind:'phone', value:'9876543210' })).toEqual({});
     expect(calls[0]).toEqual({
       url:`https://verify.twilio.com/v2/Services/${SERVICE}/Verifications`,
       auth:'Basic ' + Buffer.from(`${SID}:${TOKEN}`).toString('base64'),
@@ -26,19 +26,27 @@ describe('Twilio Verify', () => {
     });
   });
 
+  it('emails a code to an email address, and checks it against the same address', async () => {
+    const { calls, twilio } = fakeTwilio(() => [201, { status:'approved' }]);
+    await twilio.send({ kind:'email', value:'asha@example.com' });
+    expect(calls[0].form).toEqual({ To:'asha@example.com', Channel:'email' });
+    expect(await twilio.check({ kind:'email', value:'asha@example.com' }, '123456')).toBe(true);
+    expect(calls[1].form).toEqual({ To:'asha@example.com', Code:'123456' });
+  });
+
   it('says a code is right only when Twilio approves it', async () => {
     let status = 'approved';
     const { calls, twilio } = fakeTwilio(() => [200, { status }]);
-    expect(await twilio.check('9876543210', '123456')).toBe(true);
+    expect(await twilio.check({ kind:'phone', value:'9876543210' }, '123456')).toBe(true);
     expect(calls[0].form).toEqual({ To:'+919876543210', Code:'123456' });
     status = 'pending';
-    expect(await twilio.check('9876543210', '000000')).toBe(false);
+    expect(await twilio.check({ kind:'phone', value:'9876543210' }, '000000')).toBe(false);
   });
 
   it("turns Twilio's errors into messages a customer understands, and hides the rest", async () => {
     const fails = async (code, httpStatus = 400) => {
       const { twilio } = fakeTwilio(() => [httpStatus, { code, message:'twilio says no' }]);
-      return twilio.send('9876543210').catch(err => ({ status:err.status, code:err.code, message:err.message }));
+      return twilio.send({ kind:'phone', value:'9876543210' }).catch(err => ({ status:err.status, code:err.code, message:err.message }));
     };
     expect(await fails(60200)).toMatchObject({ status:400, code:'invalid' });
     expect(await fails(60203, 429)).toMatchObject({ status:429, code:'busy' });
@@ -50,6 +58,6 @@ describe('Twilio Verify', () => {
 
   it('says so when Twilio cannot be reached', async () => {
     const twilio = createTwilioVerify({ accountSid:SID, authToken:TOKEN, serviceSid:SERVICE, log:silent, fetchImpl:async () => { throw new Error('offline'); } });
-    await expect(twilio.send('9876543210')).rejects.toMatchObject({ status:503 });
+    await expect(twilio.send({ kind:'phone', value:'9876543210' })).rejects.toMatchObject({ status:503 });
   });
 });

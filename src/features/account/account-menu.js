@@ -2,7 +2,7 @@
 // customer's initial and opens a menu: their name and number, My Orders, My Profile, Saved addresses and Log out.
 import { toast } from '../../components/toast.js';
 import { $ } from '../../utils/dom.js';
-import { currentUser, loginMode, logout, onUser, ready } from './account-state.js';
+import { currentUser, loginLabel, loginMode, logout, onUser, ready } from './account-state.js';
 import { openLogin } from './login-dialog.js';
 
 const svg = d => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
@@ -14,6 +14,16 @@ const ICONS = {
   out:svg('<path d="M14 4h4.5A1.5 1.5 0 0 1 20 5.5v13a1.5 1.5 0 0 1-1.5 1.5H14"/><path d="M10 16.5 5.5 12 10 7.5M5.5 12H15"/>')
 };
 const PAGE = 'account.html';
+
+// A logged-out customer who adds a product to the bag is asked to log in straight away. The product is in the bag
+// either way. Once per visit: closing the window means "not now" (the checkout still offers to log in).
+const ASKED = 'tl-login-asked';
+async function askToLogIn(){
+  await ready;
+  if (currentUser() || !loginMode()) return;
+  try { if (sessionStorage.getItem(ASKED)) return; sessionStorage.setItem(ASKED, '1'); } catch(e){}
+  openLogin({ reason:'Added to your bag. Log in to keep your bag, check out faster and follow your order.' });
+}
 
 function initAccountMenu(){
   const slot = $('#nav .nav-act');
@@ -47,9 +57,9 @@ function initAccountMenu(){
     } else {
       btn.removeAttribute('aria-controls'); btn.removeAttribute('aria-expanded'); menu.hidden = true;
     }
-    $('.acct-initial', wrap).textContent = (user?.name || user?.phone || '').trim().charAt(0).toUpperCase() || '';
+    $('.acct-initial', wrap).textContent = (user?.name || user?.loginEmail || user?.phone || '').trim().charAt(0).toUpperCase() || '';
     $('[data-acct-name]', wrap).textContent = user?.name || 'TranzLife customer';
-    $('[data-acct-phone]', wrap).textContent = user ? `+91 ${user.phone}` : '';
+    $('[data-acct-phone]', wrap).textContent = loginLabel(user);
     wrap.hidden = !user && !loginMode();
   });
   ready.then(() => { wrap.hidden = !currentUser() && !loginMode(); });
@@ -58,6 +68,7 @@ function initAccountMenu(){
     if (!currentUser()) return openLogin();
     setOpen(menu.hidden);
   });
+  document.addEventListener('tl:added', askToLogIn);
   $('[data-acct-logout]', wrap).addEventListener('click', async () => {
     setOpen(false);
     await logout();
