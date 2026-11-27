@@ -15,7 +15,7 @@ export default defineConfig(({ mode }) => {
       proxy,
       allowedHosts: ['.ngrok-free.dev', '.ngrok-free.app', '.ngrok.app', '.ngrok.io', 'albertine-nonempathic-heaven.ngrok-free.dev'],
       watch: {
-        ignored: ['**/*.mp4']
+        ignored: ['**/*.mp4', '**/dist/**']
       }
     },
     preview: {
