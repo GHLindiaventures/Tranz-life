@@ -7,6 +7,7 @@
 - The 3D bottle is the drawn amber bottle with the real label on every page. The `energy-booster*.glb` files show an older wood-cap design, so they are no longer used.
 - Layouts made for six: the shop grid is 3 × 2, the Products page lineup has six cards in a row (3 per row on tablets, 2 on phones), and the home story spaces its cards and the final lineup by the number of products (two rows of three on phones; its scroll is a little longer).
 - Fixed: product pages showed their title without the space ("Breathewell", now "Breathe well").
+- Also: Energy Booster Oral Liquid on the R&D board as launched ("Live, in stores"), and a test that fails if a product is missing from any section's data (Products page list and story cards, the "Which one is yours?" cards, both product finders, the benefits counter). Not yet in the Science section: it needs a photo of one of its botanicals (for example Echinacea).
 
 ## v14.4 (27 Nov 2026): checking out needs a login
 - Customers can still add products without logging in, but **Checkout** (bag and mini bag bar) opens the login window first: "Log in to check out. Your order is saved in your account, delivered to your address, and you can follow it in My Orders." The checkout opens as soon as they are logged in; closing the window keeps the bag.

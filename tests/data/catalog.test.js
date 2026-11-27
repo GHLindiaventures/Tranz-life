@@ -35,6 +35,21 @@ describe('catalogue data', () => {
   it('every product has benefits for the benefits panel', () => {
     PRODUCTS.forEach(p => expect(BENEFITS[p.id]?.length).toBeGreaterThan(2));
   });
+  it('a new product shows in every product section (home and Products page)', async () => {
+    const page = await import('../../src/products-page/data/products.js');
+    const pageStory = await import('../../src/products-page/data/product-story.js');
+    const pageNeeds = await import('../../src/products-page/data/needs.js');
+    const productsHtml = readFileSync(new URL('../../products.html', import.meta.url), 'utf8');
+    const ids = PRODUCTS.map(p => p.id);
+    expect(page.PRODUCTS.map(p => p.id)).toEqual(ids);                     // Products page showcase and grid
+    expect(pageStory.STORY).toHaveLength(ids.length);                      // its story cards
+    ids.forEach((id, i) => {
+      expect(productsHtml).toContain(`class="lineup-card" data-product="${id}"`);   // "Which one is yours?" card
+      expect(NEEDS.some(n => n.p === i)).toBe(true);                       // home product finder
+      expect(pageNeeds.NEEDS.some(n => n.p === i)).toBe(true);
+    });
+    expect(html).toContain(`<span id="benAll">${String(ids.length).padStart(2, '0')}</span>`);
+  });
   it('the pipeline has one entry per stage', () => {
     expect(RX).toHaveLength(NSTAGE);
   });

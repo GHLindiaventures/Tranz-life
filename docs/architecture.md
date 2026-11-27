@@ -22,7 +22,7 @@ JavaScript only fills in and animates that markup.
 
 1. **Static UI.** Cart and contact handlers (the checkout dialog is built the first time someone opens it), marquee, the curved band at the foot of the hero, lab board, product finder buttons, dock and menu.
 2. **Product images.** `features/products/product-images.js` imports the client's six product images into `thumbs`. The shop cards, finder, menu card, bag, Why TranzLife cards and benefits panel all use them. `components/lightbox.js` opens the full design board for any `[data-design]` button.
-3. **Hero lineup.** `features/hero/hero-jar.js` positions all five real product cut-outs in a balanced stage lineup on the hill, after the web fonts load.
+3. **Hero lineup.** `features/hero/hero-jar.js` puts the Lung Booster cut-out in the hero and flies it down the page into the product story, where all six product cut-outs line up (`features/product-story/product-story.js`).
 4. **Content that needs the images.** Shop grid, finder match, molecule viewer and herb picker.
 5. **Scroll scenes.** The product story (`features/product-story`) and the molecule reactor (`features/pipeline`), plus `app/page-sections.js`, which tracks the current section and dispatches `tl:page` events.
 6. **Smooth scroll and reveals.** Lenis smooth scroll, the ScrollTrigger reveals, then the intro timeline hides the loader.
@@ -78,7 +78,7 @@ Colour themes are CSS custom properties. Adding `.t-green` or `.t-cream` to any 
 
 | File | Source |
 |---|---|
-| `src/assets/products/*` | Made by `scripts/make-product-assets.py` from the client's five product designs (Nov 2026): square product images and full design boards; `*-cut.webp` cut-outs by `scripts/make-product-cutouts.py` |
+| `src/assets/products/*` | Made by `scripts/make-product-assets.py` from the client's five product designs (Nov 2026): square product images and full design boards (Energy Booster: `scripts/make-energy-assets.py`); `*-cut.webp` cut-outs by `scripts/make-product-cutouts.py` |
 | `src/assets/logo/*` | Made by `scripts/cut-logo.py` from the client's banyan-tree logo (Nov 2026) |
 | `src/assets/images/botanical-background.jpg` | Original image made by `scripts/make-botanical-background.py` |
 | `src/assets/images/dna-helix.webp` | Client-supplied DNA reference image, cut out and upscaled. **Confirm usage rights before launch.** |

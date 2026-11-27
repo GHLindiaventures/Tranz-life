@@ -5,7 +5,7 @@
 //   2. onto the Lung Booster card in "You deserve the best": the card's photo slot is empty, and the tub arrives and fills
 //      it, rides along with the card, then drops out below it and carries on down towards the product story,
 //   3. it hands over to the product story's own first tub when that tub comes up into the bottom of the screen; the
-//      story's tub is the one that comes forward and lines up with the other four,
+//      story's tub is the one that comes forward and lines up with the other products,
 //   4. when the story lets go, the tub lifts out of the lineup, travels down the left side and fills the empty photo slot of
 //      Lung Booster in "See the difference", and stays there.
 // (state.heroFlight.landed is true while the story's own tub is the one on show: features/product-story hides it otherwise.)
