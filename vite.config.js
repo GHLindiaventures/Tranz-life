@@ -3,21 +3,23 @@ import { viteSingleFile } from 'vite-plugin-singlefile';
 
 // `npm run build` makes a normal static site in dist/ for hosting.
 // `npm run build:single` makes one self-contained dist-single/index.html you can email or open from disk.
-// In dev and preview, /api is passed to the backend (`npm run backend`), so VITE_PAYMENT_API=/api works locally.
+// In dev and preview, /api is passed to the payment server (`npm run server`), so VITE_PAYMENT_API=/api works locally.
 export default defineConfig(({ mode }) => {
   const single = mode === 'single';
   const env = loadEnv(mode, process.cwd(), '');
-  const proxy = { '/api': `http://localhost:${env.API_PORT || 8787}` };
+  const proxy = { '/api': `http://localhost:${env.PAYMENT_PORT || 8787}` };
   return {
     base: './',
     server: {
       host: true,
       proxy,
+      allowedHosts: ['albertine-nonempathic-heaven.ngrok-free.dev', '.ngrok-free.dev'],
       allowedHosts: ['.ngrok-free.dev', '.ngrok-free.app', '.ngrok.app', '.ngrok.io', 'albertine-nonempathic-heaven.ngrok-free.dev'],
       watch: {
-        ignored: ['**/*.mp4', '**/dist/**']
+        ignored: ['**/*.mp4']
       }
     },
+    preview: { proxy },
     preview: {
       host: true,
       proxy,
@@ -33,8 +35,7 @@ export default defineConfig(({ mode }) => {
             input: {
               main: 'index.html',
               products: 'products.html',
-              productDetails: 'product-details.html',
-              account: 'account.html'
+              productDetails: 'product-details.html'
             }
           }
         },
