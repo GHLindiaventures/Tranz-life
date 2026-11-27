@@ -11,13 +11,18 @@ export default defineConfig(({ mode }) => {
   return {
     base: './',
     server: {
+      host: true,
       proxy,
-      allowedHosts: ['albertine-nonempathic-heaven.ngrok-free.dev', '.ngrok-free.dev'],
+      allowedHosts: ['.ngrok-free.dev', '.ngrok-free.app', '.ngrok.app', '.ngrok.io', 'albertine-nonempathic-heaven.ngrok-free.dev'],
       watch: {
         ignored: ['**/*.mp4']
       }
     },
-    preview: { proxy },
+    preview: {
+      host: true,
+      proxy,
+      allowedHosts: ['.ngrok-free.dev', '.ngrok-free.app', '.ngrok.app', '.ngrok.io', 'albertine-nonempathic-heaven.ngrok-free.dev']
+    },
     plugins: single ? [viteSingleFile()] : [],
     build: single
       ? { outDir: 'dist-single', assetsInlineLimit: Number.MAX_SAFE_INTEGER, cssCodeSplit: false }
