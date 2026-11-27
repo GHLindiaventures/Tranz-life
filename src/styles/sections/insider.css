@@ -9,7 +9,9 @@
 .in-cards{position:relative;height:clamp(420px,46vw,600px)}
 .in-card{position:absolute;width:52%;aspect-ratio:3/4;border-radius:16px;background:#fff;padding:9px;box-shadow:0 30px 60px -28px rgba(31,70,35,.45);will-change:transform}
 .in-card>div{width:100%;height:100%;border-radius:10px;overflow:hidden;background:var(--ground-2)}
+.in-card>[data-cut]{background:radial-gradient(78% 78% at 50% 44%,#f1f7e6,#cfe3b8)}
 .in-card img{width:100%;height:100%;object-fit:cover}
+.in-card>[data-cut] img{object-fit:contain;padding:12px}
 .in-card:nth-child(1){left:0;top:12%;transform:rotate(-8deg)}
 .in-card:nth-child(2){left:26%;top:4%;z-index:2;transform:rotate(4deg)}
 .in-card:nth-child(3){left:48%;top:18%;transform:rotate(-3deg)}
