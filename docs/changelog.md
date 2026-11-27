@@ -1,5 +1,10 @@
 # Changelog
 
+## v14.2 (27 Nov 2026): sharper logo emblem, sized for each place
+- The emblem is cut again from a twice-as-large image (766×626 instead of 389×319), so the tree's leaves, the roots and the stripes of the DNA ribbon are crisp, also on retina and phone screens.
+- Each place gets the pixels it needs: `logo-emblem-lg.webp` (766 px) for the loading screen (260 px wide, sharp up to 3x screens) and the menu watermark; `logo-emblem.webp` (360 px, 83 KB instead of 268 KB) for the top bar, menu header, footer and product-details page. Pages other than Home download only the small one.
+- The loading-screen sketch is traced at a fixed 400 px width, so a sharper logo file gives the same light sketch, not a busier one.
+
 ## v14.1 (27 Nov 2026): new logo emblem
 - The emblem is the new tree on the green and gold infinity DNA ribbon, with its roots below, everywhere: top bar, menu, footer, loading screen, the product-details page and the browser tab and phone home-screen icons. The TRANZLIFE BIOSCIENCES wordmark and every font are unchanged.
 - The loading screen's line sketch is traced from the new emblem (`scripts/make-logo-sketch.py` now reads the emblem's size and groups its lines as ribbon, roots, trunk and leaves by position).

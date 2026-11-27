@@ -3,11 +3,14 @@
 Usage:  python scripts/cut-emblem.py path/to/image-with-the-emblem-on-white.png
 
 Finds the emblem as the biggest picture in the image (anything else, like a line of text, is left out), turns the white
-background transparent while keeping soft edges and the shadow, and writes:
-  src/assets/logo/logo-emblem.webp    the emblem everywhere on the site (top bar, menu, footer, loading screen)
-  public/assets/logo-emblem.webp      the same file at a fixed address (product-details page, browser tab icon)
-  public/favicon.png                  96x96 browser tab icon
-  public/apple-touch-icon.png         180x180 phone home-screen icon
+background transparent while keeping soft edges and the shadow, and writes each size where it is needed:
+  src/assets/logo/logo-emblem-lg.webp  full size (up to 800 px wide): the loading screen (260 px wide, sharp on 3x
+                                       phone screens) and the menu's watermark
+  src/assets/logo/logo-emblem.webp     360 px wide: the top bar, menu header and footer (at most 117 px wide, so
+                                       sharp even on 3x screens) at a fraction of the download
+  public/assets/logo-emblem.webp       the 360 px file at a fixed address (product-details page, browser tab icon)
+  public/favicon.png                   96x96 browser tab icon
+  public/apple-touch-icon.png          180x180 phone home-screen icon
 Then run scripts/make-logo-sketch.py to redraw the loading screen's line sketch, and set .logo-em's aspect-ratio in
 src/styles/components/logo.css (and .ld-mark's in loader.css) to the size this prints.
 A larger original (or a vector SVG from the designer) always gives a sharper emblem than a screenshot.
@@ -38,8 +41,14 @@ y0, y1, x0, x1 = max(0, ys.min() - pad), ys.max() + pad + 1, max(0, xs.min() - p
 rgba = np.dstack([col, alpha * 255])[y0:y1, x0:x1].astype(np.uint8)
 emblem = Image.fromarray(rgba, 'RGBA')
 
-for path in ('src/assets/logo/logo-emblem.webp', 'public/assets/logo-emblem.webp'):
-    emblem.save(os.path.join(ROOT, path), 'WEBP', quality=92, method=6)
+def sized(width):
+    if emblem.width <= width: return emblem
+    return emblem.resize((width, round(emblem.height * width / emblem.width)), Image.LANCZOS)
+
+save = lambda img, path: img.save(os.path.join(ROOT, path), 'WEBP', quality=92, method=6)
+save(sized(800), 'src/assets/logo/logo-emblem-lg.webp')
+save(sized(360), 'src/assets/logo/logo-emblem.webp')
+save(sized(360), 'public/assets/logo-emblem.webp')
 
 def icon(size, inner, background=None):
     img = emblem.copy(); img.thumbnail((inner, inner), Image.LANCZOS)

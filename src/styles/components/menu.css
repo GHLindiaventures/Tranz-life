@@ -4,7 +4,7 @@
 .menu-bg{position:absolute;inset:0;overflow:hidden;background:radial-gradient(60% 70% at 85% 15%,rgba(255,255,255,.4),transparent 60%),radial-gradient(50% 60% at 8% 95%,rgba(36,80,42,.18),transparent 70%),var(--stage);clip-path:circle(0px at var(--ox,40px) var(--oy,50%));transition:clip-path .95s cubic-bezier(.7,0,.2,1)}
 .menu.open .menu-bg{clip-path:circle(160vmax at var(--ox,40px) var(--oy,50%))}
 .menu-bg svg{position:absolute;inset:0;width:100%;height:100%;fill:none;stroke:rgba(255,255,255,.75);stroke-width:30;stroke-linecap:round}
-.menu-mark{position:absolute;right:-5vw;bottom:-8vh;width:min(46vw,640px);opacity:.14;filter:saturate(.3)}
+.menu-mark{position:absolute;right:-5vw;bottom:-8vh;width:min(46vw,640px);opacity:.14;filter:saturate(.3);background-image:url('../../assets/logo/logo-emblem-lg.webp')}
 .menu-in{position:relative;height:100%;display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:clamp(30px,5vw,80px);align-items:center;padding:clamp(90px,12vh,120px) clamp(30px,6vw,90px) clamp(30px,5vh,60px) clamp(120px,11vw,170px);opacity:0;transition:opacity .35s}
 .menu.open .menu-in{opacity:1;transition-delay:.3s}
 .menu-top{position:absolute;left:clamp(120px,11vw,170px);right:clamp(30px,6vw,90px);top:22px;display:flex;justify-content:space-between;align-items:center}

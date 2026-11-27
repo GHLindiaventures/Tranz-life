@@ -2,7 +2,7 @@
 
 Usage:  python scripts/make-logo-sketch.py
 
-Reads src/assets/logo/logo-emblem.webp and logo-word.webp, finds their outlines (OpenCV Canny + contours)
+Reads src/assets/logo/logo-emblem-lg.webp and logo-word.webp, finds their outlines (OpenCV Canny + contours)
 and writes two inline SVGs between the <!-- logo-sketch:start --> and <!-- logo-sketch:end --> markers in
 index.html. Each line gets a start time (--t) and a length (--d) so the loader draws them in order:
 the DNA first, then the roots, trunk and leaves, then the name, left to right. Re-run it if the logo changes.
@@ -16,8 +16,11 @@ ROOT = os.path.join(os.path.dirname(__file__), '..')
 LOGO = os.path.join(ROOT, 'src', 'assets', 'logo')
 HTML = os.path.join(ROOT, 'index.html')
 
-def contours(path, minlen, eps, blur):
-    im = np.asarray(Image.open(path).convert('RGBA')).astype(np.float32)
+def contours(path, minlen, eps, blur, width=None):
+    img = Image.open(path).convert('RGBA')
+    # trace at a fixed width, so a sharper (bigger) logo file gives the same amount of lines, not more
+    if width: img = img.resize((width, round(img.height * width / img.width)), Image.LANCZOS)
+    im = np.asarray(img).astype(np.float32)
     al = im[..., 3]/255
     rgb = im[..., :3]*al[..., None] + 255*(1 - al[..., None])
     gray = cv2.GaussianBlur(cv2.cvtColor(rgb.astype(np.uint8), cv2.COLOR_RGB2GRAY), (0, 0), blur)
@@ -34,7 +37,7 @@ d = lambda p: 'M' + 'L'.join(f'{x} {y}' for x, y in p)
 # emblem: group each line as DNA, roots, trunk or leaves, then time each group in turn (ms).
 # The emblem (Nov 2026): a round tree on top (leaves: the top third), its trunk in the middle, the infinity DNA ribbon
 # across the lower half (its two loops: left and right of the centre), and the roots below the centre.
-im, lines = contours(os.path.join(LOGO, 'logo-emblem.webp'), 16, .8, 1.0)
+im, lines = contours(os.path.join(LOGO, 'logo-emblem-lg.webp'), 16, .8, 1.0, width=400)
 H, W = im.shape[:2]
 def group(cx, cy):
     x, y, side = cx / W, cy / H, abs(cx / W - .5) > .17
