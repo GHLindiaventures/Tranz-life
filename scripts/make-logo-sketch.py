@@ -31,17 +31,20 @@ def contours(path, minlen, eps, blur):
 
 d = lambda p: 'M' + 'L'.join(f'{x} {y}' for x, y in p)
 
-# emblem: group each line as DNA, roots, trunk or leaves, then time each group in turn (ms)
-im, lines = contours(os.path.join(LOGO, 'logo-emblem.webp'), 22, .9, 1.2)
-r, g, b, a = (im[..., i] for i in range(4))
-gold = ((a > 128) & (r > 150) & (g > 120) & (b < 110)).astype(np.uint8)
-dna = np.zeros_like(gold); dna[185:335, 135:515] = 1; dna &= cv2.dilate(gold, np.ones((9, 9), np.uint8))
-H, W = gold.shape
+# emblem: group each line as DNA, roots, trunk or leaves, then time each group in turn (ms).
+# The emblem (Nov 2026): a round tree on top (leaves: the top third), its trunk in the middle, the infinity DNA ribbon
+# across the lower half (its two loops: left and right of the centre), and the roots below the centre.
+im, lines = contours(os.path.join(LOGO, 'logo-emblem.webp'), 16, .8, 1.0)
+H, W = im.shape[:2]
+def group(cx, cy):
+    x, y, side = cx / W, cy / H, abs(cx / W - .5) > .17
+    if y < .32: return 'leaf'
+    if side and y < .9: return 'dna'
+    return 'trunk' if y < .6 else 'root'
 groups = {'dna': [], 'root': [], 'trunk': [], 'leaf': []}
 for p, L in lines:
     cx, cy = p[:, 0].mean(), p[:, 1].mean()
-    on_dna = dna[np.clip(p[:, 1], 0, H - 1), np.clip(p[:, 0], 0, W - 1)].mean() > .5
-    groups['dna' if on_dna else 'root' if cy > 300 else 'trunk' if cy > 150 and 230 < cx < 410 else 'leaf'].append((p, L, cx, cy))
+    groups[group(cx, cy)].append((p, L, cx, cy))
 WINDOW = {'dna': (100, 950), 'root': (780, 1270), 'trunk': (930, 1520), 'leaf': (1240, 2300)}
 em = []
 for name, items in groups.items():
@@ -57,7 +60,7 @@ wl.sort(key=lambda o: o[0][:, 0].mean())
 wd = [f'<path pathLength="1" style="--t:{2550 + 680*k/max(1, len(wl) - 1):.0f}ms;--d:{min(440, max(190, L*1.4)):.0f}ms" d="{d(p)}"/>' for k, (p, L) in enumerate(wl)]
 
 block = ('<!-- logo-sketch:start (made by scripts/make-logo-sketch.py) -->\n'
-  '    <div class="ld-mark"><svg class="ld-sk" viewBox="0 0 640 381" aria-hidden="true">' + ''.join(em) + '</svg><span class="logo-em ld-real" role="img" aria-label="TranzLife Biosciences"></span></div>\n'
+  f'    <div class="ld-mark"><svg class="ld-sk" viewBox="0 0 {W} {H}" aria-hidden="true">' + ''.join(em) + '</svg><span class="logo-em ld-real" role="img" aria-label="TranzLife Biosciences"></span></div>\n'
   '    <div class="ld-word"><svg class="ld-sk" viewBox="0 0 1100 231" aria-hidden="true">' + ''.join(wd) + '</svg><span class="logo-word ld-real" aria-hidden="true"></span></div>\n'
   '    <!-- logo-sketch:end -->')
 html = open(HTML, encoding='utf-8').read()

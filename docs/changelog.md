@@ -1,5 +1,10 @@
 # Changelog
 
+## v14.1 (27 Nov 2026): new logo emblem
+- The emblem is the new tree on the green and gold infinity DNA ribbon, with its roots below, everywhere: top bar, menu, footer, loading screen, the product-details page and the browser tab and phone home-screen icons. The TRANZLIFE BIOSCIENCES wordmark and every font are unchanged.
+- The loading screen's line sketch is traced from the new emblem (`scripts/make-logo-sketch.py` now reads the emblem's size and groups its lines as ribbon, roots, trunk and leaves by position).
+- New `scripts/cut-emblem.py` replaces just the emblem from any image on white, and writes the favicons too. The emblem was cut from a 1152×1280 screenshot (about 390 px wide), so it is a little soft at the largest size on the loading screen; a larger original or an SVG would be sharper.
+
 ## v14.0 (26 Nov 2026): customer accounts, and the backend in its own folder with PostgreSQL
 - **Login with a mobile number:** a person icon in the top bar on every page. A 6-digit code by SMS (Twilio Verify), which verifies itself once typed, with a 30-second resend timer. A new number gets an account and is asked for a name. No passwords.
 - **Account menu:** logged in, the icon shows the customer's initial and opens "Hello, name", My Orders, My Profile, Saved addresses and Log out.

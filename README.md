@@ -185,7 +185,7 @@ See `docs/architecture.md` for how the pieces talk to each other.
 ## Notes
 
 - Fonts load from Google Fonts: Archivo and Caveat.
-- The logo lives in `src/assets/logo/`. To replace it, run `python scripts/cut-logo.py new-logo-on-white.png` (or drop in your own transparent WebP files with the same names), then run `python scripts/make-logo-sketch.py` to redraw the loading-screen sketch, and rebuild.
+- The logo lives in `src/assets/logo/`. To replace only the emblem (the tree picture) and keep the TRANZLIFE wordmark, run `python scripts/cut-emblem.py emblem-on-white.png`, then `python scripts/make-logo-sketch.py`, and set the `aspect-ratio` it prints in `src/styles/components/logo.css` and `loader.css`. To replace the whole logo, run `python scripts/cut-logo.py new-logo-on-white.png` (or drop in your own transparent WebP files with the same names), then run `python scripts/make-logo-sketch.py` to redraw the loading-screen sketch, and rebuild.
 - Product images live in `src/assets/products/`. To update them after a design changes, put the five design files (`gummies.png`, `inhaler.png`, `rollon.png`, `reviva.png`, `liver.png`) in a folder and run `python scripts/make-product-assets.py path/to/folder`. The cut-outs used in the hero and the product story come from `python scripts/make-product-cutouts.py path/to/folder` (needs `rembg`, see `scripts/requirements.txt`). The crop boxes at the top of each script match the current designs.
 - Prices in `src/data/products.js` are placeholders until the client confirms them.
 - The contact form is front-end only until `VITE_CONTACT_ENDPOINT` is set. Login and checkout run in test mode until the backend is connected (see Payments and Customer accounts).
