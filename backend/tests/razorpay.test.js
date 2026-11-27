@@ -60,14 +60,14 @@ describe('creating the order', () => {
 
   it('still takes QR code orders when Razorpay is down, and says payments are unavailable when there is no QR code either', async () => {
     rz.setDown(true);
-    const res = await api.post('/api/orders', { items:[{ id:'inhaler', qty:1 }], customer });
+    const res = await api.placeOrder({ items:[{ id:'inhaler', qty:1 }], customer });
     expect(res.status).toBe(201);
     const o = await res.json();
     expect(o).not.toHaveProperty('razorpay');
     expect(o.upi.id).toBe(UPI);
 
     api.use({ env:{ MERCHANT_UPI_ID:'' }, razorpay:razorpay() });
-    expect((await api.post('/api/orders', { items:[{ id:'inhaler', qty:1 }], customer })).status).toBe(503);
+    expect((await api.placeOrder({ items:[{ id:'inhaler', qty:1 }], customer })).status).toBe(503);
   });
 
   it('works with Razorpay alone (no UPI ID for the QR code)', async () => {

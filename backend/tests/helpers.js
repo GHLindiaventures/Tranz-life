@@ -1,6 +1,7 @@
 // A test copy of the API: its own in-memory PostgreSQL per test file (emptied before every test), on a random port.
 //   const api = useTestApi();          in a test file
-//   await api.post('/api/orders', body) / api.get(path) / api.login('9876543210') -> cookie
+//   await api.post(path, body) / api.get(path) / api.login('9876543210') -> cookie
+//   await api.newOrder(items) / api.placeOrder(body)   orders, placed by a logged-in test customer
 //   api.use({ env:{ … }, razorpay, codes })   rebuild the app with other settings for one test
 import { createServer } from 'node:http';
 import { afterAll, beforeAll, beforeEach } from 'vitest';
@@ -32,9 +33,11 @@ function useTestApi(defaults = () => ({})){
     await new Promise(r => server.listen(0, r));
     api.base = `http://localhost:${server.address().port}`;
   });
+  let shopper = null; // the test's default logged-in customer (orders need a login)
   beforeEach(async () => {
     await api.db.exec(`TRUNCATE ${TABLES} RESTART IDENTITY CASCADE`);
     api.use();
+    shopper = null;
   });
   afterAll(async () => {
     await new Promise(r => server.close(r));
@@ -54,7 +57,12 @@ function useTestApi(defaults = () => ({})){
     return { Cookie:res.headers.getSetCookie()[0].split(';')[0] };
   };
 
-  api.newOrder = async (items = [{ id:'inhaler', qty:2 }], headers = {}) => (await api.post('/api/orders', { items, customer }, headers)).json();
+  // the Cookie header of a customer logged in for this test (the same one each time it is asked for)
+  api.shopper = async () => (shopper ||= await api.login('9000000001'));
+
+  // places an order as `headers` (a login cookie), or as the test's default customer
+  api.placeOrder = async (body, headers) => api.post('/api/orders', body, headers?.Cookie ? headers : await api.shopper());
+  api.newOrder = async (items = [{ id:'inhaler', qty:2 }], headers) => (await api.placeOrder({ items, customer }, headers)).json();
   api.status = async ref => (await api.get(`/api/orders/${ref}`)).json();
   api.adminToken = async () => (await (await api.post('/api/admin/login', { password:PASSWORD })).json()).token;
   return api;

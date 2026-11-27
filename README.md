@@ -143,7 +143,7 @@ The person icon in the top bar (every page) logs customers in with their **mobil
 - **Profile information:** name, gender and email. The mobile number is how they log in.
 - **Manage addresses:** up to 10 addresses (home or work), one of them the default.
 
-Login is **optional at checkout**: guests still check out as before. A logged-in customer sees their saved addresses at the top of the delivery step (the default one is filled in), their order goes to My Orders, and a new delivery address is saved to their address book.
+Customers can browse and fill their bag without logging in, but **checking out needs a login**: **Checkout** opens the login window first, and the checkout opens as soon as they are in (closing the login window keeps the bag). So every order belongs to an account. The delivery step shows their saved addresses with the default one filled in, or, with none saved yet, their name, mobile number and email from the account, so they only type the address. The order goes to My Orders and the address is saved to their address book. The backend refuses an order from anyone not logged in.
 
 Codes are sent by **Twilio Verify** (emails through SendGrid). Until the backend has Twilio keys, login runs in test mode: the code shows on the login screen. Setting it up: [backend/README.md → What you do manually](backend/README.md#what-you-do-manually).
 

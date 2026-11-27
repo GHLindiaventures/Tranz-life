@@ -4,6 +4,8 @@ import { cart, thumbs } from '../../app/state.js';
 import { toast } from '../../components/toast.js';
 import { PRODUCTS } from '../../data/products.js';
 import { SHIPPING } from '../../data/shipping.js';
+import { currentUser, loginMode, ready } from '../account/account-state.js';
+import { requireLogin } from '../account/login-dialog.js';
 import { openCheckout } from '../checkout/checkout.js';
 import { initMiniBag, syncMiniBag } from './mini-bag.js';
 import { $ } from '../../utils/dom.js';
@@ -50,9 +52,15 @@ function openBag(open){
   $('#drawer').classList.toggle('open', open); $('#scrim').classList.toggle('open', open); $('#drawer').setAttribute('aria-hidden', !open);
 }
 
-function startCheckout(){
+// Checking out needs a login: the order belongs to the customer's account and goes to their address. A logged-out
+// customer is asked to log in first, then the checkout opens; closing the login window leaves the bag as it was.
+const LOGIN_REASON = 'Log in to check out. Your order is saved in your account, delivered to your address, and you can follow it in My Orders.';
+async function startCheckout(){
   if (!cart.size) return toast('Your bag is empty');
   openBag(false);
+  await ready;
+  if (!currentUser() && !loginMode()) return toast('Checkout is not available right now. Please try again later.');
+  if (!await requireLogin(LOGIN_REASON)) return toast('Log in to check out. Your bag is saved.');
   const problem = openCheckout([...cart].map(([id, qty]) => ({ id, qty })));
   if (problem) toast(problem);
 }

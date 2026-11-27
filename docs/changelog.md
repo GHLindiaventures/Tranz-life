@@ -1,5 +1,11 @@
 # Changelog
 
+## v14.4 (27 Nov 2026): checking out needs a login
+- Customers can still add products without logging in, but **Checkout** (bag and mini bag bar) opens the login window first: "Log in to check out. Your order is saved in your account, delivered to your address, and you can follow it in My Orders." The checkout opens as soon as they are logged in; closing the window keeps the bag.
+- The delivery step fills in the default saved address, or, with none saved yet, the name, mobile number and email from the account, so a new customer only types the address (someone who logged in with email types their mobile number here).
+- The backend enforces it: `POST /api/orders` answers 401 without a login, so every order belongs to an account (`orders.customer_id`) and its address is saved to the address book. 53 backend tests.
+- `backend/.env` created on this computer (git-ignored) with places for the Twilio values.
+
 ## v14.3 (27 Nov 2026): log in with email, and the login window opens when a product is added
 - **Add to bag while logged out:** the login window opens straight away ("Added to your bag. Log in to keep your bag, check out faster and follow your order."). The product is in the bag either way. Once per visit, so closing it means "not now"; the checkout still offers to log in.
 - **Email login:** "Use email instead" right under the mobile number field. The 6-digit code goes by email (Twilio Verify with SendGrid), and "Use mobile number instead" switches back. A new email customer gets that address as their contact email and is only asked for their name.

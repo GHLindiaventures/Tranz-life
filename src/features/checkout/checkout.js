@@ -273,6 +273,7 @@ const shownMethods = () => els('.co-method').filter(b => !b.hidden).map(b => b.d
 // ---------- step 1: details ----------
 async function submitDetails(e){
   e.preventDefault(); if (busy) return;
+  if (!currentUser()) return showErr('Please log in to place your order (the Log in link above).'); // logged out in another tab
   const checked = checkCustomer(Object.fromEntries(new FormData(e.target))), errors = checked.errors;
   ['name', 'phone', 'email', 'address', 'city', 'pincode', 'state'].forEach(k => setFieldErr(k, errors?.[k]));
   if (errors){ showErr('Please check the highlighted details.'); $(`#co-${Object.keys(errors)[0]}`, box).focus(); return; }

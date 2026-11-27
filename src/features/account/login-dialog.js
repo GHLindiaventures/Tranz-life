@@ -2,11 +2,12 @@
 // code sent by SMS or email, which verifies by itself once all six digits are in, (3) for a new customer, their name.
 // No passwords.
 //   openLogin({ reason }) -> Promise of the logged-in customer, or null when the window is closed
+//   requireLogin(reason)  -> the logged-in customer, opening the window first when nobody is logged in
 import { state } from '../../app/state.js';
 import { toast } from '../../components/toast.js';
 import { $, $$ } from '../../utils/dom.js';
 import { esc } from '../../utils/html.js';
-import { account, emailLogin, setUser } from './account-state.js';
+import { account, currentUser, emailLogin, loginMode, ready, setUser } from './account-state.js';
 
 const REASON = 'Get to your orders, saved addresses and a faster checkout.';
 const HELP = {
@@ -217,4 +218,12 @@ function openLogin({ reason } = {}){
   return new Promise(resolve => { resolveOpen = resolve; });
 }
 
-export { openLogin };
+// the logged-in customer; asks them to log in first when nobody is. Null when they close the window, or when login is
+// not available (then nothing that needs an account, like checking out, can go ahead).
+async function requireLogin(reason){
+  await ready;
+  if (currentUser()) return currentUser();
+  return loginMode() ? openLogin({ reason }) : null;
+}
+
+export { openLogin, requireLogin };

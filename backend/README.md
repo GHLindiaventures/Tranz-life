@@ -36,7 +36,7 @@ To try login without Twilio, set `OTP_TEST_MODE=true`: the code then shows on th
 npm test
 ```
 
-52 tests run the whole API against a real PostgreSQL (PGlite in memory), with fake Twilio and Razorpay servers. They cover logging in and its limits, accounts and address books, the privacy of each customer's orders, placing and paying orders (UTR and Razorpay), webhooks and the admin page.
+53 tests run the whole API against a real PostgreSQL (PGlite in memory), with fake Twilio and Razorpay servers. They cover logging in and its limits, accounts and address books, the privacy of each customer's orders, placing and paying orders (UTR and Razorpay), webhooks and the admin page.
 
 ## How it is organised
 
@@ -96,7 +96,7 @@ Each module is split the same way, so you always know where to look:
 | `POST /api/me/addresses` | Adds an address. `/:id` edits it, `/:id/delete` deletes it, `/:id/default` makes it the default |
 | `GET /api/me/orders` | My Orders, newest first |
 | `GET /api/me/orders/:ref` | One order with its tracking timeline (only the customer's own) |
-| `POST /api/orders` | Places an order (guest or logged in) |
+| `POST /api/orders` | Places an order for the logged-in customer (401 when nobody is logged in) |
 | `GET /api/orders/:ref` | The payment status the checkout polls |
 | `POST /api/orders/:ref/razorpay`, `/utr` | Confirms a Razorpay payment / sends a UTR |
 | `POST /api/webhooks/razorpay` | Razorpay reporting payments |
@@ -136,7 +136,7 @@ Some decisions worth knowing:
 3. If it is right: a number or address we have not seen becomes a new customer (an email customer gets that address as their contact email too), and a session starts. The browser gets the `tl_session` cookie, which is `HttpOnly` (page scripts cannot read it), `Secure`, `SameSite=Lax` and only sent to `/api`. It lasts 30 days.
 4. A new customer is asked for their name (and, if they used their mobile number, an optional email). After that, every call knows who they are through the cookie.
 
-Orders placed while logged in get the customer's ID (`orders.customer_id`), so they show in My Orders, and their delivery address is saved to the address book. Guests can still check out; their orders have no customer.
+Placing an order needs a login (the orders service refuses one without a customer, 401). Every order gets the customer's ID (`orders.customer_id`), so it shows in their My Orders, and its delivery address is saved to their address book. On the website, **Checkout** opens the login window first when nobody is logged in.
 
 ## Settings
 

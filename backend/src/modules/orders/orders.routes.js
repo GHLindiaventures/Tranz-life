@@ -1,6 +1,7 @@
 // Orders.
-// Checkout (anyone; a logged-in customer's order also goes to their account)
+// Checkout (logged in: every order belongs to the customer's account)
 //   POST /api/orders                  { items:[{ id, qty }], customer } -> 201 order number, totals, Razorpay and/or UPI details
+//                                     (401 when nobody is logged in)
 //   GET  /api/orders/:ref             -> { ref, status, total, utr, reason, paymentId }
 //   POST /api/orders/:ref/razorpay    { paymentId, signature } -> status (checks the payment with Razorpay)
 //   POST /api/orders/:ref/utr         { utr } -> status "verifying"   (payments to TranzLife's own QR code)
