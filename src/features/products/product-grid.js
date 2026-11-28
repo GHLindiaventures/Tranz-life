@@ -18,7 +18,7 @@ function buildGrid(){
       <div class="pc-media">${thumbImg(p, '', true)}<span class="pc-tag">${p.tag}</span><button class="pc-view" type="button" data-design="${p.id}">View design <i aria-hidden="true">↗</i></button></div>
       <div class="pc-body">
         <p class="pc-no">${p.no} / ${String(PRODUCTS.length).padStart(2, '0')}</p>
-        <h3>${p.name}</h3>
+        <h3>${p.name.replace(/^TranzLife\s+/i, '')}</h3>
         <p class="pc-d">${p.desc}</p>
         <div class="pc-foot"><span class="pc-price">${inr(p.price)}<small>${p.size}</small></span><button class="add pill" data-id="${p.id}"><i aria-hidden="true">+</i>Add to bag</button></div>
       </div>

@@ -258,7 +258,7 @@ function calcHoldTransform(p, start, view, mouse = { x: 0, y: 0 }, tTime = 0, is
  *   the card (STORY[i]: icon, title, description), the badges (PRODUCTS[i].ing), and down the page the full
  *   write-up from product-details.js (eyebrow, tagline, intro, botanicals list, highlights, closing, small print),
  *   the product finder's line for it (needs.js), its botanicals (herbs.js), price and size, the product photo and
- *   the design board. Reviva has no write-up, so its page uses the catalogue copy instead.
+ *   the design board. Every product has a write-up.
  * Builds a mask for each title letter. Call again when the product changes.
  */
 // The section starts under the hero, so its first screen (100vh) is what the hero's fade reveals: only the card sits

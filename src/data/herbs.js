@@ -29,7 +29,7 @@ const HERBS = [
   { id:'bhumyamalaki', n:'Bhumyamalaki', latin:'Phyllanthus niruri', part:'Whole herb', cmp:'Phyllanthin', p:4, color:0x75a64a, seed:19, img:imgBhumyamalaki,
     motto:'Cleanse. Restore. Support.',
     notes:{ part:'500 mg per 10 ml', cmp:'Standardized phyllanthin', found:'TranzLife Liver Booster' },
-    txt:'A foundational Ayurvedic herb for liver wellness and natural detoxification. Formulated at 500 mg per 10 ml serving as the lead botanical in TranzLife Liver Booster.' },
+    txt:'A foundational Ayurvedic herb for liver wellness. Formulated at 500 mg per 10 ml serving as the lead botanical in TranzLife Liver Booster.' },
   { id:'turmeric', n:'Turmeric', latin:'Curcuma longa', part:'Rhizome', cmp:'Curcuminoids', p:4, color:0xe09638, seed:7, img:imgTurmeric,
     motto:'Golden. Antioxidant. Shield.',
     notes:{ part:'Golden & black rhizome', cmp:'Bioactive curcuminoids', found:'Liver Booster & PulmoClear' },

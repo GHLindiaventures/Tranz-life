@@ -3,6 +3,7 @@
 // lineup position on the line above into the benefit photo slot, echoing the hero jar trajectory.
 import { PRODUCTS } from '../../data/products.js';
 import { BENEFITS } from '../../data/benefits.js';
+import { DETAILS } from '../../products-page/data/product-details.js';
 import { state, thumbs } from '../../app/state.js';
 import { CUTS } from '../products/product-images.js';
 import { gsap } from '../../lib/gsap.js';
@@ -22,6 +23,7 @@ function initBenefits(){
       <div class="bi-body">
         <p class="bi-tag">${p.tag} · ${p.size}</p>
         <h3 class="bi-name">${p.name}</h3>
+        ${(DETAILS[p.id]?.highlights || []).length ? `<ul class="bi-hl" aria-label="Key benefits">${DETAILS[p.id].highlights.slice(0, 3).map(h => `<li>${h[0]}</li>`).join('')}</ul>` : ''}
         <div class="tbl" role="table" aria-label="What goes into ${p.name}">
           <div class="tr th" role="row"><span class="td" role="columnheader">What goes in</span><span class="td" role="columnheader"><span class="brandmark">TranzLife</span></span><span class="td" role="columnheader">Typical brand</span></div>
           <div class="tbl-rows" role="rowgroup">${(BENEFITS[p.id] || []).map(b =>

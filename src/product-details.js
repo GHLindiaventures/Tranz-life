@@ -17,89 +17,93 @@ import { createZoomPan } from './utils/zoom-pan.js';
 
 let pdpZoom = null;
 
-// Product page content per product. Ingredients follow official composition sheet
+// Product page content per product: from the client's product sheet (Nov 2026): key benefits, ingredients as on the
+// pack, directions, cautions, storage and pack details. Disease claims printed on some packs are left out.
 const CLINICAL_DETAILS = {
   gummies: {
     category: 'Respiratory Wellness Gummies',
     eyebrow: 'Respiratory Wellness · PulmoClear™ formulation',
     rating: null,
     highlights: [
-      'Traditional botanicals for everyday respiratory wellness',
-      'Tulsi, Vasaka, dry ginger, long pepper and licorice root in every gummy',
-      'With Vitamin C, Vitamin D3 and Zinc',
-      'Convenient, berry-flavoured gummy format'
+      'Supports respiratory wellness and everyday health',
+      'Traditional Ayurvedic botanicals with Vitamin C, Vitamin D3 and Zinc',
+      'Antioxidant support and support for natural immune function',
+      'Natural berry-flavoured gummy, 60 per pack'
     ],
-    botanicals: 'Tulsi (Ocimum tenuiflorum), Vasaka (Justicia adhatoda), Dry Ginger / Sukku (Zingiber officinale), Long Pepper / Thippili (Piper longum), Black Pepper (Piper nigrum), Black Turmeric / Karumanjal (Curcuma caesia), Cumin / Jeera (Cuminum cyminum), Licorice Root (Glycyrrhiza glabra), Small Onion Extract (Allium cepa), Vitamin C, Vitamin D3 and Zinc.',
-    usage: 'Adults: 2 gummies twice daily after meals, or as directed on the label. Chew well before swallowing. Do not exceed the recommended daily usage. Not recommended for pregnant or lactating women. Consult a healthcare professional if you have a respiratory condition or take regular medication.',
+    botanicals: 'Botanical ingredients: Jeera (Cumin), Karumanjal (Black Turmeric), Sukku (Dry Ginger), Thippili (Long Pepper), Black Pepper, Tulsi, Vasaka, Licorice Root and Small Onion Extract. Added nutrients: Vitamin C, Vitamin D3 and Zinc.',
+    usage: 'Follow the serving size and frequency on the approved product pack. Do not exceed the recommended daily intake. Consult a healthcare professional if you are pregnant, breastfeeding, have a respiratory condition or take regular medication.',
     mechanism: null,
-    packaging: 'Tamper-evident container. 60 gummies. Barcode: 8 906132 540147.',
+    packaging: '60 gummies per pack, natural berry flavour. Tamper-evident container. Barcode: 8 906132 540147.',
     scienceCards: []
   },
   inhaler: {
-    category: 'Aromatherapy & Relaxation',
-    eyebrow: 'PORTABLE AROMATHERAPY · SIX ESSENTIAL OILS',
+    category: 'Aromatherapy · Smoke-Free Support',
+    eyebrow: 'ESSENTIAL OIL AROMATHERAPY INHALER · SIX OILS',
     rating: null,
     highlights: [
-      'A compact, portable aromatherapy inhaler',
-      'A blend of six essential oils for a refreshing aromatic moment',
-      'Bring a brief pause and mindful breathing into your day',
-      'Fits easily in a pocket or bag'
+      'Helps manage smoking cravings, on your way to a smoke-free lifestyle',
+      'Promotes relaxation and emotional balance; helps manage stress and irritability',
+      'Supports a refreshing breathing experience',
+      'Compact, pocket-sized and discreet; marketed as a non-addictive formulation'
     ],
-    botanicals: 'Peppermint Oil, Lavender Oil, Eucalyptus Oil, Lemon Oil, Black Pepper Oil and Tulsi Oil.',
-    usage: 'Remove the cap and inhale gently through each nostril 2–3 times whenever you want a moment to pause. Pair with slow, deep breathing. For inhalation only; do not apply to skin.',
+    botanicals: 'Peppermint Oil, Eucalyptus Oil, Lavender Oil, Lemon Oil, Black Pepper Oil and Tulsi Oil.',
+    usage: '1. Gently remove the protective cap. 2. Place the inhaler near each nostril. 3. Take slow, deep inhalations. 4. Repeat whenever you experience cravings or feel stressed. For inhalation only.',
     mechanism: null,
-    packaging: 'Airtight 10 ml pocket inhaler with a secure cap.',
+    packaging: 'Compact, pocket-sized inhaler with a protective cap. Easy to carry while travelling or working.',
     scienceCards: []
   },
   rollon: {
     category: 'Menstrual Comfort Roll-On',
-    eyebrow: 'WOMEN’S MENSTRUAL WELLNESS · PLANT-BASED ROLL-ON',
+    eyebrow: 'WOMEN’S MENSTRUAL COMFORT · PLANT-BASED ROLL-ON',
     rating: null,
+    activesTitle: 'Ingredients (as on the pack)',
+    packagingTitle: 'Cautions, Storage & Pack',
     highlights: [
-      'Designed around comfort throughout your cycle',
-      'Wintergreen, Peppermint, Ginger, Lavender and Eucalyptus in a Sesame oil base',
-      'Fast-absorbing, non-greasy roll-on',
-      'Convenient 50 ml roll-on and 8 ml pocket size'
+      'Designed to support menstrual comfort routines',
+      'A soothing topical application that supports relaxation and personal comfort',
+      'Easy-to-apply, non-greasy roll-on',
+      'Compact 8 ml pack, portable and convenient to carry'
     ],
-    botanicals: 'Wintergreen Oil (Gaultheria procumbens), Peppermint Oil (Mentha × piperita), Ginger (Zingiber officinale), Lavender Oil (Lavandula angustifolia) and Eucalyptus Oil (Eucalyptus globulus) in a Sesame Oil (Sesamum indicum) base.',
-    usage: 'Roll gently around the belly button every morning on an empty stomach, as directed on the label. For external use only. Avoid eyes and broken skin.',
+    botanicals: 'Wintergreen Oil, Peppermint Oil, Ginger Essential Oil, Lavender Essential Oil, Eucalyptus Oil and Sesame Oil.',
+    usage: 'Do a patch test before first use. Roll onto the lower abdomen, lower back or inner wrists and massage gently until absorbed. Reapply 2–4 times daily, or as needed, during the menstrual cycle.',
     mechanism: null,
-    packaging: '50 ml roll-on bottle (and 8 ml travel size) with stainless steel rollerball. Barcode: 8 906132 540154.',
+    packaging: 'For external use only. Avoid contact with eyes, mucous membranes and broken or irritated skin. Do not use on children. Discontinue use if irritation occurs. Keep out of reach of children. Store in a cool, dry place away from direct sunlight and keep the container tightly closed. 8 ml roll-on. Plant-based, not tested on animals, recyclable packaging. ISO 9001:2015, GMP certified, made in India. Barcode: 8 906132 540154.',
     scienceCards: []
   },
   reviva: {
     category: 'Botanical Massage Roll-On',
-    eyebrow: 'BOTANICAL MASSAGE ROLL-ON · EVERYDAY WELLNESS & VITALITY RITUAL',
+    eyebrow: 'BOTANICAL MASSAGE ROLL-ON · DAILY SELF-CARE',
     rating: null,
     pills: false,
     activesTitle: 'Ingredients',
     packagingTitle: 'Pack & Precautions',
     highlights: [
-      'Convenient 50 ml massage roll-on format',
-      'Designed for external application and gentle massage',
-      'Portable format for a simple daily wellness ritual',
-      'Botanical-inspired positioning for everyday personal care'
+      'A refreshing topical application with Dill and Eucalyptus essential oils',
+      'Supports a simple daily self-care routine',
+      'Convenient massage roll-on: easy and direct, no preparation needed',
+      'Portable, travel-friendly 50 ml roll-on'
     ],
-    botanicals: 'Dill essential oil and Eucalyptus essential oil. See the product label for the full ingredient declaration.',
-    usage: 'Apply a small amount to intact skin and massage gently, as directed on the label. Do not apply to wounds or irritated skin. Wash hands after use.',
+    botanicals: 'Dill Essential Oil and Eucalyptus Essential Oil.',
+    usage: 'Roll gently around the belly button every morning on an empty stomach and massage gently. Apply to intact skin only, follow the pack for how often to use it, and wash your hands after use.',
     mechanism: null,
-    packaging: 'Massage roll-on, 50 ml. External use only. Avoid eyes and mucous membranes. Keep out of reach of children.',
+    packaging: 'Massage roll-on, 50 ml. For external use only: avoid the eyes, wounds and irritated skin. Keep out of reach of children. ISO 9001:2015 and GMP certified.',
     scienceCards: []
   },
   liver: {
-    category: 'Ayurvedic Liver Wellness (500 ml)',
-    eyebrow: 'CLASSICAL POLYHERBAL LIQUID · 11 AYURVEDIC BOTANICALS',
+    category: 'Polyherbal Concoction · Liver Wellness (500 ml)',
+    eyebrow: 'POLYHERBAL CONCOCTION · 11 AYURVEDIC BOTANICALS',
     rating: null,
+    packagingTitle: 'Cautions, Storage & Pack',
     highlights: [
-      'Eleven classical Ayurvedic botanicals in every 10 ml',
-      'Made to complement a balanced diet and healthy lifestyle',
-      'Bhumyamalaki, Kalmegh and Kutki lead the formulation',
+      'Supports normal liver function and natural metabolic processes',
+      'Antioxidant support from traditional botanicals',
+      'Supports digestive health and appetite',
       'Simple routine: 10 ml twice daily after meals'
     ],
-    botanicals: 'Each 10 ml contains: Bhumyamalaki (Phyllanthus niruri) 500mg, Kalmegh (Andrographis paniculata) 400mg, Kutki (Picrorhiza kurroa) 400mg, Punarnava (Boerhavia diffusa) 300mg, Bhringraj (Eclipta alba) 300mg, Daruharidra (Berberis aristata) 200mg, Guduchi (Tinospora cordifolia) 200mg, Amla (Emblica officinalis) 200mg, Haritaki (Terminalia chebula) 200mg, Turmeric (Curcuma longa) 150mg, Black Pepper (Piper nigrum) 50mg.',
-    usage: 'Adults: 10 ml (2 teaspoons) twice daily after meals. Shake well before use. Refrigerate after opening. Store away from direct sunlight.',
+    botanicals: 'Composition per 10 ml: Bhumyamalaki (Phyllanthus niruri) 500 mg, Kalmegh (Andrographis paniculata) 400 mg, Kutki (Picrorhiza kurroa) 400 mg, Punarnava (Boerhaavia diffusa) 300 mg, Bhringraj (Eclipta alba) 300 mg, Daruharidra (Berberis aristata) 200 mg, Guduchi (Tinospora cordifolia) 200 mg, Amla (Emblica officinalis) 200 mg, Haritaki (Terminalia chebula) 200 mg, Turmeric (Curcuma longa) 150 mg, Piper nigrum (Black Pepper) 50 mg, Excipients q.s.',
+    usage: 'Adults: 10 ml (2 teaspoons) twice daily after meals, using a measuring cup. Shake well before use. Follow the dosage and duration on the approved label or as advised by a healthcare professional.',
     mechanism: null,
-    packaging: '500 ml amber bottle with calibrated dosing cap. Barcode: 8 906132 540130.',
+    packaging: 'Not recommended for pregnant or lactating women. Consult your physician if you are under medication. Store in a cool, dry place away from direct sunlight; refrigerate after opening. 500 ml, mixed flavour. 100% Ayurvedic, natural ingredients, no added colours, no added sugar. Ayurvedic proprietary medicine, GMP certified, made in India. Barcode: 8 906132 540130.',
     scienceCards: []
   },
   energy: {
@@ -108,17 +112,17 @@ const CLINICAL_DETAILS = {
     rating: null,
     pills: false,
     activesTitle: 'Key Ingredients',
-    packagingTitle: 'Pack & Storage',
+    packagingTitle: 'Pack & Precautions',
     highlights: [
-      'Designed to complement daily energy, activity and general well-being',
-      'Selected botanical and mineral-origin ingredients in a ready-to-use liquid',
-      'A simple, measured routine: 7.5 ml twice daily',
-      '500 ml pack with measuring device'
+      'Supports everyday energy and stamina',
+      'Promotes overall vitality and well-being',
+      'Supports hormonal wellness and healthy immune function',
+      'Easy-to-measure dosage: 7.5 ml twice daily, 500 ml pack'
     ],
-    botanicals: 'Ruta graveolens, Hecla lava, Symphytum officinale, Calcarea phosphorica, Echinacea angustifolia.',
-    usage: '7.5 ml twice daily, or as recommended by a healthcare professional. Shake well before use.',
+    botanicals: 'Ruta graveolens (Q), Hecla lava (3X), Symphytum officinale (Q), Calcarea phosphorica (8X) and Echinacea angustifolia (Q).',
+    usage: 'Suggested dosage: 7.5 ml twice daily, or as recommended by a healthcare professional. Use the measuring device supplied with the pack and follow the approved product label.',
     mechanism: null,
-    packaging: 'Oral liquid, net quantity 500 ml. Store as directed on the final pack.',
+    packaging: 'Oral liquid, 500 ml, with a measuring device. Do not exceed the recommended serving. Consult a healthcare professional before use if pregnant, breastfeeding, taking medication or managing a health condition. Keep out of reach of children.',
     scienceCards: []
   }
 };

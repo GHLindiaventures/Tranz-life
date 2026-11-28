@@ -1,6 +1,7 @@
-// Full product write-ups shown in the product sheet (lightbox) next to each product's design.
-// Wording follows the client's brief: relaxation, comfort and wellness positioning, no treatment claims.
-// Reviva has no write-up yet, so its sheet shows the design only.
+// Full product write-ups: the Products page showcase and each product page (product-details.html).
+// From the client's "Tranzlife Biosciences Products.pdf" (Nov 2026): product introduction, key benefits, ingredients,
+// how to use, how it works and pack details. Wellness wording only: the disease claims printed on some packs (blood
+// sugar, detox, lung function, cramp relief) are left out, and no product is said to treat, cure or prevent anything.
 const BRAND = {
   name: 'TranzLife Biosciences',
   tagline: 'Innovating Life Beyond Limits.',
@@ -9,127 +10,176 @@ const BRAND = {
 
 const DETAILS = {
   gummies: {
-    eyebrow: 'Respiratory Wellness · PulmoClear™ formulation',
+    eyebrow: 'Respiratory Wellness · PulmoClear™ Gummies',
     title: 'TranzLife Lung Booster Gummies',
     tagline: 'Breathe Well. Live Better. Embrace Every Breath.',
     intro: [
-      'Discover a new approach to everyday wellness with TranzLife Lung Booster Gummies, inspired by traditional botanical knowledge and contemporary product innovation.',
-      'Selected botanicals, vitamins and minerals come together in a convenient gummy format designed for modern lifestyles, rooted in nature-inspired innovation and a commitment to quality.'
+      'TranzLife PulmoClear Gummies are a botanical-based wellness supplement that combines traditional Ayurvedic herbs with essential vitamins and minerals, designed to support respiratory wellness and everyday health.',
+      'Traditional Ayurvedic botanicals and Vitamin C, Vitamin D3 and Zinc come together to provide nutritional and botanical support for everyday respiratory wellness, in a natural berry-flavoured gummy.'
     ],
-    listTitle: 'The power of botanicals in every gummy',
+    listTitle: 'Botanicals and nutrients in every gummy',
     list: [
-      ['Tulsi (Holy Basil)', 'A traditional Indian botanical valued in herbal wellness practices.'],
-      ['Vasaka', 'A botanical traditionally used in Ayurvedic respiratory wellness preparations.'],
-      ['Dry Ginger (Sukku)', 'A familiar botanical ingredient used in traditional wellness formulations.'],
-      ['Long Pepper (Thippili)', 'A traditional spice valued in Ayurvedic herbal preparations.'],
-      ['Black Pepper', 'A natural spice containing piperine, studied for its interactions with certain nutrients.'],
-      ['Black Turmeric (Karumanjal)', 'A distinctive botanical being explored for its phytochemical properties.'],
-      ['Cumin (Jeera)', 'A traditional culinary ingredient included in the botanical formulation.'],
+      ['Tulsi', 'A traditional Indian botanical valued in herbal wellness practices.'],
+      ['Vasaka', 'A botanical traditionally used in Ayurvedic respiratory preparations.'],
+      ['Sukku (Dry Ginger)', 'A familiar botanical used in traditional wellness formulations.'],
+      ['Thippili (Long Pepper)', 'A traditional spice valued in Ayurvedic herbal preparations.'],
+      ['Karumanjal (Black Turmeric)', 'A distinctive botanical included in the formulation.'],
       ['Licorice Root', 'A botanical used in traditional herbal preparations.'],
-      ['Small Onion Extract', 'A plant-derived ingredient included in the formulation.'],
-      ['Vitamin C, Vitamin D3 & Zinc', 'Essential micronutrients that contribute to normal physiological functions in appropriate quantities.']
+      ['Jeera, Black Pepper & Small Onion Extract', 'Traditional kitchen botanicals that complete the blend.'],
+      ['Vitamin C, Vitamin D3 & Zinc', 'Added essential vitamins and minerals.']
     ],
     highlightsTitle: 'Why choose Lung Booster Gummies?',
     highlights: [
-      ['Convenient gummy format', 'Designed for easy consumption as directed on the product label.'],
-      ['Botanical-inspired formulation', 'Inspired by traditional plant-based wellness practices.'],
-      ['Micronutrient inclusion', 'Vitamins and minerals as specified in the final formulation.'],
-      ['Quality-focused development', 'Emphasising ingredient specifications and formulation consistency.'],
-      ['Modern wellness approach', 'Botanical inspiration and contemporary product development together.']
+      ['Respiratory wellness', 'Designed to support respiratory wellness and everyday health.'],
+      ['Antioxidant support', 'Botanicals and Vitamin C that provide antioxidant support.'],
+      ['Natural immune function', 'With Vitamin C, Vitamin D3 and Zinc to support natural immune function.'],
+      ['Ayurveda meets nutrition', 'Traditional Ayurvedic botanicals combined with selected nutrients.'],
+      ['Easy to take', 'A natural berry-flavoured gummy, 60 per pack, for everyday wellness routines.']
     ],
-    note: 'Use only as directed on the product label. This product is not a substitute for medical treatment or a means of preventing or curing respiratory disease. Consult a qualified healthcare professional if you have a respiratory condition or take regular medication.'
+    note: 'Follow the serving size and frequency on the approved product pack. Do not exceed the recommended daily intake. A wellness supplement, not a substitute for medical care. Consult a healthcare professional if you have a respiratory condition or take regular medication.'
   },
 
   inhaler: {
-    eyebrow: 'Aromatherapy · Relaxation',
-    title: 'TranzLife Aromatherapy Inhaler',
+    eyebrow: 'Aromatherapy · Smoke-Free Support',
+    title: 'TranzLife BreatheFree Aromatherapy Inhaler',
     tagline: 'Pause. Breathe. Relax. Rediscover Your Balance.',
     intro: [
-      'A moment of calm, wherever life takes you. Work pressures, busy schedules and everyday responsibilities can leave us feeling overwhelmed; taking a moment to pause and reconnect can make a meaningful difference to your daily wellness routine.',
-      'The TranzLife Aromatherapy Inhaler is a convenient, portable aromatherapy product, inspired by the relationship between aroma, sensory perception and relaxation, that brings a refreshing sensory experience into your everyday routine.'
+      'TranzLife BreatheFree is an essential oil-based aromatherapy inhaler designed to support you on your journey towards a smoke-free lifestyle, with a convenient aromatic experience that promotes relaxation, freshness and breathing comfort.',
+      'Its blend of six essential oils provides an aromatic inhalation experience, intended to promote relaxation, help manage cravings and support breathing comfort, whenever and wherever you need it.'
     ],
-    highlightsTitle: 'Why choose the Aromatherapy Inhaler?',
+    listTitle: 'Six essential oils',
+    list: [
+      ['Peppermint Oil', 'A cool, fresh aroma.'],
+      ['Eucalyptus Oil', 'A clear, refreshing vapour.'],
+      ['Lavender Oil', 'A soft floral aroma linked with relaxation.'],
+      ['Lemon Oil', 'A bright, citrus freshness.'],
+      ['Black Pepper Oil', 'A warm, spicy note.'],
+      ['Tulsi Oil', 'Holy basil, a traditional Indian botanical.']
+    ],
+    highlightsTitle: 'Why choose BreatheFree?',
     highlights: [
-      ['A convenient wellness companion', 'A compact, portable format designed to fit easily into everyday routines.'],
-      ['An aromatic sensory experience', 'The distinctive aroma of its aromatic ingredients, as part of a personal wellness ritual.'],
-      ['A moment to pause', 'Bring a brief pause and mindful breathing into your day whenever you need it.'],
-      ['Inspired by nature', 'Reflecting TranzLife’s interest in botanical ingredients and nature-inspired innovation.'],
-      ['Designed for modern lifestyles', 'A practical format for people who value simple self-care routines.']
+      ['Helps manage cravings', 'Reach for a slow, aromatic breath when the urge to smoke comes.'],
+      ['Relaxation & balance', 'Promotes relaxation and emotional balance, and helps manage stress and irritability.'],
+      ['A refreshing breath', 'Supports a refreshing breathing experience.'],
+      ['Smoke-free support', 'Convenient support during your smoking-cessation efforts; marketed as a non-addictive formulation.'],
+      ['Pocket-sized & discreet', 'Easy to carry while travelling or working, and simple to use whenever needed.']
     ],
-    closingTitle: 'Make space for a moment of calm',
-    closing: 'Wellness is not always about big changes. Use the inhaler as part of a personal relaxation routine alongside mindful breathing, adequate rest, regular physical activity and healthy daily habits.',
-    note: 'Use according to the product directions. Individual experiences with aromas may differ; aromatherapy is a complementary wellness practice, not a replacement for professional mental healthcare.'
+    closingTitle: 'How to use',
+    closing: 'Gently remove the protective cap, place the inhaler near each nostril and take slow, deep breaths. Repeat whenever you experience cravings or feel stressed.',
+    note: 'For inhalation only. Use according to the product directions. An aromatherapy product, not a medicine or nicotine replacement; individual experiences with aromas may differ. Keep out of reach of children.'
   },
 
   rollon: {
-    eyebrow: 'Women’s Menstrual Wellness & Comfort',
-    title: 'TranzLife CycleRelief',
+    eyebrow: 'Women’s Menstrual Comfort · Plant-Based Roll-On',
+    title: 'TranzLife CycleRelief Roll-On',
     tagline: 'Embrace Every Cycle. Celebrate Every You.',
     intro: [
-      'Every woman’s journey is unique, and every menstrual cycle deserves care, comfort and understanding. CycleRelief is part of our commitment to convenient wellness solutions designed around the evolving needs of women.',
-      'Some women experience discomfort, cramps, lower back pain, bloating or fatigue during their periods. CycleRelief is developed with an emphasis on comfort, convenience and individual care throughout the cycle.'
+      'TranzLife CycleRelief is a plant-based topical roll-on designed for menstrual comfort and personal care, a convenient application for a soothing self-care and relaxation routine during the menstrual cycle.',
+      'Applied with a gentle massage, its essential oil blend provides a topical, aromatherapy-inspired self-care experience to complement relaxation and personal comfort routines.'
     ],
     highlightsTitle: 'Designed with women in mind',
     highlights: [
-      ['A focus on comfort', 'Positioned as a women’s wellness solution for comfort and well-being during menstruation.'],
-      ['Convenience for everyday life', 'A practical solution that fits into women’s daily routines.'],
-      ['Thoughtful innovation', 'Scientific understanding, formulation expertise and nature-inspired innovation combined.'],
-      ['Quality-conscious development', 'Responsible formulation, appropriate testing and clear information for informed choices.']
+      ['Menstrual comfort routines', 'Designed to support your comfort routine during the menstrual cycle.'],
+      ['Soothing application', 'A soothing topical application with a comforting massage.'],
+      ['Relaxation & comfort', 'Supports relaxation and personal comfort.'],
+      ['Easy and non-greasy', 'An easy-to-apply, non-greasy roll-on in a compact 8 ml pack you can carry anywhere.']
     ],
-    listTitle: 'Our commitment to women’s wellness',
+    listTitle: 'Ingredients (as on the pack)',
     list: [
-      ['Awareness', 'Promoting awareness of menstrual health and self-care.'],
-      ['Informed choices', 'Supporting informed decisions about period-related discomfort.'],
-      ['Quality', 'Prioritising product quality and responsible innovation.'],
-      ['Professional guidance', 'Encouraging medical advice when symptoms are severe, unusual or persistent.']
+      ['Wintergreen Oil', 'Essential oil'],
+      ['Peppermint Oil', 'Essential oil'],
+      ['Ginger Essential Oil', 'Essential oil'],
+      ['Lavender Essential Oil', 'Essential oil'],
+      ['Eucalyptus Oil', 'Essential oil'],
+      ['Sesame Oil', 'Carrier oil']
     ],
-    note: 'Use as directed on the label. Please consult a healthcare professional if your symptoms are severe, unusual or persistent.'
+    closingTitle: 'How to use',
+    closing: 'Do a patch test before first use. Roll onto the lower abdomen, lower back or inner wrists and massage gently until absorbed. Reapply 2–4 times a day, or as needed, during the menstrual cycle.',
+    note: 'For external use only. Avoid contact with eyes, mucous membranes and broken or irritated skin. Do not use on children. Stop using it if irritation occurs. Keep out of reach of children. Consult a healthcare professional if your symptoms are severe, unusual or persistent.'
+  },
+
+  reviva: {
+    eyebrow: 'Botanical Massage Roll-On · Daily Self-Care',
+    title: 'TranzLife Reviva Roll-On',
+    tagline: 'Balance. Restore. Revitalize.',
+    intro: [
+      'TranzLife Reviva is a botanical-inspired massage roll-on designed for external application as part of a daily personal-care and wellness routine. It contains Dill and Eucalyptus essential oils in a convenient 50 ml roll-on.',
+      'Reviva is applied through gentle massage: its essential oil blend gives a refreshing topical experience as part of a daily personal-care routine.'
+    ],
+    highlightsTitle: 'Why choose Reviva?',
+    highlights: [
+      ['Refreshing application', 'Provides a refreshing topical application.'],
+      ['Daily self-care', 'Supports a simple daily self-care routine.'],
+      ['Easy massage', 'A convenient massage roll-on, with no complicated preparation.'],
+      ['Portable 50 ml roll-on', 'Travel-friendly, for easy and direct application.']
+    ],
+    listTitle: 'Ingredients',
+    list: [
+      ['Dill Essential Oil', 'Essential oil'],
+      ['Eucalyptus Essential Oil', 'Essential oil']
+    ],
+    closingTitle: 'How to use',
+    closing: 'Roll gently around the belly button every morning on an empty stomach, apply to intact skin and massage gently. Use daily as directed on the pack, and wash your hands after use.',
+    note: 'For external use only. Do not apply to wounds or irritated skin, and avoid the eyes. A personal-care product: it does not replace any medicine or medical advice. Keep out of reach of children. ISO 9001:2015 and GMP certified.'
   },
 
   liver: {
-    eyebrow: 'Nature-Inspired Innovation for Liver Wellness',
+    eyebrow: 'Polyherbal Concoction · Liver Wellness',
     title: 'TranzLife Liver Booster',
     tagline: 'Nourish Your Wellness. Support Your Liver. Embrace a Healthier Lifestyle.',
     intro: [
-      'TranzLife Liver Booster reflects our commitment to botanical-inspired wellness solutions designed with a focus on quality, scientific understanding and everyday well-being, combining traditional botanical knowledge with contemporary product development.',
-      'The liver plays a vital role in the body’s internal balance: it contributes to nutrient metabolism, processes many substances in the bloodstream and produces bile to support digestion.'
+      'TranzLife Liver Booster is a botanical-based wellness product formulated with traditional herbal ingredients, designed to support normal liver function, digestive wellness and overall well-being.',
+      'Liver Booster combines eleven traditional botanicals associated with liver and digestive wellness, positioned to provide botanical and antioxidant support for normal liver function and metabolic processes.'
     ],
     highlightsTitle: 'Our approach to liver wellness',
     highlights: [
-      ['Botanical inspiration', 'Exploring plant-derived ingredients and traditional botanical knowledge.'],
-      ['Quality-focused formulation', 'Ingredient identity, quality standards, formulation consistency and appropriate testing.'],
-      ['Science-led innovation', 'Scientific understanding and responsible innovation for evolving wellness needs.'],
-      ['Responsible wellness', 'Encouraging informed choices and a holistic approach to well-being.']
+      ['Normal liver function', 'Designed to support normal liver function.'],
+      ['Antioxidant support', 'Botanicals such as Amla, Haritaki and Turmeric provide antioxidant support.'],
+      ['Digestion & appetite', 'Supports digestive health, appetite and natural metabolic processes.'],
+      ['Traditional botanicals', 'A blend of eleven traditional Ayurvedic botanicals for everyday wellness support.']
+    ],
+    listTitle: 'Composition per 10 ml',
+    list: [
+      ['Bhumyamalaki (Phyllanthus niruri)', '500 mg'],
+      ['Kalmegh (Andrographis paniculata)', '400 mg'],
+      ['Kutki (Picrorhiza kurroa)', '400 mg'],
+      ['Punarnava (Boerhaavia diffusa)', '300 mg'],
+      ['Bhringraj (Eclipta alba)', '300 mg'],
+      ['Daruharidra (Berberis aristata)', '200 mg'],
+      ['Guduchi (Tinospora cordifolia)', '200 mg'],
+      ['Amla, Haritaki, Turmeric & Black Pepper', '200, 200, 150 & 50 mg']
     ],
     closingTitle: 'Making liver health a priority',
     closing: 'Liver health begins with everyday habits: a balanced diet, regular physical activity, limiting alcohol, maintaining a healthy weight and following medical advice about medicines.',
-    note: 'Liver wellness products should not replace a balanced lifestyle, appropriate medical assessment or prescribed treatment. Consult a qualified healthcare professional if you have concerns about liver function.'
+    note: 'Adults: 10 ml (2 teaspoons) twice daily after meals, with a measuring cup. Shake well before use and refrigerate after opening. Not recommended for pregnant or lactating women. Consult your physician if you are under medication. Not a replacement for medical assessment or prescribed treatment.'
   },
 
-  // From the Energy Booster brochure (a draft marketing aid): wellness positioning only, no treatment claims.
   energy: {
     eyebrow: 'Herbal & Bioactive Wellness Formulation',
     title: 'TranzLife Energy Booster',
     tagline: 'Natural Wellness Formulation. Nature, Science, Wellness.',
     intro: [
-      'TranzLife Energy Booster is a convenient oral liquid designed to complement an active lifestyle and an everyday wellness routine.',
-      'It combines selected botanical and mineral ingredients in a ready-to-use liquid, for adults seeking to complement their daily energy, activity and general well-being.'
+      'TranzLife Energy Booster is a herbal and bioactive oral liquid formulation designed to complement an active lifestyle and support everyday energy, stamina and overall wellness.',
+      'It combines selected botanical and mineral-origin ingredients in an oral liquid, designed to complement daily energy, activity and general wellness.'
     ],
     highlightsTitle: 'Designed for active days',
     highlights: [
-      ['Botanical-inspired formula', 'Selected botanical and mineral ingredients in a ready-to-use liquid format.'],
-      ['Everyday energy & activity', 'For adults seeking to complement daily energy, activity and general well-being.'],
-      ['A simple, measured routine', '7.5 ml twice daily, or as advised by a healthcare professional.'],
-      ['500 ml oral liquid', 'With a measuring device in the pack. Follow the directions on the label.']
+      ['Energy & stamina', 'Supports everyday energy and stamina.'],
+      ['Vitality & well-being', 'Promotes overall vitality and well-being.'],
+      ['Hormonal & immune wellness', 'Supports hormonal wellness and healthy immune function.'],
+      ['An active lifestyle', 'Designed to complement an active lifestyle and daily wellness routines.'],
+      ['Easy to measure', 'A 500 ml oral liquid with a measuring device in the pack.']
     ],
     listTitle: 'Key ingredients',
     list: [
       ['Ruta graveolens (Q)', 'Botanical ingredient'],
-      ['Hecla lava (3X)', 'Mineral-origin preparation'],
+      ['Hecla lava (3X)', 'Mineral-origin ingredient'],
       ['Symphytum officinale (Q)', 'Botanical ingredient'],
-      ['Calcarea phosphorica (8X)', 'Mineral-origin preparation'],
+      ['Calcarea phosphorica (8X)', 'Mineral-origin ingredient'],
       ['Echinacea angustifolia (Q)', 'Botanical ingredient']
     ],
+    closingTitle: 'How to use',
+    closing: 'Suggested dosage: 7.5 ml twice daily, or as recommended by a healthcare professional. Use the measuring device supplied with the pack and follow the approved product label.',
     note: 'Use only as directed and do not exceed the recommended serving. Consult a qualified healthcare professional before use if pregnant, breastfeeding, taking medication or managing a health condition. Keep out of reach of children.'
   }
 };

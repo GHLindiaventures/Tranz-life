@@ -1,11 +1,11 @@
-// Product finder needs and the product each one maps to.
+// Product finder needs and the product each one maps to (index in PRODUCTS).
 const NEEDS = [
-  { t:'Breathe easier every day', p:0, why:'Sixty herbal apple mint gummies, made for respiratory care and immune support.' },
-  { t:'Calm down in a busy moment', p:1, why:'A pocket nasal inhaler made with 100% natural, organic ingredients. Two slow breaths whenever you need a pause.' },
-  { t:'Ease period cramps', p:2, why:'Rosemary, rose and peppermint in a pocket roll-on made for period cramp relief.' },
-  { t:'Care for dry, tired feet', p:3, why:'Reviva is a plant-based, skin-friendly roll-on for everyday diabetic foot care.' },
-  { t:'Support my liver', p:4, why:'A plant-based liquid that supports healthy liver function and detoxification.*' },
-  { t:'Keep up with active days', p:5, why:'A herbal and bioactive oral liquid, designed to complement your everyday energy, activity and well-being.' }
+  { t:'Everyday respiratory wellness', p:0, why:'PulmoClear gummies: Ayurvedic botanicals with Vitamin C, D3 and Zinc, designed to support respiratory wellness and everyday health.' },
+  { t:'Go smoke-free, stay calm', p:1, why:'BreatheFree: six essential oils in a pocket inhaler, designed to help manage cravings and stress with a slow, refreshing breath.' },
+  { t:'Comfort during my period', p:2, why:'CycleRelief: a plant-based roll-on with wintergreen, peppermint, ginger, lavender and eucalyptus, for a soothing self-care routine during your cycle.' },
+  { t:'A refreshing daily ritual', p:3, why:'Reviva: a massage roll-on with dill and eucalyptus essential oils, for a refreshing morning self-care routine.' },
+  { t:'Support my liver', p:4, why:'A polyherbal liquid with 11 traditional botanicals, designed to support normal liver function and digestive wellness.' },
+  { t:'Keep up with active days', p:5, why:'A herbal and bioactive oral liquid, designed to support everyday energy, stamina and overall wellness.' }
 ];
 
 export { NEEDS };
