@@ -75,10 +75,10 @@ export const COMPARE = {
     botanicals: [['Dill essential oil', ''], ['Eucalyptus essential oil', '']],
     note: 'Illustrative only: these images show the self-care routine Reviva Roll-On is designed for. They are not clinical before-and-after results, and individual experience varies. For external personal-care use only; it is not intended to diagnose, treat, cure or prevent any disease, and it is not a substitute for prescribed medication or medical advice. Perform a patch test before first use. Avoid eyes, mucous membranes, and broken or irritated skin, and discontinue if irritation occurs. Essential oils may not be suitable during pregnancy or for people with sensitivities; seek professional advice where appropriate. Keep out of reach of children.'
   },
-  // Aroma Inhaler (the brochure called it BreatheFree). Wording follows the client brief: relaxation and a mindful
-  // pause, no smoking-cessation or treatment claims. The photos still show a cigarette pack; swap them when new ones arrive.
+  // BreatheFree Aromatherapy Inhaler. Wording from the client's product sheet (Nov 2026): support on the way to a
+  // smoke-free lifestyle, relaxation and breathing comfort; an aromatherapy product, never a medicine or nicotine replacement.
   inhaler: {
-    eyebrow: 'Aroma Inhaler · Pure essential oils',
+    eyebrow: 'BreatheFree Inhaler · Six essential oils',
     title: ['Designed for a', 'moment of calm'],
     intro: 'Drag the slider to compare. A visual guide to the moment this pocket aromatherapy inhaler is designed for: pausing for a calming, aromatic breath in a stressful day.',
     fill: true,
@@ -91,27 +91,27 @@ export const COMPARE = {
     },
     after: {
       label: 'After',
-      sub: 'With the Aroma Inhaler',
+      sub: 'With BreatheFree',
       img: '/assets/compare/inhaler-after.webp',
       alt: 'The same man calm on a green, sunlit terrace, breathing in from a small white inhaler, the cigarette pack crushed and set aside',
-      tags: ['A mindful pause', 'Relaxation & focus', 'Pure essential oils']
+      tags: ['Smoke-free journey', 'Relaxation & balance', 'Six essential oils']
     },
     size: [2100, 1000],
     // brochure: benefits list, "How to use", "Pocket friendly"
     benefits: [
-      ['A mindful pause', 'A calming aromatic breath to reach for whenever the day gets busy.'],
-      ['Relaxation & focus', 'A pure essential-oil blend for a calmer, more balanced moment.'],
-      ['A fresh feeling', 'Peppermint and eucalyptus give a cool, refreshing aroma.'],
-      ['Open · Inhale · Relax', 'Remove the cap, inhale gently through each nostril, and use whenever you need a pause.'],
+      ['Helps manage cravings', 'Reach for a slow, aromatic breath when the urge to smoke comes.'],
+      ['Relaxation & balance', 'Promotes relaxation and emotional balance, and helps manage stress and irritability.'],
+      ['A refreshing breath', 'Peppermint and eucalyptus support a cool, refreshing breathing experience.'],
+      ['Open · Inhale · Repeat', 'Remove the cap, take slow, deep breaths near each nostril, and repeat whenever cravings or stress come.'],
       ['Pocket friendly', 'Compact and discreet, so you can use it at work, while travelling or anytime.']
     ],
     icons: ['shield', 'leaf', 'wind', 'spark', 'drop'],
-    botanicalsTitle: 'Pure essential oils',
+    botanicalsTitle: 'Six essential oils',
     botanicals: [
-      ['Peppermint oil', ''], ['Lavender oil', ''], ['Eucalyptus oil', ''],
+      ['Peppermint oil', ''], ['Eucalyptus oil', ''], ['Lavender oil', ''],
       ['Lemon oil', ''], ['Black pepper oil', ''], ['Tulsi oil', '']
     ],
-    note: 'Illustrative only: these images show the moment the Aroma Inhaler is designed for. They are not clinical before-and-after results, and individual experience varies. The Aroma Inhaler is an aromatherapy personal-care product, not a medicine or nicotine replacement therapy, and it is not intended to diagnose, treat, cure or prevent any disease. For inhalation only: do not insert deep into the nostril, and keep away from eyes. Essential oils may not be suitable during pregnancy, for children, or for people with asthma or sensitivities; seek professional advice where appropriate. For support with quitting smoking, speak to a healthcare professional. Keep out of reach of children.'
+    note: 'Illustrative only: these images show the moment the BreatheFree inhaler is designed for. They are not clinical before-and-after results, and individual experience varies. BreatheFree is an aromatherapy personal-care product, not a medicine or nicotine replacement therapy, and it is not intended to diagnose, treat, cure or prevent any disease. For inhalation only: do not insert deep into the nostril, and keep away from eyes. Essential oils may not be suitable during pregnancy, for children, or for people with asthma or sensitivities; seek professional advice where appropriate. For support with quitting smoking, speak to a healthcare professional. Keep out of reach of children.'
   },
   energy: {
     eyebrow: 'Energy Booster · Herbal & bioactive wellness formulation',
@@ -130,12 +130,12 @@ export const COMPARE = {
       sub: 'Complemented with Energy Booster',
       img: '/assets/compare/energy-after.webp',
       alt: 'An energetic man outdoors in the sunshine, arms raised',
-      tags: ['Complements daily energy', 'Supports an active lifestyle', 'General well-being']
+      tags: ['Everyday energy & stamina', 'Supports an active lifestyle', 'Overall vitality']
     },
     size: [2100, 1000],
     // brochure: "Wellness positioning", "Product at a glance", "Directions for use"
     benefits: [
-      ['Complements daily energy', 'For adults seeking to complement daily energy, activity and general well-being.'],
+      ['Energy & stamina', 'Supports everyday energy, stamina and overall vitality and well-being.'],
       ['Active lifestyle', 'Designed to complement an active lifestyle and everyday wellness routine.'],
       ['Botanical & mineral blend', 'Selected botanical and mineral-origin ingredients in a ready-to-use liquid.'],
       ['Simple measured routine', '7.5 ml twice daily, or as advised by a healthcare professional.'],
@@ -171,9 +171,9 @@ export const COMPARE = {
     size: [1200, 820],
     // wording: the client brief (wellness positioning, no treatment claims)
     benefits: [
-      ['Respiratory wellness', 'Botanicals traditionally used in Ayurvedic respiratory preparations.'],
+      ['Respiratory wellness', 'Designed to support respiratory wellness and everyday health.'],
       ['Traditional botanicals', 'Tulsi, Vasaka, dry ginger, long pepper and licorice root.'],
-      ['Vitamins & minerals', 'Vitamin C, Vitamin D3 and Zinc, which contribute to normal immune function.'],
+      ['Vitamins & minerals', 'Vitamin C, Vitamin D3 and Zinc to support natural immune function, with antioxidant support.'],
       ['Easy gummy format', 'A convenient, berry-flavoured gummy for modern routines.'],
       ['Quality-focused', 'Developed with an emphasis on ingredient specifications and consistency.']
     ],
@@ -190,13 +190,13 @@ export const COMPARE = {
   liver: {
     eyebrow: 'Liver Booster · Ayurvedic liver wellness',
     title: ['Designed for everyday', 'liver wellness'],
-    intro: 'Drag the slider to compare. A visual guide to what this classical Ayurvedic polyherbal liquid is designed for: everyday liver wellness alongside a balanced lifestyle.',
+    intro: 'Drag the slider to compare. A visual guide to what this Ayurvedic polyherbal concoction is designed for: everyday liver wellness alongside a balanced lifestyle.',
     before: {
       label: 'Before',
       sub: 'Everyday strain',
       img: '/assets/compare/liver-before.webp',
       alt: 'Illustration of a dull, mottled liver under everyday strain',
-      tags: ['Toxin build-up', 'Oxidative stress', 'Sluggish digestion']
+      tags: ['Rich, irregular meals', 'Oxidative stress', 'Sluggish digestion']
     },
     after: {
       label: 'After',
@@ -208,9 +208,9 @@ export const COMPARE = {
     size: [1200, 820],
     // wording: the client brief (wellness positioning, no treatment claims)
     benefits: [
-      ['Liver wellness', 'Classical botanicals traditionally used in Ayurvedic liver-wellness preparations.'],
+      ['Normal liver function', 'Traditional botanicals designed to support normal liver function and metabolic processes.'],
       ['Eleven botanicals', 'Led by Bhumyamalaki, Kalmegh and Kutki.'],
-      ['Natural antioxidants', 'Amla, Haritaki and Turmeric are natural sources of antioxidants.'],
+      ['Antioxidants & digestion', 'Antioxidant support, with support for digestive health and appetite.'],
       ['Everyday routine', '10 ml twice daily after meals.'],
       ['Balanced lifestyle', 'Made to complement a balanced diet, regular activity and limited alcohol.']
     ],

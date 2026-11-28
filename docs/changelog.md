@@ -1,5 +1,11 @@
 # Changelog
 
+## v14.6 (28 Nov 2026): product content from the official product sheet
+- Every product's text now follows the client's "Tranzlife Biosciences Products.pdf": the home story, benefits table, product finder, shop cards, Products page showcase and lineup, product pages (highlights, ingredients, how to use, cautions, storage, pack), before / after slider, R&D board and the Tulsi chat's product facts.
+- Corrections: Reviva is a massage roll-on with dill and eucalyptus (not "diabetic foot care"); CycleRelief is 8 ml with wintergreen, peppermint, ginger, lavender and eucalyptus in sesame oil, rolled onto the lower abdomen, back or wrists (not rosemary and rose, not 50 ml, not around the belly button); Liver Booster is a 500 ml polyherbal concoction with 11 botanicals (the chat said 200 ml and 13); Lung Booster gummies are berry-flavoured (not apple mint) and their serving follows the pack; the inhaler is the BreatheFree Aromatherapy Inhaler, for a smoke-free journey; Energy Booster adds stamina, hormonal and immune wellness from its key benefits.
+- Reviva has its own write-up now. New cautions and storage from the packs (CycleRelief: not on children; Liver Booster: not in pregnancy or breastfeeding, refrigerate after opening).
+- Left out on purpose: disease claims printed on some packs (Reviva: blood sugar, circulation, nerves, pain; Liver Booster: detox, flushing toxins; CycleRelief: soothing cramps; BreathFree drops: lung function). BreathFree drops are not a shop product (no photo or price yet).
+
 ## v14.5 (27 Nov 2026): Energy Booster in the product sections
 - **TranzLife Energy Booster** (500 ml oral liquid, ₹649, the same as the other 500 ml liquid until the client confirms the MRP) is the sixth product everywhere: the home product story (its own "Everyday energy" card, then the lineup of six), benefits, product finder ("Keep up with active days"), shop grid (Liquid filter), menu card, bag and checkout; the Products page showcase and "Which one is yours?" lineup; and its product page. Before, it only had its own page, with no price.
 - Copy from the Energy Booster brochure, wellness positioning only: botanical and mineral ingredients (Ruta graveolens, Hecla lava, Symphytum officinale, Calcarea phosphorica, Echinacea angustifolia), 7.5 ml twice daily, the brochure's precautions. No treatment claims.
