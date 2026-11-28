@@ -20,6 +20,7 @@ function initStory(){
       <span class="sc-st">${icon(s.ic)}</span>
       <p class="sc-k">${PRODUCTS[i].no} · ${PRODUCTS[i].name}</p>
       <h3><span>${s.t[0]}</span><span>${s.t[1]}</span></h3>
+      ${s.flag ? `<p class="sc-flag">${s.flag}</p>` : ''}
       <p class="sc-d">${icon('spark', 'sc-i')}${s.d}</p>
     </article>`).join('');
   $('#seqNotes').innerHTML = STORY.map((s, i) => `<p class="sn ${i % 2 ? 'sn-l' : 'sn-r'}">${s.note}<svg viewBox="0 0 120 60" aria-hidden="true"><path d="${i % 2 ? 'M110 8C80 10 50 24 30 48m0 0l2-14m-2 14l13-5' : 'M10 8c30 2 60 16 80 40m0 0l-2-14m2 14l-13-5'}"/></svg></p>`).join('');

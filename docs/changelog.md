@@ -1,5 +1,12 @@
 # Changelog
 
+## v14.7 (28 Nov 2026): new gummies photo, shorter card names, Reviva for diabetics
+- New Lung Booster Gummies photo (the tub with the TRANZLIFE BIOSCIENCES wordmark): the shop photo (`gummies.webp`) and the cut-out in the hero, home story and shop cards (`gummies-cut.webp`). The 3D model still shows the old label (`decal-gummies.webp`) until the flat label artwork comes.
+- Shop cards show the name without "TranzLife" (Lung Booster Gummies, BreatheFree Aromatherapy Inhaler, ...). The bag, orders and image descriptions keep the full name.
+- The gummies story card (home and Products page) is titled "Lung booster gummies", was "Breathe well".
+- Reviva's home story card has a "For diabetics" label and says it is made for people with diabetes, as its pack does. Its blood-sugar claims stay off the site.
+- Benefits section: the table lists what goes into each product (ingredients and pack facts), with its three key benefits above it.
+
 ## v14.6 (28 Nov 2026): product content from the official product sheet
 - Every product's text now follows the client's "Tranzlife Biosciences Products.pdf": the home story, benefits table, product finder, shop cards, Products page showcase and lineup, product pages (highlights, ingredients, how to use, cautions, storage, pack), before / after slider, R&D board and the Tulsi chat's product facts.
 - Corrections: Reviva is a massage roll-on with dill and eucalyptus (not "diabetic foot care"); CycleRelief is 8 ml with wintergreen, peppermint, ginger, lavender and eucalyptus in sesame oil, rolled onto the lower abdomen, back or wrists (not rosemary and rose, not 50 ml, not around the belly button); Liver Booster is a 500 ml polyherbal concoction with 11 botanicals (the chat said 200 ml and 13); Lung Booster gummies are berry-flavoured (not apple mint) and their serving follows the pack; the inhaler is the BreatheFree Aromatherapy Inhaler, for a smoke-free journey; Energy Booster adds stamina, hormonal and immune wellness from its key benefits.

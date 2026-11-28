@@ -58,7 +58,8 @@ export const PRODUCTS = [
     id: 'reviva',
     no: '04',
     short: 'Reviva',
-    // A massage roll-on for external use. Its pack also makes blood-sugar / diabetes claims: never used on the site.
+    // A massage roll-on for external use, made for people with diabetes (the story card says so). Its pack's
+    // blood-sugar claims are not used on the site.
     name: 'TranzLife Reviva Roll-On',
     cat: 'rollon',
     tag: 'Daily Self-Care',
