@@ -13,6 +13,9 @@ import './components/chat-loader.js';
 import { $, $$ } from './utils/dom.js';
 import { initBeforeAfter } from './features/compare/before-after.js';
 import { initAccountMenu } from './features/account/account-menu.js';
+import { createZoomPan } from './utils/zoom-pan.js';
+
+let pdpZoom = null;
 
 // Product page content per product: from the client's product sheet (Nov 2026): key benefits, ingredients as on the
 // pack, directions, cautions, storage and pack details. Disease claims printed on some packs are left out.
@@ -279,11 +282,18 @@ function renderProductDetails(productId) {
   }
 
   // 4. Setup 3D Canvas & Gallery Tabs
+  const imgBox = $('#pdpImgBox');
   const canvas = $('#pdp3dCanvas');
   const mainImg = $('#pdpMainImg');
   const badge3d = $('#pdp3dBadge');
+  const zoomBar = $('#pdpZoom');
   const tagEl = $('#pdpTag');
   if (tagEl) tagEl.textContent = prod.tag;
+
+  if (!pdpZoom && imgBox && mainImg) {
+    pdpZoom = createZoomPan({ stage: imgBox, img: mainImg, controls: zoomBar, wheel: false });
+  }
+  if (pdpZoom) pdpZoom.reset();
 
   const studioImg = SHOTS[prod.id];
   const designImg = DESIGNS[prod.id];
@@ -294,6 +304,8 @@ function renderProductDetails(productId) {
   }
   if (mainImg) mainImg.hidden = true;
   if (badge3d) badge3d.classList.remove('hidden');
+  if (zoomBar) zoomBar.hidden = true;
+  if (imgBox) imgBox.classList.remove('is-img', 'is-design');
 
   // Wire Gallery Tabs
   const tabBtns = $$('.pdp-tab-btn');
@@ -302,13 +314,21 @@ function renderProductDetails(productId) {
     btn.onclick = () => {
       tabBtns.forEach(b => b.classList.toggle('on', b === btn));
       const mode = btn.dataset.view;
+      if (pdpZoom) pdpZoom.reset();
       if (mode === '3d') {
         if (canvas) canvas.hidden = false;
         if (mainImg) mainImg.hidden = true;
         if (badge3d) badge3d.classList.remove('hidden');
+        if (zoomBar) zoomBar.hidden = true;
+        if (imgBox) imgBox.classList.remove('is-img', 'is-design');
       } else {
         if (canvas) canvas.hidden = true;
         if (badge3d) badge3d.classList.add('hidden');
+        if (zoomBar) zoomBar.hidden = false;
+        if (imgBox) {
+          imgBox.classList.add('is-img');
+          imgBox.classList.toggle('is-design', mode === 'design');
+        }
         if (mainImg) {
           mainImg.hidden = false;
           mainImg.src = mode === 'design' && designImg ? designImg : studioImg;
